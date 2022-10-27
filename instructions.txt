@@ -1,0 +1,23 @@
+1)explain how to run rstudio from active environment (check screenshot of your phone)
+
+2) first install mambaforge 
+https://github.com/conda-forge/miniforge#mambaforge
+3) then install climate4R :
+
+conda create --name climate4R
+conda activate climate4R
+mamba install -y -c conda-forge -c r -c defaults -c santandermetgroup r-climate4r
+
+activate environment
+
+4) better to install rhumba as package manager for R (https://github.com/mamba-org/rhumba)
+
+activate environment
+
+mamba install rhumba
+
+activate R and then rhumba::set_channels(c("conda-forge", "default"))
+
+rhumba::install("r-devtools")
+
+examples of cava analytics code

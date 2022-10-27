@@ -25,7 +25,7 @@ home/user/data/. data would contain subfolders with the climate models. Historic
 \item{country}{A character string, in english, indicating the country of interest. To select a bounding box,
 set country to NULL and define arguments xlim and ylim}
 
-\item{variable}{A character string indicating the variable to be loaded}
+\item{variable}{A character string indicating the variable}
 
 \item{xlim}{Vector of length = 2, with minimum and maximum longitude coordinates, in decimal degrees, of the bounding box selected.}
 
@@ -39,7 +39,9 @@ set country to NULL and define arguments xlim and ylim}
 
 \item{n.cores}{Integer, number of cores to use in parallel processing, default is 9}
 
-\item{buffer}{Integer, default to zero. Buffer to add when selecting a country or a bounding box}
+\item{buffer}{Numeric. Default is zero.}
+
+\item{domain}{Specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.rcps = CORDEX-CORE}
 }
 \value{
 Tibble with column list
@@ -49,6 +51,8 @@ Automatically load climate models (netCDF/NcML) in a tidy format.
 }
 \examples{
 fpath <- system.file("extdata/", package="cavaR")
-exmp <- load_data(country = "Moldova", variable="hurs", n.cores=6,
+exmp1 <- load_data(country = "Moldova", variable="hurs", years.hist=2000. years.proj=2010,
               path.to.rcps = fpath)
+exmp2 <- load_data(country = "Somalia", variable="tas", years.hist=2000. years.proj=2010,
+              path.to.rcps = "CORDEX-CORE", domain="AFR-22")
 }

@@ -13,19 +13,22 @@
 #' home/user/data/. data would contain subfolders with the climate models. Historical simulations have to be contained in a folder called historical. If path.to.rcps is set as CORDEX-CORE, CORDEX-CORE simulations from RCM RegCM4 will be loaded
 #' @param country A character string, in english, indicating the country of interest. To select a bounding box,
 #' set country to NULL and define arguments xlim and ylim
-#' @param variable  A character string indicating the variable to be loaded
+#' @param variable  A character string indicating the variable
 #' @param xlim Vector of length = 2, with minimum and maximum longitude coordinates, in decimal degrees, of the bounding box selected.
 #' @param ylim Same as xlim, but for the selection of the latitudinal range.
 #' @param path.to.obs Default to NULL, if not, indicate the absolute path to the directory containing a reanalysis dataset, for example ERA5. To automatically load W5E5. specify W5E5
 #' @param years.proj Numerical range, years to select for projections
 #' @param years.hist Numerical range, years to select for historical simulations and observations
 #' @param n.cores Integer, number of cores to use in parallel processing, default is 9
-#' @param buffer Integer, default to zero. Buffer to add when selecting a country or a bounding box
+#' @param domain Specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.rcps = CORDEX-CORE
+#' @param buffer Numeric. Default is zero.
 #' @return Tibble with column list
 #' @examples
-#'fpath <- system.file("extdata/", package="cavaR")
-#' exmp <- load_data(country = "Moldova", variable="hurs", n.cores=6,
+#' fpath <- system.file("extdata/", package="cavaR")
+#' exmp1 <- load_data(country = "Moldova", variable="hurs", years.hist=2000. years.proj=2010,
 #'               path.to.rcps = fpath)
+#' exmp2 <- load_data(country = "Somalia", variable="tas", years.hist=2000. years.proj=2010,
+#'               path.to.rcps = "CORDEX-CORE", domain="AFR-22")
 
 
 load_data <- function(

@@ -24,7 +24,7 @@ cavaR simplifies and standardize how to load multiple climate models or other ne
 load_data returns a tibble with list columns, in a format that allows the user to apply the tidyverse approach for further processing the data. 
 
 ``` 
-fpath <- system.file("extdata/", package="chatR")
+fpath <- system.file("extdata/", package="cavaR")
 
 exmp1 <- load_data(country = "Moldova", variable="hurs", years.hist=2000, years.projections=2010
               path.to.rcps = fpath)

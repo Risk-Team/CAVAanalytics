@@ -27,7 +27,7 @@ cavaR makes it easier to work with a large number of climate or impact model sim
 ## 1st Step
 ### Loading data: load_data function
 
-**cavaR** simplifies and standardize how to load multiple climate models/simulations or other netcdf files (e.g impact models from ISIMIP). To **load local data**, specify the path to your directories, containing, for example, sevral RCPs and a folder with historical runs (Figure 1). 
+**cavaR** simplifies and standardize how to load multiple climate models/simulations or other netcdf files (e.g impact models from ISIMIP). To **load local data**, specify the path to your directories, containing, for example, several RCPs and a folder with historical runs. 
 
 ``` 
 exmp1 <- load_data(country = "Somalia", variable="hurs", years.hist=2000, years.projections=2010
@@ -37,7 +37,7 @@ exmp1 <- load_data(country = "Somalia", variable="hurs", years.hist=2000, years.
 
 | ![image17](https://user-images.githubusercontent.com/40058235/199230403-5d252400-e543-42ea-89bd-297d777ee6a4.png) | 
 |:--:| 
-| *Space* |
+| *When data is uploaded locally, path.to.rcps would contain at least one folder called historical, conytaining the historical simulation runs and one or more folders per RCP, SSP or other. Within this folders, there can be multiple models or simulations that will be loaded and checked for temportal consistency* |
 
 
 To automatically load CORDEX-CORE simulations (RCM RegCM4-7), specify path.to.rcps="CORDEX-CORE" and the domain of interest (e.g "AFR-22"). To automatically load the W5E5 dataset, specify path.obs="W5E5". 

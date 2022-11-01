@@ -1,8 +1,8 @@
 # cavaR
 
-If you encountered difficulties working with several netCDF files and perform meaningful analysis, especially related to climate change, then this package might be what you are looking for. 
+If you had hard times working with several netCDF files and perform meaningful analysis, especially related to climate change, then this package might be what you are looking for. 
 
-cavaR is the package version of CAVA-Analytics. It allows easy loading of cllimate models, both from local data and remotely, through [climate4RUDG](https://github.com/SantanderMetGroup/climate4R.UDG). 
+cavaR is the package version of [CAVA-Analytics](https://github.com/Risk-Team/CAVA-Analytics). It allows easy loading of cllimate models, both from local data and remotely, through [climate4RUDG](https://github.com/SantanderMetGroup/climate4R.UDG). 
 cavaR can be seen as a wrapper of several packages, but the main engine for loading and processing climate models is the  [climate4R framework](https://github.com/SantanderMetGroup/climate4R), applied with a tidyverse approach. 
 
 ## Installation
@@ -20,24 +20,68 @@ if you encounter problems with dependencies, such as loadeR, downscaleR and clim
 
 A conda environment will follow
 
-## Framework to work with climate data and other netCDF files
+## A framework to work with climate data and other netCDF files
 
-cavaR makes it easier to work with a large number of climate or impact model simulations (netCDF files) and perform meaningful analysis. The idea behind cavaR is to first load the data and then work with the output of the load_data with other functions. More examples below
+cavaR makes it easier to work with a large number of climate or impact model simulations (netCDF files) and perform meaningful analysis. The idea behind cavaR is to first load the data and then work with the output of the load_data with other **cavaR** functions. 
 
-### Loading example data
+## 1st step
+### Loading data: load_data function
 
-cavaR simplifies and standardize how to load multiple climate models or other netcdf files (e.g impact models from ISIMIP). To automatically load CORDEX-CORE simulations (RCM RegCM4-7), specify path.to.rcps="CORDEX-CORE" and the domain of interest (e.g "AFR-22"). To automatically load the W5E5 dataset, specify path.obs="W5E5". 
-
-load_data returns a tibble with list columns, in a format that allows the user to apply the tidyverse approach for further processing the data. 
+**cavaR** simplifies and standardize how to load multiple climate models/simulations or other netcdf files (e.g impact models from ISIMIP). To **load local data**, specify the path to your directories, containing, for example, several RCPs and a folder with historical runs. 
 
 ``` 
-fpath <- system.file("extdata/", package="cavaR")
-
-exmp1 <- load_data(country = "Moldova", variable="hurs", years.hist=2000, years.projections=2010
-              path.to.rcps = fpath)
-
-exmp2 <- load_data(country = "Somalia", variable="hurs", years.hist=2000, years.projections=2010
-              path.to.rcps = "CORDEX-CORE", path.obs="W5E5", domain="AFR-22")
+exmp1 <- load_data(country = "Somalia", variable="hurs", years.hist=2000, years.projections=2010
+              path.to.rcps = "~/Databases/CORDEX-CORE/AFR-22", path.obs="~/Databases/W5E5")
 
 ```
 
+| ![image17](https://user-images.githubusercontent.com/40058235/199230403-5d252400-e543-42ea-89bd-297d777ee6a4.png) | 
+|:--:| 
+| *When data is uploaded locally, path.to.rcps would contain at least one folder called historical, containing the historical simulation runs and one or more folders per RCP, SSP or other. Within these folders, there can be multiple models or simulations that will be loaded and checked for temportal consistency* |
+
+with a small subset of the CAS-22 domain, available with the package 
+
+``` 
+
+fpath <- system.file("extdata/", package="cavaR")
+exmp1 <- load_data(country = "Moldova", variable="hurs", years.hist=2000, years.projections=2010
+              path.to.rcps = fpath)
+``` 
+
+**To load CORDEX-CORE data stored remotely**, set path.to.rcps to "CORDEX-CORE" and specify the domain. For example:
+
+``` 
+local.data <- load_data(country = "Kenya", variable="tasmax", years.hist=1980:2000, years.projections=2010:2030
+              path.to.rcps = "CORDEX-CORE", path.obs="W5E5", domain="AFR-22")
+
+
+```
+
+would load the variable tasmax for 3 CORDEX-CORE simulations (RCM RegCM4-7) and 2 RCPs alongside the W5E5 dataset for the country of Kenya. To select a bounding box, run:
+
+``` 
+remote.data <- load_data(country = NULL, variable="tasmax", years.hist=1980:2000, years.projections=2010:2030
+              path.to.rcps = "CORDEX-CORE", path.obs="W5E5", domain="AFR-22", xlim=c(10,20), ylim=c(-30,-20))
+
+```
+
+load_data returns a tibble with list columns, in a format that allows the user to apply the tidyverse approach for further processing the data. For example, in climate models temperature is often expressed in Kalvin. To convert it to Celsius, it is sufficient to run:
+
+``` 
+exmp1 <- load_data(country = "Sudan", variable="tasmax", years.hist=2000, years.proj=2070:2090,
+                   path.to.rcps ="~/Databases/CORDEX-CORE/AFR-22/") %>% # transforming
+  map(., function(x) {
+
+    if(is.data.frame(x)) {
+
+      x %>%
+        mutate(models_mbrs= map(models_mbrs, ~ gridArithmetics(.x, 273.15, operator = "-")))
+
+    } else {
+      x
+    }
+
+
+  })
+
+```

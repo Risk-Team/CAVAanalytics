@@ -6,6 +6,7 @@
 #' @import purrr
 #' @import furrr
 #' @import dplyr
+#' @import climate4R.UDG
 
 
 #'
@@ -25,9 +26,9 @@
 #' @return Tibble with column list
 #' @examples
 #' fpath <- system.file("extdata/", package="cavaR")
-#' exmp1 <- load_data(country = "Moldova", variable="hurs", years.hist=2000. years.proj=2010,
+#' exmp1 <- load_data(country = "Moldova", variable="hurs", years.hist=2000, years.proj=2010,
 #'               path.to.rcps = fpath)
-#' exmp2 <- load_data(country = "Somalia", variable="tas", years.hist=2000. years.proj=2010,
+#' exmp2 <- load_data(country = "Somalia", variable="tas", years.hist=2000, years.proj=2010,
 #'               path.to.rcps = "CORDEX-CORE", domain="AFR-22")
 
 
@@ -210,6 +211,6 @@ load_data <- function(
   rm(models.df)
   gc()
 
-  return(list(models.df2, country_shp, models, "C4R.dataframe"))
+  return(list(models.df2, country_shp, as.character(models), "C4R.dataframe"))
 
 } # end of function

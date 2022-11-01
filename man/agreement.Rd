@@ -16,5 +16,5 @@ bindGrid(data, dimension = "member"). Temporal dimension needs to be removed thr
 array with 0 (no model agreement) or 1 (model agreement), based on threshold
 }
 \description{
-function to find models members sign agreement.
+function to find model members sign agreement.
 }

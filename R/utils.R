@@ -86,7 +86,7 @@ find.agreement = function(x, threshold) {
 
 #' Model agreement
 #'
-#' function to find models members sign agreement.
+#' function to find model members sign agreement.
 #'
 #' @param array3d 3d array in which first dimension is model member, usually C4R$Data. This can be obtained as a result of
 #' bindGrid(data, dimension = "member"). Temporal dimension needs to be removed through another function
@@ -114,7 +114,7 @@ make_raster <- function(cl4.object) {
   nms <-
     paste0(
       str_extract(cl4.object$Dates$start[1], "\\d{4}"),
-      "_",
+      ".",
       str_extract(cl4.object$Dates$end[length(cl4.object$Dates$start)],  "\\d{4}")
     )
   names(rasters) <-  nms
@@ -241,3 +241,42 @@ ToE <- function(x, array)  {
   return(tmp)
 
 }
+
+
+#' Apply mixed effect model to multidimensional array
+#'
+#' fit a mixed effect model (random slope) to c4R object with multiple member in the first dimension
+#' @export
+#' @import nlme
+#' @param cl4 list used in climate4R with slot Data containing more than one member
+#' @param slope logical.
+
+
+
+array.lme <- function(cl4, slope) {
+
+  dimnames(cl4$Data) <- list(paste0("mod_", 1:dim(cl4$Data)[[1]]))
+
+  lme.res <- apply(cl4$Data, c(3,4), function(y) {
+
+    df <- melt(y)
+    res <- lme(value~ Var2, random = ~ 1|Var1, data = df ) # random intercept model
+
+    if (slope) {
+
+      summary(res)$tTable[[2,1]]
+
+    } else {
+
+      summary(res)$tTable[[2,5]]
+    }
+
+  })
+
+  cl4$Data <- lme.res
+  return(cl4)
+
+}
+
+
+

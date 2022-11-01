@@ -51,8 +51,8 @@ Automatically load climate models (netCDF/NcML) in a tidy format.
 }
 \examples{
 fpath <- system.file("extdata/", package="cavaR")
-exmp1 <- load_data(country = "Moldova", variable="hurs", years.hist=2000. years.proj=2010,
+exmp1 <- load_data(country = "Moldova", variable="hurs", years.hist=2000, years.proj=2010,
               path.to.rcps = fpath)
-exmp2 <- load_data(country = "Somalia", variable="tas", years.hist=2000. years.proj=2010,
+exmp2 <- load_data(country = "Somalia", variable="tas", years.hist=2000, years.proj=2010,
               path.to.rcps = "CORDEX-CORE", domain="AFR-22")
 }

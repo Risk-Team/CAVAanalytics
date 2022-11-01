@@ -25,7 +25,8 @@ Imports:
     ggplot2,
     climate4R.indices,
     RColorBrewer,
-    tidyr
+    tidyr,
+    climate4R.UDG,
+    nlme
 Depends:
-    loadeR,
-    climate4R.UDG
+    loadeR

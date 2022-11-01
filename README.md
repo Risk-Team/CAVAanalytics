@@ -10,7 +10,7 @@ package might be what you are looking for.
 
 cavaR is the package version of
 [CAVA-Analytics](https://github.com/Risk-Team/CAVA-Analytics). It allows
-easy loading of cllimate models, both from local data and remotely,
+easy loading of climate models, both from local data and remotely,
 through
 [climate4RUDG](https://github.com/SantanderMetGroup/climate4R.UDG).
 cavaR can be seen as a wrapper of several packages, but the main engine

@@ -65,7 +65,27 @@ remote.data <- load_data(country = NULL, variable="tasmax", years.hist=1980:2000
 
 ```
 
-load_data returns a tibble with list columns, in a format that allows the user to apply the tidyverse approach for further processing the data. 
+load_data returns a tibble with list columns, in a format that allows the user to apply the tidyverse approach for further processing the data. For example, in climate models temperature is often expressed in Kalvin. To convert it to Celsius, it is sufficient to run:
+
+``` 
+remote.data <- load_data(country = NULL, variable="tasmax", years.hist=1980:2000, years.projections=2010:2030
+              path.to.rcps = "CORDEX-CORE", path.obs="W5E5", domain="AFR-22", xlim=c(10,20), ylim=c(-30,-20))
+
+```
+
+exmp1 <- load_data(country = "Sudan", variable="tasmax", years.hist=2000, years.proj=2070:2090,
+                   path.to.rcps ="~/Databases/CORDEX-CORE/AFR-22/") %>% # transforming
+  map(., function(x) {
+
+    if(is.data.frame(x)) {
+
+      x %>%
+        mutate(models_mbrs= map(models_mbrs, ~ gridArithmetics(.x, 273.15, operator = "-")))
+
+    } else {
+      x
+    }
 
 
+  })
 

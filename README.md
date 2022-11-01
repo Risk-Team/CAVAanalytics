@@ -39,7 +39,7 @@ exmp1 <- load_data(country = "Somalia", variable="hurs", years.hist=2000, years.
 |:--:| 
 | *When data is uploaded locally, path.to.rcps would contain at least one folder called historical, containing the historical simulation runs and one or more folders per RCP, SSP or other. Within these folders, there can be multiple models or simulations that will be loaded and checked for temportal consistency* |
 
-with a small subset of the CAS-22 domain, availabel with the package 
+with a small subset of the CAS-22 domain, available with the package 
 
 ``` 
 
@@ -57,7 +57,7 @@ local.data <- load_data(country = "Kenya", variable="tasmax", years.hist=1980:20
 
 ```
 
-would load the variable tasmax for 3 CORDEX-CORE simulations and 2 RCPs alongside the W5E5 dataset for the country of Kenya. To select a bounding box, run:
+would load the variable tasmax for 3 CORDEX-CORE simulations (RCM RegCM4-7) and 2 RCPs alongside the W5E5 dataset for the country of Kenya. To select a bounding box, run:
 
 ``` 
 remote.data <- load_data(country = NULL, variable="tasmax", years.hist=1980:2000, years.projections=2010:2030
@@ -65,18 +65,7 @@ remote.data <- load_data(country = NULL, variable="tasmax", years.hist=1980:2000
 
 ```
 
-To automatically load CORDEX-CORE simulations (RCM RegCM4-7), specify path.to.rcps="CORDEX-CORE" and the domain of interest (e.g "AFR-22"). To automatically load the W5E5 dataset, specify path.obs="W5E5". 
-
 load_data returns a tibble with list columns, in a format that allows the user to apply the tidyverse approach for further processing the data. 
 
-``` 
-fpath <- system.file("extdata/", package="cavaR")
 
-exmp1 <- load_data(country = "Moldova", variable="hurs", years.hist=2000, years.projections=2010
-              path.to.rcps = fpath)
-
-exmp2 <- load_data(country = "Somalia", variable="hurs", years.hist=2000, years.projections=2010
-              path.to.rcps = "CORDEX-CORE", path.obs="W5E5", domain="AFR-22")
-
-```
 

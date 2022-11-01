@@ -24,7 +24,7 @@ A conda environment will follow
 
 cavaR makes it easier to work with a large number of climate or impact model simulations (netCDF files) and perform meaningful analysis. The idea behind cavaR is to first load the data and then work with the output of the load_data with other **cavaR** functions. 
 
-## 1st Step
+## 1st step
 ### Loading data: load_data function
 
 **cavaR** simplifies and standardize how to load multiple climate models/simulations or other netcdf files (e.g impact models from ISIMIP). To **load local data**, specify the path to your directories, containing, for example, several RCPs and a folder with historical runs. 

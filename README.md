@@ -1,6 +1,6 @@
 # cavaR
 
-If you have encountered difficulties working with several netCDF files and perform meaningful analysis, especially related to climate change, then this package might be what you are looking for. 
+If you hard times working with several netCDF files and perform meaningful analysis, especially related to climate change, then this package might be what you are looking for. 
 
 cavaR is the package version of CAVA-Analytics. It allows easy loading of cllimate models, both from local data and remotely, through [climate4RUDG](https://github.com/SantanderMetGroup/climate4R.UDG). 
 cavaR can be seen as a wrapper of several packages, but the main engine for loading and processing climate models is the  [climate4R framework](https://github.com/SantanderMetGroup/climate4R), applied with a tidyverse approach. 

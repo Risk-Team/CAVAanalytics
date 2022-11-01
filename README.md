@@ -31,14 +31,29 @@ cavaR makes it easier to work with a large number of climate or impact model sim
 
 ``` 
 exmp1 <- load_data(country = "Somalia", variable="hurs", years.hist=2000, years.projections=2010
-              path.to.rcps = "~/Databases/CORDEX-CORE/AFR-22", path.obs="~/Databases/W5E5", domain="AFR-22")
+              path.to.rcps = "~/Databases/CORDEX-CORE/AFR-22", path.obs="~/Databases/W5E5")
 
 ```
 
 | ![image17](https://user-images.githubusercontent.com/40058235/199230403-5d252400-e543-42ea-89bd-297d777ee6a4.png) | 
 |:--:| 
-| *When data is uploaded locally, path.to.rcps would contain at least one folder called historical, conytaining the historical simulation runs and one or more folders per RCP, SSP or other. Within this folders, there can be multiple models or simulations that will be loaded and checked for temportal consistency* |
+| *When data is uploaded locally, path.to.rcps would contain at least one folder called historical, containing the historical simulation runs and one or more folders per RCP, SSP or other. Within this folders, there can be multiple models or simulations that will be loaded and checked for temportal consistency* |
 
+**To load remote CORDEX-CORE data**, set path.to.rcps to "CORDEX-CORE" and specify the domain. For example:
+
+``` 
+exmp1 <- load_data(country = "Kenya", variable="tasmax", years.hist=1980:2000, years.projections=2010:2030
+              path.to.rcps = "CORDEX-CORE", path.obs="W5E5", domain="AFR-22")
+
+```
+
+would load the variable tasmax for 3 CORDEX-CORE simulations and 2 RCPs alongside the W5E5 dataset for the country of Kenya. To select a bounding box, run:
+
+``` 
+exmp1 <- load_data(country = "Kenya", variable="tasmax", years.hist=1980:2000, years.projections=2010:2030
+              path.to.rcps = "CORDEX-CORE", path.obs="W5E5", domain="AFR-22")
+
+```
 
 To automatically load CORDEX-CORE simulations (RCM RegCM4-7), specify path.to.rcps="CORDEX-CORE" and the domain of interest (e.g "AFR-22"). To automatically load the W5E5 dataset, specify path.obs="W5E5". 
 

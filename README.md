@@ -4,7 +4,7 @@ cavaR
 
 ## Introduction
 
-If you have ever had hard times working with several netCDF files and perform
+If you have ever had hard times working with several NetCDF files and perform
 meaningful analysis, especially related to climate change, then this
 package might be what you are looking for.
 

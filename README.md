@@ -48,7 +48,7 @@ exmp1 <- load_data(country = "Moldova", variable="hurs", years.hist=2000, years.
               path.to.rcps = fpath)
 ``` 
 
-**To load remote CORDEX-CORE data**, set path.to.rcps to "CORDEX-CORE" and specify the domain. For example:
+**To load CORDEX-CORE data stored remotely**, set path.to.rcps to "CORDEX-CORE" and specify the domain. For example:
 
 ``` 
 local.data <- load_data(country = "Kenya", variable="tasmax", years.hist=1980:2000, years.projections=2010:2030

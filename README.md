@@ -37,21 +37,25 @@ exmp1 <- load_data(country = "Somalia", variable="hurs", years.hist=2000, years.
 
 | ![image17](https://user-images.githubusercontent.com/40058235/199230403-5d252400-e543-42ea-89bd-297d777ee6a4.png) | 
 |:--:| 
-| *When data is uploaded locally, path.to.rcps would contain at least one folder called historical, containing the historical simulation runs and one or more folders per RCP, SSP or other. Within this folders, there can be multiple models or simulations that will be loaded and checked for temportal consistency* |
+| *When data is uploaded locally, path.to.rcps would contain at least one folder called historical, containing the historical simulation runs and one or more folders per RCP, SSP or other. Within these folders, there can be multiple models or simulations that will be loaded and checked for temportal consistency* |
 
 **To load remote CORDEX-CORE data**, set path.to.rcps to "CORDEX-CORE" and specify the domain. For example:
 
 ``` 
-exmp1 <- load_data(country = "Kenya", variable="tasmax", years.hist=1980:2000, years.projections=2010:2030
+local.data <- load_data(country = "Kenya", variable="tasmax", years.hist=1980:2000, years.projections=2010:2030
               path.to.rcps = "CORDEX-CORE", path.obs="W5E5", domain="AFR-22")
 
+# with a small subset of the CAS-22 domain, availabel with the package 
+fpath <- system.file("extdata/", package="cavaR")
+exmp1 <- load_data(country = "Moldova", variable="hurs", years.hist=2000, years.projections=2010
+              path.to.rcps = fpath)
 ```
 
 would load the variable tasmax for 3 CORDEX-CORE simulations and 2 RCPs alongside the W5E5 dataset for the country of Kenya. To select a bounding box, run:
 
 ``` 
-exmp1 <- load_data(country = "Kenya", variable="tasmax", years.hist=1980:2000, years.projections=2010:2030
-              path.to.rcps = "CORDEX-CORE", path.obs="W5E5", domain="AFR-22")
+remote.data <- load_data(country = NULL, variable="tasmax", years.hist=1980:2000, years.projections=2010:2030
+              path.to.rcps = "CORDEX-CORE", path.obs="W5E5", domain="AFR-22", xlim=c(10,20), ylim=c(-30,-20))
 
 ```
 

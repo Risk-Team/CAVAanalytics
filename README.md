@@ -17,7 +17,7 @@ if you encounter problems with dependencies, such as loadeR, downscaleR and clim
 
 A conda environment will follow
 
-## Framework to work with climate data amd other netCDF files
+## Framework to work with climate data and other netCDF files
 
 cavaR makes it easier to work with a large number of climate or impact model simulations (netCDF files) and perform meaningful analysis. The idea behind cavaR is to first load the data and then work with the output of the load_data with other functions. More examples below
 

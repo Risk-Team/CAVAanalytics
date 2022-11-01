@@ -22,11 +22,14 @@ A conda environment will follow
 
 ## A framework to work with climate data and other netCDF files
 
-cavaR makes it easier to work with a large number of climate or impact model simulations (netCDF files) and perform meaningful analysis. The idea behind cavaR is to first load the data and then work with the output of the load_data with other functions. 
+cavaR makes it easier to work with a large number of climate or impact model simulations (netCDF files) and perform meaningful analysis. The idea behind cavaR is to first load the data and then work with the output of the load_data with other cavaR functions. 
 
 ### Loading data: example
 
-cavaR simplifies and standardize how to load multiple climate models or other netcdf files (e.g impact models from ISIMIP). To automatically load CORDEX-CORE simulations (RCM RegCM4-7), specify path.to.rcps="CORDEX-CORE" and the domain of interest (e.g "AFR-22"). To automatically load the W5E5 dataset, specify path.obs="W5E5". 
+cavaR simplifies and standardize how to load multiple climate models/simulations or other netcdf files (e.g impact models from ISIMIP). To load simnulations locally, 
+
+
+To automatically load CORDEX-CORE simulations (RCM RegCM4-7), specify path.to.rcps="CORDEX-CORE" and the domain of interest (e.g "AFR-22"). To automatically load the W5E5 dataset, specify path.obs="W5E5". 
 
 load_data returns a tibble with list columns, in a format that allows the user to apply the tidyverse approach for further processing the data. 
 

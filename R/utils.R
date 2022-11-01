@@ -192,11 +192,11 @@ thrs = function(col, lowert, uppert, ...) {
 
   if(!is.null(lowert)){
 
-    sum(precip_col < lowert)
+    sum(col < lowert)
 
   } else{
 
-    sum(precip_col > uppert)
+    sum(col > uppert)
 
   }
 

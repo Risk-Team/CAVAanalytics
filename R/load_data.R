@@ -21,7 +21,7 @@
 #' @param years.proj Numerical range, years to select for projections
 #' @param years.hist Numerical range, years to select for historical simulations and observations
 #' @param n.cores Integer, number of cores to use in parallel processing, default is 9
-#' @param domain Specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.rcps = CORDEX-CORE
+#' @param domain Specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.rcps = CORDEX-CORE. Default is NULL
 #' @param buffer Numeric. Default is zero.
 #' @return Tibble with column list
 #' @examples

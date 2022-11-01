@@ -21,7 +21,7 @@
 #' @param uppert  numeric of length=1, upper threshold
 #' @param lowert numeric of length=1, lower threshold
 #' @param season Numerical, seasons to select. For example, 1:12
-#' @param method character, default to "scaling". Indicates the bias correction method
+#' @param scaling.type character, default to "additive". Indicates whether to use multiplicative or additive approach for bias correction
 #' @param consecutive logical, to use in conjuunction with lowert or uppert
 #' @param duration character, either "max" or "total".
 #' @return raster
@@ -40,7 +40,7 @@ projections <-
            uppert = NULL,
            lowert = NULL,
            season,
-           method = "scaling",
+           scaling.type="additive",
            consecutive = FALSE,
            duration = "max") {
     # checking inputs requirement
@@ -89,7 +89,7 @@ projections <-
           paste0(" below threshold of ", lowert),
           paste0(" above threshold of ", uppert)
         ),
-        ifelse(bias.correction, " after bias-correction", "")
+        ifelse(bias.correction, " after bias-correction with scaling type", scaling.type, "")
       )
     }
 
@@ -103,7 +103,7 @@ projections <-
           paste0("below ", lowert),
           paste0("above ", uppert)
         ),
-        ifelse(bias.correction, " after bias-correction", "")
+        ifelse(bias.correction, " after bias-correction with scaling type", scaling.type, "")
       )
     }
 
@@ -118,7 +118,7 @@ projections <-
           paste0("below threshold of ", lowert),
           paste0("above threshold of ", uppert)
         ),
-        ifelse(bias.correction, " after bias-correction", "")
+        ifelse(bias.correction, " after bias-correction with scaling type", scaling.type, "")
       )
     }
     # cores
@@ -151,9 +151,8 @@ projections <-
           message(
             paste(
               Sys.time(),
-              " Performing bias correction with the",
-              method,
-              " method for each model separately and then calculating the ensemble mean. Season",
+              " Performing bias correction with the scaling",
+              " method, scaling type ", scaling.type, " for each model separately and then calculating the ensemble mean. Season",
               glue_collapse(season, "-")
             )
           )
@@ -161,24 +160,24 @@ projections <-
                  models_mbrs = future_map(models_mbrs, function(x) {
                    if (var == "pr") {
                      bc <-
-                       downscaleR::biasCorrection(
+                       suppressMessages(downscaleR::biasCorrection(
                          y = obs[[1]],
                          x = filter(datasets, RCP == "historical")$models_mbrs[[1]],
                          newdata = x,
                          precipitation = TRUE,
-                         method = method,
-                         scaling.type = "multiplicative"
-                       )
+                         method = "scaling",
+                         scaling.type = scaling.type
+                       ))
                    } else {
                      bc <-
-                       downscaleR::biasCorrection(
+                       suppressMessages(downscaleR::biasCorrection(
                          y = obs[[1]],
                          x = filter(datasets, RCP == "historical")$models_mbrs[[1]],
                          newdata = x,
                          precipitation = FALSE,
-                         method = method,
-                         scaling.type = "additive"
-                       )
+                         method ="scaling",
+                         scaling.type = scaling.type
+                       ))
                    }
                    out <-
                      transformeR::intersectGrid.time(x, bc, which.return = 2)
@@ -233,3 +232,117 @@ projections <-
     return(rst)
 
   }
+
+
+#' @param rst output of one of cavaR functions, such as projections. rst is of class RasterStack
+#' @param palette charachter. Color Palette
+#' @param legend.range  numeric. Fix legend limits
+#' @param plot_titles character. Title of teh plot legend
+#' @return ggplot object
+#' @examples
+#' fpath <- system.file("extdata/", package="chatR")
+#' exmp <- load_data(country = "Moldova", variable="hurs", n.cores=6,
+#'               path.to.rcps = fpath) %>%
+#' projections(., season = 1:12) %>%
+#' plotting(plot_titles="hurs")
+#'
+#'
+
+
+plotting <- function(rst, palette=NULL, legend.range=NULL, plot_titles) {
+
+
+  # for legends
+  colors <- if(is.null(palette)) rev(c("blue", "cyan", "green", "yellow", "orange", "red", "black")) else palette
+
+  legend_range = if (is.null(legend.range)) c(range(raster::values(rst), na.rm = TRUE)) else legend.range
+
+  options(warn = -1)
+
+  countries <-
+    ne_countries(scale = "medium", returnclass = "sf")
+
+
+  rs_df <- raster::as.data.frame(rst, xy = TRUE, na.rm = TRUE) %>%
+    tidyr::pivot_longer(
+      cols = 3:ncol(.),
+      values_to = "value",
+      names_to = "long_name"
+    )  %>%
+    mutate(
+      scenario = str_extract(long_name, ".*_") %>% str_remove(., "_"),
+      time_frame = str_extract(long_name, "_.*")%>% str_remove(., "_")
+    ) %>%
+    mutate(time_frame = str_replace(time_frame, "\\.", "-"))
+
+
+  # if (trends) {
+  #   rs_df.p <- as.data.frame(rs_tot_p, xy = TRUE, na.rm = TRUE) %>%
+  #     tidyr::pivot_longer(
+  #       cols = 3:ncol(.),
+  #       values_to = "value",
+  #       names_to = "long_name"
+  #     )  %>%
+  #     mutate(
+  #       scenario = str_extract(long_name, ".*_"),
+  #       time_frame = str_extract(long_name, "2\\d+_\\d+")
+  #     ) %>%
+  #     mutate(time_frame = str_replace(time_frame, "_", "-"))
+  # } else {
+  #   rs_df.p = data.frame(x = double(),
+  #                        y = double(),
+  #                        value = double())
+  # }
+
+  p <- ggplot() +
+    scale_fill_gradientn(
+      colors = colors,
+      limits = legend_range,
+      na.value = "transparent",
+      n.breaks = 10
+    ) +
+    geom_sf(fill = 'antiquewhite1',
+            color = "black",
+            data = countries) +
+    geom_raster(aes(x = x, y = y, fill = value),
+                data = rs_df,
+                alpha = 0.7) +
+    coord_sf(
+      xlim = c(range(rs_df$x)[[1]] - 4, range(rs_df$x)[[2]] + 4),
+      ylim = c(range(rs_df$y)[[1]] - 4, range(rs_df$y)[[2]] + 4),
+      expand = F,
+      ndiscr = 500
+    ) +
+    # geom_point(
+    #   data = filter(rs_df.p, value < 0.05),
+    #   size = 0.3,
+    #   shape = 19,
+    #   color = "black",
+    #   aes(x, y)
+    # ) +
+    facet_grid(scenario ~ time_frame) +
+    labs(fill = plot_titles, x="", y="") +
+    theme_bw(base_size = 12) +
+    theme(
+      plot.background = element_blank(),
+      panel.background = element_rect(fill = 'aliceblue'),
+      panel.border = element_blank(),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      axis.text.x = element_blank(),
+      axis.text.y = element_blank(),
+      axis.ticks= element_blank()
+    ) +
+    guides(fill = guide_colourbar(
+      barwidth = 0.5,
+      barheight = 10,
+      ticks.colour = "black",
+      ticks.linewidth = 2
+    ))
+
+  message(Sys.time(), " Done")
+
+  return(p)
+
+}
+

@@ -41,7 +41,7 @@ set country to NULL and define arguments xlim and ylim}
 
 \item{buffer}{Numeric. Default is zero.}
 
-\item{domain}{Specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.rcps = CORDEX-CORE}
+\item{domain}{Specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.rcps = CORDEX-CORE. Default is NULL}
 }
 \value{
 Tibble with column list

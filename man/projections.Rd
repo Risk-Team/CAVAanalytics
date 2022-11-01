@@ -9,12 +9,8 @@ projections(
   bias.correction = F,
   uppert = NULL,
   lowert = NULL,
-  legend.range = NULL,
-  trends = F,
   season,
-  palette = NULL,
-  method = "scaling",
-  prov.country = NULL,
+  scaling.type = "additive",
   consecutive = FALSE,
   duration = "max"
 )
@@ -28,24 +24,16 @@ projections(
 
 \item{lowert}{numeric of length=1, lower threshold}
 
-\item{legend.range}{numeric of length=2,}
-
-\item{trends}{logical, if TRUE applies linear regression}
-
 \item{season}{Numerical, seasons to select. For example, 1:12}
 
-\item{palette}{character vector indicating colors to be used}
-
-\item{method}{character, default to "scaling". Indicates the bias correction method}
-
-\item{prov.country}{character, country for which provinces are highlighted}
+\item{scaling.type}{character, default to "additive". Indicates whether to use multiplicative or additive approach for bias correction}
 
 \item{consecutive}{logical, to use in conjuunction with lowert or uppert}
 
 \item{duration}{character, either "max" or "total".}
 }
 \value{
-ggplot object
+raster
 }
 \description{
 Automatically plot climate models projections and useful statistics.
@@ -53,8 +41,8 @@ Automatically plot climate models projections and useful statistics.
 \examples{
 fpath <- system.file("extdata/", package="chatR")
 exmp <- load_data(country = "Moldova", variable="hurs", n.cores=6,
-              path.to.rcps = fpath)
-projections(exmp, season = 1:12)
+              path.to.rcps = fpath) \%>\%
+projections(., season = 1:12)
 
 
 }

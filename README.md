@@ -17,6 +17,10 @@ if you encounter problems with dependencies, such as loadeR, downscaleR and clim
 
 A conda environment will follow
 
+## Framework to work with climate data amd other netCDF files
+
+cavaR makes it easier to work with a large number of climate or impact model simulations (netCDF files) and perform meaningful analysis. The idea behind cavaR is to first load the data and then work with the output of the load_data with other functions. More examples below
+
 ### Loading example data
 
 cavaR simplifies and standardize how to load multiple climate models or other netcdf files (e.g impact models from ISIMIP). To automatically load CORDEX-CORE simulations (RCM RegCM4-7), specify path.to.rcps="CORDEX-CORE" and the domain of interest (e.g "AFR-22"). To automatically load the W5E5 dataset, specify path.obs="W5E5". 

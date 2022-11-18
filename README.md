@@ -10,8 +10,8 @@ package might be what you are looking for.
 
 cavaR is the package version of
 [CAVA-Analytics](https://github.com/Risk-Team/CAVA-Analytics). It allows
-easy loading of cllimate models, both from local data and remotely,
-through
+easy loading of multiple climate models, both from local data or
+remotely, through
 [climate4RUDG](https://github.com/SantanderMetGroup/climate4R.UDG).
 cavaR can be seen as a wrapper of several packages, but the main engine
 for loading and processing climate models is the [climate4R
@@ -38,8 +38,8 @@ A conda environment will follow
 
 cavaR makes it easier to work with a large number of climate or impact
 model simulations (netCDF files) and perform meaningful analysis. The
-idea behind cavaR is to first load the data and then work with the
-output of the load_data with other **cavaR** functions.
+idea behind cavaR is to first load the data (multiple models) and then
+work with the output of the load_data with other **cavaR** functions.
 
 | ![Framework](https://user-images.githubusercontent.com/40058235/199256415-ed32c42b-e2f8-48e0-b4fe-558de6612038.png) |
 |:-------------------------------------------------------------------------------------------------------------------:|
@@ -113,7 +113,7 @@ rsts <- local.data %>%
   projections(bias.correction = F, season = 1:12, uppert=NULL, lowert = NULL, consecutive = F)
 ```
 
-    ## 2022-11-01 15:10:31 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
+    ## 2022-11-18 15:56:53 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
 
 ``` r
 # calculating number of days above 42 C, which is equal to 315 Kelvin
@@ -121,7 +121,7 @@ rsts_thrs <- local.data %>%
   projections(bias.correction = F, season = 1:12, uppert = 315.15, lowert = NULL, consecutive = F)
 ```
 
-    ## 2022-11-01 15:10:47 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 315.15
+    ## 2022-11-18 15:57:09 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 315.15
 
 ### Third step: visualize results
 
@@ -133,7 +133,7 @@ rsts %>%
 plotting(plot_titles = "Average tasmax (K)")
 ```
 
-    ## 2022-11-01 15:11:02 Done
+    ## 2022-11-18 15:57:23 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
@@ -142,6 +142,6 @@ rsts_thrs %>%
 plotting(plot_titles = "N. days")
 ```
 
-    ## 2022-11-01 15:11:03 Done
+    ## 2022-11-18 15:57:24 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-4-2.png)<!-- -->

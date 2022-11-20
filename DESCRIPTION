@@ -4,8 +4,7 @@ Title: Easy loading and visualization of climate models
 Version: 1.1.0
 Author: Riccardo Soldan
 Maintainer: Riccardo Soldan <riccardosoldan@hotmail.it>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Description: A framework to work with multiple NetCDF files
 License: GPL-2 | GPL-3
 Encoding: UTF-8
 LazyData: true

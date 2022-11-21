@@ -1,0 +1,4 @@
+"0","df_sl <- readRDS(""../data/precipitation/df_sl.rds"") %>% "
+"0","  group_by(date=floor_date(time, ""month"")) %>% "
+"0","  summarise(tot_pr=sum(data)) %>% "
+"0","  mutate(month=as.factor(month(date)), years=year(date))"

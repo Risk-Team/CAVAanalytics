@@ -1,0 +1,90 @@
+"0","library(cavaR)"
+"0",""
+"0","local.data <- load_data(country = ""Sudan"", variable=""tasmax"", years.hist=1980:2000, years.proj=2050:2080,"
+"0","              path.to.rcps = ""~/Databases/CORDEX-CORE/AFR-22"", path.to.obs=""~/Databases/W5E5"")"
+"2","Your directory contains the following folders: 
+/home/riccardo/Databases/CORDEX-CORE/AFR-22/historical 
+/home/riccardo/Databases/CORDEX-CORE/AFR-22/rcp26 
+/home/riccardo/Databases/CORDEX-CORE/AFR-22/rcp85 
+all files within the listed folders will be uploaded 
+
+"
+"0","T"
+"2","2022-11-01 15:04:37 Loading /home/riccardo/Databases/CORDEX-CORE/AFR-22/historical/AFR-22_MOHC-HadGEM2-ES_historical_r1i1p1_GERICS-REMO2015_v1_day.nc
+"
+"2","2022-11-01 15:04:39 Done
+"
+"2","2022-11-01 15:04:39 Loading /home/riccardo/Databases/CORDEX-CORE/AFR-22/historical/AFR-22_MOHC-HadGEM2-ES_historical_r1i1p1_ICTP-RegCM4-7_v0_day.nc
+"
+"2","2022-11-01 15:04:40 Done
+"
+"2","2022-11-01 15:04:39 Loading /home/riccardo/Databases/CORDEX-CORE/AFR-22/historical/AFR-22_MPI-M-MPI-ESM-LR_historical_r1i1p1_GERICS-REMO2015_v1_day.nc
+"
+"2","2022-11-01 15:04:41 Done
+"
+"2","2022-11-01 15:04:41 Loading /home/riccardo/Databases/CORDEX-CORE/AFR-22/historical/AFR-22_MPI-M-MPI-ESM-MR_historical_r1i1p1_ICTP-RegCM4-7_v0_day.nc
+"
+"2","2022-11-01 15:04:42 Done
+"
+"2","2022-11-01 15:04:41 Loading /home/riccardo/Databases/CORDEX-CORE/AFR-22/historical/AFR-22_NCC-NorESM1-M_historical_r1i1p1_GERICS-REMO2015_v1_day.nc
+"
+"2","2022-11-01 15:04:43 Done
+"
+"2","2022-11-01 15:04:43 Loading /home/riccardo/Databases/CORDEX-CORE/AFR-22/historical/AFR-22_NCC-NorESM1-M_historical_r1i1p1_ICTP-RegCM4-7_v0_day.nc
+"
+"2","2022-11-01 15:04:44 Done
+"
+"2","2022-11-01 15:04:39 Loading /home/riccardo/Databases/CORDEX-CORE/AFR-22/rcp26/AFR-22_MOHC-HadGEM2-ES_rcp26_r1i1p1_GERICS-REMO2015_v1_day.nc
+"
+"2","2022-11-01 15:04:42 Done
+"
+"2","2022-11-01 15:04:42 Loading /home/riccardo/Databases/CORDEX-CORE/AFR-22/rcp26/AFR-22_MOHC-HadGEM2-ES_rcp26_r1i1p1_ICTP-RegCM4-7_v0_day.nc
+"
+"2","2022-11-01 15:04:43 Done
+"
+"2","2022-11-01 15:04:41 Loading /home/riccardo/Databases/CORDEX-CORE/AFR-22/rcp26/AFR-22_MPI-M-MPI-ESM-LR_rcp26_r1i1p1_GERICS-REMO2015_v1_day.nc
+"
+"2","2022-11-01 15:04:44 Done
+"
+"2","2022-11-01 15:04:44 Loading /home/riccardo/Databases/CORDEX-CORE/AFR-22/rcp26/AFR-22_MPI-M-MPI-ESM-MR_rcp26_r1i1p1_ICTP-RegCM4-7_v0_day.nc
+"
+"2","2022-11-01 15:04:45 Done
+"
+"2","2022-11-01 15:04:43 Loading /home/riccardo/Databases/CORDEX-CORE/AFR-22/rcp26/AFR-22_NCC-NorESM1-M_rcp26_r1i1p1_GERICS-REMO2015_v1_day.nc
+"
+"2","2022-11-01 15:04:46 Done
+"
+"2","2022-11-01 15:04:46 Loading /home/riccardo/Databases/CORDEX-CORE/AFR-22/rcp26/AFR-22_NCC-NorESM1-M_rcp26_r1i1p1_ICTP-RegCM4-7_v0_day.nc
+"
+"2","2022-11-01 15:04:47 Done
+"
+"2","2022-11-01 15:04:41 Loading /home/riccardo/Databases/CORDEX-CORE/AFR-22/rcp85/AFR-22_MOHC-HadGEM2-ES_rcp85_r1i1p1_GERICS-REMO2015_v1_day.nc
+"
+"2","2022-11-01 15:04:44 Done
+"
+"2","2022-11-01 15:04:44 Loading /home/riccardo/Databases/CORDEX-CORE/AFR-22/rcp85/AFR-22_MOHC-HadGEM2-ES_rcp85_r1i1p1_ICTP-RegCM4-7_v0_day.nc
+"
+"2","2022-11-01 15:04:45 Done
+"
+"2","2022-11-01 15:04:43 Loading /home/riccardo/Databases/CORDEX-CORE/AFR-22/rcp85/AFR-22_MPI-M-MPI-ESM-LR_rcp85_r1i1p1_GERICS-REMO2015_v1_day.nc
+"
+"2","2022-11-01 15:04:46 Done
+"
+"2","2022-11-01 15:04:46 Loading /home/riccardo/Databases/CORDEX-CORE/AFR-22/rcp85/AFR-22_MPI-M-MPI-ESM-MR_rcp85_r1i1p1_ICTP-RegCM4-7_v0_day.nc
+"
+"2","2022-11-01 15:04:47 Done
+"
+"2","2022-11-01 15:04:45 Loading /home/riccardo/Databases/CORDEX-CORE/AFR-22/rcp85/AFR-22_NCC-NorESM1-M_rcp85_r1i1p1_GERICS-REMO2015_v1_day.nc
+"
+"2","2022-11-01 15:04:47 Done
+"
+"2","2022-11-01 15:04:47 Loading /home/riccardo/Databases/CORDEX-CORE/AFR-22/rcp85/AFR-22_NCC-NorESM1-M_rcp85_r1i1p1_ICTP-RegCM4-7_v0_day.nc
+"
+"2","2022-11-01 15:04:49 Done
+"
+"2","
+ 2022-11-01 15:04:49 Aggregating members 
+
+"
+"2","2022-11-01 15:05:03 Done
+"

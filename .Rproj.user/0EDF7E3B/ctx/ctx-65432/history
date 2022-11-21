@@ -1,0 +1,18 @@
+remove.packages("cavaR")
+library(cavaR)
+library(cavaR)
+?load_data
+library(cavaR)
+library(cavaR)
+remove.packages("cavaR")
+library(cavaR)
+library(cavaR)
+?load_data
+fpath <- system.file("extdata/", package="cavaR")
+exmp <- load_data(country = "Moldova", variable="hurs", path.to.rcps = fpath, years.proj = 2010, years.hist = 2000)
+exmp <- load_data(country = "Moldova", variable="hurs", path.to.rcps = fpath, years.proj = 2010,
+years.hist = 2000, path.to.obs = "~/Databases/W5E5/W5E5v2.0_1979-2019.nc")
+exmp <- load_data(country = "Moldova", variable="hurs", path.to.rcps = fpath, years.proj = 2010,
+years.hist = 2000, path.to.obs = "~/Databases/W5E5/")
+exmp <- load_data(country = "Moldova", variable="hurs", path.to.rcps = fpath, years.proj = 2010,
+years.hist = 2000, path.to.obs = "W5E5")

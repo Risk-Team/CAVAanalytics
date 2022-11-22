@@ -25,9 +25,8 @@
 #' @param duration character, either "max" or "total".
 #' @return raster
 #' @examples
-#' fpath <- system.file("extdata/", package="chatR")
-#' exmp <- load_data(country = "Moldova", variable="hurs", n.cores=6,
-#'               path.to.rcps = fpath) %>%
+#' fpath <- system.file("extdata/", package="cavaR")
+#' exmp <- load_data(country = "Moldova", variable="hurs", years.hist=2000, years.proj=2010, path.to.data = fpath) %>%
 #' projections(., season = 1:12)
 #'
 #'
@@ -124,26 +123,26 @@ projections <-
 
     # initialising
 
-    if (any(str_detect(colnames(datasets), "obs"))) {
+    if (any(stringr::str_detect(colnames(datasets), "obs"))) {
 
       datasets <- datasets %>%
-        mutate_at(c("models_mbrs", "obs"), ~ map(., ~ subsetGrid(., season =
+        dplyr::mutate_at(c("models_mbrs", "obs"), ~ purrr::map(., ~ subsetGrid(., season =
                                                                    season)))
     } else {
 
       datasets <- datasets %>%
-        mutate_at(c("models_mbrs"), ~ map(., ~ subsetGrid(., season =
+        dplyr::mutate_at(c("models_mbrs"), ~ purrr::map(., ~ subsetGrid(., season =
                                                             season)))
     }
     message(Sys.time(),
             " projections, season ",
-            glue_collapse(season, "-"),
+            glue::glue_collapse(season, "-"),
             ". ",
             mes)
 
 
     data_list <- datasets %>%
-      filter(RCP != "historical") %>%
+      dplyr::filter(forcing != "historical") %>%
       {
         if (bias.correction) {
           message(
@@ -151,16 +150,16 @@ projections <-
               Sys.time(),
               " Performing bias correction with the scaling",
               " method, scaling type ", scaling.type, " for each model separately and then calculating the ensemble mean. Season",
-              glue_collapse(season, "-")
+              glue::glue_collapse(season, "-")
             )
           )
-          mutate(.,
-                 models_mbrs = future_map(models_mbrs, function(x) {
+          dplyr::mutate(.,
+                 models_mbrs = furrr::future_map(models_mbrs, function(x) {
                    if (var == "pr") {
                      bc <-
                        suppressMessages(downscaleR::biasCorrection(
                          y = obs[[1]],
-                         x = filter(datasets, RCP == "historical")$models_mbrs[[1]],
+                         x = dplyr::filter(datasets, forcing == "historical")$models_mbrs[[1]],
                          newdata = x,
                          precipitation = TRUE,
                          method = "scaling",
@@ -170,7 +169,7 @@ projections <-
                      bc <-
                        suppressMessages(downscaleR::biasCorrection(
                          y = obs[[1]],
-                         x = filter(datasets, RCP == "historical")$models_mbrs[[1]],
+                         x = dplyr::filter(datasets, forcing == "historical")$models_mbrs[[1]],
                          newdata = x,
                          precipitation = FALSE,
                          method ="scaling",
@@ -186,8 +185,8 @@ projections <-
         } else
           .
       }  %>%  # computing annual aggregation. if threshold is specified, first apply threshold
-      mutate(
-        models_agg_y = future_map(models_mbrs, function(x)
+      dplyr::mutate(
+        models_agg_y = furrr::future_map(models_mbrs, function(x)
           suppressMessages(transformeR::aggregateGrid(# perform aggregation based on seasonended output
             x, aggr.y =
               if (var == "pr" &
@@ -211,7 +210,7 @@ projections <-
                      lowert = lowert)
               }))
         ),
-        rst = map2(RCP, models_agg_y, function(x, y) {
+        rst = purrr::map2(forcing, models_agg_y, function(x, y) {
           y <- suppressMessages(transformeR::aggregateGrid(y, aggr.mem = list(FUN = "mean", na.rm = TRUE)))
           arry_mean <-
             apply(y$Data, c(2, 3), mean, na.rm = TRUE)

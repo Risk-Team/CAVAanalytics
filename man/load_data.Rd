@@ -5,22 +5,22 @@
 \title{Climate models upload}
 \usage{
 load_data(
-  path.to.rcps,
+  path.to.data,
   country,
   variable,
   xlim = NULL,
   ylim = NULL,
   years.proj,
-  years.hist,
+  years.hist = NULL,
   path.to.obs = NULL,
-  n.cores = NULL,
+  n.cores = 3,
   buffer = 0,
   domain = NULL
 )
 }
 \arguments{
-\item{path.to.rcps}{Path to the directory containing the RCPs/SSPs folders and historical simulations. For example,
-home/user/data/. data would contain subfolders with the climate models. Historical simulations have to be contained in a folder called historical. If path.to.rcps is set as CORDEX-CORE, CORDEX-CORE simulations from RCM RegCM4 will be loaded}
+\item{path.to.data}{Path to the directory containing the RCP/SSPs folders and historical simulations (optional). For example,
+home/user/data/. data would contain subfolders with the climate/impact models. Historical simulations have to be contained in a folder called historical. If path.to.data is set as CORDEX-CORE, CORDEX-CORE simulations from RCM RegCM4 will be loaded}
 
 \item{country}{A character string, in english, indicating the country of interest. To select a bounding box,
 set country to NULL and define arguments xlim and ylim}
@@ -37,11 +37,11 @@ set country to NULL and define arguments xlim and ylim}
 
 \item{path.to.obs}{Default to NULL, if not, indicate the absolute path to the directory containing a reanalysis dataset, for example ERA5. To automatically load W5E5. specify W5E5}
 
-\item{n.cores}{Integer, number of cores to use in parallel processing, default is 9}
+\item{n.cores}{Integer, number of cores to use in parallel processing, default is 3}
 
 \item{buffer}{Numeric. Default is zero.}
 
-\item{domain}{Specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.rcps = CORDEX-CORE. Default is NULL}
+\item{domain}{Specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE. Default is NULL}
 }
 \value{
 Tibble with column list
@@ -52,7 +52,7 @@ Automatically load climate models (netCDF/NcML) in a tidy format.
 \examples{
 fpath <- system.file("extdata/", package="cavaR")
 exmp1 <- load_data(country = "Moldova", variable="hurs", years.hist=2000, years.proj=2010,
-              path.to.rcps = fpath)
+              path.to.data = fpath)
 exmp2 <- load_data(country = "Somalia", variable="tas", years.hist=2000, years.proj=2010,
-              path.to.rcps = "CORDEX-CORE", domain="AFR-22")
+              path.to.data = "CORDEX-CORE", domain="AFR-22")
 }

@@ -6,6 +6,7 @@ date: '2022-11-01'
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+knitr::include_graphics
 ```
 
 ## Introduction
@@ -123,6 +124,7 @@ After performing the required analysis, it is sufficient to call the plotting fu
 
 rsts %>%
 plotting(plot_titles = "Average tasmax (K)")
+
 
 rsts_thrs %>%
 plotting(plot_titles = "N. days")

@@ -5,13 +5,14 @@
 #' @import stringr
 #' @import purrr
 #' @import furrr
+#' @import future
 #' @import dplyr
 #' @import climate4R.UDG
 
 
 #'
-#' @param path.to.rcps Path to the directory containing the RCPs/SSPs folders and historical simulations. For example,
-#' home/user/data/. data would contain subfolders with the climate models. Historical simulations have to be contained in a folder called historical. If path.to.rcps is set as CORDEX-CORE, CORDEX-CORE simulations from RCM RegCM4 will be loaded
+#' @param path.to.data Path to the directory containing the RCP/SSPs folders and historical simulations (optional). For example,
+#' home/user/data/. data would contain subfolders with the climate/impact models. Historical simulations have to be contained in a folder called historical. If path.to.data is set as CORDEX-CORE, CORDEX-CORE simulations from RCM RegCM4 will be loaded
 #' @param country A character string, in english, indicating the country of interest. To select a bounding box,
 #' set country to NULL and define arguments xlim and ylim
 #' @param variable  A character string indicating the variable
@@ -20,48 +21,54 @@
 #' @param path.to.obs Default to NULL, if not, indicate the absolute path to the directory containing a reanalysis dataset, for example ERA5. To automatically load W5E5. specify W5E5
 #' @param years.proj Numerical range, years to select for projections
 #' @param years.hist Numerical range, years to select for historical simulations and observations
-#' @param n.cores Integer, number of cores to use in parallel processing, default is 9
-#' @param domain Specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.rcps = CORDEX-CORE. Default is NULL
+#' @param n.cores Integer, number of cores to use in parallel processing, default is 3
+#' @param domain Specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE. Default is NULL
 #' @param buffer Numeric. Default is zero.
 #' @return Tibble with column list
 #' @examples
 #' fpath <- system.file("extdata/", package="cavaR")
 #' exmp1 <- load_data(country = "Moldova", variable="hurs", years.hist=2000, years.proj=2010,
-#'               path.to.rcps = fpath)
+#'               path.to.data = fpath)
 #' exmp2 <- load_data(country = "Somalia", variable="tas", years.hist=2000, years.proj=2010,
-#'               path.to.rcps = "CORDEX-CORE", domain="AFR-22")
+#'               path.to.data = "CORDEX-CORE", domain="AFR-22")
 
 
 load_data <- function(
-    path.to.rcps,
+    path.to.data,
     country,
     variable,
     xlim=NULL,
     ylim=NULL,
     years.proj,
-    years.hist,
+    years.hist=NULL,
     path.to.obs=NULL,
-    n.cores=NULL,
+    n.cores=3,
     buffer=0,
     domain=NULL) {
 
   # stop and warnings ####
 
-  if(path.to.rcps!="CORDEX-CORE" & str_detect(path.to.rcps, "/")) {
+  if(path.to.data!="CORDEX-CORE" & stringr::str_detect(path.to.data, "/")) {
 
-    if (!any(str_detect(list.files(path.to.rcps), "stor"))) {
+    if (!any(stringr::str_detect(list.files(path.to.data), "historical")) & is.null(years.hist)) {
 
-      stop("Please add the historical simulations rounds of your model. The folder name needs to contain at least the letters stor")
+      warning("Historical simulation rounds not found. If present, the folder needs to be named historical")
+    } else if (!any(stringr::str_detect(list.files(path.to.data), "historical")) & !is.null(years.hist)) {
+
+      stop("Historical simulation rounds not found. The folder needs to be named historical")
+
+    } else {
+
+      message("Your directory contains the following folders: \n", paste(list.dirs(path.to.data)[-1], "\n"), "all files within the listed folders will be uploaded \n")
+
+      files <- list.dirs(path.to.data, full.names = TRUE)[-1] %>%
+        map(., ~ list.files(.x, full.names = TRUE))
+
+      forcing =list.dirs(path.to.data, full.names = F)[-1]
+
     }
 
-    if (length(list.files(path.to.rcps)) >= 2) message("Your directory contains the following folders: \n", paste(list.dirs(path.to.rcps)[-1], "\n"), "all files within the listed folders will be uploaded \n")
-
-    files <- list.dirs(path.to.rcps, full.names = TRUE)[-1] %>%
-      map(., ~ list.files(.x, full.names = TRUE))
-
-    RCP =list.dirs(path.to.rcps, full.names = F)[-1]
-
-  } else if (path.to.rcps=="CORDEX-CORE") {
+  } else if (path.to.data=="CORDEX-CORE") {
 
     start <-  "CORDEX-"
 
@@ -69,12 +76,12 @@ load_data <- function(
 
     GCM= c("_MOHC-HadGEM2-ES_", "_MPI-M-MPI-ESM-MR_", "_NCC-NorESM1-M_")
 
-    RCP= c("historical", "rcp26", "rcp85")
+    forcing= c("historical", "rcp26", "rcp85")
 
     RCM= c("_r1i1p1_ICTP-RegCM4-7_v0" )
 
-    files= map(RCP, ~ paste0(GCM, .x)) %>%
-      map(., ~ paste0(start, domain, .x, RCM))
+    files= purrr::map(forcing, ~ paste0(GCM, .x)) %>%
+      purrr::map(., ~ paste0(start, domain, .x, RCM))
 
   } else {
 
@@ -86,10 +93,6 @@ load_data <- function(
   if (!is.null(path.to.obs)) {
 
     obs.file <- ifelse(path.to.obs=="W5E5", "W5E5", list.files(path.to.obs, full.names = TRUE) )
-
-  }  else {
-
-    warning("if you do not specify a reanalysis/observational gridded dataset, bias-correction cannot be performed. To load W5E5 set path.to.obs as W5E5 \n")
 
   }
 
@@ -123,39 +126,14 @@ load_data <- function(
 
   # number of cores ####
 
-  if (is.null(n.cores)) {
+ future::plan(multisession, workers = n.cores)
 
-    future::plan(
-      list(
-        future::tweak(
-          future::multisession,
-          workers = 3),
-        future::tweak(
-          future::multisession,
-          workers = 3),
-        future::tweak(
-          future::multisession,
-          workers = 3)
-      )
-    )
-
-    answer <- readline("The process is currently parallelized using 9 cores. Type TRUE to continue or set the argument n.cores \n")
-
-    ifelse(answer, " ", stop("set number of cores"))
-
-  }  else {
-
-
-    future::plan(multisession, workers = n.cores)
-
-
-  }
   # making the dataset ####
 
 
-  models.df = tibble(path= files, RCP=RCP) %>%
-    mutate(
-      models = future_map(path,  ~ future_map(.x, function(x)  {
+  models.df = tibble(path= files, forcing=forcing) %>%
+    dplyr::mutate(
+      models = purrr::map(path,  ~ furrr::future_map(.x, function(x)  {
         if (str_detect(x, "historical")) {
           message(Sys.time(), " Loading ", x)
           data <- suppressMessages(loadGridData(
@@ -187,10 +165,10 @@ load_data <- function(
   message(paste("\n", Sys.time(), "Aggregating members \n"))
 
   models.df2 <- models.df %>%
-    mutate(models_mbrs = lapply(models, function(x)
+    dplyr::mutate(models_mbrs = lapply(models, function(x)
       common_dates(x))) %>%
     {if (!is.null(path.to.obs)) {
-      mutate(., obs = list(suppressMessages(
+      dplyr::mutate(., obs = list(suppressMessages(
         loadGridData(
           obs.file,
           var = variable,

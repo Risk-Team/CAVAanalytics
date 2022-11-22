@@ -174,12 +174,12 @@ with this function. It returns a RasterStack</p>
 <span class="co"># operations are performed for each model separately and then an ensemble mean is made</span>
 <span class="va">rsts</span> <span class="op">&lt;-</span> <span class="va">local.data</span> <span class="op">%&gt;%</span>  
   <span class="fu"><a href="reference/projections.html">projections</a></span><span class="op">(</span>bias.correction <span class="op">=</span> <span class="cn">F</span>, season <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">12</span>, uppert<span class="op">=</span><span class="cn">NULL</span>, lowert <span class="op">=</span> <span class="cn">NULL</span>, consecutive <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="do">## 2022-11-18 16:04:30 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="do">## 2022-11-21 16:43:15 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax</span></span></code></pre></div>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># calculating number of days above 42 C, which is equal to 315 Kelvin</span>
 <span class="va">rsts_thrs</span> <span class="op">&lt;-</span> <span class="va">local.data</span> <span class="op">%&gt;%</span> 
   <span class="fu"><a href="reference/projections.html">projections</a></span><span class="op">(</span>bias.correction <span class="op">=</span> <span class="cn">F</span>, season <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">12</span>, uppert <span class="op">=</span> <span class="fl">315.15</span>, lowert <span class="op">=</span> <span class="cn">NULL</span>, consecutive <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb10"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="do">## 2022-11-18 16:04:45 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 315.15</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="do">## 2022-11-21 16:43:31 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 315.15</span></span></code></pre></div>
 </div>
 <div id="third-step-visualize-results" class="section level3">
 <h3 class="hasAnchor">
@@ -187,14 +187,16 @@ with this function. It returns a RasterStack</p>
 <p>After performing the required analysis, it is sufficient to call the
 plotting function to visualize the results</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">rsts</span> <span class="op">%&gt;%</span>
+<code class="sourceCode R"><span class="va">out</span> <span class="op">&lt;-</span> <span class="va">rsts</span> <span class="op">%&gt;%</span>
 <span class="fu"><a href="reference/plotting.html">plotting</a></span><span class="op">(</span>plot_titles <span class="op">=</span> <span class="st">"Average tasmax (K)"</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb12"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="do">## 2022-11-18 16:05:00 Done</span></span></code></pre></div>
-<p><img src="README_files/figure-gfm/unnamed-chunk-4-1.png"><!-- --></p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="do">## 2022-11-21 16:43:46 Done</span></span></code></pre></div>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></code></pre></div>
+<p><img src="README_files/figure-gfm/unnamed-chunk-4-1.png"><!-- --></p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">rsts_thrs</span> <span class="op">%&gt;%</span>
 <span class="fu"><a href="reference/plotting.html">plotting</a></span><span class="op">(</span>plot_titles <span class="op">=</span> <span class="st">"N. days"</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb14"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="do">## 2022-11-18 16:05:01 Done</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="do">## 2022-11-21 16:43:47 Done</span></span></code></pre></div>
 <p><img src="README_files/figure-gfm/unnamed-chunk-4-2.png"><!-- --></p>
 </div>
 </div>

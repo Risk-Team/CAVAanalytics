@@ -39,9 +39,8 @@ raster
 Automatically process climate model projections and compute useful statistics.
 }
 \examples{
-fpath <- system.file("extdata/", package="chatR")
-exmp <- load_data(country = "Moldova", variable="hurs", n.cores=6,
-              path.to.rcps = fpath) \%>\%
+fpath <- system.file("extdata/", package="cavaR")
+exmp <- load_data(country = "Moldova", variable="hurs", years.hist=2000, years.proj=2010, path.to.data = fpath) \%>\%
 projections(., season = 1:12)
 
 

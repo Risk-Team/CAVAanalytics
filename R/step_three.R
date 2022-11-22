@@ -15,10 +15,10 @@
 #' @return ggplot object
 #' @examples
 #' fpath <- system.file("extdata/", package="chatR")
-#' exmp <- load_data(country = "Moldova", variable="hurs", n.cores=6,
-#'               path.to.rcps = fpath) %>%
+#' exmp <- load_data(country = "Moldova", variable="hurs", years.hist=2000, years.proj=2010, path.to.data = fpath) %>%
 #' projections(., season = 1:12) %>%
 #' plotting(plot_titles="hurs")
+#' exmp
 #'
 #'
 
@@ -48,25 +48,6 @@ plotting <- function(rst, palette=NULL, legend.range=NULL, plot_titles) {
       time_frame = str_extract(long_name, "_.*")%>% str_remove(., "_")
     ) %>%
     mutate(time_frame = str_replace(time_frame, "\\.", "-"))
-
-
-  # if (trends) {
-  #   rs_df.p <- as.data.frame(rs_tot_p, xy = TRUE, na.rm = TRUE) %>%
-  #     tidyr::pivot_longer(
-  #       cols = 3:ncol(.),
-  #       values_to = "value",
-  #       names_to = "long_name"
-  #     )  %>%
-  #     mutate(
-  #       scenario = str_extract(long_name, ".*_"),
-  #       time_frame = str_extract(long_name, "2\\d+_\\d+")
-  #     ) %>%
-  #     mutate(time_frame = str_replace(time_frame, "_", "-"))
-  # } else {
-  #   rs_df.p = data.frame(x = double(),
-  #                        y = double(),
-  #                        value = double())
-  # }
 
   p <- ggplot() +
     scale_fill_gradientn(

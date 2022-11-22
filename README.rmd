@@ -51,7 +51,7 @@ cavaR makes it easier to work with a large number of climate or impact model sim
 library(cavaR)
 
 exmp1 <- load_data(country = "Sudan", variable="tasmax", years.hist=2000, years.proj=2010,
-              path.to.rcps = "~/Databases/CORDEX-CORE/AFR-22", path.to.obs="~/Databases/W5E5")
+              path.to.data = "~/Databases/CORDEX-CORE/AFR-22", path.to.obs="~/Databases/W5E5")
 
 ```
 
@@ -59,7 +59,7 @@ exmp1 <- load_data(country = "Sudan", variable="tasmax", years.hist=2000, years.
 library(cavaR)
 
 local.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1980:2000, years.proj=2050:2080,
-              path.to.rcps = "~/Databases/CORDEX-CORE/AFR-22", path.to.obs="~/Databases/W5E5")
+              path.to.data = "~/Databases/CORDEX-CORE/AFR-22", path.to.obs="~/Databases/W5E5")
 ```
 ```{r, message=FALSE, warning=FALSE}
 
@@ -80,16 +80,16 @@ with a small subset of the CAS-22 domain, available with the package
 
 fpath <- system.file("extdata/", package="cavaR")
 exmp1 <- load_data(country = "Moldova", variable="hurs", years.hist=2000, years.proj=2010
-              path.to.rcps = fpath)
+              path.to.data = fpath)
 ``` 
 
-**To load CORDEX-CORE data stored remotely**, set path.to.rcps to "CORDEX-CORE" and specify the domain. For example:
+**To load CORDEX-CORE data stored remotely**, set path.to.data to "CORDEX-CORE" and specify the domain. For example:
 
 
 ```
 
 remote.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1995:2000, years.proj=2050:2060,
-              path.to.rcps = "CORDEX-CORE", path.to.obs="W5E5", domain="AFR-22")
+              path.to.data = "CORDEX-CORE", path.to.obs="W5E5", domain="AFR-22")
 
 ```
 

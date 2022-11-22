@@ -57,14 +57,14 @@ containing, for example, several RCPs and a folder with historical runs.
     library(cavaR)
 
     exmp1 <- load_data(country = "Sudan", variable="tasmax", years.hist=2000, years.proj=2010,
-                  path.to.rcps = "~/Databases/CORDEX-CORE/AFR-22", path.to.obs="~/Databases/W5E5")
+                  path.to.data = "~/Databases/CORDEX-CORE/AFR-22", path.to.obs="~/Databases/W5E5")
 
 ``` r
 head(local.data[[1]])
 ```
 
     ## # A tibble: 3 x 3
-    ##   RCP        models_mbrs      obs             
+    ##   forcing    models_mbrs      obs             
     ##   <chr>      <list>           <list>          
     ## 1 historical <named list [6]> <named list [4]>
     ## 2 rcp26      <named list [6]> <named list [4]>
@@ -81,14 +81,14 @@ with a small subset of the CAS-22 domain, available with the package
 
     fpath <- system.file("extdata/", package="cavaR")
     exmp1 <- load_data(country = "Moldova", variable="hurs", years.hist=2000, years.proj=2010
-                  path.to.rcps = fpath)
+                  path.to.data = fpath)
 
-**To load CORDEX-CORE data stored remotely**, set path.to.rcps to
+**To load CORDEX-CORE data stored remotely**, set path.to.data to
 “CORDEX-CORE” and specify the domain. For example:
 
 
     remote.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1995:2000, years.proj=2050:2060,
-                  path.to.rcps = "CORDEX-CORE", path.to.obs="W5E5", domain="AFR-22")
+                  path.to.data = "CORDEX-CORE", path.to.obs="W5E5", domain="AFR-22")
 
 ### Second step: perform analysis
 
@@ -113,7 +113,7 @@ rsts <- local.data %>%
   projections(bias.correction = F, season = 1:12, uppert=NULL, lowert = NULL, consecutive = F)
 ```
 
-    ## 2022-11-21 16:47:05 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
+    ## 2022-11-22 09:35:13 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
 
 ``` r
 # calculating number of days above 42 C, which is equal to 315 Kelvin
@@ -121,7 +121,7 @@ rsts_thrs <- local.data %>%
   projections(bias.correction = F, season = 1:12, uppert = 315.15, lowert = NULL, consecutive = F)
 ```
 
-    ## 2022-11-21 16:47:21 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 315.15
+    ## 2022-11-22 09:35:29 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 315.15
 
 ### Third step: visualize results
 
@@ -133,7 +133,7 @@ rsts %>%
 plotting(plot_titles = "Average tasmax (K)")
 ```
 
-    ## 2022-11-21 16:47:35 Done
+    ## 2022-11-22 09:35:44 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
@@ -142,6 +142,6 @@ rsts_thrs %>%
 plotting(plot_titles = "N. days")
 ```
 
-    ## 2022-11-21 16:47:37 Done
+    ## 2022-11-22 09:35:45 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-4-2.png)<!-- -->

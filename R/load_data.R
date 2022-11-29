@@ -21,7 +21,7 @@
 #' @param path.to.obs Default to NULL, if not, indicate the absolute path to the directory containing a reanalysis dataset, for example ERA5. To automatically load W5E5. specify W5E5
 #' @param years.proj Numerical range, years to select for projections
 #' @param years.hist Numerical range, years to select for historical simulations and observations
-#' @param n.cores Character vector, number of cores to use in parallel processing. Alternatively, for faster processing nested uses 9 cores in a nested fashion.
+#' @param n.cores Character vector, number of cores to use in parallel processing. Alternatively, for faster processing nested uses 9 nested cores (3*3).
 #' @param domain Specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE. Default is NULL
 #' @param buffer Numeric. Default is zero.
 #' @return Tibble with column list
@@ -61,7 +61,7 @@ load_data <- function(
 
     } else {
 
-      message("Your directory contains the following folders: \n", paste(list.dirs(path.to.data)[-1], "\n"), "all files within the listed folders will be uploaded \n")
+      message("\n Your directory contains the following folders: \n", paste(list.dirs(path.to.data)[-1], "\n"), "all files within the listed folders will be uploaded \n")
 
       files <- list.dirs(path.to.data, full.names = TRUE)[-1] %>%
         map(., ~ list.files(.x, full.names = TRUE))
@@ -146,7 +146,7 @@ if (n.cores=="nested") {
 
   # making the dataset ####
 
-  if (path.to.data=="CORDEX-CORE") message(Sys.time(), " Retrieving the information ") else message(Sys.time())
+  if (path.to.data=="CORDEX-CORE") message(Sys.time(), " Retrieving CORDEX-CORE data, RCM RegCM4. This may take a while... ") else message(Sys.time())
 
   models.df = tibble(path= files, forcing=forcing) %>%
     dplyr::mutate(

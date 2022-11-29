@@ -131,11 +131,16 @@ rsts %>%
 plotting(plot_titles = "Average tasmax")
 
 
+```
+
+```{r}
+
+
 rsts_thrs %>%
 plotting(plot_titles = "N. days")
 
-```
 
+```
 
 
 

@@ -86,10 +86,6 @@ with a small subset of the CAS-22 domain, available with the package
 **To load CORDEX-CORE data stored remotely**, set path.to.data to
 “CORDEX-CORE” and specify the domain. For example:
 
-
-    remote.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1995:2000, years.proj=2050:2060,
-                  path.to.data = "CORDEX-CORE", path.to.obs="W5E5", domain="AFR-22", n.cores=3)
-
 ### Second step: perform analysis
 
 The second step is the most dynamic step of the cavaR framework.
@@ -109,19 +105,19 @@ with this function. It returns a RasterStack
 ``` r
 library(magrittr)
 # operations are performed for each model separately and then an ensemble mean is made
-rsts <- local.data %>%  
+rsts <- remote.data %>%  
   projections(bias.correction = F, season = 1:12, uppert=NULL, lowert = NULL, consecutive = F)
 ```
 
-    ## 2022-11-29 12:11:54 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
+    ## 2022-11-29 22:15:19 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
 
 ``` r
 # calculating number of days above 42 C, which is equal to 315 Kelvin
-rsts_thrs <- local.data %>% 
-  projections(bias.correction = F, season = 1:12, uppert = 315.15, lowert = NULL, consecutive = F)
+rsts_thrs <- remote.data %>% 
+  projections(bias.correction = F, season = 1:12, uppert = 45, lowert = NULL, consecutive = F)
 ```
 
-    ## 2022-11-29 12:12:09 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 315.15
+    ## 2022-11-29 22:15:33 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 45
 
 ### Third step: visualize results
 
@@ -133,7 +129,7 @@ rsts %>%
 plotting(plot_titles = "Average tasmax (K)")
 ```
 
-    ## 2022-11-29 12:12:24 Done
+    ## 2022-11-29 22:15:46 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
@@ -142,6 +138,6 @@ rsts_thrs %>%
 plotting(plot_titles = "N. days")
 ```
 
-    ## 2022-11-29 12:12:26 Done
+    ## 2022-11-29 22:15:47 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-5-2.png)<!-- -->

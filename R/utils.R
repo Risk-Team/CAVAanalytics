@@ -100,14 +100,19 @@ agreement = function(array3d, threshold) {
 
 make_raster <- function(cl4.object) {
   if (length(dim(cl4.object$Data)) != 2)
-    stop("Your data needs to be a 2d array, check dimension")
+  stop("Your data needs to be a 2d array, check dimension")
+
+  xmin <- if (is.null(cl4.object$xyCoords$lon))  min(cl4.object$xyCoords$x) else  min(cl4.object$xyCoords$lon[1,])
+  xmax <-  if (is.null(cl4.object$xyCoords$lon))  max(cl4.object$xyCoords$x) else  max(cl4.object$xyCoords$lon[1,])
+  ymin <-  if (is.null(cl4.object$xyCoords$lat))  min(cl4.object$xyCoords$y) else  min(cl4.object$xyCoords$lat[,1])
+  ymax <-  if (is.null(cl4.object$xyCoords$lat))  max(cl4.object$xyCoords$y) else  max(cl4.object$xyCoords$lat[,1])
 
   rasters <- raster::raster(
     cl4.object$Data,
-    xmn = min(cl4.object$xyCoords$x),
-    xmx = max(cl4.object$xyCoords$x),
-    ymn = min(cl4.object$xyCoords$y),
-    ymx = max(cl4.object$xyCoords$y)
+    xmn = xmin,
+    xmx = xmax,
+    ymn = ymin,
+    ymx = ymax
   ) %>%
     flip(., direction = 'y')
 

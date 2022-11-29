@@ -1,7 +1,7 @@
 Package: cavaR
 Type: Package
 Title: Easy loading and visualization of climate models
-Version: 1.1.0
+Version: 1.1.1
 Author: Riccardo Soldan
 Maintainer: Riccardo Soldan <riccardosoldan@hotmail.it>
 Description: A framework to work with multiple NetCDF files

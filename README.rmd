@@ -59,15 +59,7 @@ exmp1 <- load_data(country = "Sudan", variable="tasmax", years.hist=2000, years.
 library(cavaR)
 
 local.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1980:2000, years.proj=2050:2080,
-              path.to.data = "~/Databases/CORDEX-CORE/AFR-22", path.to.obs="~/Databases/W5E5")
-```
-
-```{r, include=FALSE, echo=FALSE, message=FALSE}
-library(cavaR)
-
-remote.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1980:2000, years.proj=2050:2080,
-              path.to.data = "~/Databases/CORDEX-CORE/AFR-22", path.to.obs="~/Databases/W5E5")
-
+              path.to.data = "~/Databases/CORDEX-CORE/AFR-22", path.to.obs="~/Databases/W5E5", n.cores = "6")
 ```
 
 
@@ -96,12 +88,15 @@ exmp1 <- load_data(country = "Moldova", variable="hurs", years.hist=2000, years.
 **To load CORDEX-CORE data stored remotely**, set path.to.data to "CORDEX-CORE" and specify the domain. For example:
 
 
-```
+
+```{r, include=FALSE}
+# when n.cores="nested" 9 cores for parallel processing are used (3*3)
 
 remote.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1995:2000, years.proj=2050:2060,
-              path.to.data = "CORDEX-CORE", path.to.obs="W5E5", domain="AFR-22", n.cores=3)
+              path.to.data = "CORDEX-CORE", path.to.obs="W5E5", domain="AFR-22", n.cores="nested")
 
 ```
+
 
 ### Second step: perform analysis
 
@@ -115,13 +110,13 @@ type ?projections to better understand what analysis can be performed with this 
 ```{r, warning=FALSE}
 library(magrittr)
 # operations are performed for each model separately and then an ensemble mean is made
-rsts <- local.data %>%  
+rsts <- remote.data %>%  
   projections(bias.correction = F, season = 1:12, uppert=NULL, lowert = NULL, consecutive = F)
 
 
 # calculating number of days above 42 C, which is equal to 315 Kelvin
-rsts_thrs <- local.data %>% 
-  projections(bias.correction = F, season = 1:12, uppert = 315.15, lowert = NULL, consecutive = F)
+rsts_thrs <- remote.data %>% 
+  projections(bias.correction = F, season = 1:12, uppert = 45, lowert = NULL, consecutive = F)
 
 ```
 

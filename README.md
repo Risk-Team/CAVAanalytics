@@ -88,7 +88,7 @@ with a small subset of the CAS-22 domain, available with the package
 
 
     remote.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1995:2000, years.proj=2050:2060,
-                  path.to.data = "CORDEX-CORE", path.to.obs="W5E5", domain="AFR-22")
+                  path.to.data = "CORDEX-CORE", path.to.obs="W5E5", domain="AFR-22", n.cores=3)
 
 ### Second step: perform analysis
 
@@ -113,7 +113,7 @@ rsts <- local.data %>%
   projections(bias.correction = F, season = 1:12, uppert=NULL, lowert = NULL, consecutive = F)
 ```
 
-    ## 2022-11-22 09:35:13 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
+    ## 2022-11-29 12:11:54 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
 
 ``` r
 # calculating number of days above 42 C, which is equal to 315 Kelvin
@@ -121,7 +121,7 @@ rsts_thrs <- local.data %>%
   projections(bias.correction = F, season = 1:12, uppert = 315.15, lowert = NULL, consecutive = F)
 ```
 
-    ## 2022-11-22 09:35:29 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 315.15
+    ## 2022-11-29 12:12:09 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 315.15
 
 ### Third step: visualize results
 
@@ -133,15 +133,15 @@ rsts %>%
 plotting(plot_titles = "Average tasmax (K)")
 ```
 
-    ## 2022-11-22 09:35:44 Done
+    ## 2022-11-29 12:12:24 Done
 
-![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 ``` r
 rsts_thrs %>%
 plotting(plot_titles = "N. days")
 ```
 
-    ## 2022-11-22 09:35:45 Done
+    ## 2022-11-29 12:12:26 Done
 
-![](README_files/figure-gfm/unnamed-chunk-4-2.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-5-2.png)<!-- -->

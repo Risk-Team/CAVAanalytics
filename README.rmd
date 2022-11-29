@@ -61,6 +61,16 @@ library(cavaR)
 local.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1980:2000, years.proj=2050:2080,
               path.to.data = "~/Databases/CORDEX-CORE/AFR-22", path.to.obs="~/Databases/W5E5")
 ```
+
+```{r, include=FALSE, echo=FALSE, message=FALSE}
+library(cavaR)
+
+remote.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1980:2000, years.proj=2050:2080,
+              path.to.data = "~/Databases/CORDEX-CORE/AFR-22", path.to.obs="~/Databases/W5E5")
+
+```
+
+
 ```{r, message=FALSE, warning=FALSE}
 
 head(local.data[[1]])
@@ -89,7 +99,7 @@ exmp1 <- load_data(country = "Moldova", variable="hurs", years.hist=2000, years.
 ```
 
 remote.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1995:2000, years.proj=2050:2060,
-              path.to.data = "CORDEX-CORE", path.to.obs="W5E5", domain="AFR-22")
+              path.to.data = "CORDEX-CORE", path.to.obs="W5E5", domain="AFR-22", n.cores=3)
 
 ```
 

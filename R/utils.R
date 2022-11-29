@@ -252,7 +252,7 @@ ToE <- function(x, array)  {
 #'
 #' fit a mixed effect model (random slope) to c4R object with multiple member in the first dimension
 #' @export
-#' @import nlme
+#' @importFrom nlme lme
 #' @param cl4 list used in climate4R with slot Data containing more than one member
 #' @param slope logical.
 

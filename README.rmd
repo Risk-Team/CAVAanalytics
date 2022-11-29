@@ -51,11 +51,11 @@ cavaR makes it easier to work with a large number of climate or impact model sim
 library(cavaR)
 
 exmp1 <- load_data(country = "Sudan", variable="tasmax", years.hist=2000, years.proj=2010,
-              path.to.data = "~/Databases/CORDEX-CORE/AFR-22", path.to.obs="~/Databases/W5E5")
+              path.to.data = "~/Databases/CORDEX-CORE/AFR-22", path.to.obs="~/Databases/W5E5", n.cores=9)
 
 ```
 
-```{r, include=F}
+```{r, message=F}
 library(cavaR)
 
 local.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1980:2000, years.proj=2050:2080,
@@ -89,7 +89,7 @@ exmp1 <- load_data(country = "Moldova", variable="hurs", years.hist=2000, years.
 
 
 
-```{r, include=FALSE}
+```{r, message=FALSE}
 # when n.cores="nested" 9 cores for parallel processing are used (3*3)
 
 remote.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1995:2000, years.proj=2050:2060,
@@ -128,7 +128,7 @@ After performing the required analysis, it is sufficient to call the plotting fu
 ```{r}
 
 rsts %>%
-plotting(plot_titles = "Average tasmax (K)")
+plotting(plot_titles = "Average tasmax")
 
 
 rsts_thrs %>%

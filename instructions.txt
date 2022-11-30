@@ -1,4 +1,4 @@
-1)explain how to run rstudio from active environment (check screenshot of your phone)
+1)explain how to run rstudio from active environment (check screenshot on your phone)
 
 2) first install mambaforge 
 https://github.com/conda-forge/miniforge#mambaforge

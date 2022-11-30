@@ -21,7 +21,7 @@
 #' @param path.to.obs Default to NULL, if not, indicate the absolute path to the directory containing a reanalysis dataset, for example ERA5. To automatically load W5E5. specify W5E5
 #' @param years.proj Numerical range, years to select for projections
 #' @param years.hist Numerical range, years to select for historical simulations and observations
-#' @param n.cores Character vector, number of cores to use in parallel processing. Alternatively, for faster processing nested uses 9 nested cores (3*3).
+#' @param n.cores Integer, number of cores to use in parallel processing. Default is 3. Increasing the number of cores is not suggested for most applications.
 #' @param domain Specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE. Default is NULL
 #' @param buffer Numeric. Default is zero.
 #' @return Tibble with column list
@@ -42,13 +42,13 @@ load_data <- function(
     years.proj,
     years.hist=NULL,
     path.to.obs=NULL,
-    n.cores=c("nested",1:10),
+    n.cores=3,
     buffer=0,
     domain=NULL) {
 
   # stop and warnings ####
 
-  n.cores=match.arg(n.cores)
+
 
   if(path.to.data!="CORDEX-CORE" & stringr::str_detect(path.to.data, "/")) {
 
@@ -127,21 +127,8 @@ load_data <- function(
 
   # number of cores ####
 
-if (n.cores=="nested") {
-  future::plan(
-    list(
-      future::tweak(
-        future::multisession,
-        workers = 3),
-      future::tweak(
-        future::multisession,
-        workers = 3)
-    )
-  )
-} else {
-
   future::plan(multisession, workers = n.cores)
-}
+
 
 
   # making the dataset ####
@@ -150,7 +137,7 @@ if (n.cores=="nested") {
 
   models.df = tibble(path= files, forcing=forcing) %>%
     dplyr::mutate(
-      models = furrr::future_map(path,  ~ furrr::future_map(.x, function(x)  {
+      models = furrr::future_map(path,  ~ purrr::map(.x, function(x)  {
         if (str_detect(x, "historical")) {
           message(Sys.time(), " Loading ", x)
           data <- suppressMessages(loadGridData(

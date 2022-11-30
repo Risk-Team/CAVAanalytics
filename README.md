@@ -57,13 +57,13 @@ containing, for example, several RCPs and a folder with historical runs.
     library(cavaR)
 
     exmp1 <- load_data(country = "Sudan", variable="tasmax", years.hist=2000, years.proj=2010,
-                  path.to.data = "~/Databases/CORDEX-CORE/AFR-22", path.to.obs="~/Databases/W5E5", n.cores=9)
+                  path.to.data = "~/Databases/CORDEX-CORE/AFR-22", path.to.obs="~/Databases/W5E5")
 
 ``` r
 library(cavaR)
 
 local.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1980:2000, years.proj=2050:2080,
-              path.to.data = "~/Databases/CORDEX-CORE/AFR-22", path.to.obs="~/Databases/W5E5", n.cores = "6")
+              path.to.data = "~/Databases/CORDEX-CORE/AFR-22", path.to.obs="~/Databases/W5E5")
 ```
 
 ``` r
@@ -96,8 +96,8 @@ with a small subset of the CAS-22 domain, available with the package
 ``` r
 # when n.cores="nested" 9 cores for parallel processing are used (3*3)
 
-remote.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1995:2000, years.proj=2050:2060,
-              path.to.data = "CORDEX-CORE", path.to.obs="W5E5", domain="AFR-22", n.cores="nested")
+remote.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1995, years.proj=2050:2052,
+              path.to.data = "CORDEX-CORE", path.to.obs="W5E5", domain="AFR-22")
 ```
 
 ### Second step: perform analysis
@@ -123,7 +123,7 @@ rsts <- remote.data %>%
   projections(bias.correction = F, season = 1:12, uppert=NULL, lowert = NULL, consecutive = F)
 ```
 
-    ## 2022-11-29 23:10:32 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
+    ## 2022-11-30 11:19:09 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
 
 ``` r
 # calculating number of days above 42 C, which is equal to 315 Kelvin
@@ -131,7 +131,7 @@ rsts_thrs <- remote.data %>%
   projections(bias.correction = F, season = 1:12, uppert = 45, lowert = NULL, consecutive = F)
 ```
 
-    ## 2022-11-29 23:10:46 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 45
+    ## 2022-11-30 11:19:17 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 45
 
 ### Third step: visualize results
 
@@ -143,7 +143,7 @@ rsts %>%
 plotting(plot_titles = "Average tasmax")
 ```
 
-    ## 2022-11-29 23:11:00 Done
+    ## 2022-11-30 11:19:25 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
@@ -152,6 +152,6 @@ rsts_thrs %>%
 plotting(plot_titles = "N. days")
 ```
 
-    ## 2022-11-29 23:11:01 Done
+    ## 2022-11-30 11:19:26 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->

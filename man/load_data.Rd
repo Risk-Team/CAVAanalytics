@@ -13,7 +13,7 @@ load_data(
   years.proj,
   years.hist = NULL,
   path.to.obs = NULL,
-  n.cores = c("nested", 1:10),
+  n.cores = 3,
   buffer = 0,
   domain = NULL
 )
@@ -37,7 +37,7 @@ set country to NULL and define arguments xlim and ylim}
 
 \item{path.to.obs}{Default to NULL, if not, indicate the absolute path to the directory containing a reanalysis dataset, for example ERA5. To automatically load W5E5. specify W5E5}
 
-\item{n.cores}{Character vector, number of cores to use in parallel processing. Alternatively, for faster processing nested uses 9 nested cores (3*3).}
+\item{n.cores}{Integer, number of cores to use in parallel processing. Default is 3. Increasing the number of cores is not suggested for most applications.}
 
 \item{buffer}{Numeric. Default is zero.}
 

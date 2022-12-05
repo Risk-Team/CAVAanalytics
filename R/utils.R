@@ -182,7 +182,7 @@ thrs_consec = function(col, duration, lowert, uppert, ...) {
 #' Calculation of thresholds
 #'
 #' Calculation of number of days with certain condition. It can be used with aggregateGrid.
-#'
+#' @export
 #' @param col numeric vector
 #' @param lowert numeric. lower threshold
 #' @param uppert numeric. upper threshold

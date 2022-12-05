@@ -41,8 +41,8 @@ projections <-
            consecutive = FALSE,
            duration = "max") {
     # checking inputs requirement
-    if (data[[4]] != "C4R.dataframe")
-      stop("The input data does not seem to be the output of the chatR loading function")
+    if (class(data)!="cavaR_list")
+      stop("The input data is not the output of cavaR load_data")
     stopifnot(is.logical(consecutive),
               is.logical(bias.correction))
 

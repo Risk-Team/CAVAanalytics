@@ -183,8 +183,7 @@ load_data <- function(
 
   message(paste(Sys.time(), "Done"))
   rm(models.df)
-  gc()
 
-  return(list(models.df2, country_shp, as.character(models), "C4R.dataframe"))
+  invisible(structure(list(models.df2, country_shp, as.character(models)), class="cavaR_list", components=list("data.frmae with list columns", "bbox", "vector of model names")))
 
 } # end of function

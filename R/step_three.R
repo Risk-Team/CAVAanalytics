@@ -88,8 +88,8 @@ plotting.cavaR_projections <- function(rst, palette=NULL, legend_range=NULL, plo
                 data = rs_df,
                 alpha = 0.7) +
     coord_sf(
-      xlim = c(range(rs_df$x)[[1]] - 4, range(rs_df$x)[[2]] + 4),
-      ylim = c(range(rs_df$y)[[1]] - 4, range(rs_df$y)[[2]] + 4),
+      xlim = c(range(rs_df$x)[[1]] - 2, range(rs_df$x)[[2]] + 2),
+      ylim = c(range(rs_df$y)[[1]] - 2, range(rs_df$y)[[2]] + 2),
       expand = F,
       ndiscr = 500
     ) +

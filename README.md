@@ -120,38 +120,54 @@ with this function. It returns a RasterStack
 library(magrittr)
 # operations are performed for each model separately and then an ensemble mean is made
 rsts <- remote.data %>%  
-  projections(bias.correction = F, season = 1:12, uppert=NULL, lowert = NULL, consecutive = F)
+  projections(bias.correction = F, season = 1:12)
 ```
 
-    ## 2022-11-30 11:19:09 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
+    ## 2023-01-23 11:33:58 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
 
 ``` r
 # calculating number of days above 42 C, which is equal to 315 Kelvin
 rsts_thrs <- remote.data %>% 
-  projections(bias.correction = F, season = 1:12, uppert = 45, lowert = NULL, consecutive = F)
+  projections(bias.correction = F, season = 1:12, uppert = 45, consecutive = F)
 ```
 
-    ## 2022-11-30 11:19:17 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 45
+    ## 2023-01-23 11:34:08 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 45
 
 ### Third step: visualize results
 
 After performing the required analysis, it is sufficient to call the
-plotting function to visualize the results
+plotting function to visualize the results. The results can be
+visualized for each simulation or as an ensemble.
 
 ``` r
 rsts %>%
-plotting(plot_titles = "Average tasmax")
+plotting(plot_titles = "Average tasmax", ensemble=T)
 ```
 
-    ## 2022-11-30 11:19:25 Done
+    ## 2023-01-23 11:34:15 Prepare for plotting
+
+    ## 2023-01-23 11:34:16 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 ``` r
-rsts_thrs %>%
-plotting(plot_titles = "N. days")
+rsts %>%
+plotting(plot_titles = "Average tasmax", ensemble=F)
 ```
 
-    ## 2022-11-30 11:19:26 Done
+    ## 2023-01-23 11:34:17 Prepare for plotting
+
+    ## 2023-01-23 11:34:18 Done
+
+![](README_files/figure-gfm/unnamed-chunk-5-2.png)<!-- -->
+
+``` r
+rsts_thrs %>%
+plotting(plot_titles = "N. days", ensemble=F)
+```
+
+    ## 2023-01-23 11:34:19 Prepare for plotting
+
+    ## 2023-01-23 11:34:20 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->

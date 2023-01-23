@@ -4,7 +4,7 @@
 \alias{plotting}
 \title{Step three: Visualization}
 \usage{
-plotting(rst, palette = NULL, legend.range = NULL, plot_titles)
+plotting(rst, palette, legend.range, plot_titles, ensemble)
 }
 \arguments{
 \item{rst}{output of one of cavaR functions, such as projections. rst is of class RasterStack}
@@ -13,7 +13,9 @@ plotting(rst, palette = NULL, legend.range = NULL, plot_titles)
 
 \item{legend.range}{numeric. Fix legend limits}
 
-\item{plot_titles}{character. Title of teh plot legend}
+\item{plot_titles}{character. Title of the plot legend}
+
+\item{ensemble}{logical. Whether to visualize the ensemble mean or each individual model}
 }
 \value{
 ggplot object
@@ -25,8 +27,5 @@ Automatically plot results from cavaR step two
 fpath <- system.file("extdata/", package="chatR")
 exmp <- load_data(country = "Moldova", variable="hurs", years.hist=2000, years.proj=2010, path.to.data = fpath) \%>\%
 projections(., season = 1:12) \%>\%
-plotting(plot_titles="hurs")
-exmp
-
-
+plotting(plot_titles="hurs", ensemble=T)
 }

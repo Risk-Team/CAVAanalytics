@@ -111,24 +111,29 @@ type ?projections to better understand what analysis can be performed with this 
 library(magrittr)
 # operations are performed for each model separately and then an ensemble mean is made
 rsts <- remote.data %>%  
-  projections(bias.correction = F, season = 1:12, uppert=NULL, lowert = NULL, consecutive = F)
+  projections(bias.correction = F, season = 1:12)
 
 
 # calculating number of days above 42 C, which is equal to 315 Kelvin
 rsts_thrs <- remote.data %>% 
-  projections(bias.correction = F, season = 1:12, uppert = 45, lowert = NULL, consecutive = F)
+  projections(bias.correction = F, season = 1:12, uppert = 45, consecutive = F)
 
 ```
 
 ### Third step: visualize results
 
-After performing the required analysis, it is sufficient to call the plotting function to visualize the results
+After performing the required analysis, it is sufficient to call the plotting function to visualize the results. The results can be visualized for each simulation or as an ensemble. 
 
 
 ```{r}
 
+
 rsts %>%
-plotting(plot_titles = "Average tasmax")
+plotting(plot_titles = "Average tasmax", ensemble=T)
+
+rsts %>%
+plotting(plot_titles = "Average tasmax", ensemble=F)
+
 
 
 ```
@@ -137,7 +142,7 @@ plotting(plot_titles = "Average tasmax")
 
 
 rsts_thrs %>%
-plotting(plot_titles = "N. days")
+plotting(plot_titles = "N. days", ensemble=F)
 
 
 ```

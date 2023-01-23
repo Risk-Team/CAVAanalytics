@@ -8,46 +8,71 @@
 #' @import rnaturalearth
 #' @import RColorBrewer
 #' @importFrom raster as.data.frame
+#' @importFrom ggh4x facet_nested
 #' @param rst output of one of cavaR functions, such as projections. rst is of class RasterStack
 #' @param palette charachter. Color Palette
 #' @param legend.range  numeric. Fix legend limits
-#' @param plot_titles character. Title of teh plot legend
+#' @param plot_titles character. Title of the plot legend
+#' @param ensemble logical. Whether to visualize the ensemble mean or each individual model
 #' @return ggplot object
 #' @examples
 #' fpath <- system.file("extdata/", package="chatR")
 #' exmp <- load_data(country = "Moldova", variable="hurs", years.hist=2000, years.proj=2010, path.to.data = fpath) %>%
 #' projections(., season = 1:12) %>%
-#' plotting(plot_titles="hurs")
-#' exmp
-#'
-#'
+#' plotting(plot_titles="hurs", ensemble=T)
 
 
-plotting <- function(rst, palette=NULL, legend.range=NULL, plot_titles) {
+plotting <- function(rst, palette, legend.range, plot_titles, ensemble) {
+UseMethod("plotting")
+}
 
+#' @export
+plotting.cavaR_projections <- function(rst, palette=NULL, legend_range=NULL, plot_titles, ensemble) {
 
-  # for legends
-  colors <- if(is.null(palette)) c("blue", "cyan", "green", "yellow", "orange", "red", "black") else palette
+  stopifnot(is.logical(ensemble))
 
-  legend_range = if (is.null(legend.range)) c(range(raster::values(rst), na.rm = TRUE)) else legend.range
+  message(Sys.time(), " Prepare for plotting")
 
+  # retrieve the right raster stack based on the ensemble argument
+
+  rst <- if (isTRUE(ensemble)) rst[[1]] else rst[[2]]
+
+  # Set default colors for legend
+  colors <- if (is.null(palette)) c("blue", "cyan", "green", "yellow", "orange", "red", "black") else palette
+
+  # Set default range for legend
+  legend_range <- if (is.null(legend_range)) c(range(raster::values(rst), na.rm = TRUE)) else legend_range
+
+  # Suppress warnings
   options(warn = -1)
 
-  countries <-
-    ne_countries(scale = "medium", returnclass = "sf")
+  # Get countries data
+  countries <- ne_countries(scale = "medium", returnclass = "sf")
 
-
+  # Convert raster to dataframe
   rs_df <- raster::as.data.frame(rst, xy = TRUE, na.rm = TRUE) %>%
     tidyr::pivot_longer(
       cols = 3:ncol(.),
       values_to = "value",
       names_to = "long_name"
-    )  %>%
-    mutate(
-      scenario = str_extract(long_name, ".*_") %>% str_remove(., "_"),
-      time_frame = str_extract(long_name, "_.*")%>% str_remove(., "_")
-    ) %>%
-    mutate(time_frame = str_replace(time_frame, "\\.", "-"))
+    ) %>% {
+      if(ensemble) {
+        # Extract scenario and time frame from column names
+        dplyr::mutate(., scenario = str_extract(long_name, ".*_") %>% str_remove(., "_"),
+                      time_frame = str_extract(long_name, "_.*") %>% str_remove(., "_")) %>%
+          # Replace "." with "-" in time frame
+          mutate(., time_frame = str_replace(time_frame, "\\.", "-"))
+
+      } else {
+        # Extract Member, scenario and time frame from column names
+        mutate(., member=  str_extract(long_name, "Member\\.\\d+"),
+               scenario = str_extract(long_name, "_.*_") %>% str_remove_all(., "_"),
+               time_frame = str_extract(long_name, "_\\d+.*") %>% str_remove(., "_")) %>%
+          # Replace "." with "-" in time frame
+          mutate(., time_frame = str_replace(time_frame, "\\.", "-"))
+
+      }
+    }
 
   p <- ggplot() +
     scale_fill_gradientn(
@@ -68,14 +93,15 @@ plotting <- function(rst, palette=NULL, legend.range=NULL, plot_titles) {
       expand = F,
       ndiscr = 500
     ) +
-    # geom_point(
-    #   data = filter(rs_df.p, value < 0.05),
-    #   size = 0.3,
-    #   shape = 19,
-    #   color = "black",
-    #   aes(x, y)
-    # ) +
-    facet_grid(scenario ~ time_frame) +
+    {
+      if(ensemble) {
+
+        facet_grid(scenario ~ time_frame)
+      } else {
+
+        facet_nested(scenario ~ time_frame + member)
+      }
+    } +
     labs(fill = plot_titles, x="", y="") +
     theme_bw(base_size = 12) +
     theme(
@@ -100,4 +126,7 @@ plotting <- function(rst, palette=NULL, legend.range=NULL, plot_titles) {
   return(p)
 
 }
+
+
+
 

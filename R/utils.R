@@ -6,29 +6,16 @@
 #' @import dplyr
 #' @param data list containing C4R objects, which are the outputs of the loadGridata function
 
+
 common_dates <- function(data) {
-  # list of models
-  dates.all = c()
+  all_dates <- lapply(data, function(x) substr(x$Dates$start, 1, 10))
+  common_dates <- Reduce(intersect, all_dates)
 
-  for (imodel in 1:length(data)) {
-    dates.all = c(dates.all, substr(data[[imodel]]$Dates$start, 1, 10))
-  }
-
-  dates.common = substr(data[[1]]$Dates$start, 1, 10)
-  for (imodel in 2:length(data)) {
-    aux = intersect(substr(data[[imodel - 1]]$Dates$start, 1, 10),
-                    substr(data[[imodel]]$Dates$start, 1, 10))
-    dates.common = intersect(dates.common, aux)
-  }
-  for (imodel in 1:length(data)) {
-    ind = which(!is.na(match(
-      substr(data[[imodel]]$Dates$start, 1, 10), dates.common
-    )))
-    data[[imodel]] = subsetDimension(data[[imodel]], dimension = "time", indices = ind)
-  }
-
-  return(bindGrid(data, dimension = "member"))
-
+  data.filt <- lapply(data, function(x) {
+    ind <- which(substr(x$Dates$start, 1, 10) %in% common_dates)
+    mod <- subsetDimension(x, dimension = "time", indices = ind)
+  })
+  return(bindGrid(data.filt, dimension = "member"))
 }
 
 
@@ -97,6 +84,14 @@ find.agreement = function(x, threshold) {
 agreement = function(array3d, threshold) {
   array1_agreement = apply(array3d, c(2, 3), find.agreement, threshold)
 }
+
+
+#' make a raster
+#'
+#' Make a raster from a C4R list with dim(Data)=2
+#'
+#' @param cl4.object A C4R llist with the Data slot in two dimension
+#' @return raster
 
 make_raster <- function(cl4.object) {
   if (length(dim(cl4.object$Data)) != 2)
@@ -210,6 +205,7 @@ thrs = function(col, lowert, uppert, ...) {
 
 
 # time of emergence. Yes when mean/SD > or < 1 for at least 5 consecutive years
+
 ToE <- function(x, array)  {
   array_names <- dimnames(array)[3]
   if(is.null(array_names)) stop("Your array does not have named 3rd dimension. Check your input")

@@ -199,7 +199,7 @@ load_data <-
     models.df2 <- models.df %>%
       dplyr::mutate(models_mbrs = purrr::map(models, common_dates)) %>%
       dplyr::mutate(obs = if (!is.null(path.to.obs)) {
-        message("\n", Sys.time(), " Uploading obs data \n")
+        message("\n", Sys.time(), " Uploading obs data")
         list(suppressMessages(
           loadGridData(
             obs.file,

@@ -31,7 +31,7 @@ plotting.cavaR_projections <- function(rst, palette=NULL, legend_range=NULL, plo
 
   stopifnot(is.logical(ensemble))
 
-  message(Sys.time(), " Prepare for plotting")
+  message(Sys.time(), "\n", "Prepare for plotting")
 
   # retrieve the right raster stack based on the ensemble argument
 

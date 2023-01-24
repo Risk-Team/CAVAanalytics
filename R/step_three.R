@@ -79,8 +79,9 @@ plotting.cavaR_projections <- function(rst, palette=NULL, legend_range=NULL, plo
       colors = colors,
       limits = legend_range,
       na.value = "transparent",
-      n.breaks = 10
-    ) +
+      n.breaks = 10,
+      guide=guide_colourbar(ticks.colour = "black",
+                            ticks.linewidth = 1, title.position="top", title.hjust=0.5)) +
     geom_sf(fill = 'antiquewhite1',
             color = "black",
             data = countries) +
@@ -112,14 +113,14 @@ plotting.cavaR_projections <- function(rst, palette=NULL, legend_range=NULL, plo
       panel.grid.minor = element_blank(),
       axis.text.x = element_blank(),
       axis.text.y = element_blank(),
-      axis.ticks= element_blank()
-    ) +
-    guides(fill = guide_colourbar(
-      barwidth = 0.5,
-      barheight = 10,
-      ticks.colour = "black",
-      ticks.linewidth = 2
-    ))
+      axis.ticks= element_blank(),
+      axis.title= element_blank(),
+      legend.position = "bottom",
+      legend.direction = "horizontal",
+      legend.key.height= unit(0.5, 'cm'),
+      legend.key.width= unit(2, 'cm'),
+      legend.box.spacing=unit(0, "pt")
+    )
 
   message(Sys.time(), " Done")
 

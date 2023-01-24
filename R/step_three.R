@@ -97,10 +97,10 @@ plotting.cavaR_projections <- function(rst, palette=NULL, legend_range=NULL, plo
     {
       if(ensemble) {
 
-        facet_grid(scenario ~ time_frame)
+        facet_grid(scenario ~ time_frame )
       } else {
 
-        facet_nested(scenario ~ time_frame + member)
+        facet_nested(scenario ~ time_frame   + member)
       }
     } +
     labs(fill = plot_titles, x="", y="") +

@@ -123,7 +123,7 @@ rsts <- remote.data %>%
   projections(bias.correction = F, season = 1:12)
 ```
 
-    ## 2023-01-24 11:19:50 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
+    ## 2023-01-24 11:54:00 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
 
 ``` r
 # calculating number of days above 42 C, which is equal to 315 Kelvin
@@ -131,7 +131,7 @@ rsts_thrs <- remote.data %>%
   projections(bias.correction = F, season = 1:12, uppert = 45, consecutive = F)
 ```
 
-    ## 2023-01-24 11:19:59 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 45
+    ## 2023-01-24 11:54:09 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 45
 
 ### Third step: visualize results
 
@@ -144,10 +144,10 @@ rsts %>%
 plotting(plot_titles = "Average tasmax", ensemble=T)
 ```
 
-    ## 2023-01-24 11:20:06
+    ## 2023-01-24 11:54:16
     ## Prepare for plotting
 
-    ## 2023-01-24 11:20:07 Done
+    ## 2023-01-24 11:54:17 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
@@ -156,10 +156,10 @@ rsts %>%
 plotting(plot_titles = "Average tasmax", ensemble=F)
 ```
 
-    ## 2023-01-24 11:20:07
+    ## 2023-01-24 11:54:17
     ## Prepare for plotting
 
-    ## 2023-01-24 11:20:08 Done
+    ## 2023-01-24 11:54:18 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-5-2.png)<!-- -->
 
@@ -168,9 +168,9 @@ rsts_thrs %>%
 plotting(plot_titles = "N. days", ensemble=F)
 ```
 
-    ## 2023-01-24 11:20:09
+    ## 2023-01-24 11:54:19
     ## Prepare for plotting
 
-    ## 2023-01-24 11:20:10 Done
+    ## 2023-01-24 11:54:20 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->

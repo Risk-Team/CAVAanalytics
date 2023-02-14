@@ -54,11 +54,6 @@ models/simulations or other netcdf files (e.g impact models from
 ISIMIP). To **load local data**, specify the path to your directories,
 containing, for example, several RCPs and a folder with historical runs.
 
-    library(cavaR)
-
-    exmp1 <- load_data(country = "Sudan", variable="tasmax", years.hist=2000, years.proj=2010,
-                  path.to.data = "~/Databases/CORDEX-CORE/AFR-22", path.to.obs="~/Databases/W5E5")
-
 ``` r
 library(cavaR)
 
@@ -77,25 +72,25 @@ head(local.data[[1]])
     ## 2 rcp26      <named list [6]> <named list [4]>
     ## 3 rcp85      <named list [6]> <named list [4]>
 
-In this case, the path.to.rcps contained the following list of files:
+load_data will now create a multi-model ensemble (temporally consistent)
+which is stored in a data frame with list columns. At this point, all
+dplyr, purrr and furrr functions will work, so you can use map with
+mutate, etc. You simply need to get familiar with the output of
+load_data. The best way to do this is by loading a small dataset
+available from the package
 
-|                                                                                                  ![screnshot](https://user-images.githubusercontent.com/40058235/199230403-5d252400-e543-42ea-89bd-297d777ee6a4.png)                                                                                                   |
-|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
-| *When data is uploaded locally, path.to.rcps would contain at least one folder called historical, containing the historical simulation runs and one or more folders per RCP, SSP or other. Within these folders, there can be multiple models or simulations that will be loaded and checked for temporal consistency* |
-
-with a small subset of the CAS-22 domain, available with the package
-
-
-    fpath <- system.file("extdata/", package="cavaR")
-    exmp1 <- load_data(country = "Moldova", variable="hurs", years.hist=2000, years.proj=2010
+    path <- system.file("extdata/", package="cavaR")
+    exmp1 <- load_data(country = "Moldova", variable="hurs", years.hist=2000, years.proj=2010,
                   path.to.data = fpath)
+                  
+    # explore exmp1
+                  
 
 **To load CORDEX-CORE data stored remotely**, set path.to.data to
-“CORDEX-CORE” and specify the domain. For example:
+“CORDEX-CORE” and specify the domain. This will load CORDEX-CORE
+simulations from ESGF node. For example:
 
 ``` r
-# when n.cores="nested" 9 cores for parallel processing are used (3*3)
-
 remote.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1995, years.proj=2050:2052,
               path.to.data = "CORDEX-CORE", path.to.obs="W5E5", domain="AFR-22")
 ```
@@ -123,7 +118,7 @@ rsts <- remote.data %>%
   projections(bias.correction = F, season = 1:12)
 ```
 
-    ## 2023-01-24 11:54:00 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
+    ## 2023-02-14 15:05:04 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
 
 ``` r
 # calculating number of days above 42 C, which is equal to 315 Kelvin
@@ -131,7 +126,7 @@ rsts_thrs <- remote.data %>%
   projections(bias.correction = F, season = 1:12, uppert = 45, consecutive = F)
 ```
 
-    ## 2023-01-24 11:54:09 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 45
+    ## 2023-02-14 15:05:14 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 45
 
 ### Third step: visualize results
 
@@ -144,10 +139,10 @@ rsts %>%
 plotting(plot_titles = "Average tasmax", ensemble=T)
 ```
 
-    ## 2023-01-24 11:54:16
+    ## 2023-02-14 15:05:20
     ## Prepare for plotting
 
-    ## 2023-01-24 11:54:17 Done
+    ## 2023-02-14 15:05:21 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
@@ -156,10 +151,10 @@ rsts %>%
 plotting(plot_titles = "Average tasmax", ensemble=F)
 ```
 
-    ## 2023-01-24 11:54:17
+    ## 2023-02-14 15:05:22
     ## Prepare for plotting
 
-    ## 2023-01-24 11:54:18 Done
+    ## 2023-02-14 15:05:23 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-5-2.png)<!-- -->
 
@@ -168,9 +163,9 @@ rsts_thrs %>%
 plotting(plot_titles = "N. days", ensemble=F)
 ```
 
-    ## 2023-01-24 11:54:19
+    ## 2023-02-14 15:05:24
     ## Prepare for plotting
 
-    ## 2023-01-24 11:54:20 Done
+    ## 2023-02-14 15:05:25 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->

@@ -104,7 +104,7 @@ rsts <- remote.data %>%
   projections(bias.correction = F, season = 1:12)
 
 
-# calculating number of days above 42 C, which is equal to 315 Kelvin
+# calculating number of days above 45 C
 rsts_thrs <- remote.data %>% 
   projections(bias.correction = F, season = 1:12, uppert = 45, consecutive = F)
 

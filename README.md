@@ -76,15 +76,7 @@ load_data will now create a multi-model ensemble (temporally consistent)
 which is stored in a data frame with list columns. At this point, all
 dplyr, purrr and furrr functions will work, so you can use map with
 mutate, etc. You simply need to get familiar with the output of
-load_data. The best way to do this is by loading a small dataset
-available from the package
-
-    path <- system.file("extdata/", package="cavaR")
-    exmp1 <- load_data(country = "Moldova", variable="hurs", years.hist=2000, years.proj=2010,
-                  path.to.data = fpath)
-                  
-    # explore exmp1
-                  
+load_data.
 
 **To load CORDEX-CORE data stored remotely**, set path.to.data to
 “CORDEX-CORE” and specify the domain. This will load CORDEX-CORE
@@ -118,7 +110,7 @@ rsts <- remote.data %>%
   projections(bias.correction = F, season = 1:12)
 ```
 
-    ## 2023-02-15 08:59:58 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
+    ## 2023-02-17 15:47:52 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
 
 ``` r
 # calculating number of days above 45 C
@@ -126,7 +118,7 @@ rsts_thrs <- remote.data %>%
   projections(bias.correction = F, season = 1:12, uppert = 45, consecutive = F)
 ```
 
-    ## 2023-02-15 09:00:07 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 45
+    ## 2023-02-17 15:48:01 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 45
 
 ### Third step: visualize results
 
@@ -139,10 +131,10 @@ rsts %>%
 plotting(plot_titles = "Average tasmax", ensemble=T)
 ```
 
-    ## 2023-02-15 09:00:14
+    ## 2023-02-17 15:48:08
     ## Prepare for plotting
 
-    ## 2023-02-15 09:00:14 Done
+    ## 2023-02-17 15:48:09 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
@@ -151,10 +143,10 @@ rsts %>%
 plotting(plot_titles = "Average tasmax", ensemble=F)
 ```
 
-    ## 2023-02-15 09:00:15
+    ## 2023-02-17 15:48:10
     ## Prepare for plotting
 
-    ## 2023-02-15 09:00:16 Done
+    ## 2023-02-17 15:48:11 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-5-2.png)<!-- -->
 
@@ -163,9 +155,9 @@ rsts_thrs %>%
 plotting(plot_titles = "N. days", ensemble=F)
 ```
 
-    ## 2023-02-15 09:00:17
+    ## 2023-02-17 15:48:12
     ## Prepare for plotting
 
-    ## 2023-02-15 09:00:18 Done
+    ## 2023-02-17 15:48:13 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->

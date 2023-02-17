@@ -24,8 +24,8 @@
 #' @param duration character, either "max" or "total".
 #' @return list with raster stacks
 #' @examples
-#' fpath <- system.file("extdata/", package="cavaR")
-#' exmp <- load_data(country = "Moldova", variable="hurs", years.hist=2000, years.proj=2010, path.to.data = fpath) %>%
+#' load_data(country = "Somalia", variable="tas", years.hist=2000, years.proj=2010,
+#'               path.to.data = "CORDEX-CORE", domain="AFR-22") %>%
 #' projections(., season = 1:12)
 #'
 #'

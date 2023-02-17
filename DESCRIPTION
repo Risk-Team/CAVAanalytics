@@ -27,6 +27,8 @@ Imports:
     RColorBrewer,
     tidyr,
     climate4R.UDG,
-    nlme
+    nlme,
+    terra,
+    ggh4x
 Depends:
     loadeR

@@ -136,7 +136,7 @@ make_raster <- function(cl4.object) {
 #' @return numeric of length 1
 
 # functions for consecutive days
-thrs_consec = function(col, duration, lowert, uppert, ...) {
+thrs_consec = function(col, duration, lowert, uppert) {
 
   if (!is.numeric(col))
 
@@ -184,7 +184,7 @@ thrs_consec = function(col, duration, lowert, uppert, ...) {
 #' @return numeric of length 1
 
 
-thrs = function(col, lowert, uppert, ...) {
+thrs = function(col, lowert, uppert) {
 
   if (!is.numeric(col))
 

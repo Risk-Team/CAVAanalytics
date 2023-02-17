@@ -4,7 +4,7 @@
 \alias{thrs}
 \title{Calculation of thresholds}
 \usage{
-thrs(col, lowert, uppert, ...)
+thrs(col, lowert, uppert)
 }
 \arguments{
 \item{col}{numeric vector}

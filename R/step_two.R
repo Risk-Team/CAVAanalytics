@@ -1,18 +1,6 @@
 #' Step two: projection analysis
 #'
 #' Automatically process climate model projections and compute useful statistics.
-#' @export
-#' @import stringr
-#' @import ggplot2
-#' @import purrr
-#' @import furrr
-#' @import dplyr
-#' @import transformeR
-#' @import rnaturalearth
-#' @import RColorBrewer
-#' @importFrom downscaleR biasCorrection
-#' @importFrom glue glue_collapse
-#' @importFrom raster crop mask stack extent subset flip
 
 #' @param data output of load_data
 #' @param bias.correction logical
@@ -27,7 +15,7 @@
 #' load_data(country = "Somalia", variable="tas", years.hist=2000, years.proj=2010,
 #'               path.to.data = "CORDEX-CORE", domain="AFR-22") %>%
 #' projections(., season = 1:12)
-#'
+#' @export
 #'
 
 
@@ -45,7 +33,7 @@ projections <- function(data, bias.correction=F, uppert=NULL, lowert=NULL,
     match.arg(scaling.type, c("additive", "multiplicative"))
     if (!is.null(lowert) & !is.null(uppert)) stop("select only one threshold")
     if (consecutive & is.null(uppert) & is.null(lowert)) stop("Specify a threshold for which you want to calculate consecutive days")
-    if (!any(str_detect(colnames(data[[1]]),"obs"))& isTRUE(bias.correction)) {
+    if (!any(stringr::str_detect(colnames(data[[1]]),"obs"))& isTRUE(bias.correction)) {
       warning("Bias correction cannot be performed, no observational dataset found. Set as F")
       bias.correction=F
     }
@@ -189,19 +177,19 @@ perform_calculations <- function(datasets, mod.numb, var, bias.correction, upper
         rs <- make_raster(y) %>%
           raster::crop(., country_shp, snap = "out") %>%
           raster::mask(., country_shp)
-        names(rs) <- paste0(x, "_", names(rs)) %>%  str_remove(., "X")
+        names(rs) <- paste0(x, "_", names(rs)) %>%  stringr::str_remove(., "X")
         return(rs)
       }),
       # individual models
       rst_models = purrr::map2(forcing, models_agg_y, function(x, y) {
-        rs_list <- map(1:dim(y$Data)[[1]], function(ens) {
+        rs_list <- purrr::map(1:dim(y$Data)[[1]], function(ens) {
           array_mean <- apply(y$Data[ens,,,], c(2, 3), mean, na.rm = TRUE) # climatology per member
           y$Data <- array_mean
           rs <- make_raster(y)%>%
             raster::crop(., country_shp, snap = "out") %>%
             raster::mask(., country_shp)
 
-          names(rs) <- paste0("Member ", ens, "_", x, "_", names(rs)) %>%  str_remove(., "X")
+          names(rs) <- paste0("Member ", ens, "_", x, "_", names(rs)) %>%  stringr::str_remove(., "X")
           return(rs)
         })
 
@@ -209,7 +197,7 @@ perform_calculations <- function(datasets, mod.numb, var, bias.correction, upper
     )
 
   invisible(structure(
-    list(stack(data_list$rst_ens_mean), stack(map(data_list$rst_models, ~ stack(.x)))),
+    list(stack(data_list$rst_ens_mean), stack(purrr::map(data_list$rst_models, ~ stack(.x)))),
     class = "cavaR_projections",
     components = list("raster stack for ensemble mean", "raster stack for individual members")
   ))
@@ -282,7 +270,7 @@ trends = function(data,
       is.null(lowert))
     stop("Specify a threshold for which you want to calculate consecutive days")
   stopifnot(duration == "max" | duration == "total")
-  if (!any(str_detect(colnames(data[[1]]),"obs"))& isTRUE(bias.correction)) {
+  if (!any(stringr::str_detect(colnames(data[[1]]),"obs"))& isTRUE(bias.correction)) {
     warning("Bias correction cannot be performed, no observational dataset found. Set as F")
     bias.correction=F
   }

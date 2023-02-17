@@ -2,11 +2,11 @@
 #'
 #' Automatically plot results from cavaR step two
 #' @export
-#' @import stringr
+
 #' @import ggplot2
-#' @import dplyr
-#' @import rnaturalearth
 #' @import RColorBrewer
+#' @importFrom rnaturalearth ne_countries
+#' @importFrom dplyr mutate
 #' @importFrom raster as.data.frame
 #' @importFrom ggh4x facet_nested
 #' @param rst output of one of cavaR functions, such as projections. rst is of class RasterStack
@@ -27,6 +27,7 @@ UseMethod("plotting")
 }
 
 #' @export
+
 plotting.cavaR_projections <- function(rst, palette=NULL, legend_range=NULL, plot_titles, ensemble) {
 
   stopifnot(is.logical(ensemble))
@@ -58,18 +59,18 @@ plotting.cavaR_projections <- function(rst, palette=NULL, legend_range=NULL, plo
     ) %>% {
       if(ensemble) {
         # Extract scenario and time frame from column names
-        dplyr::mutate(., scenario = str_extract(long_name, ".*_") %>% str_remove(., "_"),
-                      time_frame = str_extract(long_name, "_.*") %>% str_remove(., "_")) %>%
+        mutate(., scenario = stringr::str_extract(long_name, ".*_") %>%  stringr::str_remove(., "_"),
+                      time_frame =  stringr::str_extract(long_name, "_.*") %>%  stringr::str_remove(., "_")) %>%
           # Replace "." with "-" in time frame
-          mutate(., time_frame = str_replace(time_frame, "\\.", "-"))
+          mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
 
       } else {
         # Extract Member, scenario and time frame from column names
-        mutate(., member=  str_extract(long_name, "Member\\.\\d+"),
-               scenario = str_extract(long_name, "_.*_") %>% str_remove_all(., "_"),
-               time_frame = str_extract(long_name, "_\\d+.*") %>% str_remove(., "_")) %>%
+        mutate(., member=   stringr::str_extract(long_name, "Member\\.\\d+"),
+               scenario =  stringr::str_extract(long_name, "_.*_") %>%  stringr::str_remove_all(., "_"),
+               time_frame =  stringr::str_extract(long_name, "_\\d+.*") %>%  stringr::str_remove(., "_")) %>%
           # Replace "." with "-" in time frame
-          mutate(., time_frame = str_replace(time_frame, "\\.", "-"))
+          mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
 
       }
     }

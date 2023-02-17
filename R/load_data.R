@@ -2,15 +2,8 @@
 #'
 #' Automatically load climate models (netCDF/NcML) in a tidy format.
 #' @export
-#' @import stringr
-#' @import purrr
-#' @import furrr
-#' @import future
-#' @import dplyr
 #' @import climate4R.UDG
 
-
-#'
 #' @param path.to.data Path to the directory containing the RCP/SSPs folders and historical simulations (optional). For example,
 #' home/user/data/. data would contain subfolders with the climate/impact models. Historical simulations have to be contained in a folder called historical. If path.to.data is set as CORDEX-CORE, CORDEX-CORE simulations from RCM RegCM4 will be loaded
 #' @param country A character string, in english, indicating the country of interest. To select a bounding box,
@@ -148,7 +141,7 @@ load_data <-
     ylim <- result$ylim
 
     # making the dataset
-    future::plan(multisession, workers = 3)
+    future::plan(future::multisession, workers = 3)
 
     if (path.to.data == "CORDEX-CORE")
       message(Sys.time(),

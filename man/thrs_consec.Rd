@@ -4,7 +4,7 @@
 \alias{thrs_consec}
 \title{Consecutive days}
 \usage{
-thrs_consec(col, duration, lowert, uppert, ...)
+thrs_consec(col, duration, lowert, uppert)
 }
 \arguments{
 \item{col}{numeric vector}

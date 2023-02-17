@@ -190,7 +190,7 @@ load_data <-
 
       }, .progress = T)))
 
-    message("\n", Sys.time(), " Aggregating members \n")
+    message("\n", Sys.time(), " Binding members \n")
 
     # aggregating members and adding obs data if specified
     models.df2 <- models.df %>%

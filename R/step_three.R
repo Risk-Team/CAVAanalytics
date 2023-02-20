@@ -4,11 +4,6 @@
 #' @export
 
 #' @import ggplot2
-#' @import RColorBrewer
-#' @importFrom rnaturalearth ne_countries
-#' @importFrom dplyr mutate
-#' @importFrom raster as.data.frame
-#' @importFrom ggh4x facet_nested
 #' @param rst output of one of cavaR functions, such as projections. rst is of class RasterStack
 #' @param palette charachter. Color Palette
 #' @param legend.range  numeric. Fix legend limits
@@ -48,7 +43,7 @@ plotting.cavaR_projections <- function(rst, palette=NULL, legend_range=NULL, plo
   options(warn = -1)
 
   # Get countries data
-  countries <- ne_countries(scale = "medium", returnclass = "sf")
+  countries <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
 
   # Convert raster to dataframe
   rs_df <- raster::as.data.frame(rst, xy = TRUE, na.rm = TRUE) %>%
@@ -59,18 +54,18 @@ plotting.cavaR_projections <- function(rst, palette=NULL, legend_range=NULL, plo
     ) %>% {
       if(ensemble) {
         # Extract scenario and time frame from column names
-        mutate(., scenario = stringr::str_extract(long_name, ".*_") %>%  stringr::str_remove(., "_"),
+        dplyr::mutate(., scenario = stringr::str_extract(long_name, ".*_") %>%  stringr::str_remove(., "_"),
                       time_frame =  stringr::str_extract(long_name, "_.*") %>%  stringr::str_remove(., "_")) %>%
           # Replace "." with "-" in time frame
-          mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
+          dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
 
       } else {
         # Extract Member, scenario and time frame from column names
-        mutate(., member=   stringr::str_extract(long_name, "Member\\.\\d+"),
+        dplyr::mutate(., member=   stringr::str_extract(long_name, "Member\\.\\d+"),
                scenario =  stringr::str_extract(long_name, "_.*_") %>%  stringr::str_remove_all(., "_"),
                time_frame =  stringr::str_extract(long_name, "_\\d+.*") %>%  stringr::str_remove(., "_")) %>%
           # Replace "." with "-" in time frame
-          mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
+          dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
 
       }
     }
@@ -101,7 +96,7 @@ plotting.cavaR_projections <- function(rst, palette=NULL, legend_range=NULL, plo
         facet_grid(scenario ~ time_frame )
       } else {
 
-        facet_nested(scenario ~ time_frame   + member)
+        ggh4x::facet_nested(scenario ~ time_frame   + member)
       }
     } +
     labs(fill = plot_titles, x="", y="") +

@@ -97,7 +97,7 @@ load_data <-
         stop("Either select a country or a region of interest, not both")
       } else {
         country_shp = if (!is.null(country)) {
-          raster::getData("GADM", country = country, level = 1)
+         rnaturalearth::ne_states(country = country)
         } else {
           as(extent(min(xlim), max(xlim), min(ylim), max(ylim)), "SpatialPolygons")
         }
@@ -149,9 +149,9 @@ load_data <-
     else
       message(Sys.time())
 
-    models.df = tibble(path = files, forcing = forcing) %>%
+    models.df = dplyr::tibble(path = files, forcing = forcing) %>%
       dplyr::mutate(models = purrr::map(path,  ~ furrr::future_map(.x, function(x)  {
-        if (str_detect(x, "historical")) {
+        if (stringr::str_detect(x, "historical")) {
           message("\n", Sys.time(), " Loading ", x)
           data <- suppressMessages(
             loadGridData(

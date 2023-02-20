@@ -2,8 +2,6 @@
 #'
 #' automatically select common dates among C4R objects
 #' @export
-#' @importFrom transformeR bindGrid subsetDimension
-#' @import dplyr
 #' @param data list containing C4R objects, which are the outputs of the loadGridata function
 
 
@@ -13,9 +11,9 @@ common_dates <- function(data) {
 
   data.filt <- lapply(data, function(x) {
     ind <- which(substr(x$Dates$start, 1, 10) %in% common_dates)
-    mod <- subsetDimension(x, dimension = "time", indices = ind)
+    mod <- transformeR::subsetDimension(x, dimension = "time", indices = ind)
   })
-  return(bindGrid(data.filt, dimension = "member"))
+  return(transformeR::bindGrid(data.filt, dimension = "member"))
 }
 
 
@@ -109,13 +107,13 @@ make_raster <- function(cl4.object) {
     ymn = ymin,
     ymx = ymax
   ) %>%
-    flip(., direction = 'y')
+    raster::flip(., direction = 'y')
 
   nms <-
     paste0(
-      str_extract(cl4.object$Dates$start[1], "\\d{4}"),
+      stringr::str_extract(cl4.object$Dates$start[1], "\\d{4}"),
       ".",
-      str_extract(cl4.object$Dates$end[length(cl4.object$Dates$start)],  "\\d{4}")
+      stringr::str_extract(cl4.object$Dates$end[length(cl4.object$Dates$start)],  "\\d{4}")
     )
   names(rasters) <-  nms
 

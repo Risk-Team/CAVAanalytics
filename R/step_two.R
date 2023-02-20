@@ -16,8 +16,6 @@
 #'               path.to.data = "CORDEX-CORE", domain="AFR-22") %>%
 #' projections(., season = 1:12)
 #' @export
-#'
-
 
 projections <- function(data, bias.correction=F, uppert=NULL, lowert=NULL,
                         season, scaling.type="additive", consecutive=F, duration="max") {
@@ -58,12 +56,121 @@ projections <- function(data, bias.correction=F, uppert=NULL, lowert=NULL,
 # subset based on a season of interest
   filter_data_by_season <- function(datasets, season) {
     if (any(stringr::str_detect(colnames(datasets), "obs"))) {
-      datasets %>% dplyr::mutate_at(c("models_mbrs", "obs"), ~ purrr::map(., ~ subsetGrid(., season = season)))
+      datasets %>% dplyr::mutate_at(c("models_mbrs", "obs"), ~ purrr::map(., ~ transformeR::subsetGrid(., season = season)))
     } else {
-      datasets %>% dplyr::mutate_at(c("models_mbrs"), ~ purrr::map(., ~ subsetGrid(., season = season)))
+      datasets %>% dplyr::mutate_at(c("models_mbrs"), ~ purrr::map(., ~ transformeR::subsetGrid(., season = season)))
     }
   }
 
+# function used to perform the calculations
+
+perform_calculations <- function(datasets, mod.numb, var, bias.correction, uppert, lowert, consecutive, duration, country_shp, scaling.type) {
+
+
+    data_list <- datasets %>%
+      dplyr::filter(forcing != "historical") %>%
+      {
+        if (bias.correction) {
+          message(
+            paste(
+              Sys.time(),
+              " Performing bias correction with the scaling",
+              " method, scaling type ", scaling.type, " for each model separately and then calculating the ensemble mean. Season",
+              glue::glue_collapse(season, "-")
+            )
+          )
+          dplyr::mutate(.,
+                        models_mbrs = furrr::future_map(models_mbrs, function(x) {
+                          if (var == "pr") {
+                            bc <-
+                              suppressMessages(downscaleR::biasCorrection(
+                                y = obs[[1]],
+                                x = dplyr::filter(datasets, forcing == "historical")$models_mbrs[[1]],
+                                newdata = x,
+                                precipitation = TRUE,
+                                method = "scaling",
+                                scaling.type = "multiplicative"
+                              ))
+                          } else {
+                            bc <-
+                              suppressMessages(downscaleR::biasCorrection(
+                                y = obs[[1]],
+                                x = dplyr::filter(datasets, forcing == "historical")$models_mbrs[[1]],
+                                newdata = x,
+                                precipitation = FALSE,
+                                method ="scaling",
+                                scaling.type = scaling.type
+                              ))
+                          }
+                          out <-
+                            transformeR::intersectGrid.time(x, bc, which.return = 2)
+                          out$Dates$start <- x$Dates$start
+                          out$Dates$end <-  x$Dates$end
+                          return(out)
+                        }))
+        } else
+          .
+      }  %>%  # computing annual aggregation. if threshold is specified, first apply threshold
+      dplyr::mutate(
+        models_agg_y = furrr::future_map(models_mbrs, function(x)
+          suppressMessages(transformeR::aggregateGrid(# perform aggregation based on seasonended output
+            x, aggr.y =
+              if (var == "pr" &
+                  !consecutive &
+                  (is.null(uppert) & is.null(lowert))) {
+                list(FUN = "sum")
+              } else if (var != "pr" &
+                         !consecutive &
+                         (is.null(lowert) & is.null(uppert))) {
+                list(FUN = "mean")
+              } else if (consecutive) {
+                list(
+                  FUN = thrs_consec,
+                  duration = duration,
+                  lowert = lowert,
+                  uppert = uppert
+                )
+              } else if (!consecutive) {
+                list(FUN = thrs,
+                     uppert = uppert,
+                     lowert = lowert)
+              }))
+        ),
+        # ensemble mean
+        rst_ens_mean = purrr::map2(forcing, models_agg_y, function(x, y) {
+          y <- suppressMessages(transformeR::aggregateGrid(y, aggr.mem = list(FUN = "mean", na.rm = TRUE)))
+          array_mean <-
+            apply(y$Data, c(2, 3), mean, na.rm = TRUE) # climatology
+          y$Data <- array_mean
+          rs <- make_raster(y) %>%
+            raster::crop(., country_shp, snap = "out") %>%
+            raster::mask(., country_shp)
+          names(rs) <- paste0(x, "_", names(rs)) %>%  stringr::str_remove(., "X")
+          return(rs)
+        }),
+        # individual models
+        rst_models = purrr::map2(forcing, models_agg_y, function(x, y) {
+          rs_list <- purrr::map(1:dim(y$Data)[[1]], function(ens) {
+            array_mean <-     array_mean <- if (length(y$Dates$start)==1) apply(y$Data[ens,,,], c(1, 2), mean, na.rm = TRUE) else apply(y$Data[ens,,,], c(2, 3), mean, na.rm = TRUE) # climatology per member adjusting by array dimension
+            y$Data <- array_mean
+            rs <- make_raster(y)%>%
+              raster::crop(., country_shp, snap = "out") %>%
+              raster::mask(., country_shp)
+
+            names(rs) <- paste0("Member ", ens, "_", x, "_", names(rs)) %>%  stringr::str_remove(., "X")
+            return(rs)
+          })
+
+        })
+      )
+
+    invisible(structure(
+      list(raster::stack(data_list$rst_ens_mean), raster::stack(purrr::map(data_list$rst_models, ~ raster::stack(.x)))),
+      class = "cavaR_projections",
+      components = list("raster stack for ensemble mean", "raster stack for individual members")
+    ))
+
+  }
 
 # beginning of code -------------------------------------------------------
 
@@ -93,134 +200,12 @@ projections <- function(data, bias.correction=F, uppert=NULL, lowert=NULL,
   return(data_list)
 }
 
-# Functions used in projections for performing calculation``
 
-
-perform_calculations <- function(datasets, mod.numb, var, bias.correction, uppert, lowert, consecutive, duration, country_shp, scaling.type) {
-
-
-  data_list <- datasets %>%
-    dplyr::filter(forcing != "historical") %>%
-    {
-      if (bias.correction) {
-        message(
-          paste(
-            Sys.time(),
-            " Performing bias correction with the scaling",
-            " method, scaling type ", scaling.type, " for each model separately and then calculating the ensemble mean. Season",
-            glue::glue_collapse(season, "-")
-          )
-        )
-        dplyr::mutate(.,
-                      models_mbrs = furrr::future_map(models_mbrs, function(x) {
-                        if (var == "pr") {
-                          bc <-
-                            suppressMessages(downscaleR::biasCorrection(
-                              y = obs[[1]],
-                              x = dplyr::filter(datasets, forcing == "historical")$models_mbrs[[1]],
-                              newdata = x,
-                              precipitation = TRUE,
-                              method = "scaling",
-                              scaling.type = "multiplicative"
-                            ))
-                        } else {
-                          bc <-
-                            suppressMessages(downscaleR::biasCorrection(
-                              y = obs[[1]],
-                              x = dplyr::filter(datasets, forcing == "historical")$models_mbrs[[1]],
-                              newdata = x,
-                              precipitation = FALSE,
-                              method ="scaling",
-                              scaling.type = scaling.type
-                            ))
-                        }
-                        out <-
-                          transformeR::intersectGrid.time(x, bc, which.return = 2)
-                        out$Dates$start <- x$Dates$start
-                        out$Dates$end <-  x$Dates$end
-                        return(out)
-                      }))
-      } else
-        .
-    }  %>%  # computing annual aggregation. if threshold is specified, first apply threshold
-    dplyr::mutate(
-      models_agg_y = furrr::future_map(models_mbrs, function(x)
-        suppressMessages(transformeR::aggregateGrid(# perform aggregation based on seasonended output
-          x, aggr.y =
-            if (var == "pr" &
-                !consecutive &
-                (is.null(uppert) & is.null(lowert))) {
-              list(FUN = "sum")
-            } else if (var != "pr" &
-                       !consecutive &
-                       (is.null(lowert) & is.null(uppert))) {
-              list(FUN = "mean")
-            } else if (consecutive) {
-              list(
-                FUN = thrs_consec,
-                duration = duration,
-                lowert = lowert,
-                uppert = uppert
-              )
-            } else if (!consecutive) {
-              list(FUN = thrs,
-                   uppert = uppert,
-                   lowert = lowert)
-            }))
-      ),
-      # ensemble mean
-      rst_ens_mean = purrr::map2(forcing, models_agg_y, function(x, y) {
-        y <- suppressMessages(transformeR::aggregateGrid(y, aggr.mem = list(FUN = "mean", na.rm = TRUE)))
-        array_mean <-
-          apply(y$Data, c(2, 3), mean, na.rm = TRUE) # climatology
-        y$Data <- array_mean
-        rs <- make_raster(y) %>%
-          raster::crop(., country_shp, snap = "out") %>%
-          raster::mask(., country_shp)
-        names(rs) <- paste0(x, "_", names(rs)) %>%  stringr::str_remove(., "X")
-        return(rs)
-      }),
-      # individual models
-      rst_models = purrr::map2(forcing, models_agg_y, function(x, y) {
-        rs_list <- purrr::map(1:dim(y$Data)[[1]], function(ens) {
-          array_mean <- apply(y$Data[ens,,,], c(2, 3), mean, na.rm = TRUE) # climatology per member
-          y$Data <- array_mean
-          rs <- make_raster(y)%>%
-            raster::crop(., country_shp, snap = "out") %>%
-            raster::mask(., country_shp)
-
-          names(rs) <- paste0("Member ", ens, "_", x, "_", names(rs)) %>%  stringr::str_remove(., "X")
-          return(rs)
-        })
-
-      })
-    )
-
-  invisible(structure(
-    list(stack(data_list$rst_ens_mean), stack(purrr::map(data_list$rst_models, ~ stack(.x)))),
-    class = "cavaR_projections",
-    components = list("raster stack for ensemble mean", "raster stack for individual members")
-  ))
-
-}
 
 
 #' Step two: trends analysis
 #'
 #' Perform linear trends.
-#' @export
-#' @import stringr
-#' @import ggplot2
-#' @import purrr
-#' @import furrr
-#' @import dplyr
-#' @import transformeR
-#' @import rnaturalearth
-#' @import RColorBrewer
-#' @importFrom downscaleR biasCorrection
-#' @importFrom climate4R.indices linearTrend
-#' @importFrom glue glue_collapse
-#' @importFrom raster crop mask stack extent subset flip
 
 #' @param data output of load_data
 #' @param bias.correction logical, whether to perform bias.correction or not

@@ -28,7 +28,8 @@ Imports:
     tidyr,
     climate4R.UDG,
     nlme,
-    terra,
-    ggh4x
+    ggh4x,
+    rgeos
 Depends:
-    loadeR
+    loadeR,
+    magrittr

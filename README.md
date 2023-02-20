@@ -21,13 +21,15 @@ a tidyverse approach.
 ## Installation
 
 If you have already installed most of the climaterR packages, you can
-install cavaR from github:
+install cavaR from GitHub:
 
     library(devtools)
     install_github("Risk-Team/cavaR")
 
 If you are also new to climate4R, install its main packages first. The
-best way is to install all climate4R libraries through conda/mamba
+best way is to install all climate4R libraries through conda/mamba. If
+you want to know more about using conda and environments with R, have a
+look at [this quick tutorial](https://github.com/RSO9192/conda_R).
 
     conda create --name climate4R
     conda activate climate4R
@@ -132,7 +134,7 @@ rsts <- remote.data %>%
   projections(bias.correction = F, season = 1:12)
 ```
 
-    ## 2023-02-20 15:10:09 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
+    ## 2023-02-20 17:00:07 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
 
 ``` r
 # calculating number of days above 45 C
@@ -140,7 +142,7 @@ rsts_thrs <- remote.data %>%
   projections(bias.correction = F, season = 1:12, uppert = 45, consecutive = F)
 ```
 
-    ## 2023-02-20 15:10:15 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 45
+    ## 2023-02-20 17:00:13 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 45
 
 ### Third step: visualize results
 
@@ -153,10 +155,10 @@ rsts %>%
 plotting(plot_titles = "Average tasmax", ensemble=T)
 ```
 
-    ## 2023-02-20 15:10:20
+    ## 2023-02-20 17:00:18
     ## Prepare for plotting
 
-    ## 2023-02-20 15:10:20 Done
+    ## 2023-02-20 17:00:18 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
@@ -165,9 +167,9 @@ rsts %>%
 plotting(plot_titles = "Average tasmax", ensemble=F)
 ```
 
-    ## 2023-02-20 15:10:20
+    ## 2023-02-20 17:00:18
     ## Prepare for plotting
-    ## 2023-02-20 15:10:20 Done
+    ## 2023-02-20 17:00:18 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-5-2.png)<!-- -->
 
@@ -176,9 +178,9 @@ rsts_thrs %>%
 plotting(plot_titles = "N. days", ensemble=F)
 ```
 
-    ## 2023-02-20 15:10:21
+    ## 2023-02-20 17:00:19
     ## Prepare for plotting
 
-    ## 2023-02-20 15:10:21 Done
+    ## 2023-02-20 17:00:19 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->

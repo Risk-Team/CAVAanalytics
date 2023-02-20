@@ -18,14 +18,14 @@ cavaR can be seen as a wrapper of several packages, but the main engine for load
 
 ## Installation
 
-If you have already installed most of the climaterR packages, you can install cavaR from github:
+If you have already installed most of the climaterR packages, you can install cavaR from GitHub:
 
 
 ```
 library(devtools)
 install_github("Risk-Team/cavaR")
 ```
-If you are also new to climate4R, install its main packages first. The best way is to install all climate4R libraries through conda/mamba
+If you are also new to climate4R, install its main packages first. The best way is to install all climate4R libraries through conda/mamba. If you want to know more about using conda and environments with R, have a look at [this quick tutorial](https://github.com/RSO9192/conda_R).
 
 ```
 conda create --name climate4R

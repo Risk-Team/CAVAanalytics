@@ -29,7 +29,8 @@ Imports:
     climate4R.UDG,
     nlme,
     ggh4x,
-    rgeos
+    rgeos,
+    rnaturalearthhires
 Depends:
     loadeR,
     magrittr

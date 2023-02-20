@@ -18,14 +18,37 @@ cavaR can be seen as a wrapper of several packages, but the main engine for load
 
 ## Installation
 
-The development version of cavaR can be installed directly from github with:
+If you have already installed most of the climaterR packages, you can install cavaR from github:
 
 
 ```
 library(devtools)
 install_github("Risk-Team/cavaR")
 ```
+If you are also new to climate4R, install its main packages first. The best way is to install all climate4R libraries through conda/mamba
 
+```
+conda create --name climate4R
+conda activate climate4R
+```
+then
+
+```
+mamba install -y -c conda-forge -c r -c defaults -c santandermetgroup r-climate4r
+mamba install rhumba
+```
+While in your environment, open R in the terminal and type
+
+```
+rhumba::install("r-devtools")
+```
+At this point you can install cavaR as described above, through devtools. 
+
+```
+install.packages("usethis")
+library(devtools)
+install_github("Risk-Team/cavaR")
+```
 if you encounter problems with dependencies, such as loadeR, downscaleR and climate4R.indices, follow the following instructions:
 [loadeR](https://github.com/SantanderMetGroup/loadeR),
 [downscaleR](https://github.com/SantanderMetGroup/downscaleR),

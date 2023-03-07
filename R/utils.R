@@ -117,8 +117,6 @@ make_raster <- function(cl4.object) {
     )
   names(rasters) <-  nms
 
-  raster::crs(rasters) <- sp::CRS("+init=epsg:4326")
-
   return(rasters)
 
 }

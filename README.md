@@ -21,15 +21,33 @@ a tidyverse approach.
 ## Installation
 
 If you have already installed most of the climaterR packages, you can
-install cavaR from GitHub:
+simply install cavaR from GitHub:
 
     library(devtools)
     install_github("Risk-Team/cavaR")
 
-If you are also new to climate4R, install its main packages first. The
-best way is to install all climate4R libraries through conda/mamba. If
-you want to know more about using conda and environments with R, have a
-look at [this quick tutorial](https://github.com/RSO9192/conda_R).
+**If you are also new to climate4R**, install its main packages first.
+You can do so by
+
+    library(devtools)
+    install_github(c("SantanderMetGroup/loadeR.java",
+                     "SantanderMetGroup/climate4R.UDG",
+                     "SantanderMetGroup/loadeR",
+                     "SantanderMetGroup/transformeR",
+                     "SantanderMetGroup/climate4R.indices",
+                     "SantanderMetGroup/downscaleR"))
+
+it is possible that the installation of loadR.java fails. If so, have a
+look at the [loadR main
+page](https://github.com/SantanderMetGroup/loadeR) and the [wiki
+page](https://github.com/SantanderMetGroup/loadeR/wiki/Installation) to
+solve the issue. loadR.java depends on rJava and this installation can
+be troublesome.
+
+It is also possible to install all climate4R libraries through
+conda/mamba. If you want to know more about why you should use conda and
+environments with R, have a look at [this quick
+tutorial](https://github.com/RSO9192/conda_R).
 
     conda create --name climate4R
     conda activate climate4R
@@ -49,14 +67,6 @@ devtools.
     install.packages("usethis")
     library(devtools)
     install_github("Risk-Team/cavaR")
-
-if you encounter problems with dependencies, such as loadeR, downscaleR
-and climate4R.indices, follow the following instructions:
-[loadeR](https://github.com/SantanderMetGroup/loadeR),
-[downscaleR](https://github.com/SantanderMetGroup/downscaleR),
-[climate4R.indices](https://github.com/SantanderMetGroup/climate4R.indices)
-
-A conda environment will follow
 
 ## A framework to work with climate data and other netCDF files
 
@@ -134,7 +144,7 @@ rsts <- remote.data %>%
   projections(bias.correction = F, season = 1:12)
 ```
 
-    ## 2023-02-20 17:00:07 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
+    ## 2023-03-08 11:55:53 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
 
 ``` r
 # calculating number of days above 45 C
@@ -142,7 +152,7 @@ rsts_thrs <- remote.data %>%
   projections(bias.correction = F, season = 1:12, uppert = 45, consecutive = F)
 ```
 
-    ## 2023-02-20 17:00:13 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 45
+    ## 2023-03-08 11:55:58 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 45
 
 ### Third step: visualize results
 
@@ -155,10 +165,10 @@ rsts %>%
 plotting(plot_titles = "Average tasmax", ensemble=T)
 ```
 
-    ## 2023-02-20 17:00:18
+    ## 2023-03-08 11:56:03
     ## Prepare for plotting
 
-    ## 2023-02-20 17:00:18 Done
+    ## 2023-03-08 11:56:03 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
@@ -167,9 +177,9 @@ rsts %>%
 plotting(plot_titles = "Average tasmax", ensemble=F)
 ```
 
-    ## 2023-02-20 17:00:18
+    ## 2023-03-08 11:56:03
     ## Prepare for plotting
-    ## 2023-02-20 17:00:18 Done
+    ## 2023-03-08 11:56:03 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-5-2.png)<!-- -->
 
@@ -178,9 +188,9 @@ rsts_thrs %>%
 plotting(plot_titles = "N. days", ensemble=F)
 ```
 
-    ## 2023-02-20 17:00:19
+    ## 2023-03-08 11:56:04
     ## Prepare for plotting
 
-    ## 2023-02-20 17:00:19 Done
+    ## 2023-03-08 11:56:04 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->

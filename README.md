@@ -4,17 +4,14 @@ cavaR
 
 ## Introduction
 
-If you had hard times working with several netCDF files and perform
-meaningful analysis, especially related to climate change, then this
-package might be what you are looking for.
-
-cavaR is the package version of
-[CAVA-Analytics](https://github.com/Risk-Team/CAVA-Analytics). It allows
-easy loading of multiple climate models, both from local data or
-remotely, through
-[climate4RUDG](https://github.com/SantanderMetGroup/climate4R.UDG).
-cavaR can be seen as a wrapper of several packages, but the main engine
-for loading and processing climate models is the [climate4R
+**cavaR** is a package that offers a consistent framework to load,
+analyse and visualize multi-model ensembles. Particularly, cavaR is
+being developed with climate models in mind, but it can be used for any
+model, like impact models. Additionally, **cavaR** provides an access
+point for CORDEX-CORE simulations at 25 Km resolution already
+interpolated plus the W5E5 dataset. cavaR can be seen as a wrapper of
+several packages, but the main engine for loading and processing climate
+models is the [climate4R
 framework](https://github.com/SantanderMetGroup/climate4R), applied with
 a tidyverse approach.
 
@@ -79,7 +76,7 @@ work with the output of the load_data with other **cavaR** functions.
 |:-------------------------------------------------------------------------------------------------------------------:|
 |                                                  *cavaR framework*                                                  |
 
-### First step: load the data (locally or from remote repository)
+### First step: load the data (**locally or from remote repository**)
 
 #### Loading data: load_data function
 
@@ -144,7 +141,7 @@ rsts <- remote.data %>%
   projections(bias.correction = F, season = 1:12)
 ```
 
-    ## 2023-03-08 11:55:53 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
+    ## 2023-03-29 16:10:16 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
 
 ``` r
 # calculating number of days above 45 C
@@ -152,7 +149,7 @@ rsts_thrs <- remote.data %>%
   projections(bias.correction = F, season = 1:12, uppert = 45, consecutive = F)
 ```
 
-    ## 2023-03-08 11:55:58 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 45
+    ## 2023-03-29 16:10:21 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 45
 
 ### Third step: visualize results
 
@@ -165,10 +162,10 @@ rsts %>%
 plotting(plot_titles = "Average tasmax", ensemble=T)
 ```
 
-    ## 2023-03-08 11:56:03
+    ## 2023-03-29 16:10:26
     ## Prepare for plotting
 
-    ## 2023-03-08 11:56:03 Done
+    ## 2023-03-29 16:10:26 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
@@ -177,9 +174,9 @@ rsts %>%
 plotting(plot_titles = "Average tasmax", ensemble=F)
 ```
 
-    ## 2023-03-08 11:56:03
+    ## 2023-03-29 16:10:26
     ## Prepare for plotting
-    ## 2023-03-08 11:56:03 Done
+    ## 2023-03-29 16:10:26 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-5-2.png)<!-- -->
 
@@ -188,9 +185,9 @@ rsts_thrs %>%
 plotting(plot_titles = "N. days", ensemble=F)
 ```
 
-    ## 2023-03-08 11:56:04
+    ## 2023-03-29 16:10:27
     ## Prepare for plotting
 
-    ## 2023-03-08 11:56:04 Done
+    ## 2023-03-29 16:10:27 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->

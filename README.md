@@ -47,7 +47,7 @@ environments with R, have a look at [this quick
 tutorial](https://github.com/RSO9192/conda_R). To install everything you need to work with cavaR, download the cavaR repository, then extract the files and run from the conda_env folder:
 
    ``` 
-   conda env create -f cavaR.yaml
+    conda env create -f cavaR.yaml
     conda activate cavaR
     R
     devtools::install_github("Risk-Team/cavaR")

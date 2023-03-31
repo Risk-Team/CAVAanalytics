@@ -44,27 +44,11 @@ be troublesome.
 It is also possible to install all climate4R libraries through
 conda/mamba. If you want to know more about why you should use conda and
 environments with R, have a look at [this quick
-tutorial](https://github.com/RSO9192/conda_R).
+tutorial](https://github.com/RSO9192/conda_R). Download the cavaR repository, then extract the files and run from the conda_env folder:
 
-    conda create --name climate4R
-    conda activate climate4R
+   conda env create -f cavaR.yaml
 
-then
-
-    mamba install -y -c conda-forge -c r -c defaults -c santandermetgroup r-climate4r
-    mamba install rhumba
-
-While in your environment, open R in the terminal and type
-
-    rhumba::install("r-devtools")
-
-At this point you can install cavaR as described above, through
-devtools.
-
-    install.packages("usethis")
-    library(devtools)
-    install_github("Risk-Team/cavaR")
-
+  
 ## A framework to work with climate data and other netCDF files
 
 cavaR makes it easier to work with a large number of climate or impact

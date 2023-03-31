@@ -46,10 +46,11 @@ conda/mamba. If you want to know more about why you should use conda and
 environments with R, have a look at [this quick
 tutorial](https://github.com/RSO9192/conda_R). To install everything you need to work with cavaR, download the cavaR repository, then extract the files and run from the conda_env folder:
 
-   `conda env create -f cavaR.yaml
+   ```conda env create -f cavaR.yaml
     conda activate cavaR
     R
-    devtools::install_github("Risk-Team/cavaR")`
+    devtools::install_github("Risk-Team/cavaR")
+    ```
 
   
 ## A framework to work with climate data and other netCDF files

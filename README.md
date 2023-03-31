@@ -49,7 +49,7 @@ tutorial](https://github.com/RSO9192/conda_R). To install everything you need to
    ``` 
     conda env create -f cavaR.yaml
     conda activate cavaR
-    R
+    R # open R in terminal
     devtools::install_github("ropensci/rnaturalearthhires")
     devtools::install_github("Risk-Team/cavaR")
   ```

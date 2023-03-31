@@ -50,7 +50,7 @@ tutorial](https://github.com/RSO9192/conda_R). To install everything you need to
     conda activate cavaR
     R
     devtools::install_github("Risk-Team/cavaR")
-    ```
+  ```
 
   
 ## A framework to work with climate data and other netCDF files

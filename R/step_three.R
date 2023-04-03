@@ -33,7 +33,7 @@ plotting.cavaR_projections <- function(rst, palette=NULL, legend_range=NULL, plo
 
   if (isTRUE(ensemble)) {
     message(Sys.time(), "\n", paste0("Visualizing ensemble ", stat))
-  } else {message(Sys.time(), "\n", "Visualizing individual members")}
+  } else {message(Sys.time(), "\n", "Visualizing individual members, argument stat is ignored")}
 
   message(Sys.time(), "\n", "Prepare for plotting")
 

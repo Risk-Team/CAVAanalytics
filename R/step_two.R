@@ -138,11 +138,23 @@ perform_calculations <- function(datasets, mod.numb, var, bias.correction, upper
         ),
         # ensemble mean
         rst_ens_mean = purrr::map2(forcing, models_agg_y, function(x, y) {
-          y <- suppressMessages(transformeR::aggregateGrid(y, aggr.mem = list(FUN = "mean", na.rm = TRUE)))
+          ens <- suppressMessages(transformeR::aggregateGrid(y, aggr.mem = list(FUN = "mean", na.rm = TRUE)))
           array_mean <-
-            apply(y$Data, c(2, 3), mean, na.rm = TRUE) # climatology
-          y$Data <- array_mean
-          rs <- make_raster(y) %>%
+            apply(ens$Data, c(2, 3), mean, na.rm = TRUE) # climatology
+          ens$Data <- array_mean
+          rs <- make_raster(ens) %>%
+            raster::crop(., country_shp, snap = "out") %>%
+            raster::mask(., country_shp)
+          names(rs) <- paste0(x, "_", names(rs)) %>%  stringr::str_remove(., "X")
+          return(rs)
+        }),
+        # ensemble SD
+        rst_ens_sd = purrr::map2(forcing, models_agg_y, function(x, y) {
+          ens <- suppressMessages(transformeR::aggregateGrid(y, aggr.mem = list(FUN = "sd", na.rm = TRUE)))
+          array_mean <-
+            apply(ens$Data, c(2, 3), mean, na.rm = TRUE) # climatology
+          ens$Data <- array_mean
+          rs <- make_raster(ens) %>%
             raster::crop(., country_shp, snap = "out") %>%
             raster::mask(., country_shp)
           names(rs) <- paste0(x, "_", names(rs)) %>%  stringr::str_remove(., "X")
@@ -151,7 +163,7 @@ perform_calculations <- function(datasets, mod.numb, var, bias.correction, upper
         # individual models
         rst_models = purrr::map2(forcing, models_agg_y, function(x, y) {
           rs_list <- purrr::map(1:dim(y$Data)[[1]], function(ens) {
-            array_mean <-     array_mean <- if (length(y$Dates$start)==1) apply(y$Data[ens,,,], c(1, 2), mean, na.rm = TRUE) else apply(y$Data[ens,,,], c(2, 3), mean, na.rm = TRUE) # climatology per member adjusting by array dimension
+            array_mean <- if (length(y$Dates$start)==1) apply(y$Data[ens,,,], c(1, 2), mean, na.rm = TRUE) else apply(y$Data[ens,,,], c(2, 3), mean, na.rm = TRUE) # climatology per member adjusting by array dimension
             y$Data <- array_mean
             rs <- make_raster(y)%>%
               raster::crop(., country_shp, snap = "out") %>%
@@ -165,9 +177,9 @@ perform_calculations <- function(datasets, mod.numb, var, bias.correction, upper
       )
 
     invisible(structure(
-      list(raster::stack(data_list$rst_ens_mean), raster::stack(purrr::map(data_list$rst_models, ~ raster::stack(.x)))),
+      list(raster::stack(data_list$rst_ens_mean), raster::stack(data_list$rst_ens_sd), raster::stack(purrr::map(data_list$rst_models, ~ raster::stack(.x)))),
       class = "cavaR_projections",
-      components = list("raster stack for ensemble mean", "raster stack for individual members")
+      components = list("raster stack for ensemble mean", "raster stack for ensemble sd", "raster stack for individual members")
     ))
 
   }

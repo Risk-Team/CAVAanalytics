@@ -17,21 +17,29 @@
 #' plotting(plot_titles="hurs", ensemble=T)
 
 
-plotting <- function(rst, palette, legend.range, plot_titles, ensemble) {
+plotting <- function(rst, palette, legend.range, plot_titles, ensemble, ...) {
 UseMethod("plotting")
 }
 
 #' @export
 
-plotting.cavaR_projections <- function(rst, palette=NULL, legend_range=NULL, plot_titles, ensemble) {
+plotting.cavaR_projections <- function(rst, palette=NULL, legend_range=NULL, plot_titles, ensemble, stat="mean") {
 
+  # checking requirements
   stopifnot(is.logical(ensemble))
+  match.arg(stat, choices = c("mean", "sd"))
+
+  # messages
+
+  if (isTRUE(ensemble)) {
+    message(Sys.time(), "\n", paste0("Visualizing ensemble ", stat))
+  } else {message(Sys.time(), "\n", "Visualizing individual members")}
 
   message(Sys.time(), "\n", "Prepare for plotting")
 
   # retrieve the right raster stack based on the ensemble argument
 
-  rst <- if (isTRUE(ensemble)) rst[[1]] else rst[[2]]
+  rst <- if (isTRUE(ensemble) & stat=="mean") rst[[1]] else if (isTRUE(ensemble) & stat=="sd") rst[[2]] else rst[[3]]
 
   # Set default colors for legend
   colors <- if (is.null(palette)) c("blue", "cyan", "green", "yellow", "orange", "red", "black") else palette

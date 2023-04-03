@@ -101,7 +101,7 @@ load_data <-
         } else {
           as(extent(min(xlim), max(xlim), min(ylim), max(ylim)), "SpatialPolygons")
         }
-        raster::crs(country_shp) = sp::CRS("+init=epsg:4326")
+
         xlim <-
           c(round(country_shp@bbox[1, 1] - buffer),
             round(country_shp@bbox[1, 2] + buffer))

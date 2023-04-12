@@ -64,6 +64,7 @@ install.packages("usethis")
 library(devtools)
 install_github("Risk-Team/cavaR")
 ```
+A docker container will follow
 
 ## A framework to work with climate data and other netCDF files
 
@@ -105,7 +106,7 @@ You simply need to get familiar with the output of load_data.
 ```{r, message=FALSE}
 
 
-remote.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1995, years.proj=2050:2052,
+remote.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1995:2000, years.proj=2050:2055,
               path.to.data = "CORDEX-CORE", path.to.obs="W5E5", domain="AFR-22")
 
 ```
@@ -115,14 +116,17 @@ remote.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1995, 
 
 The second step is the most dynamic step of the cavaR framework. 
 
-After loading the data, regardless of whether the files are climate models or impact models, you now have a tidy tibble with list column and you can apply all of the tidyverse functions. One of the **cavaR** functions is called **projections**. As the name gives away, this function is used to calculate indexes and other statistics on future data. It is also possible to perform bias-correction if observed data has been loaded (e.g W5E5). 
-In this example we will use one of the several functions available in cavaR (at the moment, only projections). \n
+After loading the data, regardless of whether the files are climate models or impact models, you now have a tidy tibble with list column and you can apply all of the tidyverse functions. 
+
+#### Projections
+One of the **cavaR** functions is called **projections**. As the name gives away, this function is used to calculate indexes and other statistics on future data. It is also possible to perform bias-correction if observed data has been loaded (e.g W5E5). 
+In this example we will use one of the several functions available in cavaR (at the moment, only projections an dclimate_change_signal). \n
 
 type ?projections to better understand what analysis can be performed with this function. It returns a RasterStack
 
 ```{r, warning=FALSE}
 library(magrittr)
-# operations are performed for each model separately and then an ensemble mean is made
+# operations are performed for each model separately and then an ensemble mean is made. It is possible to specify thresholds with the uppert and lowert arguments
 rsts <- remote.data %>%  
   projections(bias.correction = F, season = 1:12)
 
@@ -133,9 +137,20 @@ rsts_thrs <- remote.data %>%
 
 ```
 
+#### Climate_change_signal
+It is also possible to look at the climate change signal (delta from historical period). Similarly to the projections function, threshold can be specified with the uppert and lowert arguments. 
+
+```{r, warning=FALSE}
+library(magrittr)
+
+rsts_ccs <- remote.data %>%  
+  climate_change_signal(., season = 1:12)
+
+```
+
 ### Third step: visualize results
 
-After performing the required analysis, it is sufficient to call the plotting function to visualize the results. The results can be visualized for each simulation or as an ensemble. 
+After performing the required analysis, it is sufficient to call the plotting function to visualize the results. The results can be visualized for each simulation or as an ensemble. It is also possible to decide whether to visualize the ensemble means or standard deviation.
 
 
 ```{r}
@@ -147,6 +162,8 @@ plotting(plot_titles = "Average tasmax", ensemble=T, stat="mean") # default is m
 rsts %>%
 plotting(plot_titles = "Average tasmax", ensemble=F)
 
+rsts_ccs %>%
+plotting(plot_titles = "Climate change signal", ensemble=T, stat="mean", palette = rev(heat.colors(4))) # default is mean but it can also take SD
 
 
 ```

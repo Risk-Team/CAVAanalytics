@@ -65,6 +65,8 @@ devtools.
     library(devtools)
     install_github("Risk-Team/cavaR")
 
+A docker container will follow
+
 ## A framework to work with climate data and other netCDF files
 
 cavaR makes it easier to work with a large number of climate or impact
@@ -114,7 +116,7 @@ load_data.
 simulations. For example:
 
 ``` r
-remote.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1995, years.proj=2050:2052,
+remote.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1995:2000, years.proj=2050:2055,
               path.to.data = "CORDEX-CORE", path.to.obs="W5E5", domain="AFR-22")
 ```
 
@@ -124,24 +126,28 @@ The second step is the most dynamic step of the cavaR framework.
 
 After loading the data, regardless of whether the files are climate
 models or impact models, you now have a tidy tibble with list column and
-you can apply all of the tidyverse functions. One of the **cavaR**
-functions is called **projections**. As the name gives away, this
-function is used to calculate indexes and other statistics on future
-data. It is also possible to perform bias-correction if observed data
-has been loaded (e.g W5E5). In this example we will use one of the
-several functions available in cavaR (at the moment, only projections).
+you can apply all of the tidyverse functions.
+
+#### Projections
+
+One of the **cavaR** functions is called **projections**. As the name
+gives away, this function is used to calculate indexes and other
+statistics on future data. It is also possible to perform
+bias-correction if observed data has been loaded (e.g W5E5). In this
+example we will use one of the several functions available in cavaR (at
+the moment, only projections an dclimate_change_signal).
 
 type ?projections to better understand what analysis can be performed
 with this function. It returns a RasterStack
 
 ``` r
 library(magrittr)
-# operations are performed for each model separately and then an ensemble mean is made
+# operations are performed for each model separately and then an ensemble mean is made. It is possible to specify thresholds with the uppert and lowert arguments
 rsts <- remote.data %>%  
   projections(bias.correction = F, season = 1:12)
 ```
 
-    ## 2023-04-12 08:22:12 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
+    ## 2023-04-12 17:01:00 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
 
 ``` r
 # calculating number of days above 45 C
@@ -149,55 +155,86 @@ rsts_thrs <- remote.data %>%
   projections(bias.correction = F, season = 1:12, uppert = 45, consecutive = F)
 ```
 
-    ## 2023-04-12 08:22:18 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 45
+    ## 2023-04-12 17:01:09 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 45
+
+#### Climate_change_signal
+
+It is also possible to look at the climate change signal (delta from
+historical period). Similarly to the projections function, threshold can
+be specified with the uppert and lowert arguments.
+
+``` r
+library(magrittr)
+
+rsts_ccs <- remote.data %>%  
+  climate_change_signal(., season = 1:12)
+```
+
+    ## 2023-04-12 17:01:18 climate change signal, season 1-2-3-4-5-6-7-8-9-10-11-12. Climate change signal for mean tasmax
 
 ### Third step: visualize results
 
 After performing the required analysis, it is sufficient to call the
 plotting function to visualize the results. The results can be
-visualized for each simulation or as an ensemble.
+visualized for each simulation or as an ensemble. It is also possible to
+decide whether to visualize the ensemble means or standard deviation.
 
 ``` r
 rsts %>%
 plotting(plot_titles = "Average tasmax", ensemble=T, stat="mean") # default is mean but it can also take SD
 ```
 
-    ## 2023-04-12 08:22:23
+    ## 2023-04-12 17:01:28
     ## Visualizing ensemble mean
 
-    ## 2023-04-12 08:22:23
+    ## 2023-04-12 17:01:28
     ## Prepare for plotting
 
-    ## 2023-04-12 08:22:23 Done
+    ## 2023-04-12 17:01:28 Done
 
-![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 ``` r
 rsts %>%
 plotting(plot_titles = "Average tasmax", ensemble=F)
 ```
 
-    ## 2023-04-12 08:22:23
+    ## 2023-04-12 17:01:28
     ## Visualizing individual members, argument stat is ignored
 
-    ## 2023-04-12 08:22:23
+    ## 2023-04-12 17:01:28
     ## Prepare for plotting
 
-    ## 2023-04-12 08:22:23 Done
+    ## 2023-04-12 17:01:28 Done
 
-![](README_files/figure-gfm/unnamed-chunk-5-2.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-6-2.png)<!-- -->
+
+``` r
+rsts_ccs %>%
+plotting(plot_titles = "Climate change signal", ensemble=T, stat="mean", palette = rev(heat.colors(4))) # default is mean but it can also take SD
+```
+
+    ## 2023-04-12 17:01:29
+    ## Visualizing ensemble mean
+
+    ## 2023-04-12 17:01:29
+    ## Prepare for plotting
+
+    ## 2023-04-12 17:01:29 Done
+
+![](README_files/figure-gfm/unnamed-chunk-6-3.png)<!-- -->
 
 ``` r
 rsts_thrs %>%
 plotting(plot_titles = "N. days", ensemble=F)
 ```
 
-    ## 2023-04-12 08:22:24
+    ## 2023-04-12 17:01:30
     ## Visualizing individual members, argument stat is ignored
 
-    ## 2023-04-12 08:22:24
+    ## 2023-04-12 17:01:30
     ## Prepare for plotting
 
-    ## 2023-04-12 08:22:24 Done
+    ## 2023-04-12 17:01:30 Done
 
-![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->

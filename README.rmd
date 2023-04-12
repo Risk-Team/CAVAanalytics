@@ -1,7 +1,7 @@
 ---
 title: "cavaR"
 output: github_document
-date: '2022-11-01'
+date: '2023-04-01'
 ---
 
 ```{r setup, include=FALSE}
@@ -98,7 +98,7 @@ load_data will now create a multi-model ensemble (temporally consistent) which i
 You simply need to get familiar with the output of load_data. 
           
 
-**To load CORDEX-CORE data stored remotely**, set path.to.data to "CORDEX-CORE" and specify the domain. This will load CORDEX-CORE simulations from ESGF node. For example:
+**To load CORDEX-CORE data stored remotely**, set path.to.data to "CORDEX-CORE" and specify the domain. This will load CORDEX-CORE simulations. For example:
 
 
 
@@ -142,7 +142,7 @@ After performing the required analysis, it is sufficient to call the plotting fu
 
 
 rsts %>%
-plotting(plot_titles = "Average tasmax", ensemble=T)
+plotting(plot_titles = "Average tasmax", ensemble=T, stat="mean") # default is mean but it can also take SD
 
 rsts %>%
 plotting(plot_titles = "Average tasmax", ensemble=F)

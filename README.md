@@ -1,6 +1,6 @@
 cavaR
 ================
-2022-11-01
+2023-04-01
 
 ## Introduction
 
@@ -41,20 +41,30 @@ page](https://github.com/SantanderMetGroup/loadeR/wiki/Installation) to
 solve the issue. loadR.java depends on rJava and this installation can
 be troublesome.
 
-It is also possible to install all climate4R libraries, R and cavaR dependencies with
+It is also possible to install all climate4R libraries through
 conda/mamba. If you want to know more about why you should use conda and
 environments with R, have a look at [this quick
-tutorial](https://github.com/RSO9192/conda_R). To install everything you need to work with cavaR, download the cavaR repository, then extract the files and run from the conda_env folder:
+tutorial](https://github.com/RSO9192/conda_R).
 
-   ``` 
-    conda env create -f cavaR.yaml
-    conda activate cavaR
-    R # open R in terminal
-    devtools::install_github("ropensci/rnaturalearthhires")
-    devtools::install_github("Risk-Team/cavaR")
-  ```
+    conda create --name climate4R
+    conda activate climate4R
 
-  
+then
+
+    mamba install -y -c conda-forge -c r -c defaults -c santandermetgroup r-climate4r
+    mamba install rhumba
+
+While in your environment, open R in the terminal and type
+
+    rhumba::install("r-devtools")
+
+At this point you can install cavaR as described above, through
+devtools.
+
+    install.packages("usethis")
+    library(devtools)
+    install_github("Risk-Team/cavaR")
+
 ## A framework to work with climate data and other netCDF files
 
 cavaR makes it easier to work with a large number of climate or impact
@@ -101,7 +111,7 @@ load_data.
 
 **To load CORDEX-CORE data stored remotely**, set path.to.data to
 “CORDEX-CORE” and specify the domain. This will load CORDEX-CORE
-simulations from ESGF node. For example:
+simulations. For example:
 
 ``` r
 remote.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1995, years.proj=2050:2052,
@@ -131,7 +141,7 @@ rsts <- remote.data %>%
   projections(bias.correction = F, season = 1:12)
 ```
 
-    ## 2023-03-29 16:10:16 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
+    ## 2023-04-12 08:22:12 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
 
 ``` r
 # calculating number of days above 45 C
@@ -139,7 +149,7 @@ rsts_thrs <- remote.data %>%
   projections(bias.correction = F, season = 1:12, uppert = 45, consecutive = F)
 ```
 
-    ## 2023-03-29 16:10:21 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 45
+    ## 2023-04-12 08:22:18 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 45
 
 ### Third step: visualize results
 
@@ -149,13 +159,16 @@ visualized for each simulation or as an ensemble.
 
 ``` r
 rsts %>%
-plotting(plot_titles = "Average tasmax", ensemble=T)
+plotting(plot_titles = "Average tasmax", ensemble=T, stat="mean") # default is mean but it can also take SD
 ```
 
-    ## 2023-03-29 16:10:26
+    ## 2023-04-12 08:22:23
+    ## Visualizing ensemble mean
+
+    ## 2023-04-12 08:22:23
     ## Prepare for plotting
 
-    ## 2023-03-29 16:10:26 Done
+    ## 2023-04-12 08:22:23 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
@@ -164,9 +177,13 @@ rsts %>%
 plotting(plot_titles = "Average tasmax", ensemble=F)
 ```
 
-    ## 2023-03-29 16:10:26
+    ## 2023-04-12 08:22:23
+    ## Visualizing individual members, argument stat is ignored
+
+    ## 2023-04-12 08:22:23
     ## Prepare for plotting
-    ## 2023-03-29 16:10:26 Done
+
+    ## 2023-04-12 08:22:23 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-5-2.png)<!-- -->
 
@@ -175,9 +192,12 @@ rsts_thrs %>%
 plotting(plot_titles = "N. days", ensemble=F)
 ```
 
-    ## 2023-03-29 16:10:27
+    ## 2023-04-12 08:22:24
+    ## Visualizing individual members, argument stat is ignored
+
+    ## 2023-04-12 08:22:24
     ## Prepare for plotting
 
-    ## 2023-03-29 16:10:27 Done
+    ## 2023-04-12 08:22:24 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->

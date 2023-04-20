@@ -17,16 +17,17 @@
 #' plotting(plot_titles="hurs", ensemble=T)
 
 
-plotting <- function(rst, palette, legend.range, plot_titles, ensemble, ...) {
+plotting <- function(rst, palette, legend.range, plot_titles, ensemble, bins, n.bins, ...) {
 UseMethod("plotting")
 }
 
 #' @export
 
-plotting.cavaR_projections <- function(rst, palette=NULL, legend_range=NULL, plot_titles, ensemble, stat="mean") {
+plotting.cavaR_projections <- function(rst, palette=NULL, legend_range=NULL, plot_titles, ensemble, bins=FALSE, n.bins=NULL, stat="mean") {
 
   # checking requirements
   stopifnot(is.logical(ensemble))
+  stopifnot(is.logical(bins))
   match.arg(stat, choices = c("mean", "sd"))
 
   # messages
@@ -79,13 +80,28 @@ plotting.cavaR_projections <- function(rst, palette=NULL, legend_range=NULL, plo
     }
 
   p <- ggplot() +
-    scale_fill_gradientn(
-      colors = colors,
-      limits = legend_range,
-      na.value = "transparent",
-      n.breaks = 10,
-      guide=guide_colourbar(ticks.colour = "black",
-                            ticks.linewidth = 1, title.position="top", title.hjust=0.5)) +
+    {
+      if(!bins) {
+        scale_fill_gradientn(
+          colors = colors,
+          limits = legend_range,
+          na.value = "transparent",
+          n.breaks = 10,
+          guide=guide_colourbar(ticks.colour = "black",
+                                ticks.linewidth = 1, title.position="top", title.hjust=0.5))
+      } else {
+
+        scale_fill_stepsn(
+          colors = colors,
+          limits = legend_range,
+          na.value = "transparent",
+          n.breaks = ifelse(is.null(n.bins), 10, n.bins),
+          guide=guide_colourbar(ticks.colour = "black",
+                                ticks.linewidth = 1, title.position="top", title.hjust=0.5))
+
+      }
+
+    } +
     geom_sf(fill = 'antiquewhite1',
             color = "black",
             data = countries) +
@@ -135,10 +151,11 @@ plotting.cavaR_projections <- function(rst, palette=NULL, legend_range=NULL, plo
 
 #' @export
 
-plotting.cavaR_ccs <- function(rst, palette=NULL, legend_range=NULL, plot_titles, ensemble, stat="mean") {
+plotting.cavaR_ccs <- function(rst, palette=NULL, legend_range=NULL, plot_titles, ensemble, bins=FALSE, n.bins=NULL, stat="mean") {
 
   # checking requirements
   stopifnot(is.logical(ensemble))
+  stopifnot(is.logical(bins))
   match.arg(stat, choices = c("mean", "sd"))
 
   # messages
@@ -192,13 +209,27 @@ plotting.cavaR_ccs <- function(rst, palette=NULL, legend_range=NULL, plot_titles
     }
 
   p <- ggplot() +
-    scale_fill_gradientn(
-      colors = colors,
-      limits = legend_range,
-      na.value = "transparent",
-      n.breaks = 10,
-      guide=guide_colourbar(ticks.colour = "black",
-                            ticks.linewidth = 1, title.position="top", title.hjust=0.5)) +
+    {
+      if(!bins) {
+
+        scale_fill_gradientn(
+          colors = colors,
+          limits = legend_range,
+          na.value = "transparent",
+          n.breaks = 10,
+          guide=guide_colourbar(ticks.colour = "black",
+                                ticks.linewidth = 1, title.position="top", title.hjust=0.5))
+      } else {
+
+        scale_fill_stepsn(
+          colors = colors,
+          limits = legend_range,
+          na.value = "transparent",
+          n.breaks = ifelse(is.null(n.bins), 10, n.bins),
+          guide=guide_colourbar(ticks.colour = "black",
+                                ticks.linewidth = 1, title.position="top", title.hjust=0.5))
+      }
+    } +
     geom_sf(fill = 'antiquewhite1',
             color = "black",
             data = countries) +

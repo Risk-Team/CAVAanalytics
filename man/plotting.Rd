@@ -4,7 +4,7 @@
 \alias{plotting}
 \title{Step three: Visualization}
 \usage{
-plotting(rst, palette, legend.range, plot_titles, ensemble, ...)
+plotting(rst, palette, legend.range, plot_titles, ensemble, bins, n.bins, ...)
 }
 \arguments{
 \item{rst}{output of one of cavaR functions, such as projections. rst is of class RasterStack}

@@ -466,12 +466,15 @@ climate_change_signal <- function(data,
           # individual models
           rst_models = purrr::map2(forcing, models_agg_y, function(x, y) {
             rs_list <- purrr::map(1:dim(y$Data)[[1]], function(ens) {
+
               array_mean <-
                 if (length(y$Dates$start) == 1)
                   apply(y$Data[ens, , , ], c(1, 2), mean, na.rm = TRUE)
               else
                 apply(y$Data[ens, , , ], c(2, 3), mean, na.rm = TRUE) # climatology per member adjusting by array dimension
-              y$Data <- array_mean
+
+               y$Data <- array_mean
+
               rs <- make_raster(y) %>%
                 raster::crop(., country_shp, snap = "out") %>%
                 raster::mask(., country_shp)

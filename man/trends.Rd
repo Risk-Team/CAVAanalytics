@@ -47,7 +47,7 @@ list with raster stacks
 Perform linear trends.
 }
 \examples{
-fpath <- system.file("extdata/", package="cavaR")
+fpath <- system.file("extdata/", package="CAVAanalytics")
 exmp <- load_data(country = "Moldova", variable="hurs", years.hist=2000, years.proj=2010, path.to.data = fpath) \%>\%
 projections(., season = 1:12)
 

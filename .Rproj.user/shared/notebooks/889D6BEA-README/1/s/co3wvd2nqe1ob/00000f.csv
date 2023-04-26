@@ -1,6 +1,0 @@
-"0","library(cavaR)"
-"0","exmp1 <- load_data(country = ""Somalia"", variable=""hurs"", years.hist=2000, years.projections=2010,"
-"0","              path.to.rcps = ""~/Databases/CORDEX-CORE/AFR-22"", path.obs=""~/Databases/W5E5"")"
-"2","Error in load_data(country = ""Somalia"", variable = ""hurs"", years.hist = 2000,  : 
-  unused arguments (years.projections = 2010, path.obs = ""~/Databases/W5E5"")
-"

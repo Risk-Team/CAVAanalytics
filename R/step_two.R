@@ -36,8 +36,8 @@ projections <-
                lowert,
                consecutive,
                duration) {
-        if (class(data) != "cavaR_list")
-          stop("The input data is not the output of cavaR load_data")
+        if (class(data) != "CAVAanalytics_list")
+          stop("The input data is not the output of CAVAanalytics load_data")
         stopifnot(is.logical(consecutive), is.logical(bias.correction))
         match.arg(duration, c("max", "total"))
         match.arg(scaling.type, c("additive", "multiplicative"))
@@ -267,7 +267,7 @@ projections <-
               data_list$rst_models, ~ raster::stack(.x)
             ))
           ),
-          class = "cavaR_projections",
+          class = "CAVAanalytics_projections",
           components = list(
             "raster stack for ensemble mean",
             "raster stack for ensemble sd",
@@ -354,8 +354,8 @@ climate_change_signal <- function(data,
              lowert,
              consecutive,
              duration) {
-      if (class(data) != "cavaR_list")
-        stop("The input data is not the output of cavaR load_data")
+      if (class(data) != "CAVAanalytics_list")
+        stop("The input data is not the output of CAVAanalytics load_data")
       stopifnot(is.logical(consecutive))
       match.arg(duration, c("max", "total"))
       if (!is.null(lowert) &
@@ -519,7 +519,7 @@ climate_change_signal <- function(data,
             data_list$rst_models_ccs, ~ raster::stack(.x)
           ))
         ),
-        class = "cavaR_ccs",
+        class = "CAVAanalytics_ccs",
         components = list(
           "raster stack for ccs mean",
           "raster stack for ccs sd",
@@ -590,7 +590,7 @@ climate_change_signal <- function(data,
 #' @param historical logical, whether to visualize trends for the historical period or projections
 #' @return list with raster stacks
 #' @examples
-#' fpath <- system.file("extdata/", package="cavaR")
+#' fpath <- system.file("extdata/", package="CAVAanalytics")
 #' exmp <- load_data(country = "Moldova", variable="hurs", years.hist=2000, years.proj=2010, path.to.data = fpath) %>%
 #' projections(., season = 1:12)
 #'
@@ -620,8 +620,8 @@ trends = function(data,
              lowert,
              duration,
              scaling.type) {
-      if (class(data) != "cavaR_list")
-        stop("The input data is not the output of cavaR load_data")
+      if (class(data) != "CAVAanalytics_list")
+        stop("The input data is not the output of CAVAanalytics load_data")
       stopifnot(
         is.logical(consecutive),
         is.logical(bias.correction),

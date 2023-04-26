@@ -214,7 +214,7 @@ load_data <-
 
     invisible(structure(
       list(models.df2, result$country_shp, as.character(models)),
-      class = "cavaR_list",
+      class = "CAVAanalytics_list",
       components = list("data.frame with list columns", "bbox", "vector of model names")
     ))
 

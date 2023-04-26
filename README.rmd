@@ -1,5 +1,5 @@
 ---
-title: "cavaR"
+title: "CAVAanalytics"
 output: github_document
 date: '2023-04-01'
 ---
@@ -11,18 +11,18 @@ knitr::include_graphics
 
 ## Introduction
 
-**cavaR** is a package that offers a consistent framework to load, analyse and visualize multi-model ensembles. Particularly, cavaR is being developed with climate models in mind, but it can be used for any model, like impact models. 
-Additionally, **cavaR** provides an access point for CORDEX-CORE simulations at 25 Km resolution already interpolated plus the W5E5 dataset.
-cavaR can be seen as a wrapper of several packages, but the main engine for loading and processing climate models is the  [climate4R framework](https://github.com/SantanderMetGroup/climate4R), applied with a tidyverse approach. 
+**CAVAanalytics** is a package that offers a consistent framework to load, analyse and visualize multi-model ensembles. Particularly, CAVAanalytics is being developed with climate models in mind, but it can be used for any model, like impact models. 
+Additionally, **CAVAanalytics** provides an access point for CORDEX-CORE simulations at 25 Km resolution already interpolated plus the W5E5 dataset.
+CAVAanalytics can be seen as a wrapper of several packages, but the main engine for loading and processing climate models is the  [climate4R framework](https://github.com/SantanderMetGroup/climate4R), applied with a tidyverse approach. 
 
 ## Installation
 
-If you have already installed most of the climaterR packages, you can simply install cavaR from GitHub:
+If you have already installed most of the climaterR packages, you can simply install CAVAanalytics from GitHub:
 
 
 ```
 library(devtools)
-install_github("Risk-Team/cavaR")
+install_github("Risk-Team/CAVAanalytics")
 ```
 **If you are also new to climate4R**, install its main packages first. You can do so by 
 
@@ -57,31 +57,31 @@ While in your environment, open R in the terminal and type
 ```
 rhumba::install("r-devtools")
 ```
-At this point you can install cavaR as described above, through devtools. 
+At this point you can install CAVAanalytics as described above, through devtools. 
 
 ```
 install.packages("usethis")
 library(devtools)
-install_github("Risk-Team/cavaR")
+install_github("Risk-Team/CAVAanalytics")
 ```
 A docker container will follow
 
 ## A framework to work with climate data and other netCDF files
 
-cavaR makes it easier to work with a large number of climate or impact model simulations (netCDF files) and perform meaningful analysis. The idea behind cavaR is to first load the data (multiple models) and then work with the output of the load_data with other **cavaR** functions. 
+CAVAanalytics makes it easier to work with a large number of climate or impact model simulations (netCDF files) and perform meaningful analysis. The idea behind CAVAanalytics is to first load the data (multiple models) and then work with the output of the load_data with other **CAVAanalytics** functions. 
 
 | ![Framework](https://user-images.githubusercontent.com/40058235/199256415-ed32c42b-e2f8-48e0-b4fe-558de6612038.png) |
 |:--:| 
-| *cavaR framework* |
+| *CAVAanalytics framework* |
 
 ### First step: load the data (**locally or from remote repository**)
 #### Loading data: load_data function
 
-**cavaR** simplifies and standardize how to load multiple climate models/simulations or other netcdf files (e.g impact models from ISIMIP). To **load local data**, specify the path to your directories, containing, for example, several RCPs and a folder with historical runs. 
+**CAVAanalytics** simplifies and standardize how to load multiple climate models/simulations or other netcdf files (e.g impact models from ISIMIP). To **load local data**, specify the path to your directories, containing, for example, several RCPs and a folder with historical runs. 
 
 
 ```{r, message=F}
-library(cavaR)
+library(CAVAanalytics)
 
 local.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1980:2000, years.proj=2050:2080,
               path.to.data = "~/Databases/CORDEX-CORE/AFR-22", path.to.obs="~/Databases/W5E5")
@@ -114,13 +114,13 @@ remote.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1995:2
 
 ### Second step: perform analysis
 
-The second step is the most dynamic step of the cavaR framework. 
+The second step is the most dynamic step of the CAVAanalytics framework. 
 
 After loading the data, regardless of whether the files are climate models or impact models, you now have a tidy tibble with list column and you can apply all of the tidyverse functions. 
 
 #### Projections
-One of the **cavaR** functions is called **projections**. As the name gives away, this function is used to calculate indexes and other statistics on future data. It is also possible to perform bias-correction if observed data has been loaded (e.g W5E5). 
-In this example we will use one of the several functions available in cavaR (at the moment, only projections an dclimate_change_signal). \n
+One of the **CAVAanalytics** functions is called **projections**. As the name gives away, this function is used to calculate indexes and other statistics on future data. It is also possible to perform bias-correction if observed data has been loaded (e.g W5E5). 
+In this example we will use one of the several functions available in CAVAanalytics (at the moment, only projections an dclimate_change_signal). \n
 
 type ?projections to better understand what analysis can be performed with this function. It returns a RasterStack
 

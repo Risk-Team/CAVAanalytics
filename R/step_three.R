@@ -1,10 +1,10 @@
 #' Step three: Visualization
 #'
-#' Automatically plot results from cavaR step two
+#' Automatically plot results from CAVAanalytics step two
 #' @export
 
 #' @import ggplot2
-#' @param rst output of one of cavaR functions, such as projections. rst is of class RasterStack
+#' @param rst output of one of CAVAanalytics functions, such as projections. rst is of class RasterStack
 #' @param palette charachter. Color Palette
 #' @param legend.range  numeric. Fix legend limits
 #' @param plot_titles character. Title of the plot legend
@@ -23,7 +23,7 @@ UseMethod("plotting")
 
 #' @export
 
-plotting.cavaR_projections <- function(rst, palette=NULL, legend_range=NULL, plot_titles, ensemble, bins=FALSE, n.bins=NULL, stat="mean") {
+plotting.CAVAanalytics_projections <- function(rst, palette=NULL, legend_range=NULL, plot_titles, ensemble, bins=FALSE, n.bins=NULL, stat="mean") {
 
   # checking requirements
   stopifnot(is.logical(ensemble))
@@ -151,7 +151,7 @@ plotting.cavaR_projections <- function(rst, palette=NULL, legend_range=NULL, plo
 
 #' @export
 
-plotting.cavaR_ccs <- function(rst, palette=NULL, legend_range=NULL, plot_titles, ensemble, bins=FALSE, n.bins=NULL, stat="mean") {
+plotting.CAVAanalytics_ccs <- function(rst, palette=NULL, legend_range=NULL, plot_titles, ensemble, bins=FALSE, n.bins=NULL, stat="mean") {
 
   # checking requirements
   stopifnot(is.logical(ensemble))

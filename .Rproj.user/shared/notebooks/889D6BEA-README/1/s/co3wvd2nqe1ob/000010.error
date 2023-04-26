@@ -1,1 +1,0 @@
-{"frames":[],"message":"Error in load_data(country = \"Somalia\", variable = \"hurs\", years.hist = 2000,  : \n  unused arguments (years.projections = 2010, path.obs = \"~/Databases/W5E5\")\n"}

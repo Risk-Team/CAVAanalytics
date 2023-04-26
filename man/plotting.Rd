@@ -7,7 +7,7 @@
 plotting(rst, palette, legend.range, plot_titles, ensemble, bins, n.bins, ...)
 }
 \arguments{
-\item{rst}{output of one of cavaR functions, such as projections. rst is of class RasterStack}
+\item{rst}{output of one of CAVAanalytics functions, such as projections. rst is of class RasterStack}
 
 \item{palette}{charachter. Color Palette}
 
@@ -21,7 +21,7 @@ plotting(rst, palette, legend.range, plot_titles, ensemble, bins, n.bins, ...)
 ggplot object
 }
 \description{
-Automatically plot results from cavaR step two
+Automatically plot results from CAVAanalytics step two
 }
 \examples{
 load_data(country = "Somalia", variable="tas", years.hist=2000, years.proj=2010,

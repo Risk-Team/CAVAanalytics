@@ -5,27 +5,27 @@ CAVAanalytics
 ## Introduction: What is CAVA?
 
 CAVA (Climate and Agriculture Risk Visualization and Assessment) is a
-framework and approach to the analysis of state-of-the-art climate data
-(and more). [CAVA is made of a Platform
+framework and approach to the analysis and visualization of
+state-of-the-art climate data. [CAVA is made of a Platform
 (GUI)](https://fao-cava.predictia.es/auth), which is freely accessible
-and satisfy the needs of standard users and of a R package
-(CAVAanalytics) which allows remote access to climate data and several
-functions for more advance climate data analysis.
+and satisfy the needs of most standard users, and a R package
+(**CAVAanalytics**) which allows remote access to climate data and
+several functions for more advance climate data analysis.
 
 CAVAanalytics can be used locally (installation through GitHub),
 remotely (registered users can access the University of Cantabria
 JupyterHub with 180 Gb RAM) and through a Docker image.
 
-| ![framework](https://user-images.githubusercontent.com/40058235/234544688-af8c5a1d-588e-4145-813f-feb0ea2db916.png) |
-|:-------------------------------------------------------------------------------------------------------------------:|
-|                                                       *CAVA*                                                        |
+|                                                                                        ![framework](https://user-images.githubusercontent.com/40058235/234544688-af8c5a1d-588e-4145-813f-feb0ea2db916.png)                                                                                         |
+|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+| *CAVA framework. CAVA can be used through a graphic user interface (CAVA Platform) or through the CAVAanalytics R package. The package can be used locally (GitHub installation), remotely (University of Cantabria JupyterHub) or locally but through a Docker image to solve dependencies issue* |
 
 ## CAVAanalytics
 
 **CAVAanalytics** is a package that offers a consistent framework to
 load, analyse and visualize multi-model ensembles. **CAVAanalytics**
 provides an access point for CORDEX-CORE simulations at 25 Km resolution
-already interpolated plus the W5E5 and ERA5 dataset. CAVAanalytics can
+already interpolated plus the W5E5 and ERA5 datasets. CAVAanalytics can
 be seen as a wrapper of several packages, but the main engine for
 loading and processing climate models is the [climate4R
 framework](https://github.com/SantanderMetGroup/climate4R), applied with
@@ -39,7 +39,7 @@ available.
 
 Based on how you want to use CAVAanalytics, there are three options.
 
-### Locally
+### Locally from GitHub
 
 If you have already installed most of the climaterR packages, you can
 simply install CAVAanalytics from GitHub:
@@ -71,13 +71,14 @@ be troublesome.
 You can request access to the University of Cantabria JupyterHub, where
 CAVAanalytics is already installed. This will give you access to
 computational resources and you would be able to perform your climate
-analysis using a Jupyter Notebook environment. If you would liek to
-acess these resources, you are welcome to contact
+analysis using a Jupyter Notebook environment. If you would like to
+access these resources, you are welcome to contact
 <riccardo.soldan@fao.org> or <Hideki.Kanamaru@fao.org>
 
-### Docker
+### Locally through Docker
 
-A docker image will be made available soon
+A docker image will be made available soon, containing all the required
+software to immediately start working with CAVAanalytics.
 
 ## Using CAVAanalytics
 
@@ -162,7 +163,7 @@ rsts <- remote.data %>%
   projections(bias.correction = F, season = 1:12)
 ```
 
-    ## 2023-04-26 11:26:12 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
+    ## 2023-04-26 11:59:07 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
 
 ``` r
 # calculating number of days above 45 C
@@ -170,7 +171,7 @@ rsts_thrs <- remote.data %>%
   projections(bias.correction = F, season = 1:12, uppert = 45, consecutive = F)
 ```
 
-    ## 2023-04-26 11:26:21 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 45
+    ## 2023-04-26 11:59:16 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 45
 
 #### Climate_change_signal
 
@@ -185,7 +186,7 @@ rsts_ccs <- remote.data %>%
   climate_change_signal(., season = 1:12)
 ```
 
-    ## 2023-04-26 11:26:30 climate change signal, season 1-2-3-4-5-6-7-8-9-10-11-12. Climate change signal for mean tasmax
+    ## 2023-04-26 11:59:24 climate change signal, season 1-2-3-4-5-6-7-8-9-10-11-12. Climate change signal for mean tasmax
 
 ### Third step: visualize results
 
@@ -199,13 +200,13 @@ rsts %>%
 plotting(plot_titles = "Average tasmax", ensemble=T, stat="mean") # default is mean but it can also take SD
 ```
 
-    ## 2023-04-26 11:26:39
+    ## 2023-04-26 11:59:34
     ## Visualizing ensemble mean
 
-    ## 2023-04-26 11:26:39
+    ## 2023-04-26 11:59:34
     ## Prepare for plotting
 
-    ## 2023-04-26 11:26:40 Done
+    ## 2023-04-26 11:59:34 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
@@ -214,28 +215,28 @@ rsts %>%
 plotting(plot_titles = "Average tasmax", ensemble=F)
 ```
 
-    ## 2023-04-26 11:26:40
+    ## 2023-04-26 11:59:34
     ## Visualizing individual members, argument stat is ignored
 
-    ## 2023-04-26 11:26:40
+    ## 2023-04-26 11:59:34
     ## Prepare for plotting
 
-    ## 2023-04-26 11:26:40 Done
+    ## 2023-04-26 11:59:34 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-6-2.png)<!-- -->
 
 ``` r
 rsts_ccs %>%
-plotting(plot_titles = "Climate change signal", ensemble=T, stat="mean", palette = rev(heat.colors(4))) # default is mean but it can also take SD
+plotting(plot_titles = "Climate change signal", ensemble=T, stat="mean", palette = c("yellow", "orange", "red", "brown")) # default is mean but it can also take SD
 ```
 
-    ## 2023-04-26 11:26:41
+    ## 2023-04-26 11:59:35
     ## Visualizing ensemble mean
 
-    ## 2023-04-26 11:26:41
+    ## 2023-04-26 11:59:35
     ## Prepare for plotting
 
-    ## 2023-04-26 11:26:41 Done
+    ## 2023-04-26 11:59:35 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-6-3.png)<!-- -->
 
@@ -244,12 +245,12 @@ rsts_thrs %>%
 plotting(plot_titles = "N. days", ensemble=F)
 ```
 
-    ## 2023-04-26 11:26:41
+    ## 2023-04-26 11:59:36
     ## Visualizing individual members, argument stat is ignored
 
-    ## 2023-04-26 11:26:41
+    ## 2023-04-26 11:59:36
     ## Prepare for plotting
 
-    ## 2023-04-26 11:26:41 Done
+    ## 2023-04-26 11:59:36 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->

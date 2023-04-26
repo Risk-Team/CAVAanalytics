@@ -16,7 +16,11 @@ CAVAanalytics can be used locally (installation through GitHub),
 remotely (registered users can access the University of Cantabria
 JupyterHub with 180 Gb RAM) and through a Docker image.
 
-![framework](https://user-images.githubusercontent.com/40058235/234544688-af8c5a1d-588e-4145-813f-feb0ea2db916.png)
+| ![framework](https://user-images.githubusercontent.com/40058235/234544688-af8c5a1d-588e-4145-813f-feb0ea2db916.png) |
+|:-------------------------------------------------------------------------------------------------------------------:|
+|                                                       *CAVA*                                                        |
+
+## CAVAanalytics
 
 **CAVAanalytics** is a package that offers a consistent framework to
 load, analyse and visualize multi-model ensembles. **CAVAanalytics**
@@ -85,7 +89,7 @@ models) and then work with the output of the load_data with other
 
 | ![Framework](https://user-images.githubusercontent.com/40058235/199256415-ed32c42b-e2f8-48e0-b4fe-558de6612038.png) |
 |:-------------------------------------------------------------------------------------------------------------------:|
-|                                             *CAVAanalytics steps for *                                              |
+|                                                *CAVAanalytics steps*                                                |
 
 ### First step: load the data (**Remote repository**)
 
@@ -158,7 +162,7 @@ rsts <- remote.data %>%
   projections(bias.correction = F, season = 1:12)
 ```
 
-    ## 2023-04-26 10:32:51 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
+    ## 2023-04-26 11:26:12 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
 
 ``` r
 # calculating number of days above 45 C
@@ -166,7 +170,7 @@ rsts_thrs <- remote.data %>%
   projections(bias.correction = F, season = 1:12, uppert = 45, consecutive = F)
 ```
 
-    ## 2023-04-26 10:33:00 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 45
+    ## 2023-04-26 11:26:21 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 45
 
 #### Climate_change_signal
 
@@ -181,7 +185,7 @@ rsts_ccs <- remote.data %>%
   climate_change_signal(., season = 1:12)
 ```
 
-    ## 2023-04-26 10:33:09 climate change signal, season 1-2-3-4-5-6-7-8-9-10-11-12. Climate change signal for mean tasmax
+    ## 2023-04-26 11:26:30 climate change signal, season 1-2-3-4-5-6-7-8-9-10-11-12. Climate change signal for mean tasmax
 
 ### Third step: visualize results
 
@@ -195,13 +199,13 @@ rsts %>%
 plotting(plot_titles = "Average tasmax", ensemble=T, stat="mean") # default is mean but it can also take SD
 ```
 
-    ## 2023-04-26 10:33:18
+    ## 2023-04-26 11:26:39
     ## Visualizing ensemble mean
 
-    ## 2023-04-26 10:33:18
+    ## 2023-04-26 11:26:39
     ## Prepare for plotting
 
-    ## 2023-04-26 10:33:18 Done
+    ## 2023-04-26 11:26:40 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
@@ -210,13 +214,13 @@ rsts %>%
 plotting(plot_titles = "Average tasmax", ensemble=F)
 ```
 
-    ## 2023-04-26 10:33:19
+    ## 2023-04-26 11:26:40
     ## Visualizing individual members, argument stat is ignored
 
-    ## 2023-04-26 10:33:19
+    ## 2023-04-26 11:26:40
     ## Prepare for plotting
 
-    ## 2023-04-26 10:33:19 Done
+    ## 2023-04-26 11:26:40 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-6-2.png)<!-- -->
 
@@ -225,13 +229,13 @@ rsts_ccs %>%
 plotting(plot_titles = "Climate change signal", ensemble=T, stat="mean", palette = rev(heat.colors(4))) # default is mean but it can also take SD
 ```
 
-    ## 2023-04-26 10:33:20
+    ## 2023-04-26 11:26:41
     ## Visualizing ensemble mean
 
-    ## 2023-04-26 10:33:20
+    ## 2023-04-26 11:26:41
     ## Prepare for plotting
 
-    ## 2023-04-26 10:33:20 Done
+    ## 2023-04-26 11:26:41 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-6-3.png)<!-- -->
 
@@ -240,12 +244,12 @@ rsts_thrs %>%
 plotting(plot_titles = "N. days", ensemble=F)
 ```
 
-    ## 2023-04-26 10:33:20
+    ## 2023-04-26 11:26:41
     ## Visualizing individual members, argument stat is ignored
 
-    ## 2023-04-26 10:33:20
+    ## 2023-04-26 11:26:41
     ## Prepare for plotting
 
-    ## 2023-04-26 10:33:20 Done
+    ## 2023-04-26 11:26:41 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->

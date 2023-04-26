@@ -15,7 +15,10 @@ CAVA (Climate and Agriculture Risk Visualization and Assessment) is a framework 
 
 CAVAanalytics can be used locally (installation through GitHub), remotely (registered users can access the University of Cantabria JupyterHub with 180 Gb RAM) and through a Docker image. 
 
-![Caption for the picture.](../framework.png)
+| ![framework](https://user-images.githubusercontent.com/40058235/234544688-af8c5a1d-588e-4145-813f-feb0ea2db916.png) | 
+|:--:| 
+| *CAVA* |
+
 ## CAVAanalytics
 
 **CAVAanalytics** is a package that offers a consistent framework to load, analyse and visualize multi-model ensembles. **CAVAanalytics** provides an access point for CORDEX-CORE simulations at 25 Km resolution already interpolated plus the W5E5 and ERA5 dataset.
@@ -65,7 +68,7 @@ CAVAanalytics makes it easier to work with a large number of climate or impact m
 
 | ![Framework](https://user-images.githubusercontent.com/40058235/199256415-ed32c42b-e2f8-48e0-b4fe-558de6612038.png) |
 |:--:| 
-| *CAVAanalytics steps for * |
+| *CAVAanalytics steps* |
 
 ### First step: load the data (**Remote repository**)
 #### Loading data: load_data function

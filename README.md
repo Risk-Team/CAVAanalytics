@@ -16,7 +16,7 @@ CAVAanalytics can be used locally (installation through GitHub),
 remotely (registered users can access the University of Cantabria
 JupyterHub with 180 Gb RAM) and through a Docker image.
 
-![Caption for the picture.](../framework.png) \## CAVAanalytics
+![framework](https://user-images.githubusercontent.com/40058235/234543758-bfc8db79-c934-489f-8088-d7d340ed0cba.png)
 
 **CAVAanalytics** is a package that offers a consistent framework to
 load, analyse and visualize multi-model ensembles. **CAVAanalytics**

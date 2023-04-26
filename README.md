@@ -15,8 +15,8 @@ functions for more advance climate data analysis.
 CAVAanalytics can be used locally (installation through GitHub),
 remotely (registered users can access the University of Cantabria
 JupyterHub with 180 Gb RAM) and through a Docker image.
-![framework](https://user-images.githubusercontent.com/40058235/234544287-a4507ff5-1600-4ceb-949e-acbd6d58df2d.png)
 
+![framework](https://user-images.githubusercontent.com/40058235/234544688-af8c5a1d-588e-4145-813f-feb0ea2db916.png)
 
 **CAVAanalytics** is a package that offers a consistent framework to
 load, analyse and visualize multi-model ensembles. **CAVAanalytics**

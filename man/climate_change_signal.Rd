@@ -10,7 +10,9 @@ climate_change_signal(
   lowert = NULL,
   season,
   consecutive = F,
-  duration = "max"
+  duration = "max",
+  bias.correction = F,
+  scaling.type = "additive"
 )
 }
 \arguments{
@@ -24,7 +26,11 @@ climate_change_signal(
 
 \item{consecutive}{logical, to use in conjunction with lowert or uppert}
 
-\item{duration}{character, either "max" or "total".}
+\item{duration}{character, either "max" or "total"}
+
+\item{bias.correction}{logical}
+
+\item{scaling.type}{character, default to "additive". Indicates whether to use multiplicative or additive approach for bias correction}
 }
 \value{
 list with raster stacks

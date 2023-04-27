@@ -141,7 +141,7 @@ projections <-
               message(
                 paste(
                   Sys.time(),
-                  " Performing bias correction with the scaling",
+                  " Performing monthly bias correction with the scaling",
                   " method, scaling type ",
                   scaling.type,
                   " for each model separately and then calculating the ensemble mean. Season",
@@ -150,36 +150,24 @@ projections <-
               )
               dplyr::mutate(.,
                             models_mbrs = furrr::future_map(models_mbrs, function(x) {
-                              if (var == "pr") {
                                 bc <-
                                   suppressMessages(
                                     downscaleR::biasCorrection(
                                       y = obs[[1]],
                                       x = dplyr::filter(datasets, forcing == "historical")$models_mbrs[[1]],
                                       newdata = x,
-                                      precipitation = TRUE,
+                                      precipitation = ifelse(var=="pr",TRUE,FALSE),
                                       method = "scaling",
-                                      scaling.type = "multiplicative"
+                                      scaling.type = if (var=="pr") "multiplicative" else scaling.type,
+                                      window=c(30,30)
                                     )
                                   )
-                              } else {
-                                bc <-
-                                  suppressMessages(
-                                    downscaleR::biasCorrection(
-                                      y = obs[[1]],
-                                      x = dplyr::filter(datasets, forcing == "historical")$models_mbrs[[1]],
-                                      newdata = x,
-                                      precipitation = FALSE,
-                                      method = "scaling",
-                                      scaling.type = scaling.type
-                                    )
-                                  )
-                              }
-                              out <-
-                                transformeR::intersectGrid.time(x, bc, which.return = 2)
-                              out$Dates$start <- x$Dates$start
-                              out$Dates$end <-  x$Dates$end
-                              return(out)
+
+                              mod_temp <-
+                              transformeR::intersectGrid.time(x, bc, which.return = 2)
+                              mod_temp$Dates$start <- x$Dates$start
+                              mod_temp$Dates$end <-  x$Dates$end
+                              return(mod_temp)
                             }))
             } else
               .
@@ -331,7 +319,9 @@ projections <-
 #' @param lowert numeric of length=1, lower threshold
 #' @param season Numerical, seasons to select. For example, 1:12
 #' @param consecutive logical, to use in conjunction with lowert or uppert
-#' @param duration character, either "max" or "total".
+#' @param duration character, either "max" or "total"
+#' @param bias.correction logical
+#' @param scaling.type character, default to "additive". Indicates whether to use multiplicative or additive approach for bias correction
 #' @return list with raster stacks
 #' @examples
 #' load_data(country = "Somalia", variable="tas", years.hist=2000, years.proj=2010,
@@ -344,7 +334,9 @@ climate_change_signal <- function(data,
                                   lowert = NULL,
                                   season,
                                   consecutive = F,
-                                  duration = "max") {
+                                  duration = "max",
+                                  bias.correction=F,
+                                  scaling.type="additive") {
   # Intermediate functions --------------------------------------------------
 
   # check inputs requirement
@@ -353,14 +345,23 @@ climate_change_signal <- function(data,
              uppert,
              lowert,
              consecutive,
-             duration) {
+             duration,
+             bias.correction) {
       if (class(data) != "CAVAanalytics_list")
         stop("The input data is not the output of CAVAanalytics load_data")
       stopifnot(is.logical(consecutive))
       match.arg(duration, c("max", "total"))
+      if (!any(stringr::str_detect(colnames(data[[1]]), "obs")) &
+          isTRUE(bias.correction)) {
+        warning("Bias correction cannot be performed, no observational dataset found. Set as F")
+        bias.correction = F
+      }
       if (!is.null(lowert) &
           !is.null(uppert))
-        stop("select only one threshold")
+        stop("select only one threshold argument")
+      if ((is.null(lowert) &
+          is.null(uppert)) & bias.correction)
+        stop("Bias correction can change the results of the climate change signal only for the calculation of indicators. Specify lowert or uppert aguments to use this option")
       if (consecutive &
           is.null(uppert) &
           is.null(lowert))
@@ -375,7 +376,8 @@ climate_change_signal <- function(data,
              uppert,
              lowert,
              consecutive,
-             duration) {
+             duration,
+             bias.correction) {
       if (is.null(uppert) & is.null(lowert)) {
         paste0("Climate change signal for ",
                ifelse(var == "pr", "total ", "mean "),
@@ -389,7 +391,7 @@ climate_change_signal <- function(data,
             !is.null(lowert),
             paste0(" below threshold of ", lowert),
             paste0(" above threshold of ", uppert)
-          )
+          ),  ifelse(bias.correction, " after bias-correction", "")
         )
       }
       else if ((!is.null(uppert) |
@@ -400,7 +402,7 @@ climate_change_signal <- function(data,
             !is.null(lowert),
             paste0("below ", lowert),
             paste0("above ", uppert)
-          )
+          ),  ifelse(bias.correction, " after bias-correction", "")
         )
       }
       else if ((!is.null(uppert) |
@@ -412,7 +414,7 @@ climate_change_signal <- function(data,
             !is.null(lowert),
             paste0("below threshold of ", lowert),
             paste0("above threshold of ", uppert)
-          )
+          ),  ifelse(bias.correction, " after bias-correction", "")
         )
       }
     }
@@ -425,7 +427,6 @@ climate_change_signal <- function(data,
 
   # function used to perform the calculations
 
-
   perform_calculations <-
     function(datasets,
              mod.numb,
@@ -434,8 +435,67 @@ climate_change_signal <- function(data,
              lowert,
              consecutive,
              duration,
-             country_shp) {
+             country_shp,
+             bias.correction,
+             scaling.type) {
+
       data_list <- datasets %>%
+        {
+          if (bias.correction) {
+            message(
+              paste(
+                Sys.time(),
+                " Performing bias correction with the scaling",
+                " method, scaling type ",
+                scaling.type,
+                " for each model separately and then calculating the ensemble mean. Season",
+                glue::glue_collapse(season, "-")
+              )
+            )
+            dplyr::mutate(.,
+                          models_mbrs = furrr::future_map2(models_mbrs, forcing, function(mod, forc) {
+                          if (forc=="historical") {
+                            bc <-
+                              suppressMessages(
+                                downscaleR::biasCorrection(
+                                  y = obs[[1]],
+                                  x = mod,
+                                  precipitation = ifelse(var=="pr",TRUE,FALSE),
+                                  method = "scaling",
+                                  scaling.type = if (var=="pr") "multiplicative" else scaling.type,
+                                  window=c(30,30)
+                                )
+                              )
+                            mod_temp <-
+                            transformeR::intersectGrid.time(mod, bc, which.return = 2)
+                            mod_temp$Dates$start <- mod$Dates$start
+                            mod_temp$Dates$end <-  mod$Dates$end
+                            return(mod_temp)
+
+                          } else {
+                              bc <-
+                                suppressMessages(
+                                  downscaleR::biasCorrection(
+                                    y = obs[[1]],
+                                    x = dplyr::filter(datasets, forcing == "historical")$models_mbrs[[1]],
+                                    newdata = mod,
+                                    precipitation = ifelse(var=="pr",TRUE,FALSE),
+                                    method = "scaling",
+                                    scaling.type = if (var=="pr") "multiplicative" else scaling.type,
+                                    window=c(30,30)
+                                  )
+                                )
+                              mod_temp <-
+                              transformeR::intersectGrid.time(mod, bc, which.return = 2)
+                              mod_temp$Dates$start <- mod$Dates$start
+                              mod_temp$Dates$end <-  mod$Dates$end
+                              return(mod_temp)
+                          }
+
+                          }))
+          } else
+            .
+        }  %>%
         # computing annual aggregation. if threshold is specified, first apply threshold
         dplyr::mutate(
           models_agg_y = furrr::future_map(models_mbrs, function(x)
@@ -532,7 +592,7 @@ climate_change_signal <- function(data,
   # beginning of code -------------------------------------------------------
 
   # check input requirements
-  check_inputs(data,uppert, lowert, consecutive, duration)
+  check_inputs(data,uppert, lowert, consecutive, duration, bias.correction)
 
   # retrieve information
   mod.numb <- dim(data[[1]]$models_mbrs[[1]]$Data) [1]
@@ -542,7 +602,7 @@ climate_change_signal <- function(data,
 
   # create message
   mes <-
-    create_message(var, uppert, lowert, consecutive, duration)
+    create_message(var, uppert, lowert, consecutive, duration, bias.correction)
 
   # set parallel processing
   future::plan(future::multisession, workers = 2)
@@ -566,7 +626,9 @@ climate_change_signal <- function(data,
                          lowert,
                          consecutive,
                          duration,
-                         country_shp)
+                         country_shp,
+                         bias.correction,
+                         scaling.type)
 
   # return results
   return(data_list)

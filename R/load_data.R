@@ -99,7 +99,7 @@ load_data <-
         country_shp = if (!is.null(country)) {
          rnaturalearth::ne_states(country = country)
         } else {
-          as(extent(min(xlim), max(xlim), min(ylim), max(ylim)), "SpatialPolygons")
+          as(raster::extent(min(xlim), max(xlim), min(ylim), max(ylim)), "SpatialPolygons")
         }
 
         xlim <-

@@ -17,13 +17,13 @@
 #' plotting(plot_titles="hurs", ensemble=T)
 
 
-plotting <- function(rst, palette, legend.range, plot_titles, ensemble, bins, n.bins, ...) {
+plotting <- function(rst, palette, legend.range, plot_titles, ensemble, bins, n.bins, alpha, ...) {
 UseMethod("plotting")
 }
 
 #' @export
 
-plotting.CAVAanalytics_projections <- function(rst, palette=NULL, legend_range=NULL, plot_titles, ensemble, bins=FALSE, n.bins=NULL, stat="mean") {
+plotting.CAVAanalytics_projections <- function(rst, palette=NULL, legend_range=NULL, plot_titles, ensemble, bins=FALSE, n.bins=NULL,alpha=NA, stat="mean") {
 
   # checking requirements
   stopifnot(is.logical(ensemble))
@@ -84,7 +84,7 @@ plotting.CAVAanalytics_projections <- function(rst, palette=NULL, legend_range=N
             color = "black",
             data = countries) +
     ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
-                data = rs_df) +
+                data = rs_df, alpha=alpha) +
     {
       if(!bins) {
         ggplot2::scale_fill_gradientn(
@@ -108,15 +108,15 @@ plotting.CAVAanalytics_projections <- function(rst, palette=NULL, legend_range=N
 
     }+
     ggplot2::coord_sf(
-      xlim = c(range(rs_df$x)[[1]] - 2, range(rs_df$x)[[2]] + 2),
-      ylim = c(range(rs_df$y)[[1]] - 2, range(rs_df$y)[[2]] + 2),
+      xlim = c(range(rs_df$x)[[1]] - 1, range(rs_df$x)[[2]] + 1),
+      ylim = c(range(rs_df$y)[[1]] - 1, range(rs_df$y)[[2]] + 1),
       expand = F,
       ndiscr = 500
     ) +
     {
       if(ensemble) {
 
-        ggplot2::facet_grid(scenario ~ time_frame )
+        ggplot2::facet_grid(time_frame ~ scenario )
       } else {
 
         ggh4x::facet_nested(scenario ~ time_frame   + member)
@@ -150,7 +150,7 @@ plotting.CAVAanalytics_projections <- function(rst, palette=NULL, legend_range=N
 
 #' @export
 
-plotting.CAVAanalytics_ccs <- function(rst, palette=NULL, legend_range=NULL, plot_titles, ensemble, bins=FALSE, n.bins=NULL, stat="mean") {
+plotting.CAVAanalytics_ccs <- function(rst, palette=NULL, legend_range=NULL, plot_titles, ensemble, bins=FALSE, n.bins=NULL, alpha=NA, stat="mean") {
 
   # checking requirements
   stopifnot(is.logical(ensemble))
@@ -235,15 +235,15 @@ plotting.CAVAanalytics_ccs <- function(rst, palette=NULL, legend_range=NULL, plo
       }
     } +
     ggplot2::coord_sf(
-      xlim = c(range(rs_df$x)[[1]] - 2, range(rs_df$x)[[2]] + 2),
-      ylim = c(range(rs_df$y)[[1]] - 2, range(rs_df$y)[[2]] + 2),
+      xlim = c(range(rs_df$x)[[1]] - 1, range(rs_df$x)[[2]] + 1),
+      ylim = c(range(rs_df$y)[[1]] - 1, range(rs_df$y)[[2]] + 1),
       expand = F,
       ndiscr = 500
     ) +
     {
       if(ensemble) {
 
-        ggplot2::facet_grid(scenario ~ time_frame )
+        ggplot2::facet_grid(time_frame ~ scenario )
       } else {
 
         ggh4x::facet_nested(scenario ~ time_frame   + member)
@@ -278,7 +278,7 @@ plotting.CAVAanalytics_ccs <- function(rst, palette=NULL, legend_range=NULL, plo
 
 #' @export
 
-plotting.CAVAanalytics_trends <- function(rst, palette=NULL, legend_range=NULL, plot_titles, ensemble, bins=FALSE, n.bins=NULL, spatial_average) {
+plotting.CAVAanalytics_trends <- function(rst, palette=NULL, legend_range=NULL, plot_titles, ensemble, bins=FALSE, n.bins=NULL,alpha=NA, spatial_average) {
 
   # checking requirements
   stopifnot(is.logical(ensemble))
@@ -363,7 +363,7 @@ plotting.CAVAanalytics_trends <- function(rst, palette=NULL, legend_range=NULL, 
                      color = "black",
                      data = countries) +
     ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
-                         data = rs_df[[1]]) +
+                         data = rs_df[[1]],  alpha=alpha) +
     {
       if(!bins) {
 
@@ -393,15 +393,15 @@ plotting.CAVAanalytics_trends <- function(rst, palette=NULL, legend_range=NULL, 
       ggplot2::aes(x, y)
     ) +
     ggplot2::coord_sf(
-      xlim = c(range(rs_df[[2]]$x)[[1]] - 2, range(rs_df[[2]]$x)[[2]] + 2),
-      ylim = c(range(rs_df[[2]]$y)[[1]] - 2, range(rs_df[[2]]$y)[[2]] + 2),
+      xlim = c(range(rs_df[[2]]$x)[[1]] - 1, range(rs_df[[2]]$x)[[2]] + 1),
+      ylim = c(range(rs_df[[2]]$y)[[1]] - 1, range(rs_df[[2]]$y)[[2]] + 1),
       expand = F,
       ndiscr = 500
     ) +
     {
       if(ensemble) {
 
-        ggplot2::facet_grid(scenario ~ time_frame )
+        ggplot2::facet_grid(time_frame ~scenario  )
       } else {
 
         ggh4x::facet_nested(scenario ~ time_frame   + member)

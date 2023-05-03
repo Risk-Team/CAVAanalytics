@@ -153,7 +153,7 @@ projections <-
                 )
               )
               dplyr::mutate(.,
-                            models_mbrs = furrr::future_map(models_mbrs, function(x) {
+                            models_mbrs = purrr::map(models_mbrs, function(x) {
                                 bc <-
                                   suppressMessages(
                                     downscaleR::biasCorrection(
@@ -461,7 +461,7 @@ climate_change_signal <- function(data,
               )
             )
             dplyr::mutate(.,
-                          models_mbrs = furrr::future_map2(models_mbrs, forcing, function(mod, forc) {
+                          models_mbrs = purrr::map2(models_mbrs, forcing, function(mod, forc) {
                           if (forc=="historical") {
                             bc <-
                               suppressMessages(
@@ -829,7 +829,7 @@ trends = function(data,
             )
           )
           dplyr::mutate(.,
-                        models_mbrs = furrr::future_map(models_mbrs, function(x) {
+                        models_mbrs = purrr::map(models_mbrs, function(x) {
                           bc <-
                             suppressMessages(downscaleR::biasCorrection(
                               y = obs[[1]],

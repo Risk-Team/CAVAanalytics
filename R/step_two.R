@@ -148,7 +148,7 @@ projections <-
                   " Performing monthly bias correction with the scaling",
                   " method, scaling type ",
                   scaling.type,
-                  ", for each model and month separately. This can takea while. Season",
+                  ", for each model and month separately. This can take a while. Season",
                   glue::glue_collapse(season, "-")
                 )
               )

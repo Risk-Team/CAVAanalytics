@@ -16,80 +16,13 @@ common_dates <- function(data) {
   return(transformeR::bindGrid(data.filt, dimension = "member"))
 }
 
-
-sign.prop <- function(array3d) {
-  message("first dimension needs to be model member")
-
-  if (length(dim(cl4.object$Data)) != 3)
-    stop(
-      "Your data needs to be a 3d array, with first dimension being model member. Check dimension"
-    )
-  find.sign = function(x) {
-    signs = c(length(x[x < 0]) / length(x),
-              length(x[x == 0]) / length(x),
-              length(x[x > 0]) / length(x))
-    names(signs) = c(-1, 0, 1)
-    signs
-  }
-
-  #apply the find.sign function to the array
-  array1_sign = apply(array3d, c(2, 3), find.sign)
-
-  #####
-  #create a function to find out which sign is the highest proportion, if there are ties, return NA
-  find.most.sign = function(x) {
-    if (length(x[x == max(x)]) == 1) {
-      as.numeric(names(x[x == max(x)])) * max(x) #use this line if interested in sign of change with most agreement and proportion of agreement
-    } else{
-      0
-    }
-  }
-
-  #apply the find.most.sign function to the array
-  array1_most_sign = apply(array1_sign, c(2, 3), find.most.sign)
-
-  return(array1_most_sign)
-
-}
-
-
-find.agreement = function(x, threshold) {
-  #calculate proportion of models predicting each sign of change (negative(-1), no change(0), positive(+1))
-  sign.proportion = c(length(x[x < 0]) / length(x),
-                      length(x[x == 0]) / length(x),
-                      length(x[x > 0]) / length(x))
-  names(sign.proportion) = c(-1, 0, 1)
-  #compare the set threshold to the maximum proportion of models agreeing on any one sign of change
-  #if the max proportion is higher than threshold, return 1 (meaning there is agreement in signs among model)
-  #otherwise return 0 (no agreement meeting the set threshold)
-  if (max(sign.proportion) > threshold) {
-    return(1)
-  } else{
-    return(0)
-  }
-}
-
-#' Model agreement
-#'
-#' function to find model members sign agreement.
-#'
-#' @param array3d 3d array in which first dimension is model member, usually C4R$Data. This can be obtained as a result of
-#' bindGrid(data, dimension = "member"). Temporal dimension needs to be removed through another function
-#' @param threshold numeric (0.5-1). Percentage of model agreement required
-#' @return array with 0 (no model agreement) or 1 (model agreement), based on threshold
-
-
-agreement = function(array3d, threshold) {
-  array1_agreement = apply(array3d, c(2, 3), find.agreement, threshold)
-}
-
-
 #' make a raster
 #'
 #' Make a raster from a C4R list with dim(Data)=2
 #'
 #' @param cl4.object A C4R llist with the Data slot in two dimension
 #' @return raster
+#' @export
 
 make_raster <- function(cl4.object) {
   if (length(dim(cl4.object$Data)) != 2)
@@ -130,7 +63,7 @@ make_raster <- function(cl4.object) {
 #' @param lowert numeric. lower threshold
 #' @param uppert numeric. upper threshold
 #' @return numeric of length 1
-
+#' @export
 # functions for consecutive days
 thrs_consec = function(col, duration, lowert, uppert) {
 
@@ -173,11 +106,13 @@ thrs_consec = function(col, duration, lowert, uppert) {
 #' Calculation of thresholds
 #'
 #' Calculation of number of days with certain condition. It can be used with aggregateGrid.
-#' @export
+
 #' @param col numeric vector
 #' @param lowert numeric. lower threshold
 #' @param uppert numeric. upper threshold
 #' @return numeric of length 1
+#'
+#' @export
 
 
 thrs = function(col, lowert, uppert) {
@@ -240,40 +175,127 @@ ToE <- function(x, array)  {
 }
 
 
-#' Apply mixed effect model to multidimensional array
+#' Apply multivariate linear regression to a multimember grid
 #'
-#' fit a mixed effect model (random slope) to c4R object with multiple member in the first dimension
+#' This function can be used after performing annual aggregation and with a multigrid object. it applies multivariate linear regression per pixel if
+#' spatial averages are not performed or for spatially aggregated data
+#' @return array, without spatial averages, or dataframe, if spatial averages are performed
+#'
 #' @export
-#' @importFrom nlme lme
-#' @param cl4 list used in climate4R with slot Data containing more than one member
-#' @param slope logical.
+
+# multivariate
+ens_trends <- function(c4R) {
+
+  if (is.null(c4R$Members)) stop("This list does not seem to contain several members. Consider applying models_trends")
+
+  mbrs <- dim(c4R$Data)[1]
+
+  if(length(dim(c4R$Data)) > 2) { # in cases in which there is a spatial dimension
+    if (dim(c4R$Data)[1]> 100) warning("Check that your performed annual aggregation before using this function")
+
+    message(Sys.time(), " Applying linear regression to the ensemble. Global test statistics calculated assuming uncorrelated response (for faster computation). P-value calculated using 999 iterations via PIT-trap resampling.")
+
+    global.lm <- apply(c4R$Data, c(3,4), function(y) {
 
 
+      df <- reshape2::melt(y) %>%
+        tidyr::pivot_wider(values_from = "value", names_from = "Var1") %>%
+        dplyr::select(-Var2) %>%
+        mvabund::mvabund()
 
-array.lme <- function(cl4, slope) {
+      df_var= data.frame(time= 1:nrow(df))
+      mnlm <- mvabund::manylm(df ~ time, data = df_var)
+      out <- anova(mnlm, p.uni="adjusted")
 
-  dimnames(cl4$Data) <- list(paste0("mod_", 1:dim(cl4$Data)[[1]]))
+      sig.models <- names(out$uni.p[2,][out$uni.p[2,]< 0.05]) # names of models with significance (p.value < 0.05)
+      colnames(mnlm$coefficients) <- paste0("X", 1:mbrs)
+      coef_res <- mnlm$coefficients[2,  sig.models ]
+      prop_res <- if (length(coef_res)==0) 999 else sum(ifelse(coef_res  >= 0, 1, -1)) # number of models, with significance, that shows an increaseor decraese. 999 assign to NA
+      cbind(prop_res,out$table[2,4])
 
-  lme.res <- apply(cl4$Data, c(3,4), function(y) {
+    })
+    return(global.lm)
+  } else { # if we did spatial averages
+    if (dim(c4R$Data)[2]> 100) warning("Check that your performed annual aggregation before using this function")
+    df <- reshape2::melt(c4R$Data) %>%
+      tidyr::pivot_wider(values_from = "value", names_from = "Var1") %>%
+      dplyr::select(-Var2) %>%
+      mvabund::mvabund()
 
-    df <- melt(y)
-    res <- lme(value~ Var2, random = ~ 1|Var1, data = df ) # random intercept model
+    df_var= data.frame(time= 1:nrow(df))
+    mnlm <- mvabund::manylm(df ~ time, data = df_var)
+    out <- anova(mnlm, p.uni="adjusted")
 
-    if (slope) {
+    sig.models <- names(out$uni.p[2,][out$uni.p[2,]< 0.05]) # names of models with significance (p.value < 0.05)
+    colnames(mnlm$coefficients) <- paste0("X", 1:mbrs)
+    coef_res <- mnlm$coefficients[2,  sig.models ]
+    prop_res <- if (length(coef_res)==0) 999 else sum(ifelse(coef_res  >= 0, 1, -1)) # number of models, with significance, that shows an increase or decraese. 999 assign to NA
 
-      summary(res)$tTable[[2,1]]
+    df_tm_series <- reshape2::melt(c4R$Data)  %>%
+      dplyr::select(-Var2) %>%
+      dplyr::group_by(Var1) %>%
+      dplyr::mutate(date= seq(as.Date(c4R$Dates$start[[1]]), as.Date(c4R$Dates$start[[length(c4R$Dates$start)]]), by = "year")) %>%
+      dplyr::mutate(coef=prop_res, p.value=out$table[2,4])
 
-    } else {
+    return(df_tm_series)
 
-      summary(res)$tTable[[2,5]]
-    }
-
-  })
-
-  cl4$Data <- lme.res
-  return(cl4)
+  }
+  message(Sys.time(), " Done")
 
 }
 
+#' Apply linear regression to each member of multimember grid
+#'
+#' This function can be used after performing annual aggregation and with a multigrid object. it applies linear regression per pixel if
+#' spatial averages are not performed or for spatially aggregated data.
+#' @return array, without spatial averages, or dataframe, if spatial averages are performed
+#'
+#' @export
 
+
+models_trends <- function(c4R, historical=F) {
+  if(length(dim(c4R$Data)) > 2) { # in cases in which there is a spatial dimension
+    message(Sys.time(), " Applying linear regression to ", ifelse(historical, "observation. ","each ensemble member."), " P-value calculated using 999 iterations via residual (without replacement) resampling.")
+    # single model
+
+    if (dim(c4R$Data)[ifelse(historical, 1, 2)]> 100) warning("Check that your performed annual aggregation before using this function")
+
+
+    ind.lm <- apply(c4R$Data, if (historical) c(2,3) else c(1,3,4), function(y) {
+      df <- reshape2::melt(y) %>%
+        dplyr::mutate(time=1:nrow(.))
+
+      mod= mvabund::manylm(value~time, data=df)
+      out <- anova(mod)
+      return(cbind(mod$coefficients[2,1],out$table[2,4]))
+
+    })
+
+    message(Sys.time(), " Done")
+    return(ind.lm)
+  } else { # when spatial averages are performed
+    if (dim(c4R$Data)[ifelse(historical, 1, 2)]> 100) warning("Check that your performed annual aggregation before using this function")
+    if  (!historical) {
+      df_tm_series <- reshape2::melt(c4R$Data) %>%
+        dplyr:: group_by(Var1) %>%
+        dplyr::mutate(coef=mvabund::manylm(value~Var2)$coefficients[2,1], p.value=anova(mvabund::manylm(value~Var2))$table[2,4]) %>%
+        dplyr::select(-Var2) %>%
+        dplyr::mutate(date= seq(as.Date(c4R$Dates$start[[1]]), as.Date(c4R$Dates$start[[length(c4R$Dates$start)]]), by = "year")) %>%
+        dplyr::select(Var1, value, date, coef, p.value )
+
+      return(df_tm_series)
+    } else {
+
+      df_tm_series <- data.frame(value=c4R$Data, Var2=1:length(c4R$Data)) %>%
+        dplyr::mutate(coef=mvabund::manylm(value~Var2)$coefficients[2,1], p.value=anova(mvabund::manylm(value~Var2))$table[2,4]) %>%
+        dplyr::select(-Var2) %>%
+        dplyr::mutate(date= seq(as.Date(c4R$Dates$start[[1]]), as.Date(c4R$Dates$start[[length(c4R$Dates$start)]]), by = "year")) %>%
+        dplyr::select(value, date, coef, p.value )
+
+      return(df_tm_series)
+
+    }
+
+  }
+}
 

@@ -211,7 +211,7 @@ load_data <-
       dplyr::select(path)
 
     message("\n", Sys.time(), " Done \n")
-
+    gc()
     invisible(structure(
       list(models.df2, result$country_shp, as.character(models)),
       class = "CAVAanalytics_list",

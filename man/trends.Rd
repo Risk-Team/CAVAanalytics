@@ -9,13 +9,10 @@ trends(
   bias.correction = FALSE,
   uppert = NULL,
   lowert = NULL,
-  method = "scaling",
   scaling.type = "additive",
   season,
-  legend_range = NULL,
   consecutive = FALSE,
   duration = "max",
-  spatial,
   historical = FALSE
 )
 }
@@ -35,8 +32,6 @@ trends(
 \item{consecutive}{logical, to use in conjunction with lowert or uppert}
 
 \item{duration}{character, either "max" or "total".}
-
-\item{spatial}{logical, whether to visualize trends for spatially aggregated data or not}
 
 \item{historical}{logical, whether to visualize trends for the historical period or projections}
 }

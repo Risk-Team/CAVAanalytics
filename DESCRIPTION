@@ -27,10 +27,12 @@ Imports:
     RColorBrewer,
     tidyr,
     climate4R.UDG,
-    nlme,
     ggh4x,
     rgeos,
-    rnaturalearthhires
+    rnaturalearthhires,
+    mvabund,
+    reshape2
 Depends:
     loadeR,
     magrittr
+

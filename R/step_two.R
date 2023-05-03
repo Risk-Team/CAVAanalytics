@@ -148,12 +148,12 @@ projections <-
                   " Performing monthly bias correction with the scaling",
                   " method, scaling type ",
                   scaling.type,
-                  ", for each model and month separately and then calculating the ensemble mean. Season",
+                  ", for each model and month separately. This can takea while. Season",
                   glue::glue_collapse(season, "-")
                 )
               )
               dplyr::mutate(.,
-                            models_mbrs = purrr::map(models_mbrs, function(x) {
+                            models_mbrs = furrr::future_map(models_mbrs, function(x) {
                                 bc <-
                                   suppressMessages(
                                     downscaleR::biasCorrection(
@@ -456,12 +456,12 @@ climate_change_signal <- function(data,
                 " Performing bias correction with the scaling",
                 " method, scaling type ",
                 scaling.type,
-                ", for each model and month separately and then calculating the ensemble mean. Season",
+                ", for each model and month separately. This can take a while. Season",
                 glue::glue_collapse(season, "-")
               )
             )
             dplyr::mutate(.,
-                          models_mbrs = purrr::map2(models_mbrs, forcing, function(mod, forc) {
+                          models_mbrs = furrr::future_map2(models_mbrs, forcing, function(mod, forc) {
                           if (forc=="historical") {
                             bc <-
                               suppressMessages(
@@ -824,12 +824,12 @@ trends = function(data,
             paste(
               Sys.time(),
               " Performing bias correction with the scaling",
-              " method, scaling type ", scaling.type, ", for each model and month separately. Season",
+              " method, scaling type ", scaling.type, ", for each model and month separately. This can take a while. Season",
               glue::glue_collapse(season, "-")
             )
           )
           dplyr::mutate(.,
-                        models_mbrs = purrr::map(models_mbrs, function(x) {
+                        models_mbrs = furrr::future_map(models_mbrs, function(x) {
                           bc <-
                             suppressMessages(downscaleR::biasCorrection(
                               y = obs[[1]],

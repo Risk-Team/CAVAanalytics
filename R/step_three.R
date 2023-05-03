@@ -6,9 +6,10 @@
 #' @import ggplot2
 #' @param rst output of one of CAVAanalytics functions, such as projections. rst is of class RasterStack
 #' @param palette charachter. Color Palette
-#' @param legend.range  numeric. Fix legend limits
+#' @param legend_range  numeric. Fix legend limits
 #' @param plot_titles character. Title of the plot legend
 #' @param ensemble logical. Whether to visualize the ensemble mean or each individual model
+#' @param alpha numeric. Transparency of the raster colors
 #' @return ggplot object
 #' @examples
 #'load_data(country = "Somalia", variable="tas", years.hist=2000, years.proj=2010,
@@ -17,7 +18,7 @@
 #' plotting(plot_titles="hurs", ensemble=T)
 
 
-plotting <- function(rst, palette, legend.range, plot_titles, ensemble, bins, n.bins, alpha, ...) {
+plotting <- function(rst, palette, legend_range, plot_titles, ensemble, bins, n.bins, alpha, ...) {
 UseMethod("plotting")
 }
 

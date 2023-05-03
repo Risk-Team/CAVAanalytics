@@ -310,7 +310,7 @@ projections <-
         country_shp,
         scaling.type
       )
-
+    message(Sys.time(), " Done")
     # return results
     return(data_list)
   }
@@ -638,7 +638,7 @@ climate_change_signal <- function(data,
                          country_shp,
                          bias.correction,
                          scaling.type)
-
+  message(Sys.time(), " Done")
   # return results
   return(data_list)
 }
@@ -1077,7 +1077,7 @@ trends = function(data,
                          bias.correction,
                          scaling.type,
                          historical)
-
+  message(Sys.time(), " Done")
   # return results
   return(data_list)
 

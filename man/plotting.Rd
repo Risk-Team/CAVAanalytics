@@ -7,7 +7,7 @@
 plotting(
   rst,
   palette,
-  legend.range,
+  legend_range,
   plot_titles,
   ensemble,
   bins,
@@ -21,11 +21,13 @@ plotting(
 
 \item{palette}{charachter. Color Palette}
 
-\item{legend.range}{numeric. Fix legend limits}
+\item{legend_range}{numeric. Fix legend limits}
 
 \item{plot_titles}{character. Title of the plot legend}
 
 \item{ensemble}{logical. Whether to visualize the ensemble mean or each individual model}
+
+\item{alpha}{numeric. Transparency of the raster colors}
 }
 \value{
 ggplot object

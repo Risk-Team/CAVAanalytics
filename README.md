@@ -20,6 +20,13 @@ JupyterHub with 180 Gb RAM) and through a Docker image.
 |:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
 | *CAVA framework. CAVA can be used through a graphic user interface (CAVA Platform) or through the CAVAanalytics R package. The package can be used locally (GitHub installation), remotely (University of Cantabria JupyterHub) or locally but through a Docker image to solve dependencies issue* |
 
+## Current status
+
+CAVAanalytics is currently in pre-release. You can install it locally
+but only few climate models are available for remote access. It would
+work if you have data locally available. Additionally, a more
+comprehensive README file will be made soon.
+
 ## CAVAanalytics
 
 **CAVAanalytics** is a package that offers a consistent framework to
@@ -39,7 +46,7 @@ available.
 
 Based on how you want to use CAVAanalytics, there are three options.
 
-### Locally from GitHub
+### 1) Locally from GitHub
 
 If you have already installed most of the climaterR packages, you can
 simply install CAVAanalytics from GitHub:
@@ -66,7 +73,7 @@ page](https://github.com/SantanderMetGroup/loadeR/wiki/Installation) to
 solve the issue. loadR.java depends on rJava and this installation can
 be troublesome.
 
-### JupyterHub
+### 2) JupyterHub
 
 You can request access to the University of Cantabria JupyterHub, where
 CAVAanalytics is already installed. This will give you access to
@@ -75,7 +82,7 @@ analysis using a Jupyter Notebook environment. If you would like to
 access these resources, you are welcome to contact
 <riccardo.soldan@fao.org> or <Hideki.Kanamaru@fao.org>
 
-### Locally through Docker
+### 3) Locally through Docker
 
 A docker image will be made available soon, containing all the required
 software to immediately start working with CAVAanalytics.
@@ -102,7 +109,7 @@ simulations. For example:
 
 ``` r
 library(CAVAanalytics)
-remote.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1995:2000, years.proj=2050:2055,
+remote.data <- load_data(country = "Uganda", variable="tasmax", years.hist=1995:2000, years.proj=2030:2056,
               path.to.data = "CORDEX-CORE", path.to.obs="W5E5", domain="AFR-22")
 ```
 
@@ -111,10 +118,13 @@ for that. **CAVAanalytics** simplifies and standardize how to load
 multiple climate models/simulations or other netcdf files (e.g impact
 models from ISIMIP). To **load local data**, specify the path to your
 directories, containing, for example, several RCPs and a folder with
-historical runs.
+historical runs. In this example, the AFR-22 folder contains three
+subfolders, called historical, rcp26 and rcp85. These folders contain
+the climate model netCDF files (several models containing the same
+variables and with a similar time range).
 
 ``` r
-local.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1980:2000, years.proj=2050:2080,
+local.data <- load_data(country = "Uganda", variable="tasmax", years.hist=1980:2000, years.proj=2050:2080,
               path.to.data = "~/Databases/CORDEX-CORE/AFR-22", path.to.obs="~/Databases/W5E5")
 ```
 
@@ -150,20 +160,21 @@ name gives away, this function is used to calculate indexes and other
 statistics on future data. It is also possible to perform
 bias-correction if observed data has been loaded (e.g W5E5). In this
 example we will use one of the several functions available in
-CAVAanalytics (at the moment, only projections an
-dclimate_change_signal).
+CAVAanalytics (at the moment, projections, climate_change_signal and
+trends).
 
 type ?projections to better understand what analysis can be performed
 with this function. It returns a RasterStack
 
 ``` r
-library(magrittr)
 # operations are performed for each model separately and then an ensemble mean is made. It is possible to specify thresholds with the uppert and lowert arguments
 rsts <- remote.data %>%  
   projections(bias.correction = F, season = 1:12)
 ```
 
-    ## 2023-04-26 11:59:07 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
+    ## 2023-05-04 09:44:43 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
+
+    ## 2023-05-04 09:44:49 Done
 
 ``` r
 # calculating number of days above 45 C
@@ -171,22 +182,33 @@ rsts_thrs <- remote.data %>%
   projections(bias.correction = F, season = 1:12, uppert = 45, consecutive = F)
 ```
 
-    ## 2023-04-26 11:59:16 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 45
+    ## 2023-05-04 09:44:50 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 45
+
+    ## 2023-05-04 09:44:56 Done
 
 #### Climate_change_signal
 
-It is also possible to look at the climate change signal (delta from
-historical period). Similarly to the projections function, threshold can
-be specified with the uppert and lowert arguments.
+It is also possible to look at the climate change signal (relative
+change to historical period). Similarly to the projections function,
+threshold can be specified with the uppert and lowert arguments and
+bias-correction can be performed.
 
 ``` r
-library(magrittr)
-
 rsts_ccs <- remote.data %>%  
   climate_change_signal(., season = 1:12)
 ```
 
-    ## 2023-04-26 11:59:24 climate change signal, season 1-2-3-4-5-6-7-8-9-10-11-12. Climate change signal for mean tasmax
+    ## 2023-05-04 09:44:56 climate change signal, season 1-2-3-4-5-6-7-8-9-10-11-12. Climate change signal for mean tasmax
+
+    ## 2023-05-04 09:45:03 Done
+
+#### trends
+
+The trends function performs some interesting analysis. In principle, it
+applies linear regression to each pixel but it does so for the ensemble
+(multivariate linear regression applied through residual resampling) and
+for the individual ensemble members. As for the previous functions, it
+is possible to apply bias-correction and specific thresholds.
 
 ### Third step: visualize results
 
@@ -200,28 +222,12 @@ rsts %>%
 plotting(plot_titles = "Average tasmax", ensemble=T, stat="mean") # default is mean but it can also take SD
 ```
 
-    ## 2023-04-26 11:59:34
-    ## Visualizing ensemble mean
-
-    ## 2023-04-26 11:59:34
-    ## Prepare for plotting
-
-    ## 2023-04-26 11:59:34 Done
-
 ![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 ``` r
 rsts %>%
 plotting(plot_titles = "Average tasmax", ensemble=F)
 ```
-
-    ## 2023-04-26 11:59:34
-    ## Visualizing individual members, argument stat is ignored
-
-    ## 2023-04-26 11:59:34
-    ## Prepare for plotting
-
-    ## 2023-04-26 11:59:34 Done
 
 ![](README_files/figure-gfm/unnamed-chunk-6-2.png)<!-- -->
 
@@ -230,27 +236,4 @@ rsts_ccs %>%
 plotting(plot_titles = "Climate change signal", ensemble=T, stat="mean", palette = c("yellow", "orange", "red", "brown")) # default is mean but it can also take SD
 ```
 
-    ## 2023-04-26 11:59:35
-    ## Visualizing ensemble mean
-
-    ## 2023-04-26 11:59:35
-    ## Prepare for plotting
-
-    ## 2023-04-26 11:59:35 Done
-
 ![](README_files/figure-gfm/unnamed-chunk-6-3.png)<!-- -->
-
-``` r
-rsts_thrs %>%
-plotting(plot_titles = "N. days", ensemble=F)
-```
-
-    ## 2023-04-26 11:59:36
-    ## Visualizing individual members, argument stat is ignored
-
-    ## 2023-04-26 11:59:36
-    ## Prepare for plotting
-
-    ## 2023-04-26 11:59:36 Done
-
-![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->

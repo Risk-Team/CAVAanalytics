@@ -119,15 +119,18 @@ remote.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1995, 
   plotting(., ensemble=T, plot_titles = "Average tasmax")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-1-1.png)<!-- --> You can also
-look at individual models and specify agroclimatic indicators. For
-example, number of days with maximum temperature above 45 °C.
+![](README_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
+
+You can also look at individual models and specify agroclimatic
+indicators. For example, number of days with maximum temperature above
+45 °C.
 
 ``` r
   # 2nd step
   projections(remote.data, season=1:12, uppert=42,  bias.correction = F) %>% 
   # 3rd step
-  plotting(., ensemble=F, plot_titles = "N. days Tmax > 45 °C", palette=c("white", "orange", "red", "black"))
+  plotting(., ensemble=F, plot_titles = "N. days Tmax > 45 °C", 
+           palette=c("white", "orange", "red", "black"))
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->

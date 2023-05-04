@@ -1,6 +1,6 @@
 CAVAanalytics
 ================
-2023-04-01
+2023-05-01
 
 ## Introduction: What is CAVA?
 
@@ -22,10 +22,10 @@ JupyterHub with 180 Gb RAM) and through a Docker image.
 
 ## Current status
 
-CAVAanalytics is currently in pre-release. You can install it locally
-but only few climate models are available for remote access. It would
-work if you have data locally available. Additionally, a more
-comprehensive README file will be made soon.
+**CAVAanalytics is currently in pre-release.** You can install it
+locally but only few climate models are available for remote access. It
+would work if you have data locally available. Additionally, working
+examples will be made available soon in the tutorial folder.
 
 ## CAVAanalytics
 
@@ -99,141 +99,35 @@ models) and then work with the output of the load_data with other
 |:-------------------------------------------------------------------------------------------------------------------:|
 |                                                *CAVAanalytics steps*                                                |
 
-### First step: load the data (**Remote repository**)
+## Examples
 
-#### Loading data: load_data function
+### Loading data, processing and visualizing results (more examples in the tutorials folder)
 
 **To load CORDEX-CORE data stored remotely**, set path.to.data to
 “CORDEX-CORE” and specify the domain. This will load CORDEX-CORE
-simulations. For example:
+simulations. Similarly, when path.to.obs is set to W5E5, you are
+accessing the dataset stored remotely.
 
 ``` r
 library(CAVAanalytics)
-remote.data <- load_data(country = "Uganda", variable="tasmax", years.hist=1995:2000, years.proj=2030:2056,
+  # 1st step
+remote.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1995, years.proj=2050:2055,
               path.to.data = "CORDEX-CORE", path.to.obs="W5E5", domain="AFR-22")
+  # 2nd step
+  projections(remote.data, season=1:12, bias.correction = F) %>% 
+  # 3rd step
+  plotting(., ensemble=T, plot_titles = "Average tasmax")
 ```
 
-If you have some local data available, you can also use CAVAanalytics
-for that. **CAVAanalytics** simplifies and standardize how to load
-multiple climate models/simulations or other netcdf files (e.g impact
-models from ISIMIP). To **load local data**, specify the path to your
-directories, containing, for example, several RCPs and a folder with
-historical runs. In this example, the AFR-22 folder contains three
-subfolders, called historical, rcp26 and rcp85. These folders contain
-the climate model netCDF files (several models containing the same
-variables and with a similar time range).
+![](README_files/figure-gfm/unnamed-chunk-1-1.png)<!-- --> You can also
+look at individual models and specify agroclimatic indicators. For
+example, number of days with maximum temperature above 45 °C.
 
 ``` r
-local.data <- load_data(country = "Uganda", variable="tasmax", years.hist=1980:2000, years.proj=2050:2080,
-              path.to.data = "~/Databases/CORDEX-CORE/AFR-22", path.to.obs="~/Databases/W5E5")
+  # 2nd step
+  projections(remote.data, season=1:12, uppert=42,  bias.correction = F) %>% 
+  # 3rd step
+  plotting(., ensemble=F, plot_titles = "N. days Tmax > 45 °C", palette=c("white", "orange", "red", "black"))
 ```
 
-``` r
-head(local.data[[1]])
-```
-
-    ## # A tibble: 3 x 3
-    ##   forcing    models_mbrs      obs             
-    ##   <chr>      <list>           <list>          
-    ## 1 historical <named list [6]> <named list [4]>
-    ## 2 rcp26      <named list [6]> <named list [4]>
-    ## 3 rcp85      <named list [6]> <named list [4]>
-
-load_data will now create a multi-model ensemble (temporally consistent)
-which is stored in a data frame with list columns. At this point, all
-dplyr, purrr and furrr functions will work, so you can use map with
-mutate, etc. You simply need to get familiar with the output of
-load_data.
-
-### Second step: perform analysis
-
-The second step is the most dynamic step of the CAVAanalytics framework.
-
-After loading the data, regardless of whether the files are climate
-models or impact models, you now have a tidy tibble with list column and
-you can apply all of the tidyverse functions.
-
-#### Projections
-
-One of the **CAVAanalytics** functions is called **projections**. As the
-name gives away, this function is used to calculate indexes and other
-statistics on future data. It is also possible to perform
-bias-correction if observed data has been loaded (e.g W5E5). In this
-example we will use one of the several functions available in
-CAVAanalytics (at the moment, projections, climate_change_signal and
-trends).
-
-type ?projections to better understand what analysis can be performed
-with this function. It returns a RasterStack
-
-``` r
-# operations are performed for each model separately and then an ensemble mean is made. It is possible to specify thresholds with the uppert and lowert arguments
-rsts <- remote.data %>%  
-  projections(bias.correction = F, season = 1:12)
-```
-
-    ## 2023-05-04 09:44:43 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tasmax
-
-    ## 2023-05-04 09:44:49 Done
-
-``` r
-# calculating number of days above 45 C
-rsts_thrs <- remote.data %>% 
-  projections(bias.correction = F, season = 1:12, uppert = 45, consecutive = F)
-```
-
-    ## 2023-05-04 09:44:50 projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of number of days with tasmax above threshold of 45
-
-    ## 2023-05-04 09:44:56 Done
-
-#### Climate_change_signal
-
-It is also possible to look at the climate change signal (relative
-change to historical period). Similarly to the projections function,
-threshold can be specified with the uppert and lowert arguments and
-bias-correction can be performed.
-
-``` r
-rsts_ccs <- remote.data %>%  
-  climate_change_signal(., season = 1:12)
-```
-
-    ## 2023-05-04 09:44:56 climate change signal, season 1-2-3-4-5-6-7-8-9-10-11-12. Climate change signal for mean tasmax
-
-    ## 2023-05-04 09:45:03 Done
-
-#### trends
-
-The trends function performs some interesting analysis. In principle, it
-applies linear regression to each pixel but it does so for the ensemble
-(multivariate linear regression applied through residual resampling) and
-for the individual ensemble members. As for the previous functions, it
-is possible to apply bias-correction and specific thresholds.
-
-### Third step: visualize results
-
-After performing the required analysis, it is sufficient to call the
-plotting function to visualize the results. The results can be
-visualized for each simulation or as an ensemble. It is also possible to
-decide whether to visualize the ensemble means or standard deviation.
-
-``` r
-rsts %>%
-plotting(plot_titles = "Average tasmax", ensemble=T, stat="mean") # default is mean but it can also take SD
-```
-
-![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
-
-``` r
-rsts %>%
-plotting(plot_titles = "Average tasmax", ensemble=F)
-```
-
-![](README_files/figure-gfm/unnamed-chunk-6-2.png)<!-- -->
-
-``` r
-rsts_ccs %>%
-plotting(plot_titles = "Climate change signal", ensemble=T, stat="mean", palette = c("yellow", "orange", "red", "brown")) # default is mean but it can also take SD
-```
-
-![](README_files/figure-gfm/unnamed-chunk-6-3.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->

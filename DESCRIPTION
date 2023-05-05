@@ -31,8 +31,9 @@ Imports:
     rgeos,
     rnaturalearthhires,
     mvabund,
-    reshape2
+    reshape2,
+    loadeR
 Depends:
-    loadeR,
+    loadeR.java,
     magrittr
 

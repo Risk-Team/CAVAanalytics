@@ -1,28 +1,29 @@
 #' Climate models upload
 #'
 #' Automatically load climate models (netCDF/NcML) in a tidy format.
-#' @export
+
 #' @import climate4R.UDG
 
-#' @param path.to.data Path to the directory containing the RCP/SSPs folders and historical simulations (optional). For example,
+#' @param path.to.data path to the directory containing the RCP/SSPs folders and historical simulations (optional). For example,
 #' home/user/data/. data would contain subfolders with the climate/impact models. Historical simulations have to be contained in a folder called historical. If path.to.data is set as CORDEX-CORE, CORDEX-CORE simulations from RCM RegCM4 will be loaded
-#' @param country A character string, in english, indicating the country of interest. To select a bounding box,
+#' @param country character, in English, indicating the country of interest. To select a bounding box,
 #' set country to NULL and define arguments xlim and ylim
-#' @param variable  A character string indicating the variable
-#' @param xlim Vector of length = 2, with minimum and maximum longitude coordinates, in decimal degrees, of the bounding box selected.
-#' @param ylim Same as xlim, but for the selection of the latitudinal range.
-#' @param path.to.obs Default to NULL, if not, indicate the absolute path to the directory containing a reanalysis dataset, for example ERA5. To automatically load W5E5. specify W5E5
-#' @param years.proj Numerical range, years to select for projections
-#' @param years.hist Numerical range, years to select for historical simulations and observations
-#' @param domain Specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE. Default is NULL
-#' @param buffer Numeric. Default is zero.
-#' @return Tibble with column list
+#' @param variable  character indicating the variable
+#' @param xlim numeric of length = 2, with minimum and maximum longitude coordinates, in decimal degrees, of the bounding box selected.
+#' @param ylim same as xlim, but for the selection of the latitudinal range.
+#' @param path.to.obs character, default to NULL, if not, indicate the absolute path to the directory containing a reanalysis dataset, for example ERA5. To automatically load W5E5. specify W5E5
+#' @param years.proj Numeric, years to select for projections
+#' @param years.hist Numeric, years to select for historical simulations and observations
+#' @param domain specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE. Default is NULL
+#' @param buffer numeric. Default is zero.
+#' @param aggr.m character. Monthly aggregation. One of none, mean or sum
+#' @return tibble with column list
+#' @importFrom loadeR loadGridData
 #' @examples
 #' exmp <- load_data(country = "Somalia", variable="tas", years.hist=2000, years.proj=2010,
 #'               path.to.data = "CORDEX-CORE", domain="AFR-22")
-
-
-
+#'
+#' @export
 
 
 load_data <-
@@ -35,7 +36,8 @@ load_data <-
            years.hist = NULL,
            path.to.obs = NULL,
            buffer = 0,
-           domain = NULL) {
+           domain = NULL,
+           aggr.m="none") {
 
     # intermediate functions --------------------------------------------------
 
@@ -119,6 +121,8 @@ load_data <-
 
 # start -------------------------------------------------------------------
 
+    match.arg(aggr.m, choices = c("none", "sum", "mean"))
+
     # check for valid path
     check_path(path.to.data, years.hist, domain, years.proj, variable)
 
@@ -154,13 +158,14 @@ load_data <-
         if (stringr::str_detect(x, "historical")) {
           message("\n", Sys.time(), " Loading ", x)
           data <- suppressMessages(
-            loadGridData(
+           loadGridData(
               dataset = x,
               var = variable,
               years = years.hist,
               lonLim = xlim,
               latLim = ylim,
-              season = 1:12
+              season = 1:12,
+              aggr.m =  aggr.m
             )
           )
           message(Sys.time(), " Done")
@@ -174,7 +179,8 @@ load_data <-
               years = years.proj,
               lonLim = xlim,
               latLim = ylim,
-              season = 1:12
+              season = 1:12,
+              aggr.m =  aggr.m
             )
           )
           message(Sys.time(), " Done")
@@ -185,19 +191,20 @@ load_data <-
 
     message("\n", Sys.time(), " Binding members \n")
 
-    # aggregating members and adding obs data if specified
+    # binding members and adding obs data if specified
     models.df2 <- models.df %>%
       dplyr::mutate(models_mbrs = purrr::map(models, common_dates)) %>%
       dplyr::mutate(obs = if (!is.null(path.to.obs)) {
         message("\n", Sys.time(), " Uploading obs data")
         list(suppressMessages(
-          loadGridData(
+         loadGridData(
             obs.file,
             var = variable,
             years = years.hist,
             lonLim = xlim,
             latLim = ylim,
-            season = 1:12
+            season = 1:12,
+            aggr.m =  aggr.m
           )
         ))
       }

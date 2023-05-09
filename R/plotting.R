@@ -161,10 +161,10 @@ plotting.CAVAanalytics_ccs <- function(rst, palette=NULL, legend_range=NULL, plo
   # messages
 
   if (isTRUE(ensemble)) {
-    message(Sys.time(), "\n", paste0("Visualizing ensemble ", stat))
-  } else {message(Sys.time(), "\n", "Visualizing individual members, argument stat is ignored")}
+    message(Sys.time(),  paste0(" Visualizing ensemble ", stat))
+  } else {message(Sys.time(),  " Visualizing individual members, argument stat is ignored")}
 
-  message(Sys.time(), "\n", "Prepare for plotting")
+  message(Sys.time(),  " Prepare for plotting")
 
   # retrieve the right raster stack based on the ensemble argument
 
@@ -213,7 +213,7 @@ plotting.CAVAanalytics_ccs <- function(rst, palette=NULL, legend_range=NULL, plo
             color = "black",
             data = countries) +
     ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
-                data = rs_df) +
+                data = rs_df, alpha=alpha) +
     {
       if(!bins) {
 
@@ -279,25 +279,26 @@ plotting.CAVAanalytics_ccs <- function(rst, palette=NULL, legend_range=NULL, plo
 
 #' @export
 
-plotting.CAVAanalytics_trends <- function(rst, palette=NULL, legend_range=NULL, plot_titles, ensemble, bins=FALSE, n.bins=NULL,alpha=NA, spatial_average) {
+plotting.CAVAanalytics_trends <- function(rst, palette=NULL, legend_range=NULL, plot_titles, ensemble, bins=FALSE, n.bins=NULL,alpha=NA, frequencies, n.groups=3) {
 
   # checking requirements
   stopifnot(is.logical(ensemble))
   stopifnot(is.logical(bins))
-  stopifnot(is.logical(spatial_average))
+  stopifnot(is.logical(frequencies))
 
 
   # messages
 
   if (isTRUE(ensemble)) {
-    message(Sys.time(), "\n", paste0(ifelse(spatial_average,"Visualizing ensemble, spatial averages ", "Visualizing ensemble ")))
-  } else {message(Sys.time(), "\n", paste0(ifelse(spatial_average,"Visualizing individual members after spatial averages ", "Visualizing individual members ")))}
+    message(Sys.time(), paste0(ifelse(frequencies," Visualizing ensemble, frequencies ", "Visualizing ensemble ")))
+  } else {message(Sys.time(), paste0(ifelse(frequencies," Visualizing individual members (frequencies)", "Visualizing individual members ")))}
 
-  message(Sys.time(), "\n", "Prepare for plotting")
+  message(Sys.time(), " Prepare for plotting")
 
   # retrieve the right raster stack based on how trends was run
+if (!frequencies) {
 
-  if (length(rst)>4) { # trends were ru on projections
+  if (length(rst)>4) { # trends were run on projections
     if (ensemble) {
       members <- length(unique(stringr::str_match(names((rst[[3]])), "Member.\\d")))
       rst <- rst[1:2]
@@ -430,7 +431,47 @@ plotting.CAVAanalytics_trends <- function(rst, palette=NULL, legend_range=NULL, 
   message(Sys.time(), " Done")
 
   return(p)
+} else { # when frequencies is set as T
 
+message(Sys.time(), " Arguments bins, legend_range, plot_titles and palette are ignored")
+
+  if (length(rst)>4) { # trends were run on projections
+    if (ensemble) {
+      members <- length(unique(stringr::str_match(names((rst[[3]])), "Member.\\d")))
+      rst <- rst[[5]]
+      plts <- suppressMessages(purrr::map(unique(rst$forcing), ~stxplore::ridgeline(dplyr::filter(rst, forcing==.x), group_col = 'date', z_col = 'value', num_grps = n.groups)+
+                           ggplot2::ggtitle(.x)+
+                           ggplot2::theme_bw()+
+                           ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5), legend.position = "bottom",
+                                          legend.key.height= ggplot2::unit(0.2, 'cm'), legend.key.width= ggplot2::unit(1, 'cm'))))
+
+      p <- patchwork::wrap_plots(plts)
+      return(p)
+
+    } else {
+
+      rst <- rst[[6]]
+      plts <- suppressMessages(purrr::map(unique(rst$forcing), ~ purrr::map(unique(rst$Var1), function(model)
+
+        stxplore::ridgeline(dplyr::filter(rst, forcing==.x, Var1==model), group_col = 'date', z_col = 'value', num_grps = n.groups)+
+          ggplot2::ggtitle(paste0(model, "_", .x))+
+          ggplot2::theme_bw()+
+          ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5), legend.position = "bottom",
+                         legend.key.height= ggplot2::unit(0.2, 'cm'), legend.key.width= ggplot2::unit(1, 'cm')))
+
+      )
+      )
+
+      # Combine plots
+     p <- patchwork::wrap_plots(plts[[1]]) /  patchwork::wrap_plots(plts[[2]])
+     return(p)
+
+    }
+
+  } # to complete for observation
+
+
+}
 }
 
 

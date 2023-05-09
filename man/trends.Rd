@@ -13,6 +13,7 @@ trends(
   season,
   consecutive = FALSE,
   duration = "max",
+  interannual_var = FALSE,
   historical = FALSE
 )
 }
@@ -27,11 +28,13 @@ trends(
 
 \item{scaling.type}{character, default to "additive". Indicates whether to use multiplicative or additive approach for bias correction.}
 
-\item{season}{Numerical, seasons to select. For example, 1:12}
+\item{season}{numeric, seasons to select. For example, 1:12}
 
 \item{consecutive}{logical, to use in conjunction with lowert or uppert}
 
 \item{duration}{character, either "max" or "total".}
+
+\item{interannual_var}{logical, whether linear regression is applied to annual variability, measured as standard deviation}
 
 \item{historical}{logical, whether to visualize trends for the historical period or projections}
 }
@@ -42,9 +45,8 @@ list with raster stacks
 Perform linear trends.
 }
 \examples{
-fpath <- system.file("extdata/", package="CAVAanalytics")
-exmp <- load_data(country = "Moldova", variable="hurs", years.hist=2000, years.proj=2010, path.to.data = fpath) \%>\%
-projections(., season = 1:12)
-
+exmp <- load_data(country = "Sudan", variable="pr", years.hist=1995, years.proj=2030:2060,
+path.to.data = "CORDEX-CORE", path.to.obs="W5E5", domain="AFR-22", aggr.m="sum") \%>\%
+trends(., season = 1:12, historical=F, interannual_var=T)
 
 }

@@ -8,19 +8,19 @@
 #' @param bias.correction logical, whether to perform bias.correction or not
 #' @param uppert  numeric of length=1, upper threshold
 #' @param lowert numeric of length=1, lower threshold
-#' @param season Numerical, seasons to select. For example, 1:12
+#' @param season numeric, seasons to select. For example, 1:12
 #' @param scaling.type character, default to "additive". Indicates whether to use multiplicative or additive approach for bias correction.
 #' @param consecutive logical, to use in conjunction with lowert or uppert
 #' @param duration character, either "max" or "total".
 #' @param historical logical, whether to visualize trends for the historical period or projections
+#' @param interannual_var logical, whether linear regression is applied to annual variability, measured as standard deviation
 #' @return list with raster stacks
 #'
 #' @export
 #' @examples
-#' fpath <- system.file("extdata/", package="CAVAanalytics")
-#' exmp <- load_data(country = "Moldova", variable="hurs", years.hist=2000, years.proj=2010, path.to.data = fpath) %>%
-#' projections(., season = 1:12)
-#'
+#' exmp <- load_data(country = "Sudan", variable="pr", years.hist=1995, years.proj=2030:2060,
+#' path.to.data = "CORDEX-CORE", path.to.obs="W5E5", domain="AFR-22", aggr.m="sum") %>%
+#' trends(., season = 1:12, historical=F, interannual_var=T)
 #'
 
 trends = function(data,
@@ -31,6 +31,7 @@ trends = function(data,
                   season,
                   consecutive = FALSE,
                   duration = "max",
+                  interannual_var=FALSE,
                   historical = FALSE) {
   # intermediate functions --------------------------------------------------
 
@@ -38,21 +39,36 @@ trends = function(data,
 
   check_inputs <-
     function(data,
+             var,
              consecutive,
              historical,
              bias.correction,
              uppert,
              lowert,
              duration,
-             scaling.type) {
+             scaling.type,
+             interannual_var) {
       if (class(data) != "CAVAanalytics_list")
         stop("The input data is not the output of CAVAanalytics load_data")
       stopifnot(
         is.logical(consecutive),
         is.logical(bias.correction),
-        is.logical(historical)
+        is.logical(historical),
+        is.logical(interannual_var)
       )
       match.arg(scaling.type, c("additive", "multiplicative"))
+      if (var!="pr" & interannual_var) stop("Interannual variability is only meaningful for precipitation")
+     if (interannual_var & (!is.null(lowert) | !is.null(uppert))) stop("Thresholds are not meaningful when calculating interannual variaiblity, set as NULL")
+     if (interannual_var) {
+       dates <- data[[1]]$models_mbrs[[1]]$Dates$start
+       dates <- as.Date(dates)
+       # calculate the differences between consecutive dates
+       diffs <- diff(dates)
+       # check if the differences are equal to 1
+       if (any(diffs == 1)) {
+        stop("Interannual variability requires monthly data. Reload your data specifying sum in aggr.m")
+       }
+     }
       if (!is.null(lowert) &
           !is.null(uppert))
         stop("select only one threshold")
@@ -107,11 +123,12 @@ trends = function(data,
              lowert,
              consecutive,
              duration,
-             historical) {
+             historical,
+             interannual_var) {
       if (is.null(uppert) & is.null(lowert)) {
         mes = paste0(
           "Calculation of yearly increase in ",
-          ifelse(var == "pr", "total ", "mean "),
+          if(var == "pr") ifelse(interannual_var,"interannual variability ", "total ") else "mean ",
           ifelse(bias.correction, "bias-corrected ", " "),
           var
         )
@@ -180,7 +197,8 @@ trends = function(data,
              country_shp,
              bias.correction,
              scaling.type,
-             historical) {
+             historical,
+             interannual_var) {
       gc()
       scaling.type= if (var=="pr") "multiplicative" else scaling.type
       data_list <- datasets %>%
@@ -224,7 +242,7 @@ trends = function(data,
                 if (var == "pr" &
                     !consecutive &
                     (is.null(uppert) & is.null(lowert))) {
-                  list(FUN = "sum")
+                  if (interannual_var) list(FUN = "sd") else list(FUN = "sum")
                 } else if (var != "pr" &
                            !consecutive &
                            (is.null(lowert) & is.null(uppert))) {
@@ -296,17 +314,26 @@ trends = function(data,
 
                           }),
                           ens_temp=purrr::map2(models_agg_y, forcing, function(x,y) {
-                            suppressMessages(transformeR::aggregateGrid(x, aggr.spatial = list(FUN="mean"))) %>%
-                              ens_trends(.) %>%
-                              dplyr::mutate(forcing=y)%>%
-                              dplyr::rename(members=Var1)
+                            ens <- suppressMessages(transformeR::aggregateGrid(x, aggr.mem = list(FUN="mean")))
+                            dimnames(ens$Data)[[1]] <- ens$Dates$start
+                            dimnames(ens$Data)[[2]] <- ens$xyCoords$y
+                            dimnames(ens$Data)[[3]] <- ens$xyCoords$x
+                            df <- reshape2::melt(ens$Data) %>%
+                              dplyr::mutate(date=as.Date(Var1)) %>%
+                              dplyr::mutate(forcing=y)
+                            return(df)
 
                           }),
                           models_temp=purrr::map2(models_agg_y, forcing, function(x,y) {
-                            suppressMessages(transformeR::aggregateGrid(x, aggr.spatial = list(FUN="mean"))) %>%
-                              models_trends(.) %>%
-                              dplyr::mutate(forcing=y) %>%
-                              dplyr::rename(members=Var1)
+                            dimnames(x$Data)[[1]] <- x$Members
+                            dimnames(x$Data)[[2]] <- x$Dates$start
+                            dimnames(x$Data)[[3]] <- x$xyCoords$y
+                            dimnames(x$Data)[[4]] <- x$xyCoords$x
+
+                            df <- reshape2::melt(x$Data) %>%
+                              dplyr::mutate(date=as.Date(Var2)) %>%
+                              dplyr::mutate(forcing=y)
+                            return(df)
 
                           }))
 
@@ -334,9 +361,14 @@ trends = function(data,
 
                 }),
                 models_temp=purrr::map(models_agg_y, function(x) {
-                  suppressMessages(transformeR::aggregateGrid(x, aggr.spatial = list(FUN="mean")) %>%
-                                     models_trends(., historical = T) %>%
-                                     dplyr::mutate(forcing="obs") )
+                  dimnames(x$Data)[[1]] <- x$Dates$start
+                  dimnames(x$Data)[[2]] <- x$xyCoords$y
+                  dimnames(x$Data)[[3]] <- x$xyCoords$x
+                  df <- reshape2::melt(x$Data) %>%
+                    dplyr::mutate(date=as.Date(Var1)) %>%
+                    dplyr::mutate(forcing="obs")
+                  return(df)
+
 
                 }))
 
@@ -391,21 +423,24 @@ trends = function(data,
     } # end of function
 
   # beginning of code -------------------------------------------------------
+  # retrieve information
+  datasets <- data[[1]]
+  country_shp <- data[[2]]
+  var <- datasets$models_mbrs[[1]]$Variable$varName
 
   # check input requirements
   check_inputs(data,
+               var,
                consecutive,
                historical,
                bias.correction,
                uppert,
                lowert,
                duration,
-               scaling.type)
+               scaling.type,
+               interannual_var)
 
-  # retrieve information
-  datasets <- data[[1]]
-  country_shp <- data[[2]]
-  var <- datasets$models_mbrs[[1]]$Variable$varName
+
 
   # create message
   mes <-
@@ -415,7 +450,8 @@ trends = function(data,
                    lowert,
                    consecutive,
                    duration,
-                   historical)
+                   historical,
+                   interannual_var)
   # set parallel processing
   future::plan(future::multisession, workers = 2)
 
@@ -443,8 +479,9 @@ trends = function(data,
                          country_shp,
                          bias.correction,
                          scaling.type,
-                         historical)
-  message(Sys.time(), " Done")
+                         historical,
+                         interannual_var)
+
   # return results
   return(data_list)
 

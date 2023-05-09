@@ -1,6 +1,6 @@
-#' Load data and apply projections in spatial chunks
+#' Load data and apply climate change signal in spatial chunks
 #'
-#' Automatically load and process climate model projections in a memory efficient way. Useful for analysing large areas
+#' Automatically load and process climate models in a memory efficient way. Useful for analysing large areas
 #' @param path.to.data path to the directory containing the RCP/SSPs folders and historical simulations (optional). For example,
 #' home/user/data/. data would contain subfolders with the climate/impact models. Historical simulations have to be contained in a folder called historical. If path.to.data is set as CORDEX-CORE, CORDEX-CORE simulations from RCM RegCM4 will be loaded
 #' @param country character, in English, indicating the country of interest. To select a bounding box,
@@ -28,7 +28,7 @@
 #' @export
 
 
-load_data_and_projections <- function(country, variable, years.hist=NULL,
+load_data_and_climate_change_signal <- function(country, variable, years.hist=NULL,
                                       years.proj, path.to.data,
                                       path.to.obs=NULL, xlim=NULL, ylim=NULL,aggr.m="none",
                                       chunk.size, overlap=1.5, season, lowert=NULL, uppert=NULL,consecutive=F,scaling.type="additive", duration="max", bias.correction=F  ) {
@@ -53,7 +53,7 @@ load_data_and_projections <- function(country, variable, years.hist=NULL,
                               path.to.data = path.to.data, path.to.obs = path.to.obs, xlim = xlim_chunk, ylim = ylim_chunk, aggr.m = aggr.m, buffer=0) %>%
 
         # do projections for current chunk
-        projections(., season = season, bias.correction = bias.correction,
+        climate_change_signal(., season = season, bias.correction = bias.correction,
                     uppert = uppert, lowert = lowert, consecutive = consecutive,
                     scaling.type =   scaling.type,
                     duration =  duration)
@@ -85,7 +85,7 @@ load_data_and_projections <- function(country, variable, years.hist=NULL,
       rasters_sd,
       rasters_mbrs
     ),
-    class = "CAVAanalytics_projections",
+    class = "CAVAanalytics_ccs",
     components = list(
       "raster stack for ensemble mean",
       "raster stack for ensemble sd",

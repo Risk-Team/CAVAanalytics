@@ -1,4 +1,4 @@
-#' Load data and apply projections in spatial chunks
+#' Load data and apply trends in spatial chunks
 #'
 #' Automatically load and process climate model projections in a memory efficient way. Useful for analysing large areas
 #' @param path.to.data path to the directory containing the RCP/SSPs folders and historical simulations (optional). For example,
@@ -21,17 +21,18 @@
 #' @param scaling.type character, default to "additive". Indicates whether to use multiplicative or additive approach for bias correction
 #' @param consecutive logical, to use in conjunction with lowert or uppert
 #' @param duration character, either "max" or "total"
+#' @param interannual_var logical, whether linear regression is applied to annual variability, measured as standard deviation
 #' @param chunk.size numeric, indicating the number of chunks to. The smaller the better when working with limited RAM.
 #' @param overlap numeric, amount of overlap needed to create the composite. This would depend on the resolution of your data. For example, if your data is at 50 Km resolution, overlap could be 1.5. If your data is at 1 Km resolution, overlap can be 0.5.
-#' @return list with raster stacks
+#' @return list with merged raster stacks
 #'
 #' @export
 
 
-load_data_and_projections <- function(country, variable, years.hist=NULL,
-                                      years.proj, path.to.data,
-                                      path.to.obs=NULL, xlim=NULL, ylim=NULL,aggr.m="none",
-                                      chunk.size, overlap=1.5, season, lowert=NULL, uppert=NULL,consecutive=F,scaling.type="additive", duration="max", bias.correction=F  ) {
+load_data_and_trends <- function(country, variable, years.hist=NULL,
+                                                years.proj, path.to.data,
+                                                path.to.obs=NULL, xlim=NULL, ylim=NULL,aggr.m="none",
+                                                chunk.size, overlap=1.5, season, lowert=NULL, uppert=NULL,consecutive=F,scaling.type="additive", duration="max", bias.correction=F , interannual_var) {
 
   # calculate number of chunks based on xlim and ylim
   x_chunks <- seq(from = xlim[1], to = xlim[2], by = chunk.size)
@@ -53,10 +54,10 @@ load_data_and_projections <- function(country, variable, years.hist=NULL,
                               path.to.data = path.to.data, path.to.obs = path.to.obs, xlim = xlim_chunk, ylim = ylim_chunk, aggr.m = aggr.m, buffer=0) %>%
 
         # do projections for current chunk
-        projections(., season = season, bias.correction = bias.correction,
-                    uppert = uppert, lowert = lowert, consecutive = consecutive,
-                    scaling.type =   scaling.type,
-                    duration =  duration)
+        trends(., season = season, bias.correction = bias.correction,
+                              uppert = uppert, lowert = lowert, consecutive = consecutive,
+                              scaling.type =   scaling.type,
+                              duration =  duration, interannual_var=interannual_var, historical=F)
 
       # add chunk to output list
       out_list[[paste0("chunk_", i, "_", j)]] <- proj_chunk
@@ -65,31 +66,39 @@ load_data_and_projections <- function(country, variable, years.hist=NULL,
   }
   message(Sys.time(), " Merging rasters")
   # Extract the first, second, and third elements of each list in `out_list`
-  rst_mean <- lapply(out_list, `[[`, 1)
-  rst_sd <- lapply(out_list, `[[`, 2)
-  rst_mbrs <- lapply(out_list, `[[`, 3)
+  rst_coef <- lapply(out_list, `[[`, 1)
+  rst_pval <- lapply(out_list, `[[`, 2)
+  rst_mbrs_coef <- lapply(out_list, `[[`, 3)
+  rst_mbrs_pval <- lapply(out_list, `[[`, 4)
   # Merge the extracted rasters using `Reduce` and set their names
   merge_rasters <- function(rst_list) {
     names <- names(rst_list[[1]])
     Reduce(function(...) raster::merge(..., tolerance = 0.5), rst_list) %>% setNames(names)
   }
 
-  rasters_mean <- merge_rasters(rst_mean)
-  rasters_sd <- merge_rasters(rst_sd)
-  rasters_mbrs <- merge_rasters(rst_mbrs)
+  rasters_coef <- merge_rasters(rst_coef)
+  rasters_pval <- merge_rasters(rst_pval)
+  rasters_mbrs_coef <- merge_rasters(rst_mbrs_coef)
+  rasters_mbrs_pval <- merge_rasters(rst_mbrs_pval)
 
   message(Sys.time(), " Done")
   invisible(structure(
     list(
-      rasters_mean,
-      rasters_sd,
-      rasters_mbrs
+      rasters_coef,
+      rasters_pval,
+      rasters_mbrs_coef,
+      rasters_mbrs_pval,
+      NULL,
+      NULL
     ),
-    class = "CAVAanalytics_projections",
+    class = "CAVAanalytics_trends",
     components = list(
-      "raster stack for ensemble mean",
-      "raster stack for ensemble sd",
-      "raster stack for individual members"
+      "raster stack for trends coefficients (ensemble)",
+      "raster stack for trends p.values (ensemble)",
+      "raster stack for trends coefficients (models)",
+      "raster stack for trends p.values (models)",
+      "dataframe for trends (ensemble)",
+      "dataframe for trends (models)"
     )
   ))
 

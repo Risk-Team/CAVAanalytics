@@ -2,6 +2,7 @@ CAVAanalytics
 
 ================
 2023-05-01
+
 ## Introduction: What is CAVA?
 
 CAVA (Climate and Agriculture Risk Visualization and Assessment) is a

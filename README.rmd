@@ -1,8 +1,11 @@
 ---
 title: "CAVAanalytics"
-output: github_document
-toc: true
 date: '2023-05-01'
+toc: true
+output:
+  prettydoc::html_pretty:
+    theme: architect
+    highlight: github
 ---
 
 ```{r setup, include=FALSE}
@@ -19,7 +22,7 @@ CAVA (Climate and Agriculture Risk Visualization and Assessment) is a framework 
 
 CAVAanalytics can be used locally (installation through GitHub), remotely (registered users can access the University of Cantabria JupyterHub with 180 Gb RAM) and through a Docker image. 
 
-| ![framework](https://user-images.githubusercontent.com/40058235/234544688-af8c5a1d-588e-4145-813f-feb0ea2db916.png) | 
+| ![framework](https://github.com/Risk-Team/CAVAanalytics/assets/40058235/d0647a38-a128-496d-9d7b-81365c8c7f62) | 
 |:--:| 
 | *CAVA framework. CAVA can be used through a graphic user interface (CAVA Platform) or through the CAVAanalytics R package. The package can be used locally (GitHub installation), remotely (University of Cantabria JupyterHub) or locally but through a Docker image to solve dependencies issue* |
 

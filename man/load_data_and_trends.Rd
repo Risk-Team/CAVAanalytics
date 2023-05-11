@@ -68,7 +68,7 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 \item{data}{output of load_data}
 }
 \value{
-list with merged raster stacks. To explore the output run attr(output)
+list with merged raster stacks. To explore the output run attributes(output)
 }
 \description{
 Automatically load and process climate model projections in a memory efficient way. Useful for analysing large areas. Arguments historical and country are not available for this function.

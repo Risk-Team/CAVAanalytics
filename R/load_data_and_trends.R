@@ -22,7 +22,7 @@
 #' @param interannual_var logical, whether linear regression is applied to annual variability, measured as standard deviation
 #' @param chunk.size numeric, indicating the number of chunks to. The smaller the better when working with limited RAM.
 #' @param overlap numeric, amount of overlap needed to create the composite. This would depend on the resolution of your data. For example, if your data is at 50 Km resolution, overlap could be 1.5. If your data is at 1 Km resolution, overlap can be 0.5.
-#' @return list with merged raster stacks. To explore the output run attr(output)
+#' @return list with merged raster stacks. To explore the output run attributes(output)
 #'
 #' @export
 

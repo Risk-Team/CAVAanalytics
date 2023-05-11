@@ -39,7 +39,7 @@ trends(
 \item{historical}{logical, whether to visualize trends for the historical period or projections}
 }
 \value{
-list with raster stacks. To explore the output run attr(output)
+list with raster stacks. To explore the output run attributes(output)
 }
 \description{
 Compute multivariate linear regression and linear regression through design-based inference

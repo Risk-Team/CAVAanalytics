@@ -65,8 +65,8 @@ projections <-
           stop("Specify a threshold for which you want to calculate consecutive days")
         if (!any(stringr::str_detect(colnames(data[[1]]), "obs")) &
             isTRUE(bias.correction)) {
-          warning("Bias correction cannot be performed, no observational dataset found. Set as F")
-          bias.correction = F
+         stop("Bias correction cannot be performed, no observational dataset found. Set as F")
+
         }
       }
 

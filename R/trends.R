@@ -12,7 +12,7 @@
 #' @param duration character, either "max" or "total"
 #' @param historical logical, whether to visualize trends for the historical period or projections
 #' @param interannual_var logical, whether linear regression is applied to annual variability, measured as standard deviation
-#' @return list with raster stacks. To explore the output run attr(output)
+#' @return list with raster stacks. To explore the output run attributes(output)
 #'
 #' @export
 #' @examples

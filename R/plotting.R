@@ -440,7 +440,7 @@ message(Sys.time(), " Arguments bins, legend_range, plot_titles and palette are 
     if (ensemble) {
       members <- length(unique(stringr::str_match(names((rst[[3]])), "Member.\\d")))
       rst <- rst[[5]]
-      plts <- suppressMessages(purrr::map(unique(rst$forcing), ~stxplore::ridgeline(dplyr::filter(rst, forcing==.x), group_col = 'date', z_col = 'value', num_grps = n.groups)+
+      plts <- suppressMessages(purrr::map(unique(rst$forcing), ~ ridgeline(dplyr::filter(rst, forcing==.x), group_col = 'date', z_col = 'value', num_grps = n.groups)+
                            ggplot2::ggtitle(.x)+
                            ggplot2::theme_bw()+
                            ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5), legend.position = "bottom",
@@ -454,7 +454,7 @@ message(Sys.time(), " Arguments bins, legend_range, plot_titles and palette are 
       rst <- rst[[6]]
       plts <- suppressMessages(purrr::map(unique(rst$forcing), ~ purrr::map(unique(rst$Var1), function(model)
 
-        stxplore::ridgeline(dplyr::filter(rst, forcing==.x, Var1==model), group_col = 'date', z_col = 'value', num_grps = n.groups)+
+        ridgeline(dplyr::filter(rst, forcing==.x, Var1==model), group_col = 'date', z_col = 'value', num_grps = n.groups)+
           ggplot2::ggtitle(paste0(model, "_", .x))+
           ggplot2::theme_bw()+
           ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5), legend.position = "bottom",

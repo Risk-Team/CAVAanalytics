@@ -15,7 +15,6 @@ Imports:
     purrr, 
     future,
     raster, 
-    sp, 
     stringr,
     transformeR,
     downscaleR,
@@ -34,7 +33,7 @@ Imports:
     reshape2,
     loadeR,
     patchwork,
-    stxplore
+    ggridges
 Depends:
     loadeR.java,
     magrittr

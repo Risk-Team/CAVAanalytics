@@ -2,7 +2,6 @@
 #'
 #' Automatically load climate models (netCDF/NcML) in a tidy format.
 
-#' @import climate4R.UDG
 
 #' @param path.to.data path to the directory containing the RCP/SSPs folders and historical simulations (optional). For example,
 #' home/user/data/. data would contain subfolders with the climate/impact models. Historical simulations have to be contained in a folder called historical. If path.to.data is set as CORDEX-CORE, CORDEX-CORE simulations from RCM RegCM4 will be loaded
@@ -12,8 +11,8 @@
 #' @param xlim numeric of length = 2, with minimum and maximum longitude coordinates, in decimal degrees, of the bounding box selected.
 #' @param ylim same as xlim, but for the selection of the latitudinal range.
 #' @param path.to.obs character, default to NULL, if not, indicate the absolute path to the directory containing a reanalysis dataset, for example ERA5. To automatically load W5E5. specify W5E5
-#' @param years.proj Numeric, years to select for projections
-#' @param years.hist Numeric, years to select for historical simulations and observations
+#' @param years.proj numeric, years to select for projections
+#' @param years.hist numeric, years to select for historical simulations and observations
 #' @param domain specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE. Default is NULL
 #' @param buffer numeric. Default is zero.
 #' @param aggr.m character. Monthly aggregation. One of none, mean or sum

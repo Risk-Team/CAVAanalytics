@@ -5,14 +5,13 @@
 \title{Load data and apply trends in spatial chunks}
 \usage{
 load_data_and_trends(
-  country,
   variable,
   years.hist = NULL,
   years.proj,
   path.to.data,
   path.to.obs = NULL,
-  xlim = NULL,
-  ylim = NULL,
+  xlim,
+  ylim,
   aggr.m = "none",
   chunk.size,
   overlap = 1.5,
@@ -27,12 +26,9 @@ load_data_and_trends(
 )
 }
 \arguments{
-\item{country}{character, in English, indicating the country of interest. To select a bounding box,
-set country to NULL and define arguments xlim and ylim}
-
 \item{variable}{character, indicating variable name}
 
-\item{years.hist}{Numerical range, years to select for historical simulations and observations}
+\item{years.hist}{Numerical range, years to select for historical simulations and observations. Only used for bias-correction, load_data_and_trends does not provide results for the historical period. Use load_data and trends instead}
 
 \item{years.proj}{Numerical range, years to select for projections}
 
@@ -72,8 +68,8 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 \item{data}{output of load_data}
 }
 \value{
-list with merged raster stacks
+list with merged raster stacks. To explore the output run attr(output)
 }
 \description{
-Automatically load and process climate model projections in a memory efficient way. Useful for analysing large areas
+Automatically load and process climate model projections in a memory efficient way. Useful for analysing large areas. Arguments historical and country are not available for this function.
 }

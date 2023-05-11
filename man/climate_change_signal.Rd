@@ -2,7 +2,7 @@
 % Please edit documentation in R/climate_change_signal.R
 \name{climate_change_signal}
 \alias{climate_change_signal}
-\title{climate change signal analysis}
+\title{Calculation of climate change signal}
 \usage{
 climate_change_signal(
   data,
@@ -33,7 +33,7 @@ climate_change_signal(
 \item{scaling.type}{character, default to "additive". Indicates whether to use multiplicative or additive approach for bias correction}
 }
 \value{
-list with raster stacks
+list with raster stacks. .[[1]] contains the raster stack for the ensemble mean. .[[2]] contains the rasterstack for the ensemble sd and .[[3]] conins the rasterstack for individual models
 }
 \description{
 Automatically computes climate change signal

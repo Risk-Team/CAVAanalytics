@@ -2,7 +2,7 @@
 % Please edit documentation in R/trends.R
 \name{trends}
 \alias{trends}
-\title{trends analysis}
+\title{Analysis of long-term trends}
 \usage{
 trends(
   data,
@@ -32,17 +32,17 @@ trends(
 
 \item{consecutive}{logical, to use in conjunction with lowert or uppert}
 
-\item{duration}{character, either "max" or "total".}
+\item{duration}{character, either "max" or "total"}
 
 \item{interannual_var}{logical, whether linear regression is applied to annual variability, measured as standard deviation}
 
 \item{historical}{logical, whether to visualize trends for the historical period or projections}
 }
 \value{
-list with raster stacks
+list with raster stacks. To explore the output run attr(output)
 }
 \description{
-Perform linear trends.
+Compute multivariate linear regression and linear regression through design-based inference
 }
 \examples{
 exmp <- load_data(country = "Sudan", variable="pr", years.hist=1995, years.proj=2030:2060,

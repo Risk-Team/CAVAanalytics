@@ -1,7 +1,7 @@
 Package: CAVAanalytics
 Type: Package
 Title: Easy loading and visualization of climate models
-Version: 1.1.1
+Version: 1.1.6
 Author: Riccardo Soldan
 Maintainer: Riccardo Soldan <riccardosoldan@hotmail.it>
 Description: A framework to work with multiple NetCDF files

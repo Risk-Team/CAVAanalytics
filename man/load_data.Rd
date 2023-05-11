@@ -31,9 +31,9 @@ set country to NULL and define arguments xlim and ylim}
 
 \item{ylim}{same as xlim, but for the selection of the latitudinal range.}
 
-\item{years.proj}{Numeric, years to select for projections}
+\item{years.proj}{numeric, years to select for projections}
 
-\item{years.hist}{Numeric, years to select for historical simulations and observations}
+\item{years.hist}{numeric, years to select for historical simulations and observations}
 
 \item{path.to.obs}{character, default to NULL, if not, indicate the absolute path to the directory containing a reanalysis dataset, for example ERA5. To automatically load W5E5. specify W5E5}
 

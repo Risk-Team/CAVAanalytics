@@ -2,7 +2,7 @@
 % Please edit documentation in R/projections.R
 \name{projections}
 \alias{projections}
-\title{Projections analysis}
+\title{Analysis of projections}
 \usage{
 projections(
   data,
@@ -33,10 +33,10 @@ projections(
 \item{duration}{character, either "max" or "total".}
 }
 \value{
-list with raster stacks
+list with raster stacks. .[[1]] contains the raster stack for the ensemble mean. .[[2]] contains the rasterstack for the ensemble sd and .[[3]] conins the rasterstack for individual models
 }
 \description{
-Automatically process climate model projections and compute useful statistics.
+Automatically process climate model projections and compute useful statistics
 }
 \examples{
 load_data(country = "Somalia", variable="tas", years.hist=2000, years.proj=2010,

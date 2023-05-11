@@ -1,8 +1,6 @@
-
-
-#' trends analysis
+#' Analysis of long-term trends
 #'
-#' Perform linear trends.
+#' Compute multivariate linear regression and linear regression through design-based inference
 
 #' @param data output of load_data
 #' @param bias.correction logical, whether to perform bias.correction or not
@@ -11,10 +9,10 @@
 #' @param season numeric, seasons to select. For example, 1:12
 #' @param scaling.type character, default to "additive". Indicates whether to use multiplicative or additive approach for bias correction.
 #' @param consecutive logical, to use in conjunction with lowert or uppert
-#' @param duration character, either "max" or "total".
+#' @param duration character, either "max" or "total"
 #' @param historical logical, whether to visualize trends for the historical period or projections
 #' @param interannual_var logical, whether linear regression is applied to annual variability, measured as standard deviation
-#' @return list with raster stacks
+#' @return list with raster stacks. To explore the output run attr(output)
 #'
 #' @export
 #' @examples

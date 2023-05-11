@@ -3,8 +3,6 @@
 #' Automatically load and process climate model projections in a memory efficient way. Useful for analysing large areas
 #' @param path.to.data path to the directory containing the RCP/SSPs folders and historical simulations (optional). For example,
 #' home/user/data/. data would contain subfolders with the climate/impact models. Historical simulations have to be contained in a folder called historical. If path.to.data is set as CORDEX-CORE, CORDEX-CORE simulations from RCM RegCM4 will be loaded
-#' @param country character, in English, indicating the country of interest. To select a bounding box,
-#' set country to NULL and define arguments xlim and ylim
 #' @param variable  character, indicating variable name
 #' @param xlim numeric of length = 2, with minimum and maximum longitude coordinates, in decimal degrees, of the bounding box selected.
 #' @param ylim same as xlim, but for the selection of the latitudinal range.
@@ -21,19 +19,20 @@
 #' @param scaling.type character, default to "additive". Indicates whether to use multiplicative or additive approach for bias correction
 #' @param consecutive logical, to use in conjunction with lowert or uppert
 #' @param duration character, either "max" or "total"
-#' @param chunk.size numeric, indicating the number of chunks to. The smaller the better when working with limited RAM.
-#' @param overlap numeric, amount of overlap needed to create the composite. This would depend on the resolution of your data. For example, if your data is at 50 Km resolution, overlap could be 1.5. If your data is at 1 Km resolution, overlap can be 0.5.
-#' @return list with raster stacks
+#' @param chunk.size numeric, indicating the number of chunks. The smaller the better when working with limited RAM
+#' @param overlap numeric, amount of overlap needed to create the composite. This would depend on the resolution of your data. For example, if your data is at 50 Km resolution, overlap could be 1.5. If your data is at 1 Km resolution, overlap can be 0.5
+#' @return list with raster stacks. .[[1]] contains the raster stack for the ensemble mean. .[[2]] contains the rasterstack for the ensemble sd and .[[3]] conins the rasterstack for individual models
 #'
 #' @export
 
 
 load_data_and_projections <- function(country, variable, years.hist=NULL,
                                       years.proj, path.to.data,
-                                      path.to.obs=NULL, xlim=NULL, ylim=NULL,aggr.m="none",
+                                      path.to.obs=NULL, xlim, ylim,aggr.m="none",
                                       chunk.size, overlap=1.5, season, lowert=NULL, uppert=NULL,consecutive=F,scaling.type="additive", duration="max", bias.correction=F  ) {
 
   # calculate number of chunks based on xlim and ylim
+
   x_chunks <- seq(from = xlim[1], to = xlim[2], by = chunk.size)
   y_chunks <- seq(from = ylim[1], to = ylim[2], by = chunk.size)
 
@@ -49,7 +48,7 @@ load_data_and_projections <- function(country, variable, years.hist=NULL,
       ylim_chunk <- c(y_chunks[j]-overlap, y_chunks[j+1])
 
       # load data for current chunk
-      proj_chunk <- load_data(country = country, variable = variable, years.hist = years.hist, years.proj = years.proj,
+      proj_chunk <- load_data(country = NULL, variable = variable, years.hist = years.hist, years.proj = years.proj,
                               path.to.data = path.to.data, path.to.obs = path.to.obs, xlim = xlim_chunk, ylim = ylim_chunk, aggr.m = aggr.m, buffer=0) %>%
 
         # do projections for current chunk

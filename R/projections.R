@@ -1,6 +1,6 @@
-#' Projections analysis
+#' Analysis of projections
 #'
-#' Automatically process climate model projections and compute useful statistics.
+#' Automatically process climate model projections and compute useful statistics
 
 #' @param data output of load_data
 #' @param bias.correction logical
@@ -10,7 +10,7 @@
 #' @param scaling.type character, default to "additive". Indicates whether to use multiplicative or additive approach for bias correction
 #' @param consecutive logical, to use in conjunction with lowert or uppert
 #' @param duration character, either "max" or "total".
-#' @return list with raster stacks
+#' @return list with raster stacks. .[[1]] contains the raster stack for the ensemble mean. .[[2]] contains the rasterstack for the ensemble sd and .[[3]] conins the rasterstack for individual models
 #'
 #' @export
 #' @examples

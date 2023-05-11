@@ -1,4 +1,4 @@
-#' climate change signal analysis
+#' Calculation of climate change signal
 #'
 #' Automatically computes climate change signal
 
@@ -10,7 +10,7 @@
 #' @param duration character, either "max" or "total"
 #' @param bias.correction logical
 #' @param scaling.type character, default to "additive". Indicates whether to use multiplicative or additive approach for bias correction
-#' @return list with raster stacks
+#' @return list with raster stacks. .[[1]] contains the raster stack for the ensemble mean. .[[2]] contains the rasterstack for the ensemble sd and .[[3]] conins the rasterstack for individual models
 #'
 #' @export
 #' @examples

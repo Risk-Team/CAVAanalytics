@@ -5,14 +5,13 @@
 \title{Load data and apply climate change signal in spatial chunks}
 \usage{
 load_data_and_climate_change_signal(
-  country,
   variable,
   years.hist = NULL,
   years.proj,
   path.to.data,
   path.to.obs = NULL,
-  xlim = NULL,
-  ylim = NULL,
+  xlim,
+  ylim,
   aggr.m = "none",
   chunk.size,
   overlap = 1.5,
@@ -26,9 +25,6 @@ load_data_and_climate_change_signal(
 )
 }
 \arguments{
-\item{country}{character, in English, indicating the country of interest. To select a bounding box,
-set country to NULL and define arguments xlim and ylim}
-
 \item{variable}{character, indicating variable name}
 
 \item{years.hist}{Numerical range, years to select for historical simulations and observations}
@@ -48,7 +44,7 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 
 \item{chunk.size}{numeric, indicating the number of chunks to. The smaller the better when working with limited RAM.}
 
-\item{overlap}{numeric, amount of overlap needed to create the composite. This would depend on the resolution of your data. For example, if your data is at 50 Km resolution, overlap could be 1.5. If your data is at 1 Km resolution, overlap can be 0.5.}
+\item{overlap}{numeric, amount of overlap needed to create the composite. This would depend on the resolution of your data. For example, if your data is at 50 Km resolution, overlap could be 1.5. If your data is at 1 Km resolution, overlap can be 0.5}
 
 \item{season}{numeric, seasons to select. For example, 1:12}
 
@@ -69,7 +65,7 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 \item{data}{output of load_data}
 }
 \value{
-list with raster stacks
+list with raster stacks. .[[1]] contains the raster stack for the ensemble mean. .[[2]] contains the rasterstack for the ensemble sd and .[[3]] conins the rasterstack for individual models
 }
 \description{
 Automatically load and process climate models in a memory efficient way. Useful for analysing large areas

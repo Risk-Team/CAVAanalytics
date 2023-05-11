@@ -285,13 +285,16 @@ plotting.CAVAanalytics_trends <- function(rst, palette=NULL, legend_range=NULL, 
   stopifnot(is.logical(ensemble))
   stopifnot(is.logical(bins))
   stopifnot(is.logical(frequencies))
+  if (length(rst)>4 & is.null(rst[[5]]) & frequencies) {
+     stop(Sys.time(), " Set frequencies as FALSE, not supported when loading and analsing data in chunks")
 
+  }
 
   # messages
 
   if (isTRUE(ensemble)) {
-    message(Sys.time(), paste0(ifelse(frequencies," Visualizing ensemble, frequencies ", "Visualizing ensemble ")))
-  } else {message(Sys.time(), paste0(ifelse(frequencies," Visualizing individual members (frequencies)", "Visualizing individual members ")))}
+    message(Sys.time(), paste0(ifelse(frequencies," Visualizing ensemble, frequencies ", " Visualizing ensemble ")))
+  } else {message(Sys.time(), paste0(ifelse(frequencies," Visualizing individual members (frequencies)", " Visualizing individual members ")))}
 
   message(Sys.time(), " Prepare for plotting")
 
@@ -323,8 +326,6 @@ if (!frequencies) {
   } else {
     legend_range}
 
-  # Suppress warnings
-  #options(warn = -1)
 
   # Get countries data
   countries <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")

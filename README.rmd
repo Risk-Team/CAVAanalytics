@@ -1,6 +1,7 @@
 ---
 title: "CAVAanalytics"
 output: github_document
+toc: true
 date: '2023-05-01'
 ---
 
@@ -8,6 +9,9 @@ date: '2023-05-01'
 knitr::opts_chunk$set(echo = TRUE)
 knitr::include_graphics
 ```
+
+<img src="https://img.shields.io/github/commits-since/Risk-team/CAVAanalytics/v1.0.0-alpha?include_prereleases" alt="GitHub Commits Since">
+<img src="https://img.shields.io/github/r-package/v/Risk-team/CAVAanalytics/master" alt="GitHub R package version">
 
 ## Introduction: What is CAVA?
 

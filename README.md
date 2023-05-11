@@ -2,6 +2,11 @@ CAVAanalytics
 ================
 2023-05-01
 
+true
+
+<img src="https://img.shields.io/github/commits-since/Risk-team/CAVAanalytics/v1.0.0-alpha?include_prereleases" alt="GitHub Commits Since">
+<img src="https://img.shields.io/github/r-package/v/Risk-team/CAVAanalytics/master" alt="GitHub R package version">
+
 ## Introduction: What is CAVA?
 
 CAVA (Climate and Agriculture Risk Visualization and Assessment) is a

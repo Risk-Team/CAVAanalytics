@@ -29,7 +29,7 @@
 load_data_and_projections <- function(country, variable, years.hist=NULL,
                                       years.proj, path.to.data,
                                       path.to.obs=NULL, xlim, ylim,aggr.m="none",
-                                      chunk.size, overlap=1.5, season, lowert=NULL, uppert=NULL,consecutive=F,scaling.type="additive", duration="max", bias.correction=F  ) {
+                                      chunk.size, overlap=1.5, season, lowert=NULL, uppert=NULL,consecutive=F,scaling.type="additive", duration="max", bias.correction=F, domain=NULL  ) {
 
   # calculate number of chunks based on xlim and ylim
 
@@ -49,7 +49,7 @@ load_data_and_projections <- function(country, variable, years.hist=NULL,
 
       # load data for current chunk
       proj_chunk <- load_data(country = NULL, variable = variable, years.hist = years.hist, years.proj = years.proj,
-                              path.to.data = path.to.data, path.to.obs = path.to.obs, xlim = xlim_chunk, ylim = ylim_chunk, aggr.m = aggr.m, buffer=0) %>%
+                              path.to.data = path.to.data, domain=domain, path.to.obs = path.to.obs, xlim = xlim_chunk, ylim = ylim_chunk, aggr.m = aggr.m, buffer=0) %>%
 
         # do projections for current chunk
         projections(., season = season, bias.correction = bias.correction,

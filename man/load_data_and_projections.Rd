@@ -22,7 +22,8 @@ load_data_and_projections(
   consecutive = F,
   scaling.type = "additive",
   duration = "max",
-  bias.correction = F
+  bias.correction = F,
+  domain = NULL
 )
 }
 \arguments{

@@ -44,7 +44,7 @@ JupyterHub with 180 Gb RAM) and through a Docker image.
 **CAVAanalytics is currently in pre-release.** You can install it
 locally but only few climate models are available for remote access. It
 would work if you have data locally available. Additionally, working
-examples will be made available soon in the tutorial folder.
+examples are available in the tutorial folder.
 
 ## CAVAanalytics
 

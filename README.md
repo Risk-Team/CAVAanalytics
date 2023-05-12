@@ -24,10 +24,6 @@ CAVA (Climate and Agriculture Risk Visualization and Assessment) is a
 framework and approach to the analysis and visualization of
 state-of-the-art climate data. CAVA consists of a Platform (GUI), which is freely accessible and satisfies the needs of most standard users, and a R package (**CAVAanalytics**) which allows remote access to climate data and several functions for more advanced climate data analysis.
 
-CAVAanalytics can be used locally (installation through GitHub),
-remotely (registered users can access the University of Cantabria JupyterHub with 180 Gb RAM) and through a Docker image.
-
-
 ## Introduction: What is CAVA?
 
 CAVA (Climate and Agriculture Risk Visualization and Assessment) is a

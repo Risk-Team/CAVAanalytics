@@ -27,8 +27,6 @@ state-of-the-art climate data. CAVA consists of a Platform (GUI), which is freel
 CAVAanalytics can be used locally (installation through GitHub),
 remotely (registered users can access the University of Cantabria JupyterHub with 180 Gb RAM) and through a Docker image.
 
-![CAVA Framework](https://github.com/Risk-Team/CAVAanalytics/assets/40058235/d
-
 
 ## Introduction: What is CAVA?
 

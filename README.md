@@ -1,9 +1,31 @@
-CAVAanalytics
-================
-2023-05-01
+# CAVAanalytics
 
 <img src="https://img.shields.io/github/commits-since/Risk-team/CAVAanalytics/v1.0.0-alpha?include_prereleases" alt="GitHub Commits Since">
 <img src="https://img.shields.io/github/r-package/v/Risk-team/CAVAanalytics/master" alt="GitHub R package version">
+
+## Table of Contents
+- [Introduction: What is CAVA?](#introduction-what-is-cava)
+- [Current Status](#current-status)
+- [CAVAanalytics](#cavaanalytics)
+- [Installation](#installation)
+    - [1) Locally from GitHub](#1-locally-from-github)
+    - [2) JupyterHub](#2-jupyterhub)
+    - [3) Locally through Docker](#3-locally-through-docker)
+- [Using CAVAanalytics](#using-cavaanalytics)
+- [Examples](#examples)
+    - [Loading Data, Processing and Visualizing Results](#loading-data-processing-and-visualizing-results)
+
+## Introduction: What is CAVA?
+
+CAVA (Climate and Agriculture Risk Visualization and Assessment) is a
+framework and approach to the analysis and visualization of
+state-of-the-art climate data. CAVA consists of a Platform (GUI), which is freely accessible and satisfies the needs of most standard users, and a R package (**CAVAanalytics**) which allows remote access to climate data and several functions for more advanced climate data analysis.
+
+CAVAanalytics can be used locally (installation through GitHub),
+remotely (registered users can access the University of Cantabria JupyterHub with 180 Gb RAM) and through a Docker image.
+
+![CAVA Framework](https://github.com/Risk-Team/CAVAanalytics/assets/40058235/d
+
 
 ## Introduction: What is CAVA?
 

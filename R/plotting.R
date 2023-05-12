@@ -443,7 +443,7 @@ message(Sys.time(), " Arguments bins, legend_range, plot_titles and palette are 
       plts <- suppressMessages(purrr::map(unique(rst$forcing), ~ ridgeline(dplyr::filter(rst, forcing==.x), group_col = 'date', z_col = 'value', num_grps = n.groups)+
                            ggplot2::ggtitle(.x)+
                            ggplot2::theme_bw()+
-                           ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5), legend.position = "bottom",
+                           ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5), legend.position = "none",
                                           legend.key.height= ggplot2::unit(0.2, 'cm'), legend.key.width= ggplot2::unit(1, 'cm'))))
 
       p <- patchwork::wrap_plots(plts)
@@ -457,7 +457,7 @@ message(Sys.time(), " Arguments bins, legend_range, plot_titles and palette are 
         ridgeline(dplyr::filter(rst, forcing==.x, Var1==model), group_col = 'date', z_col = 'value', num_grps = n.groups)+
           ggplot2::ggtitle(paste0(model, "_", .x))+
           ggplot2::theme_bw()+
-          ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5), legend.position = "bottom",
+          ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5), legend.position = "none",
                          legend.key.height= ggplot2::unit(0.2, 'cm'), legend.key.width= ggplot2::unit(1, 'cm')))
 
       )

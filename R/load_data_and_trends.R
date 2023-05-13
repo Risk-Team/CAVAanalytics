@@ -11,6 +11,7 @@
 #' @param years.hist Numerical range, years to select for historical simulations and observations. Only used for bias-correction, load_data_and_trends does not provide results for the historical period. Use load_data and trends instead
 #' @param domain specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE. Default is NULL
 #' @param aggr.m character, monthly aggregation. One of none, mean or sum
+#' @param domain specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE. Default is NULL
 #' @param data output of load_data
 #' @param bias.correction logical
 #' @param uppert  numeric of length=1, upper threshold
@@ -29,7 +30,7 @@
 
 load_data_and_trends <- function(variable, years.hist=NULL,
                                                 years.proj, path.to.data,
-                                                path.to.obs=NULL, xlim, ylim,aggr.m="none",
+                                                path.to.obs=NULL, xlim, ylim,aggr.m="none", domain=NULL,
                                                 chunk.size, overlap=1.5, season, lowert=NULL, uppert=NULL,consecutive=F,scaling.type="additive", duration="max", bias.correction=F , interannual_var) {
 
   # calculate number of chunks based on xlim and ylim
@@ -49,7 +50,7 @@ load_data_and_trends <- function(variable, years.hist=NULL,
 
       # load data for current chunk
       proj_chunk <- load_data(country = NULL, variable = variable, years.hist = years.hist, years.proj = years.proj,
-                              path.to.data = path.to.data, path.to.obs = path.to.obs, xlim = xlim_chunk, ylim = ylim_chunk, aggr.m = aggr.m, buffer=0) %>%
+                              path.to.data = path.to.data,  domain=domain, path.to.obs = path.to.obs, xlim = xlim_chunk, ylim = ylim_chunk, aggr.m = aggr.m, buffer=0) %>%
 
         # do projections for current chunk
         trends(., season = season, bias.correction = bias.correction,

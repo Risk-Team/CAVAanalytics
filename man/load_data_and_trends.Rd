@@ -13,6 +13,7 @@ load_data_and_trends(
   xlim,
   ylim,
   aggr.m = "none",
+  domain = NULL,
   chunk.size,
   overlap = 1.5,
   season,
@@ -43,6 +44,8 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 
 \item{aggr.m}{character, monthly aggregation. One of none, mean or sum}
 
+\item{domain}{specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE. Default is NULL}
+
 \item{chunk.size}{numeric, indicating the number of chunks to. The smaller the better when working with limited RAM.}
 
 \item{overlap}{numeric, amount of overlap needed to create the composite. This would depend on the resolution of your data. For example, if your data is at 50 Km resolution, overlap could be 1.5. If your data is at 1 Km resolution, overlap can be 0.5.}
@@ -62,8 +65,6 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 \item{bias.correction}{logical}
 
 \item{interannual_var}{logical, whether linear regression is applied to annual variability, measured as standard deviation}
-
-\item{domain}{specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE. Default is NULL}
 
 \item{data}{output of load_data}
 }

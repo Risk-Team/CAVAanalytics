@@ -451,7 +451,7 @@ trends = function(data,
                    historical,
                    interannual_var)
   # set parallel processing
-  future::plan(future::multisession, workers = 2)
+  future::plan(future::multisession, workers = 1)
 
   # filter data by season
   datasets <- filter_data_by_season(datasets, season)

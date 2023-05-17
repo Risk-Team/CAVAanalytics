@@ -120,7 +120,7 @@ models) and then work with the output of the load_data with other
 
 ## Examples
 
-### Loading data, processing and visualizing results (more examples in the tutorials folder)
+### Loading data, processing and visualizing results (more examples in the [tutorials folder](https://github.com/Risk-Team/CAVAanalytics/tree/main/tutorials))
 
 **To load CORDEX-CORE data stored remotely**, set path.to.data to
 “CORDEX-CORE” and specify the domain. This will load CORDEX-CORE

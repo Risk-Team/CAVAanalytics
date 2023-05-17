@@ -10,6 +10,7 @@
 #' @param duration character, either "max" or "total"
 #' @param bias.correction logical
 #' @param scaling.type character, default to "additive". Indicates whether to use multiplicative or additive approach for bias correction
+#' @param n.cores numeric, number of cores to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage
 #' @return list with raster stacks. .[[1]] contains the raster stack for the ensemble mean. .[[2]] contains the rasterstack for the ensemble sd and .[[3]] conins the rasterstack for individual models
 #'
 #' @export
@@ -26,6 +27,7 @@ climate_change_signal <- function(data,
                                   consecutive = F,
                                   duration = "max",
                                   bias.correction=F,
+                                  n.cores=1,
                                   scaling.type="additive") {
   # Intermediate functions --------------------------------------------------
 
@@ -309,7 +311,7 @@ climate_change_signal <- function(data,
     create_message(var, uppert, lowert, consecutive, duration, bias.correction)
 
   # set parallel processing
-  future::plan(future::multisession, workers = 1)
+  future::plan(future::multisession, workers = n.cores)
 
   # filter data by season
   datasets <- filter_data_by_season(datasets, season)

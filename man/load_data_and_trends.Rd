@@ -23,7 +23,8 @@ load_data_and_trends(
   scaling.type = "additive",
   duration = "max",
   bias.correction = F,
-  interannual_var
+  interannual_var,
+  n.cores = 1
 )
 }
 \arguments{
@@ -65,6 +66,8 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 \item{bias.correction}{logical}
 
 \item{interannual_var}{logical, whether linear regression is applied to annual variability, measured as standard deviation}
+
+\item{n.cores}{numeric, number of cores to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage}
 
 \item{data}{output of load_data}
 }

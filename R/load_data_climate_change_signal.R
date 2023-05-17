@@ -18,6 +18,7 @@
 #' @param season numeric, seasons to select. For example, 1:12
 #' @param scaling.type character, default to "additive". Indicates whether to use multiplicative or additive approach for bias correction
 #' @param consecutive logical, to use in conjunction with lowert or uppert
+#' @param n.cores numeric, number of cores to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage
 #' @param duration character, either "max" or "total"
 #' @param chunk.size numeric, indicating the number of chunks to. The smaller the better when working with limited RAM.
 #' @param overlap numeric, amount of overlap needed to create the composite. This would depend on the resolution of your data. For example, if your data is at 50 Km resolution, overlap could be 1.5. If your data is at 1 Km resolution, overlap can be 0.5
@@ -29,7 +30,7 @@
 load_data_and_climate_change_signal <- function(variable, years.hist=NULL,
                                       years.proj, path.to.data,
                                       path.to.obs=NULL, xlim, ylim,aggr.m="none",
-                                      chunk.size, overlap=1.5, season, lowert=NULL, uppert=NULL,consecutive=F,scaling.type="additive", duration="max", bias.correction=F  ) {
+                                      chunk.size, overlap=1.5, season, lowert=NULL, uppert=NULL,consecutive=F,scaling.type="additive", duration="max", bias.correction=F, n.cores=1) {
 
   # calculate number of chunks based on xlim and ylim
 
@@ -50,12 +51,14 @@ load_data_and_climate_change_signal <- function(variable, years.hist=NULL,
       # load data for current chunk
       proj_chunk <- load_data(country =NULL, variable = variable, years.hist = years.hist, years.proj = years.proj,
                               path.to.data = path.to.data, path.to.obs = path.to.obs, xlim = xlim_chunk, ylim = ylim_chunk, aggr.m = aggr.m, buffer=0) %>%
+        # set parallel processing
+        future::plan(future::multisession, workers = n.cores)
 
-        # do projections for current chunk
+        # do ccs for current chunk
         climate_change_signal(., season = season, bias.correction = bias.correction,
                     uppert = uppert, lowert = lowert, consecutive = consecutive,
                     scaling.type =   scaling.type,
-                    duration =  duration)
+                    duration =  duration, n.cores=n.cores)
 
       # add chunk to output list
       out_list[[paste0("chunk_", i, "_", j)]] <- proj_chunk

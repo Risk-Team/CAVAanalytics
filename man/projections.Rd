@@ -12,6 +12,7 @@ projections(
   season,
   scaling.type = "additive",
   consecutive = F,
+  n.cores = 1,
   duration = "max"
 )
 }
@@ -30,7 +31,9 @@ projections(
 
 \item{consecutive}{logical, to use in conjunction with lowert or uppert}
 
-\item{duration}{character, either "max" or "total".}
+\item{n.cores}{numeric, number of cores to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage}
+
+\item{duration}{character, either "max" or "total"}
 }
 \value{
 list with raster stacks. .[[1]] contains the raster stack for the ensemble mean. .[[2]] contains the rasterstack for the ensemble sd and .[[3]] conins the rasterstack for individual models

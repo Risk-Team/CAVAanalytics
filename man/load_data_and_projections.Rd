@@ -23,7 +23,8 @@ load_data_and_projections(
   scaling.type = "additive",
   duration = "max",
   bias.correction = F,
-  domain = NULL
+  domain = NULL,
+  n.cores = 1
 )
 }
 \arguments{
@@ -63,6 +64,8 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 \item{bias.correction}{logical}
 
 \item{domain}{specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE. Default is NULL}
+
+\item{n.cores}{numeric, number of cores to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage}
 
 \item{data}{output of load_data}
 }

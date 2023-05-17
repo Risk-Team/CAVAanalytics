@@ -21,7 +21,8 @@ load_data_and_climate_change_signal(
   consecutive = F,
   scaling.type = "additive",
   duration = "max",
-  bias.correction = F
+  bias.correction = F,
+  n.cores = 1
 )
 }
 \arguments{
@@ -59,6 +60,8 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 \item{duration}{character, either "max" or "total"}
 
 \item{bias.correction}{logical}
+
+\item{n.cores}{numeric, number of cores to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage}
 
 \item{domain}{specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE. Default is NULL}
 

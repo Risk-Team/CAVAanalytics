@@ -14,7 +14,8 @@ trends(
   consecutive = FALSE,
   duration = "max",
   interannual_var = FALSE,
-  historical = FALSE
+  historical = FALSE,
+  n.cores = 1
 )
 }
 \arguments{
@@ -37,6 +38,8 @@ trends(
 \item{interannual_var}{logical, whether linear regression is applied to annual variability, measured as standard deviation}
 
 \item{historical}{logical, whether to visualize trends for the historical period or projections}
+
+\item{n.cores}{numeric, number of cores to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage}
 }
 \value{
 list with raster stacks. To explore the output run attributes(output)

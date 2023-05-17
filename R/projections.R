@@ -9,7 +9,8 @@
 #' @param season numeric, seasons to select. For example, 1:12
 #' @param scaling.type character, default to "additive". Indicates whether to use multiplicative or additive approach for bias correction
 #' @param consecutive logical, to use in conjunction with lowert or uppert
-#' @param duration character, either "max" or "total".
+#' @param duration character, either "max" or "total"
+#' @param n.cores numeric, number of cores to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage
 #' @return list with raster stacks. .[[1]] contains the raster stack for the ensemble mean. .[[2]] contains the rasterstack for the ensemble sd and .[[3]] conins the rasterstack for individual models
 #'
 #' @export
@@ -27,6 +28,7 @@ projections <-
            season,
            scaling.type = "additive",
            consecutive = F,
+           n.cores=1,
            duration = "max") {
     # Intermediate functions --------------------------------------------------
 
@@ -299,7 +301,7 @@ projections <-
       create_message(var, bias.correction, uppert, lowert, consecutive, duration)
 
     # set parallel processing
-    future::plan(future::multisession, workers = 1)
+    future::plan(future::multisession, workers = n.cores)
 
     # filter data by season
     datasets <- filter_data_by_season(datasets, season)

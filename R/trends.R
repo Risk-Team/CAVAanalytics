@@ -12,6 +12,7 @@
 #' @param duration character, either "max" or "total"
 #' @param historical logical, whether to visualize trends for the historical period or projections
 #' @param interannual_var logical, whether linear regression is applied to annual variability, measured as standard deviation
+#' @param n.cores numeric, number of cores to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage
 #' @return list with raster stacks. To explore the output run attributes(output)
 #'
 #' @export
@@ -30,7 +31,8 @@ trends = function(data,
                   consecutive = FALSE,
                   duration = "max",
                   interannual_var=FALSE,
-                  historical = FALSE) {
+                  historical = FALSE,
+                  n.cores=1) {
   # intermediate functions --------------------------------------------------
 
   # checking inputs requirement, including correct specification of function arguments
@@ -451,7 +453,7 @@ trends = function(data,
                    historical,
                    interannual_var)
   # set parallel processing
-  future::plan(future::multisession, workers = 1)
+  future::plan(future::multisession, workers = n.cores)
 
   # filter data by season
   datasets <- filter_data_by_season(datasets, season)

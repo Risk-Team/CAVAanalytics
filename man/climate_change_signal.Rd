@@ -12,6 +12,7 @@ climate_change_signal(
   consecutive = F,
   duration = "max",
   bias.correction = F,
+  n.cores = 1,
   scaling.type = "additive"
 )
 }
@@ -29,6 +30,8 @@ climate_change_signal(
 \item{duration}{character, either "max" or "total"}
 
 \item{bias.correction}{logical}
+
+\item{n.cores}{numeric, number of cores to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage}
 
 \item{scaling.type}{character, default to "additive". Indicates whether to use multiplicative or additive approach for bias correction}
 }

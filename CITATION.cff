@@ -1,0 +1,19 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: CAVAanalytics
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Riccardo
+    family-names: Soldan
+    email: riccardosoldan@hotmail.it
+    orcid: 'https://orcid.org/0000-0003-2583-5840'
+abstract: >-
+  Framework for processing, analysing and visualizing
+  multi-model ensembles with remote access to
+  state-of-the-art climate models and reanalysis datasets
+license: GPL-3.0

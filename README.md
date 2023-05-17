@@ -13,9 +13,9 @@
 - [Current Status](#current-status)
 - [CAVAanalytics](#cavaanalytics)
 - [Installation](#installation)
-    - [1) Locally from GitHub](#1-locally-from-github)
+    - [1) Locally](#1-locally)
     - [2) JupyterHub](#2-jupyterhub)
-    - [3) Locally through Docker](#3-locally-through-docker)
+    - [3) Docker](#3-docker)
 - [Using CAVAanalytics](#using-cavaanalytics)
 - [Examples](#examples)
     - [Loading Data, Processing and Visualizing Results](#loading-data-processing-and-visualizing-results)
@@ -65,7 +65,7 @@ available.
 
 Based on how you want to use CAVAanalytics, there are three options.
 
-### 1) Locally from GitHub
+### 1) Locally
 
 If you have already installed most of the climaterR packages, you can
 simply install CAVAanalytics from GitHub:
@@ -101,7 +101,7 @@ analysis using a Jupyter Notebook environment. If you would like to
 access these resources, you are welcome to contact
 <riccardo.soldan@fao.org> or <Hideki.Kanamaru@fao.org>
 
-### 3) Locally through Docker
+### 3) Docker
 
 A docker image will be made available soon, containing all the required
 software to immediately start working with CAVAanalytics.

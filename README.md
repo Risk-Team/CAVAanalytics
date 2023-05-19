@@ -43,8 +43,7 @@ JupyterHub with 180 Gb RAM) and through a Docker image.
 
 **CAVAanalytics is currently in pre-release.** You can install it
 locally but only few climate models are available for remote access. It
-would work if you have data locally available. Additionally, working
-examples are available in the tutorial folder.
+would work if you have data locally available or whether you have access to the JupyerHUB of University of Cantabria.
 
 ## CAVAanalytics
 
@@ -73,6 +72,7 @@ simply install CAVAanalytics from GitHub:
     library(devtools)
     install_github("Risk-Team/CAVAanalytics")
 
+**note than only very few climate models are currently available for remote data loading**
 **If you are also new to climate4R**, install its main packages first.
 You can do so by
 
@@ -97,7 +97,7 @@ be troublesome.
 You can request access to the University of Cantabria JupyterHub, where
 CAVAanalytics is already installed. This will give you access to
 computational resources and you would be able to perform your climate
-analysis using a Jupyter Notebook environment. If you would like to
+analysis using a Jupyter Notebook environment. When using the JupyterHub you will be using data physically stored at Cantabria server. If you would like to
 access these resources, you are welcome to contact
 <riccardo.soldan@fao.org> or <Hideki.Kanamaru@fao.org>
 

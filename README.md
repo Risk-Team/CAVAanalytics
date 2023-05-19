@@ -72,7 +72,6 @@ simply install CAVAanalytics from GitHub:
     library(devtools)
     install_github("Risk-Team/CAVAanalytics")
 
-**note than only very few climate models are currently available for remote data loading**
 **If you are also new to climate4R**, install its main packages first.
 You can do so by
 
@@ -91,6 +90,7 @@ page](https://github.com/SantanderMetGroup/loadeR) and the [wiki
 page](https://github.com/SantanderMetGroup/loadeR/wiki/Installation) to
 solve the issue. loadR.java depends on rJava and this installation can
 be troublesome.
+**note than only very few climate models are currently available for remote data loading**
 
 ### 2) JupyterHub
 

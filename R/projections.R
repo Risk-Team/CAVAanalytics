@@ -11,6 +11,7 @@
 #' @param consecutive logical, to use in conjunction with lowert or uppert
 #' @param duration character, either "max" or "total"
 #' @param n.cores numeric, number of cores to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage
+#' @importFrom magrittr %>%
 #' @return list with raster stacks. .[[1]] contains the raster stack for the ensemble mean. .[[2]] contains the rasterstack for the ensemble sd and .[[3]] conins the rasterstack for individual models
 #'
 #' @export
@@ -130,10 +131,10 @@ projections <-
     # subset based on a season of interest
     filter_data_by_season <- function(datasets, season) {
       if (any(stringr::str_detect(colnames(datasets), "obs"))) {
-        datasets %>% dplyr::mutate_at(c("models_mbrs", "obs"),
+        datasets %>%  dplyr::mutate_at(c("models_mbrs", "obs"),
                                       ~ purrr::map(., ~ transformeR::subsetGrid(., season = season)))
       } else {
-        datasets %>% dplyr::mutate_at(c("models_mbrs"),
+        datasets %>%  dplyr::mutate_at(c("models_mbrs"),
                                       ~ purrr::map(., ~ transformeR::subsetGrid(., season = season)))
       }
     }
@@ -190,7 +191,7 @@ projections <-
                             }))
             } else
               .
-          }  %>%  # computing annual aggregation. if threshold is specified, first apply threshold
+          }  %>%   # computing annual aggregation. if threshold is specified, first apply threshold
           dplyr::mutate(
             models_agg_y = furrr::future_map(models_mbrs, function(x)
               suppressMessages(
@@ -229,7 +230,7 @@ projections <-
               raster::crop(., country_shp) %>%
               raster::mask(., country_shp)
             names(rs) <-
-              paste0(x, "_", names(rs)) %>%  stringr::str_remove(., "X")
+              paste0(x, "_", names(rs)) %>%   stringr::str_remove(., "X")
             return(rs)
           }),
           # ensemble SD
@@ -243,7 +244,7 @@ projections <-
               raster::crop(., country_shp) %>%
               raster::mask(., country_shp)
             names(rs) <-
-              paste0(x, "_", names(rs)) %>%  stringr::str_remove(., "X")
+              paste0(x, "_", names(rs)) %>%   stringr::str_remove(., "X")
             return(rs)
           }),
           # individual models
@@ -260,7 +261,7 @@ projections <-
                 raster::mask(., country_shp)
 
               names(rs) <-
-                paste0("Member ", ens, "_", x, "_", names(rs)) %>%  stringr::str_remove(., "X")
+                paste0("Member ", ens, "_", x, "_", names(rs)) %>%   stringr::str_remove(., "X")
               return(rs)
             })
 

@@ -20,7 +20,8 @@
 #' @param n.cores numeric, number of cores to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage
 #' @param duration character, either "max" or "total"
 #' @param chunk.size numeric, indicating the number of chunks to. The smaller the better when working with limited RAM.
-#' @param overlap numeric, amount of overlap needed to create the composite. This would depend on the resolution of your data. For example, if your data is at 50 Km resolution, overlap could be 1.5. If your data is at 1 Km resolution, overlap can be 0.5
+#' @param overlap numeric, amount of overlap needed to create the composite. This would depend on the resolution of your data. For example, if your data is at 50 Km resolution, overlap could be 0.5. If your data is at 1 Km resolution, overlap can be 0.1
+#' @importFrom magrittr %>%
 #' @return list with raster stacks. .[[1]] contains the raster stack for the ensemble mean. .[[2]] contains the rasterstack for the ensemble sd and .[[3]] conins the rasterstack for individual models
 #'
 #' @export
@@ -29,29 +30,33 @@
 load_data_and_climate_change_signal <- function(variable, years.hist=NULL,
                                       years.proj, path.to.data,
                                       path.to.obs=NULL, xlim, ylim,aggr.m="none",
-                                      chunk.size, overlap=1.5, season, lowert=NULL, uppert=NULL,consecutive=F,scaling.type="additive", duration="max", bias.correction=F, n.cores=1) {
+                                      chunk.size, overlap=0.25, season, lowert=NULL, uppert=NULL,consecutive=F,scaling.type="additive", duration="max", bias.correction=F, n.cores=1) {
 
   # calculate number of chunks based on xlim and ylim
-
+  if (missing(chunk.size)) {
+    stop("chunk.size must be specified")
+  }
     x_chunks <- seq(from = xlim[1], to = xlim[2], by = chunk.size)
     y_chunks <- seq(from = ylim[1], to = ylim[2], by = chunk.size)
 
   # create empty list to store output
   out_list <- list()
+  # set parallel processing
+  future::plan(future::multisession, workers = n.cores)
 
   # loop over chunks
   for (i in 1:(length(x_chunks)-1)) {
     for (j in 1:(length(y_chunks)-1)) {
-      message("\n", Sys.time(), paste0(" CHUNK_", i, "_", j), "\n")
+
       # set xlim and ylim for current chunk
       xlim_chunk <- c(x_chunks[i]-overlap, x_chunks[i+1])
       ylim_chunk <- c(y_chunks[j]-overlap, y_chunks[j+1])
-
+      message("\n", Sys.time(), paste0(" CHUNK_", i, "_", j),
+              ". Coordinates ", "xlim=", paste(xlim_chunk, collapse = ","),
+              " ylim=",   paste(ylim_chunk, collapse = ","),  "\n")
       # load data for current chunk
       proj_chunk <- load_data(country =NULL, variable = variable, years.hist = years.hist, years.proj = years.proj,
-                              path.to.data = path.to.data, path.to.obs = path.to.obs, xlim = xlim_chunk, ylim = ylim_chunk, aggr.m = aggr.m, buffer=0) %>%
-        # set parallel processing
-        future::plan(future::multisession, workers = n.cores)
+                              path.to.data = path.to.data, path.to.obs = path.to.obs, xlim = xlim_chunk, ylim = ylim_chunk, aggr.m = aggr.m, buffer=0)  %>%
 
         # do ccs for current chunk
         climate_change_signal(., season = season, bias.correction = bias.correction,

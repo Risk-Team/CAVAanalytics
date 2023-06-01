@@ -14,7 +14,7 @@ load_data_and_climate_change_signal(
   ylim,
   aggr.m = "none",
   chunk.size,
-  overlap = 1.5,
+  overlap = 0.25,
   season,
   lowert = NULL,
   uppert = NULL,
@@ -45,7 +45,7 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 
 \item{chunk.size}{numeric, indicating the number of chunks to. The smaller the better when working with limited RAM.}
 
-\item{overlap}{numeric, amount of overlap needed to create the composite. This would depend on the resolution of your data. For example, if your data is at 50 Km resolution, overlap could be 1.5. If your data is at 1 Km resolution, overlap can be 0.5}
+\item{overlap}{numeric, amount of overlap needed to create the composite. This would depend on the resolution of your data. For example, if your data is at 50 Km resolution, overlap could be 0.5. If your data is at 1 Km resolution, overlap can be 0.1}
 
 \item{season}{numeric, seasons to select. For example, 1:12}
 
@@ -64,8 +64,6 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 \item{n.cores}{numeric, number of cores to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage}
 
 \item{domain}{specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE. Default is NULL}
-
-\item{data}{output of load_data}
 }
 \value{
 list with raster stacks. .[[1]] contains the raster stack for the ensemble mean. .[[2]] contains the rasterstack for the ensemble sd and .[[3]] conins the rasterstack for individual models

@@ -18,6 +18,7 @@
 #' @param aggr.m character. Monthly aggregation. One of none, mean or sum
 #' @return tibble with column list
 #' @importFrom loadeR loadGridData
+#' @importFrom magrittr %>%
 #' @examples
 #' exmp <- load_data(country = "Somalia", variable="tas", years.hist=2000, years.proj=2010,
 #'               path.to.data = "CORDEX-CORE", domain="AFR-22")

@@ -61,19 +61,19 @@ plotting.CAVAanalytics_projections <- function(rst, palette=NULL, legend_range=N
       cols = 3:ncol(.),
       values_to = "value",
       names_to = "long_name"
-    ) %>% {
+    ) %>%  {
       if(ensemble) {
         # Extract scenario and time frame from column names
-        dplyr::mutate(., scenario = stringr::str_extract(long_name, ".*_") %>%  stringr::str_remove(., "_"),
-                      time_frame =  stringr::str_extract(long_name, "_.*") %>%  stringr::str_remove(., "_")) %>%
+        dplyr::mutate(., scenario = stringr::str_extract(long_name, ".*_") %>%   stringr::str_remove(., "_"),
+                      time_frame =  stringr::str_extract(long_name, "_.*") %>%   stringr::str_remove(., "_")) %>%
           # Replace "." with "-" in time frame
           dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
 
       } else {
         # Extract Member, scenario and time frame from column names
         dplyr::mutate(., member=   stringr::str_extract(long_name, "Member\\.\\d+"),
-               scenario =  stringr::str_extract(long_name, "_.*_") %>%  stringr::str_remove_all(., "_"),
-               time_frame =  stringr::str_extract(long_name, "_\\d+.*") %>%  stringr::str_remove(., "_")) %>%
+               scenario =  stringr::str_extract(long_name, "_.*_") %>%   stringr::str_remove_all(., "_"),
+               time_frame =  stringr::str_extract(long_name, "_\\d+.*") %>%   stringr::str_remove(., "_")) %>%
           # Replace "." with "-" in time frame
           dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
 
@@ -189,19 +189,19 @@ plotting.CAVAanalytics_ccs <- function(rst, palette=NULL, legend_range=NULL, plo
       cols = 3:ncol(.),
       values_to = "value",
       names_to = "long_name"
-    ) %>% {
+    ) %>%  {
       if(ensemble) {
         # Extract scenario and time frame from column names
-        dplyr::mutate(., scenario = stringr::str_split(long_name, "_") %>% purrr::map_chr(., 2),
-                      time_frame =  stringr::str_split(long_name, "_") %>% purrr::map_chr(., 3)) %>%
+        dplyr::mutate(., scenario = stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 2),
+                      time_frame =  stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 3)) %>%
           # Replace "." with "-" in time frame
           dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
 
       } else {
         # Extract Member, scenario and time frame from column names
-        dplyr::mutate(., member=   stringr::str_split(long_name, "_") %>% purrr::map_chr(., 1),
-                      scenario =  stringr::str_split(long_name, "_") %>% purrr::map_chr(., 2),
-                      time_frame =  stringr::str_split(long_name, "_") %>% purrr::map_chr(., 3)) %>%
+        dplyr::mutate(., member=   stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 1),
+                      scenario =  stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 2),
+                      time_frame =  stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 3)) %>%
           # Replace "." with "-" in time frame
           dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
 
@@ -344,17 +344,17 @@ if (!frequencies) {
         {
           if(ensemble) {
             # Extract scenario and time frame from column names
-            dplyr::mutate(., scenario = stringr::str_split(long_name, "_") %>% purrr::map_chr(., 1),
-                          time_frame =  stringr::str_split(long_name, "_") %>% purrr::map_chr(., 3)) %>%
+            dplyr::mutate(., scenario = stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 1),
+                          time_frame =  stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 3)) %>%
               # Replace "." with "-" in time frame
               dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-")) %>%
               dplyr::mutate(., value=ifelse(value==999, NA, value)) # 999 is the value assigned instead of NA
 
           } else {
             # Extract Member, scenario and time frame from column names
-            dplyr::mutate(., member=   stringr::str_split(long_name, "_") %>% purrr::map_chr(., 1),
-                          scenario =  stringr::str_split(long_name, "_") %>% purrr::map_chr(., 2),
-                          time_frame =  stringr::str_split(long_name, "_") %>% purrr::map_chr(., 4)) %>%
+            dplyr::mutate(., member=   stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 1),
+                          scenario =  stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 2),
+                          time_frame =  stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 4)) %>%
               # Replace "." with "-" in time frame
               dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
 

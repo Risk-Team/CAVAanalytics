@@ -11,12 +11,13 @@
 #' @param bias.correction logical
 #' @param scaling.type character, default to "additive". Indicates whether to use multiplicative or additive approach for bias correction
 #' @param n.cores numeric, number of cores to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage
+#' @importFrom magrittr %>%
 #' @return list with raster stacks. .[[1]] contains the raster stack for the ensemble mean. .[[2]] contains the rasterstack for the ensemble sd and .[[3]] conins the rasterstack for individual models
 #'
 #' @export
 #' @examples
 #' load_data(country = "Somalia", variable="tas", years.hist=2000, years.proj=2010,
-#'               path.to.data = "CORDEX-CORE", domain="AFR-22") %>%
+#'               path.to.data = "CORDEX-CORE", domain="AFR-22") |>
 #' climate_change_signal(., season = 1:12)
 
 
@@ -144,7 +145,7 @@ climate_change_signal <- function(data,
              scaling.type) {
       scaling.type= if (var=="pr") "multiplicative" else scaling.type
       gc()
-      data_list <- datasets %>%
+      data_list <- datasets  %>%
         {
           if (bias.correction) {
             message(
@@ -227,8 +228,8 @@ climate_change_signal <- function(data,
                          uppert = uppert,
                          lowert = lowert)
                   })
-            ))) %>%
-        dplyr::select(-models_mbrs) %>%
+            )))  %>%
+        dplyr::select(-models_mbrs)  %>%
         # individual models
         dplyr::mutate(rst_models = purrr::map2(forcing, models_agg_y, function(x, y) {
           rs_list <- purrr::map(1:dim(y$Data)[[1]], function(ens) {
@@ -241,8 +242,8 @@ climate_change_signal <- function(data,
 
             y$Data <- array_mean
 
-            rs <- make_raster(y) %>%
-              raster::crop(., country_shp) %>%
+            rs <- make_raster(y)  %>%
+              raster::crop(., country_shp)  %>%
               raster::mask(., country_shp)
 
             names(rs) <-
@@ -251,7 +252,7 @@ climate_change_signal <- function(data,
           })
 
         })
-        ) %>%
+        )  %>%
         dplyr::mutate(
           rst_ens_mean_ccs = purrr::map(rst_models, function(y) {
             h <-
@@ -274,7 +275,7 @@ climate_change_signal <- function(data,
               dplyr::filter(., stringr::str_detect(forcing, "hist"))$rst_models[[1]]
             ccs <- raster::stack(y) - raster::stack(h)
           })
-        ) %>%
+        )  %>%
         dplyr::filter(!stringr::str_detect(forcing, "hist"))
       gc()
       invisible(structure(

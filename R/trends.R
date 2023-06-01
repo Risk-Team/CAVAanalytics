@@ -13,6 +13,7 @@
 #' @param historical logical, whether to visualize trends for the historical period or projections
 #' @param interannual_var logical, whether linear regression is applied to annual variability, measured as standard deviation
 #' @param n.cores numeric, number of cores to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage
+#' @importFrom magrittr %>%
 #' @return list with raster stacks. To explore the output run attributes(output)
 #'
 #' @export
@@ -179,9 +180,9 @@ trends = function(data,
   # subset based on a season of interest
   filter_data_by_season <- function(datasets, season) {
     if (any(stringr::str_detect(colnames(datasets), "obs"))) {
-      datasets %>% dplyr::mutate_at(c("models_mbrs", "obs"), ~ purrr::map(., ~ transformeR::subsetGrid(., season = season)))
+      datasets %>%  dplyr::mutate_at(c("models_mbrs", "obs"), ~ purrr::map(., ~ transformeR::subsetGrid(., season = season)))
     } else {
-      datasets %>% dplyr::mutate_at(c("models_mbrs"), ~ purrr::map(., ~ transformeR::subsetGrid(., season = season)))
+      datasets %>%  dplyr::mutate_at(c("models_mbrs"), ~ purrr::map(., ~ transformeR::subsetGrid(., season = season)))
     }
   }
 
@@ -234,7 +235,7 @@ trends = function(data,
                           }))
           } else
             .
-        }  %>%  # computing annual aggregation. if threshold is specified, first apply threshold
+        }  %>%   # computing annual aggregation. if threshold is specified, first apply threshold
         dplyr::mutate(
           models_agg_y = furrr::future_map(if (!historical) models_mbrs else obs, function(x)
             suppressMessages(transformeR::aggregateGrid(# perform aggregation based on season and output
@@ -275,13 +276,13 @@ trends = function(data,
                               raster::crop(., country_shp) %>%
                               raster::mask(., country_shp)
 
-                            names(coef) <- paste0(y, "_coef", "_", names(coef)) %>%  stringr::str_remove(., "X")
+                            names(coef) <- paste0(y, "_coef", "_", names(coef)) %>%   stringr::str_remove(., "X")
 
                             p.value <- make_raster(x) %>%
                               raster::crop(., country_shp) %>%
                               raster::mask(., country_shp)
 
-                            names(p.value) <- paste0(y, "_p", "_", names(p.value)) %>%  stringr::str_remove(., "X")
+                            names(p.value) <- paste0(y, "_p", "_", names(p.value)) %>%   stringr::str_remove(., "X")
 
                             return(list(coef, p.value))
 
@@ -297,18 +298,18 @@ trends = function(data,
                               rst <- make_raster(c4R) %>%
                                 raster::crop(., country_shp) %>%
                                 raster::mask(., country_shp)
-                              names(rst) <-   paste0("Member ", i_mod, "_", y, "_coef_" , names(rst)) %>%  stringr::str_remove(., "X")
+                              names(rst) <-   paste0("Member ", i_mod, "_", y, "_coef_" , names(rst)) %>%   stringr::str_remove(., "X")
                               return(rst)
-                            }) %>% raster::stack()
+                            }) %>%  raster::stack()
 
                             rst_stack_p <- lapply(1:dim(x$Data)[1], function(i_mod) {
                               x$Data <- x$Data[i_mod,,]
                               rst <- make_raster(x) %>%
                                 raster::crop(., country_shp) %>%
                                 raster::mask(., country_shp)
-                              names(rst) <-   paste0("Member ", i_mod, "_", y, "_p_" , names(rst)) %>%  stringr::str_remove(., "X")
+                              names(rst) <-   paste0("Member ", i_mod, "_", y, "_p_" , names(rst)) %>%   stringr::str_remove(., "X")
                               return(rst)
-                            }) %>% raster::stack()
+                            }) %>%  raster::stack()
 
                             return(list( rst_stack_coef , rst_stack_p))
 
@@ -351,12 +352,12 @@ trends = function(data,
                   coef <- make_raster(c4R) %>%
                     raster::crop(., country_shp) %>%
                     raster::mask(., country_shp)
-                  names(coef) <- paste0("obs", "_coef_", names(coef)) %>%  stringr::str_remove(., "X")
+                  names(coef) <- paste0("obs", "_coef_", names(coef)) %>%   stringr::str_remove(., "X")
                   p.value <- make_raster(x)%>%
                     raster::crop(., country_shp) %>%
                     raster::mask(., country_shp)
 
-                  names(p.value) <- paste0("obs", "_p_", names(p.value)) %>%  stringr::str_remove(., "X")
+                  names(p.value) <- paste0("obs", "_p_", names(p.value)) %>%   stringr::str_remove(., "X")
                   return(list(coef, p.value))
 
                 }),

@@ -43,6 +43,6 @@ Automatically computes climate change signal
 }
 \examples{
 load_data(country = "Somalia", variable="tas", years.hist=2000, years.proj=2010,
-              path.to.data = "CORDEX-CORE", domain="AFR-22") \%>\%
+              path.to.data = "CORDEX-CORE", domain="AFR-22") |>
 climate_change_signal(., season = 1:12)
 }

@@ -15,7 +15,7 @@ load_data_and_trends(
   aggr.m = "none",
   domain = NULL,
   chunk.size,
-  overlap = 1.5,
+  overlap = 0.25,
   season,
   lowert = NULL,
   uppert = NULL,
@@ -49,7 +49,7 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 
 \item{chunk.size}{numeric, indicating the number of chunks to. The smaller the better when working with limited RAM.}
 
-\item{overlap}{numeric, amount of overlap needed to create the composite. This would depend on the resolution of your data. For example, if your data is at 50 Km resolution, overlap could be 1.5. If your data is at 1 Km resolution, overlap can be 0.5.}
+\item{overlap}{numeric, amount of overlap needed to create the composite. This would depend on the resolution of your data. For example, if your data is at 50 Km resolution, overlap could be 0.5. If your data is at 1 Km resolution, overlap can be 0.1.}
 
 \item{season}{numeric, seasons to select. For example, 1:12}
 
@@ -68,8 +68,6 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 \item{interannual_var}{logical, whether linear regression is applied to annual variability, measured as standard deviation}
 
 \item{n.cores}{numeric, number of cores to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage}
-
-\item{data}{output of load_data}
 }
 \value{
 list with merged raster stacks. To explore the output run attributes(output)

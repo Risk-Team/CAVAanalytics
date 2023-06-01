@@ -33,8 +33,9 @@ Imports:
     reshape2,
     loadeR,
     patchwork,
-    ggridges
-Depends:
-    loadeR.java,
+    ggridges,
     magrittr
+Depends:
+    loadeR.java
+   
 

@@ -81,6 +81,7 @@ You can do so by
                      "SantanderMetGroup/climate4R.UDG",
                      "SantanderMetGroup/loadeR",
                      "SantanderMetGroup/transformeR",
+                       "SantanderMetGroup/convertR",
                      "SantanderMetGroup/climate4R.indices",
                      "SantanderMetGroup/downscaleR"))
 

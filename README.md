@@ -7,10 +7,14 @@
    <img src="https://img.shields.io/github/release-date-pre/Risk-team/CAVAanalytics" alt="release date" style="display: inline-block;">
 </div>
 
+## Current status
+
+**CAVAanalytics is currently in pre-release.** You can install it
+locally but only few climate models are available for remote access. It
+would work if you have data locally available or whether you have access to the Jupyerhub of University of Cantabria.
 
 ## Table of Contents
 - [Introduction: What is CAVA?](#introduction-what-is-cava)
-- [Current Status](#current-status)
 - [CAVAanalytics](#cavaanalytics)
 - [Installation](#installation)
     - [1) Locally](#1-locally)
@@ -39,11 +43,7 @@ JupyterHub with 180 Gb RAM) and through a Docker image.
 |:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
 | *CAVA framework. CAVA can be used through a graphic user interface (CAVA Platform) or through the CAVAanalytics R package. The package can be used locally (GitHub installation), remotely (University of Cantabria JupyterHub) or locally but through a Docker image to solve dependencies issue* |
 
-## Current status
 
-**CAVAanalytics is currently in pre-release.** You can install it
-locally but only few climate models are available for remote access. It
-would work if you have data locally available or whether you have access to the Jupyerhub of University of Cantabria.
 
 ## CAVAanalytics
 

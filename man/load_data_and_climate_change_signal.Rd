@@ -13,6 +13,7 @@ load_data_and_climate_change_signal(
   xlim,
   ylim,
   aggr.m = "none",
+  domain,
   chunk.size,
   overlap = 0.25,
   season,
@@ -22,26 +23,28 @@ load_data_and_climate_change_signal(
   scaling.type = "additive",
   duration = "max",
   bias.correction = F,
-  n.cores = 1
+  n.sessions = 1
 )
 }
 \arguments{
-\item{variable}{character, indicating variable name}
+\item{variable}{character indicating the variable name}
 
-\item{years.hist}{Numerical range, years to select for historical simulations and observations}
+\item{years.hist}{numeric, specify year range for the historical experiment}
 
-\item{years.proj}{Numerical range, years to select for projections}
+\item{years.proj}{numeric, specify year range for projections}
 
 \item{path.to.data}{path to the directory containing the RCP/SSPs folders and historical simulations (optional). For example,
-home/user/data/. data would contain subfolders with the climate/impact models. Historical simulations have to be contained in a folder called historical. If path.to.data is set as CORDEX-CORE, CORDEX-CORE simulations from RCM RegCM4 will be loaded}
+home/user/data/. data would contain subfolders with the climate/impact models. Historical simulations have to be contained in a folder called historical. If path.to.data is set as CORDEX-CORE, CORDEX-CORE simulations will be loaded}
 
-\item{path.to.obs}{Default to NULL, if not, indicate the absolute path to the directory containing a reanalysis dataset, for example ERA5. To automatically load W5E5. specify W5E5}
+\item{path.to.obs}{character, default to NULL. To automatically load W5E5 or ERA5, specify W5E5 or ERA5. Otherwise, indicate the absolute path to the directory containing another observational dataset}
 
-\item{xlim}{numeric of length = 2, with minimum and maximum longitude coordinates, in decimal degrees, of the bounding box selected.}
+\item{xlim}{numeric of length = 2, with minimum and maximum longitude coordinates, in decimal degrees, of the bounding box of interest}
 
-\item{ylim}{same as xlim, but for the selection of the latitudinal range.}
+\item{ylim}{same as xlim, but for the selection of the latitudinal range}
 
 \item{aggr.m}{character, monthly aggregation. One of none, mean or sum}
+
+\item{domain}{charachter, specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE. Default is NULL}
 
 \item{chunk.size}{numeric, indicating the number of chunks to. The smaller the better when working with limited RAM.}
 
@@ -55,19 +58,19 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 
 \item{consecutive}{logical, to use in conjunction with lowert or uppert}
 
-\item{scaling.type}{character, default to "additive". Indicates whether to use multiplicative or additive approach for bias correction}
-
 \item{duration}{character, either "max" or "total"}
 
 \item{bias.correction}{logical}
 
-\item{n.cores}{numeric, number of cores to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage}
-
-\item{domain}{specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE. Default is NULL}
+\item{n.sessions}{numeric, number of sessions to use in parallel processing. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary}
 }
 \value{
-list with raster stacks. .[[1]] contains the raster stack for the ensemble mean. .[[2]] contains the rasterstack for the ensemble sd and .[[3]] conins the rasterstack for individual models
+list with SpatRasters. .[[1]] contains SpatRaster for the ensemble mean. .[[2]] contains SpatRaster for the ensemble sd and .[[3]] contains SpatRaster for individual models
 }
 \description{
 Automatically load and process climate models in a memory efficient way. Useful for analysing large areas
+}
+\examples{
+out <- load_data_and_climate_change_signal(variable="tas", years.hist=2000:2005, years.proj=2010:2015,
+     path.to.data = "CORDEX-CORE", season=1:12, domain="AFR-22", xlim=c(0, 10), ylim=c(5, 10), chunk.size=2)
 }

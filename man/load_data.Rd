@@ -2,7 +2,7 @@
 % Please edit documentation in R/load_data.R
 \name{load_data}
 \alias{load_data}
-\title{Climate models upload}
+\title{Models upload}
 \usage{
 load_data(
   path.to.data,
@@ -15,42 +15,45 @@ load_data(
   path.to.obs = NULL,
   buffer = 0,
   domain = NULL,
-  aggr.m = "none"
+  aggr.m = "none",
+  n.sessions = 6
 )
 }
 \arguments{
 \item{path.to.data}{path to the directory containing the RCP/SSPs folders and historical simulations (optional). For example,
-home/user/data/. data would contain subfolders with the climate/impact models. Historical simulations have to be contained in a folder called historical. If path.to.data is set as CORDEX-CORE, CORDEX-CORE simulations from RCM RegCM4 will be loaded}
+home/user/data/. data would contain subfolders with the climate/impact models. Historical simulations have to be contained in a folder called historical. If path.to.data is set as CORDEX-CORE, CORDEX-CORE simulations will be loaded}
 
 \item{country}{character, in English, indicating the country of interest. To select a bounding box,
 set country to NULL and define arguments xlim and ylim}
 
-\item{variable}{character indicating the variable}
+\item{variable}{character indicating the variable name}
 
-\item{xlim}{numeric of length = 2, with minimum and maximum longitude coordinates, in decimal degrees, of the bounding box selected.}
+\item{xlim}{numeric of length = 2, with minimum and maximum longitude coordinates, in decimal degrees, of the bounding box of interest}
 
-\item{ylim}{same as xlim, but for the selection of the latitudinal range.}
+\item{ylim}{same as xlim, but for the selection of the latitudinal range}
 
-\item{years.proj}{numeric, years to select for projections}
+\item{years.proj}{numeric, specify year range for projections}
 
-\item{years.hist}{numeric, years to select for historical simulations and observations}
+\item{years.hist}{numeric, specify year range for the historical experiment}
 
-\item{path.to.obs}{character, default to NULL, if not, indicate the absolute path to the directory containing a reanalysis dataset, for example ERA5. To automatically load W5E5. specify W5E5}
+\item{path.to.obs}{character, default to NULL. To automatically load W5E5 or ERA5, specify W5E5 or ERA5. Otherwise, indicate the absolute path to the directory containing another observational dataset}
 
-\item{buffer}{numeric. Default is zero.}
+\item{buffer}{numeric, default is zero.}
 
-\item{domain}{specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE. Default is NULL}
+\item{domain}{charachter, specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE. Default is NULL}
 
-\item{aggr.m}{character. Monthly aggregation. One of none, mean or sum}
+\item{aggr.m}{character, monthly aggregation. One of none, mean or sum}
+
+\item{n.sessions}{numeric, number of sessions to use in parallel processing. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary}
 }
 \value{
-tibble with column list
+list of length 3. List[[1]] contains a tibble with list columns. List[[2]] the bbox and list[[3]] the temporal structure of the models
 }
 \description{
-Automatically load climate models (netCDF/NcML) in a tidy format.
+Automatically load models (netCDF/NcML) in a tidy format with acess to state-of-the-art climate models and reanalysis datasets
 }
 \examples{
-exmp <- load_data(country = "Somalia", variable="tas", years.hist=2000, years.proj=2010,
+exmp <- load_data(country = "Togo", variable="tas", years.hist=2000, years.proj=2010,
               path.to.data = "CORDEX-CORE", domain="AFR-22")
 
 }

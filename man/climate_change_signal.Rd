@@ -12,8 +12,7 @@ climate_change_signal(
   consecutive = F,
   duration = "max",
   bias.correction = F,
-  n.cores = 1,
-  scaling.type = "additive"
+  n.sessions = 1
 )
 }
 \arguments{
@@ -31,18 +30,16 @@ climate_change_signal(
 
 \item{bias.correction}{logical}
 
-\item{n.cores}{numeric, number of cores to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage}
-
-\item{scaling.type}{character, default to "additive". Indicates whether to use multiplicative or additive approach for bias correction}
+\item{n.sessions}{numeric, number of sessions to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage}
 }
 \value{
-list with raster stacks. .[[1]] contains the raster stack for the ensemble mean. .[[2]] contains the rasterstack for the ensemble sd and .[[3]] conins the rasterstack for individual models
+list with SpatRasters. .[[1]] contains the SpatRasters for the ensemble mean. .[[2]] contains the SpatRasters for the ensemble sd and .[[3]] conins the SpatRasters for individual models
 }
 \description{
 Automatically computes climate change signal
 }
 \examples{
-load_data(country = "Somalia", variable="tas", years.hist=2000, years.proj=2010,
+load_data(country = "Togo", variable="tas", years.hist=2000, years.proj=2010,
               path.to.data = "CORDEX-CORE", domain="AFR-22") |>
 climate_change_signal(., season = 1:12)
 }

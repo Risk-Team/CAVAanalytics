@@ -17,7 +17,7 @@ plotting(
 )
 }
 \arguments{
-\item{rst}{output of one of CAVAanalytics functions, such as projections. rst is of class RasterStack}
+\item{rst}{output of one of CAVAanalytics functions, such as projections. rst is of class SpatRaster}
 
 \item{palette}{charachter. Color Palette}
 

@@ -15,26 +15,40 @@
 #' @param uppert  numeric of length=1, upper threshold
 #' @param lowert numeric of length=1, lower threshold
 #' @param season numeric, seasons to select. For example, 1:12
-#' @param scaling.type character, default to "additive". Indicates whether to use multiplicative or additive approach for bias correction
 #' @param consecutive logical, to use in conjunction with lowert or uppert
 #' @param duration character, either "max" or "total"
-#' @param n.cores numeric, number of cores to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage
+#' @param n.sessions numeric, number of sessions to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage
 #' @param chunk.size numeric, indicating the number of chunks. The smaller the better when working with limited RAM
-#' @param overlap numeric, amount of overlap needed to create the composite. This would depend on the resolution of your data. For example, if your data is at 50 Km resolution, overlap could be 0.5. If your data is at 1 Km resolution, overlap can be 0.1
+#' @param overlap numeric, amount of overlap needed to create the composite. Default 0.25
 #' @importFrom magrittr %>%
-#' @return list with raster stacks. .[[1]] contains the raster stack for the ensemble mean. .[[2]] contains the rasterstack for the ensemble sd and .[[3]] conins the rasterstack for individual models
-#'
+#' @return list with SpatRaster. .[[1]] contains SpatRaster for the ensemble mean. .[[2]] contains SpatRaster for the ensemble sd and .[[3]] conins SpatRaster for individual models
 #' @export
+#' @examples
+#' out <- load_data_and_projections(variable="tas", years.hist=2000, years.proj=2010:2011,
+#'      path.to.data = "CORDEX-CORE", domain="AFR-22", xlim=c(0, 10), ylim=c(5, 10), chunk.size=2, season=1:12)
 
 
-load_data_and_projections <- function(variable, years.hist=NULL,
-                                      years.proj, path.to.data,
-                                      path.to.obs=NULL, xlim, ylim,aggr.m="none",
-                                      chunk.size, overlap=0.25, season, lowert=NULL, uppert=NULL,consecutive=F,scaling.type="additive", duration="max", bias.correction=F, domain=NULL, n.cores=1) {
-
+load_data_and_projections <- function(variable,
+                                      years.hist = NULL,
+                                      years.proj,
+                                      path.to.data,
+                                      path.to.obs = NULL,
+                                      xlim,
+                                      ylim,
+                                      aggr.m = "none",
+                                      chunk.size,
+                                      overlap = 0.25,
+                                      season,
+                                      lowert = NULL,
+                                      uppert = NULL,
+                                      consecutive = F,
+                                      duration = "max",
+                                      bias.correction = F,
+                                      domain = NULL,
+                                      n.sessions = 1) {
   # calculate number of chunks based on xlim and ylim
-  if (missing(chunk.size)) {
-    stop("chunk.size must be specified")
+  if (missing(chunk.size) | missing(season)) {
+    cli::cli_abort("chunk.size and season must be specified")
   }
   x_chunks <- seq(from = xlim[1], to = xlim[2], by = chunk.size)
   y_chunks <- seq(from = ylim[1], to = ylim[2], by = chunk.size)
@@ -42,34 +56,60 @@ load_data_and_projections <- function(variable, years.hist=NULL,
   # create empty list to store output
   out_list <- list()
   # set parallel processing
-  future::plan(future::multisession, workers = n.cores)
+  future::plan(future::multisession, workers = n.sessions)
 
   # loop over chunks
-  for (i in 1:(length(x_chunks)-1)) {
-    for (j in 1:(length(y_chunks)-1)) {
-
+  for (i in 1:(length(x_chunks) - 1)) {
+    for (j in 1:(length(y_chunks) - 1)) {
       # set xlim and ylim for current chunk
-      xlim_chunk <- c(x_chunks[i]-overlap, x_chunks[i+1])
-      ylim_chunk <- c(y_chunks[j]-overlap, y_chunks[j+1])
-      message("\n", Sys.time(), paste0(" CHUNK_", i, "_", j),
-              ". Coordinates ", "xlim=", paste(xlim_chunk, collapse = ","),
-              " ylim=",   paste(ylim_chunk, collapse = ","),  "\n")
+      xlim_chunk <- c(x_chunks[i] - overlap, x_chunks[i + 1])
+      ylim_chunk <- c(y_chunks[j] - overlap, y_chunks[j + 1])
+      cli::cli_alert_success(paste(
+        paste0("Loading and processing spatial CHUNK_", i, "_", j),
+        ". Coordinates ",
+        "xlim=",
+        paste(xlim_chunk, collapse = ","),
+        " ylim=",
+        paste(ylim_chunk, collapse = ",")
+      ))
       # load data for current chunk
-      proj_chunk <- load_data(country = NULL, variable = variable, years.hist = years.hist, years.proj = years.proj,
-                              path.to.data = path.to.data, domain=domain, path.to.obs = path.to.obs, xlim = xlim_chunk, ylim = ylim_chunk, aggr.m = aggr.m, buffer=0)  %>%
+      proj_chunk <-
+        suppressMessages(
+          load_data(
+            country = NULL,
+            variable = variable,
+            years.hist = years.hist,
+            years.proj = years.proj,
+            path.to.data = path.to.data,
+            domain = domain,
+            path.to.obs = path.to.obs,
+            xlim = xlim_chunk,
+            ylim = ylim_chunk,
+            aggr.m = aggr.m,
+            buffer = 0
+          )  %>%
 
-      # do projections for current chunk
-        projections(., season = season, bias.correction = bias.correction,
-                    uppert = uppert, lowert = lowert, consecutive = consecutive,
-                    scaling.type =   scaling.type,
-                    duration =  duration, n.cores=n.cores)
+            # do projections for current chunk
+            projections(
+              .,
+              bias.correction = bias.correction,
+              uppert = uppert,
+              lowert = lowert,
+              season = season,
+              consecutive = consecutive,
+              n.sessions = n.sessions,
+              duration =  duration
+            )
+        )
 
       # add chunk to output list
       out_list[[paste0("chunk_", i, "_", j)]] <- proj_chunk
 
     }
+
   }
-  message(Sys.time(), " Merging rasters")
+
+  cli::cli_progress_step("Merging rasters")
   # Extract the first, second, and third elements of each list in `out_list`
   rst_mean <- lapply(out_list, `[[`, 1)
   rst_sd <- lapply(out_list, `[[`, 2)
@@ -77,25 +117,36 @@ load_data_and_projections <- function(variable, years.hist=NULL,
   # Merge the extracted rasters using `Reduce` and set their names
   merge_rasters <- function(rst_list) {
     names <- names(rst_list[[1]])
-    Reduce(function(...) raster::merge(..., tolerance = 0.5), rst_list) %>% setNames(names)
+    Reduce(function(...)
+      terra::merge(...), rst_list) %>% setNames(names)
   }
 
-  rasters_mean <- merge_rasters(rst_mean)
+  cli::cli_process_done()
+
+  rasters_mean <- tryCatch(
+    expr = merge_rasters(rst_mean),
+    warning = function(w) {
+      # Translate the warning into something more understandable
+      translated_warning <-
+        "Terra had to interpolate your SpatRasters to merge them. You can ignore this warning if you used sensible values for overalp and chunk_size arguments"
+      # ... handle the warning ...
+      # You can print the translated warning, log it, or perform any other action
+      cli::cli_alert_warning(translated_warning)
+    }
+  )
   rasters_sd <- merge_rasters(rst_sd)
   rasters_mbrs <- merge_rasters(rst_mbrs)
 
-  message(Sys.time(), " Done")
+
   invisible(structure(
-    list(
-      rasters_mean,
-      rasters_sd,
-      rasters_mbrs
-    ),
+    list(rasters_mean,
+         rasters_sd,
+         rasters_mbrs),
     class = "CAVAanalytics_projections",
     components = list(
-      "raster stack for ensemble mean",
-      "raster stack for ensemble sd",
-      "raster stack for individual members"
+      "SpatRaster for ensemble mean",
+      "SpatRaster for ensemble sd",
+      "SpatRaster for individual members"
     )
   ))
 

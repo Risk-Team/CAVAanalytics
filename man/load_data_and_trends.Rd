@@ -23,14 +23,14 @@ load_data_and_trends(
   scaling.type = "additive",
   duration = "max",
   bias.correction = F,
-  interannual_var,
-  n.cores = 1
+  intraannual_var = F,
+  n.sessions = 1
 )
 }
 \arguments{
 \item{variable}{character, indicating variable name}
 
-\item{years.hist}{Numerical range, years to select for historical simulations and observations. Only used for bias-correction, load_data_and_trends does not provide results for the historical period. Use load_data and trends instead}
+\item{years.hist}{Numerical range, years to select for historical simulations and observations}
 
 \item{years.proj}{Numerical range, years to select for projections}
 
@@ -47,9 +47,9 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 
 \item{domain}{specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE. Default is NULL}
 
-\item{chunk.size}{numeric, indicating the number of chunks to. The smaller the better when working with limited RAM.}
+\item{chunk.size}{numeric, indicating the number of chunks. The smaller the better when working with limited RAM}
 
-\item{overlap}{numeric, amount of overlap needed to create the composite. This would depend on the resolution of your data. For example, if your data is at 50 Km resolution, overlap could be 0.5. If your data is at 1 Km resolution, overlap can be 0.1.}
+\item{overlap}{numeric, amount of overlap needed to create the composite. Default 0.25}
 
 \item{season}{numeric, seasons to select. For example, 1:12}
 
@@ -59,19 +59,21 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 
 \item{consecutive}{logical, to use in conjunction with lowert or uppert}
 
-\item{scaling.type}{character, default to "additive". Indicates whether to use multiplicative or additive approach for bias correction}
-
 \item{duration}{character, either "max" or "total"}
 
 \item{bias.correction}{logical}
 
-\item{interannual_var}{logical, whether linear regression is applied to annual variability, measured as standard deviation}
+\item{intraannual_var}{logical, whether linear regression is applied to annual variability, measured as standard deviation}
 
-\item{n.cores}{numeric, number of cores to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage}
+\item{n.sessions}{numeric, number of sessions to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage}
 }
 \value{
 list with merged raster stacks. To explore the output run attributes(output)
 }
 \description{
 Automatically load and process climate model projections in a memory efficient way. Useful for analysing large areas. Arguments historical and country are not available for this function.
+}
+\examples{
+out <- load_data_and_trends(variable="tas", years.hist=2000, years.proj=2010:2040,
+     path.to.data = "CORDEX-CORE", season=1:12, domain="AFR-22", xlim=c(0, 10), ylim=c(5, 10), chunk.size=2)
 }

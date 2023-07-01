@@ -9,13 +9,12 @@ trends(
   bias.correction = FALSE,
   uppert = NULL,
   lowert = NULL,
-  scaling.type = "additive",
   season,
   consecutive = FALSE,
   duration = "max",
-  interannual_var = FALSE,
+  intraannual_var = FALSE,
   historical = FALSE,
-  n.cores = 1
+  n.sessions = 1
 )
 }
 \arguments{
@@ -27,29 +26,27 @@ trends(
 
 \item{lowert}{numeric of length=1, lower threshold}
 
-\item{scaling.type}{character, default to "additive". Indicates whether to use multiplicative or additive approach for bias correction.}
-
 \item{season}{numeric, seasons to select. For example, 1:12}
 
 \item{consecutive}{logical, to use in conjunction with lowert or uppert}
 
 \item{duration}{character, either "max" or "total"}
 
-\item{interannual_var}{logical, whether linear regression is applied to annual variability, measured as standard deviation}
+\item{intraannual_var}{logical, whether linear regression is applied to annual variability, measured as standard deviation}
 
 \item{historical}{logical, whether to visualize trends for the historical period or projections}
 
-\item{n.cores}{numeric, number of cores to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage}
+\item{n.sessions}{numeric, number of sessions to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage}
 }
 \value{
-list with raster stacks. To explore the output run attributes(output)
+list with SpatRaster. To explore the output run attributes(output)
 }
 \description{
 Compute multivariate linear regression and linear regression through design-based inference
 }
 \examples{
-exmp <- load_data(country = "Sudan", variable="pr", years.hist=1995, years.proj=2030:2060,
+exmp <- load_data(country = "Togo", variable="pr", years.hist=1995, years.proj=2030:2060,
 path.to.data = "CORDEX-CORE", path.to.obs="W5E5", domain="AFR-22", aggr.m="sum") \%>\%
-trends(., season = 1:12, historical=F, interannual_var=T)
+trends(., season = 1:12, historical=F, intraannual_var=F)
 
 }

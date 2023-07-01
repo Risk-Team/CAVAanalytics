@@ -14,7 +14,8 @@ Imports:
     furrr, 
     purrr, 
     future,
-    raster, 
+    terra,
+    sf,
     stringr,
     transformeR,
     downscaleR,
@@ -25,7 +26,6 @@ Imports:
     climate4R.indices,
     RColorBrewer,
     tidyr,
-    climate4R.UDG,
     ggh4x,
     rgeos,
     rnaturalearthhires,
@@ -34,7 +34,8 @@ Imports:
     loadeR,
     patchwork,
     ggridges,
-    magrittr
+    magrittr,
+    cli
 Depends:
     loadeR.java
    

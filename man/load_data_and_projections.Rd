@@ -19,11 +19,10 @@ load_data_and_projections(
   lowert = NULL,
   uppert = NULL,
   consecutive = F,
-  scaling.type = "additive",
   duration = "max",
   bias.correction = F,
   domain = NULL,
-  n.cores = 1
+  n.sessions = 1
 )
 }
 \arguments{
@@ -46,7 +45,7 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 
 \item{chunk.size}{numeric, indicating the number of chunks. The smaller the better when working with limited RAM}
 
-\item{overlap}{numeric, amount of overlap needed to create the composite. This would depend on the resolution of your data. For example, if your data is at 50 Km resolution, overlap could be 0.5. If your data is at 1 Km resolution, overlap can be 0.1}
+\item{overlap}{numeric, amount of overlap needed to create the composite. Default 0.25}
 
 \item{season}{numeric, seasons to select. For example, 1:12}
 
@@ -56,19 +55,21 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 
 \item{consecutive}{logical, to use in conjunction with lowert or uppert}
 
-\item{scaling.type}{character, default to "additive". Indicates whether to use multiplicative or additive approach for bias correction}
-
 \item{duration}{character, either "max" or "total"}
 
 \item{bias.correction}{logical}
 
 \item{domain}{specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE. Default is NULL}
 
-\item{n.cores}{numeric, number of cores to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage}
+\item{n.sessions}{numeric, number of sessions to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage}
 }
 \value{
-list with raster stacks. .[[1]] contains the raster stack for the ensemble mean. .[[2]] contains the rasterstack for the ensemble sd and .[[3]] conins the rasterstack for individual models
+list with SpatRaster. .[[1]] contains SpatRaster for the ensemble mean. .[[2]] contains SpatRaster for the ensemble sd and .[[3]] conins SpatRaster for individual models
 }
 \description{
 Automatically load and process climate model projections in a memory efficient way. Useful for analysing large areas
+}
+\examples{
+out <- load_data_and_projections(variable="tas", years.hist=2000, years.proj=2010:2011,
+     path.to.data = "CORDEX-CORE", domain="AFR-22", xlim=c(0, 10), ylim=c(5, 10), chunk.size=2, season=1:12)
 }

@@ -4,7 +4,7 @@
 #' @export
 
 #' @import ggplot2
-#' @param rst output of one of CAVAanalytics functions, such as projections. rst is of class RasterStack
+#' @param rst output of one of CAVAanalytics functions, such as projections. rst is of class SpatRaster
 #' @param palette charachter. Color Palette
 #' @param legend_range  numeric. Fix legend limits
 #' @param plot_titles character. Title of the plot legend
@@ -18,462 +18,688 @@
 #' plotting(plot_titles="hurs", ensemble=T)
 
 
-plotting <- function(rst, palette, legend_range, plot_titles, ensemble, bins, n.bins, alpha, ...) {
-UseMethod("plotting")
-}
+plotting <-
+  function(rst,
+           palette,
+           legend_range,
+           plot_titles,
+           ensemble,
+           bins,
+           n.bins,
+           alpha,
+           ...) {
+    UseMethod("plotting")
+  }
 
 #' @export
 
-plotting.CAVAanalytics_projections <- function(rst, palette=NULL, legend_range=NULL, plot_titles, ensemble, bins=FALSE, n.bins=NULL,alpha=NA, stat="mean") {
+plotting.CAVAanalytics_projections <-
+  function(rst,
+           palette = NULL,
+           legend_range = NULL,
+           plot_titles,
+           ensemble,
+           bins = FALSE,
+           n.bins = NULL,
+           alpha = NA,
+           stat = "mean") {
+    # checking requirements
+    stopifnot(is.logical(ensemble))
+    stopifnot(is.logical(bins))
+    match.arg(stat, choices = c("mean", "sd"))
 
-  # checking requirements
-  stopifnot(is.logical(ensemble))
-  stopifnot(is.logical(bins))
-  match.arg(stat, choices = c("mean", "sd"))
+    # messages
 
-  # messages
-
-  if (isTRUE(ensemble)) {
-    message(Sys.time(), "\n", paste0("Visualizing ensemble ", stat))
-  } else {message(Sys.time(), "\n", "Visualizing individual members, argument stat is ignored")}
-
-  message(Sys.time(), "\n", "Prepare for plotting")
-
-  # retrieve the right raster stack based on the ensemble argument
-
-  rst <- if (isTRUE(ensemble) & stat=="mean") rst[[1]] else if (isTRUE(ensemble) & stat=="sd") rst[[2]] else rst[[3]]
-
-  # Set default colors for legend
-  colors <- if (is.null(palette)) c("blue", "cyan", "green", "yellow", "orange", "red", "black") else palette
-
-  # Set default range for legend
-  legend_range <- if (is.null(legend_range)) c(range(raster::values(rst), na.rm = TRUE)) else legend_range
-
-  # Suppress warnings
-  options(warn = -1)
-
-  # Get countries data
-  countries <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
-
-  # Convert raster to dataframe
-  rs_df <- raster::as.data.frame(rst, xy = TRUE, na.rm = TRUE) %>%
-    tidyr::pivot_longer(
-      cols = 3:ncol(.),
-      values_to = "value",
-      names_to = "long_name"
-    ) %>%  {
-      if(ensemble) {
-        # Extract scenario and time frame from column names
-        dplyr::mutate(., scenario = stringr::str_extract(long_name, ".*_") %>%   stringr::str_remove(., "_"),
-                      time_frame =  stringr::str_extract(long_name, "_.*") %>%   stringr::str_remove(., "_")) %>%
-          # Replace "." with "-" in time frame
-          dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
-
-      } else {
-        # Extract Member, scenario and time frame from column names
-        dplyr::mutate(., member=   stringr::str_extract(long_name, "Member\\.\\d+"),
-               scenario =  stringr::str_extract(long_name, "_.*_") %>%   stringr::str_remove_all(., "_"),
-               time_frame =  stringr::str_extract(long_name, "_\\d+.*") %>%   stringr::str_remove(., "_")) %>%
-          # Replace "." with "-" in time frame
-          dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
-
-      }
+    if (isTRUE(ensemble)) {
+      cli::cli_alert_info(paste0("Visualizing ensemble ", stat))
+    } else {
+      cli::cli_alert_info("Visualizing individual members, argument stat is ignored")
     }
 
-  p <- ggplot2::ggplot() +
-    ggplot2::geom_sf(fill = 'antiquewhite1',
-            color = "black",
-            data = countries) +
-    ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
-                data = rs_df, alpha=alpha) +
-    {
-      if(!bins) {
-        ggplot2::scale_fill_gradientn(
-          colors = colors,
-          limits = legend_range,
-          na.value = "transparent",
-          n.breaks = 10,
-          guide=ggplot2::guide_colourbar(ticks.colour = "black",
-                                         ticks.linewidth = 1, title.position="top", title.hjust=0.5, label.theme = ggplot2::element_text(angle = 45),  label.hjust = 1))
-      } else {
-
-        ggplot2::scale_fill_stepsn(
-          colors = colors,
-          limits = legend_range,
-          na.value = "transparent",
-          n.breaks = ifelse(is.null(n.bins), 10, n.bins),
-          guide=ggplot2::guide_colourbar(ticks.colour = "black",
-                                         ticks.linewidth = 1, title.position="top", title.hjust=0.5, label.theme = ggplot2::element_text(angle = 45),  label.hjust = 1))
-
-      }
-
-    }+
-    ggplot2::coord_sf(
-      xlim = c(range(rs_df$x)[[1]] - 1, range(rs_df$x)[[2]] + 1),
-      ylim = c(range(rs_df$y)[[1]] - 1, range(rs_df$y)[[2]] + 1),
-      expand = F,
-      ndiscr = 500
-    ) +
-    {
-      if(ensemble) {
-
-        ggplot2::facet_grid(time_frame ~ scenario )
-      } else {
-
-        ggh4x::facet_nested(scenario ~ time_frame   + member)
-      }
-    } +
-    ggplot2::labs(fill = plot_titles, x="", y="") +
-    ggplot2::theme_bw(base_size = 12) +
-    ggplot2::theme(
-      plot.background = ggplot2::element_blank(),
-      panel.background = ggplot2::element_rect(fill = 'aliceblue'),
-      panel.border = ggplot2::element_blank(),
-      panel.grid.major = ggplot2::element_blank(),
-      panel.grid.minor = ggplot2::element_blank(),
-      axis.text.x = ggplot2::element_blank(),
-      axis.text.y = ggplot2::element_blank(),
-      axis.ticks= ggplot2::element_blank(),
-      axis.title= ggplot2::element_blank(),
-      legend.position = "bottom",
-      legend.direction = "horizontal",
-      legend.key.height= ggplot2::unit(0.5, 'cm'),
-      legend.key.width= ggplot2::unit(2, 'cm'),
-      legend.box.spacing=ggplot2::unit(0, "pt")
-    )
-
-  message(Sys.time(), " Done")
-
-  return(p)
-
-}
 
 
-#' @export
+    # retrieve the right raster stack based on the ensemble argument
 
-plotting.CAVAanalytics_ccs <- function(rst, palette=NULL, legend_range=NULL, plot_titles, ensemble, bins=FALSE, n.bins=NULL, alpha=NA, stat="mean") {
+    rst <-
+      if (isTRUE(ensemble) &
+          stat == "mean")
+        rst[[1]]
+    else if (isTRUE(ensemble) & stat == "sd")
+      rst[[2]]
+    else
+      rst[[3]]
 
-  # checking requirements
-  stopifnot(is.logical(ensemble))
-  stopifnot(is.logical(bins))
-  match.arg(stat, choices = c("mean", "sd"))
+    # Set default colors for legend
+    colors <-
+      if (is.null(palette))
+        c("blue", "cyan", "green", "yellow", "orange", "red", "black")
+    else
+      palette
 
-  # messages
+    # Set default range for legend
+    legend_range <-
+      if (is.null(legend_range))
+        c(range(terra::values(rst), na.rm = TRUE))
+    else
+      legend_range
 
-  if (isTRUE(ensemble)) {
-    message(Sys.time(),  paste0(" Visualizing ensemble ", stat))
-  } else {message(Sys.time(),  " Visualizing individual members, argument stat is ignored")}
+    # Suppress warnings
+    options(warn = -1)
 
-  message(Sys.time(),  " Prepare for plotting")
+    # Get countries data
+    countries <-
+      rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
 
-  # retrieve the right raster stack based on the ensemble argument
+    cli::cli_progress_step("Plotting")
+    # Convert SpatRaster to dataframe
+    rs_df <- terra::as.data.frame(rst, xy = TRUE, na.rm = TRUE) %>%
+      tidyr::pivot_longer(cols = 3:ncol(.),
+                          values_to = "value",
+                          names_to = "long_name") %>%  {
+                            if (ensemble) {
+                              # Extract scenario and time frame from column names
+                              dplyr::mutate(
+                                .,
+                                scenario = stringr::str_extract(long_name, ".*_") %>%   stringr::str_remove(., "_"),
+                                time_frame =  stringr::str_extract(long_name, "_.*") %>%   stringr::str_remove(., "_")
+                              ) %>%
+                                # Replace "." with "-" in time frame
+                                dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
 
-  rst <- if (isTRUE(ensemble) & stat=="mean") rst[[1]] else if (isTRUE(ensemble) & stat=="sd") rst[[2]] else rst[[3]]
+                            } else {
+                              # Extract Member, scenario and time frame from column names
+                              dplyr::mutate(
+                                .,
+                                member =   stringr::str_extract(long_name, "Member \\d+"),
+                                scenario =  stringr::str_extract(long_name, "_.*_") %>%   stringr::str_remove_all(., "_"),
+                                time_frame =  stringr::str_extract(long_name, "_\\d+.*") %>%   stringr::str_remove(., "_")
+                              ) %>%
+                                # Replace "." with "-" in time frame
+                                dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
 
-  # Set default colors for legend
-  colors <- if (is.null(palette)) c("blue", "cyan", "green", "yellow", "orange", "red", "black") else palette
+                            }
+                          }
 
-  # Set default range for legend
-  legend_range <- if (is.null(legend_range)) c(range(raster::values(rst), na.rm = TRUE)) else legend_range
+    p <- ggplot2::ggplot() +
+      ggplot2::geom_sf(
+        fill = 'antiquewhite1',
+        color = "black",
+        data = countries
+      ) +
+      ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
+                           data = rs_df,
+                           alpha = alpha) +
+      {
+        if (!bins) {
+          ggplot2::scale_fill_gradientn(
+            colors = colors,
+            limits = legend_range,
+            na.value = "transparent",
+            n.breaks = 10,
+            guide = ggplot2::guide_colourbar(
+              ticks.colour = "black",
+              ticks.linewidth = 1,
+              title.position = "top",
+              title.hjust = 0.5,
+              label.theme = ggplot2::element_text(angle = 45),
+              label.hjust = 1
+            )
+          )
+        } else {
+          ggplot2::scale_fill_stepsn(
+            colors = colors,
+            limits = legend_range,
+            na.value = "transparent",
+            n.breaks = ifelse(is.null(n.bins), 10, n.bins),
+            guide = ggplot2::guide_colourbar(
+              ticks.colour = "black",
+              ticks.linewidth = 1,
+              title.position = "top",
+              title.hjust = 0.5,
+              label.theme = ggplot2::element_text(angle = 45),
+              label.hjust = 1
+            )
+          )
 
-  # Suppress warnings
-  options(warn = -1)
+        }
 
-  # Get countries data
-  countries <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
+      } +
+      ggplot2::coord_sf(
+        xlim = c(range(rs_df$x)[[1]] - 1, range(rs_df$x)[[2]] + 1),
+        ylim = c(range(rs_df$y)[[1]] - 1, range(rs_df$y)[[2]] + 1),
+        expand = F,
+        ndiscr = 500
+      ) +
+      {
+        if (ensemble) {
+          ggplot2::facet_grid(time_frame ~ scenario)
+        } else {
+          ggh4x::facet_nested(scenario ~ time_frame   + member)
+        }
+      } +
+      ggplot2::labs(fill = plot_titles, x = "", y = "") +
+      ggplot2::theme_bw(base_size = 12) +
+      ggplot2::theme(
+        plot.background = ggplot2::element_blank(),
+        panel.background = ggplot2::element_rect(fill = 'aliceblue'),
+        panel.border = ggplot2::element_blank(),
+        panel.grid.major = ggplot2::element_blank(),
+        panel.grid.minor = ggplot2::element_blank(),
+        axis.text.x = ggplot2::element_blank(),
+        axis.text.y = ggplot2::element_blank(),
+        axis.ticks = ggplot2::element_blank(),
+        axis.title = ggplot2::element_blank(),
+        legend.position = "bottom",
+        legend.direction = "horizontal",
+        legend.key.height = ggplot2::unit(0.5, 'cm'),
+        legend.key.width = ggplot2::unit(2, 'cm'),
+        legend.box.spacing = ggplot2::unit(0, "pt")
+      )
 
-  # Convert raster to dataframe
+    cli::cli_progress_done()
 
-  rs_df <- raster::as.data.frame(rst, xy = TRUE, na.rm = TRUE) %>%
-    tidyr::pivot_longer(
-      cols = 3:ncol(.),
-      values_to = "value",
-      names_to = "long_name"
-    ) %>%  {
-      if(ensemble) {
-        # Extract scenario and time frame from column names
-        dplyr::mutate(., scenario = stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 2),
-                      time_frame =  stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 3)) %>%
-          # Replace "." with "-" in time frame
-          dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
-
-      } else {
-        # Extract Member, scenario and time frame from column names
-        dplyr::mutate(., member=   stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 1),
-                      scenario =  stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 2),
-                      time_frame =  stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 3)) %>%
-          # Replace "." with "-" in time frame
-          dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
-
-      }
-    }
-
-  p <- ggplot2::ggplot() +
-    ggplot2::geom_sf(fill = 'antiquewhite1',
-            color = "black",
-            data = countries) +
-    ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
-                data = rs_df, alpha=alpha) +
-    {
-      if(!bins) {
-
-        ggplot2::scale_fill_gradientn(
-          colors = colors,
-          limits = legend_range,
-          na.value = "transparent",
-          n.breaks = 10,
-          guide=ggplot2::guide_colourbar(ticks.colour = "black",
-                                         ticks.linewidth = 1, title.position="top", title.hjust=0.5, label.theme = ggplot2::element_text(angle = 45),  label.hjust = 1))
-      } else {
-
-        ggplot2::scale_fill_stepsn(
-          colors = colors,
-          limits = legend_range,
-          na.value = "transparent",
-          n.breaks = ifelse(is.null(n.bins), 10, n.bins),
-          guide=ggplot2::guide_colourbar(ticks.colour = "black",
-                                         ticks.linewidth = 1, title.position="top", title.hjust=0.5, label.theme = ggplot2::element_text(angle = 45),  label.hjust = 1))
-      }
-    } +
-    ggplot2::coord_sf(
-      xlim = c(range(rs_df$x)[[1]] - 1, range(rs_df$x)[[2]] + 1),
-      ylim = c(range(rs_df$y)[[1]] - 1, range(rs_df$y)[[2]] + 1),
-      expand = F,
-      ndiscr = 500
-    ) +
-    {
-      if(ensemble) {
-
-        ggplot2::facet_grid(time_frame ~ scenario )
-      } else {
-
-        ggh4x::facet_nested(scenario ~ time_frame   + member)
-      }
-    } +
-    ggplot2::labs(fill = plot_titles, x="", y="") +
-    ggplot2::theme_bw(base_size = 12) +
-    ggplot2::theme(
-      plot.background = ggplot2::element_blank(),
-      panel.background = ggplot2::element_rect(fill = 'aliceblue'),
-      panel.border = ggplot2::element_blank(),
-      panel.grid.major = ggplot2::element_blank(),
-      panel.grid.minor = ggplot2::element_blank(),
-      axis.text.x = ggplot2::element_blank(),
-      axis.text.y = ggplot2::element_blank(),
-      axis.ticks= ggplot2::element_blank(),
-      axis.title= ggplot2::element_blank(),
-      legend.position = "bottom",
-      legend.direction = "horizontal",
-      legend.key.height= ggplot2::unit(0.5, 'cm'),
-      legend.key.width= ggplot2::unit(2, 'cm'),
-      legend.box.spacing=ggplot2::unit(0, "pt")
-    )
-
-  message(Sys.time(), " Done")
-
-  return(p)
-
-}
-
-
-
-#' @export
-
-plotting.CAVAanalytics_trends <- function(rst, palette=NULL, legend_range=NULL, plot_titles, ensemble, bins=FALSE, n.bins=NULL,alpha=NA, frequencies, n.groups=3) {
-
-  # checking requirements
-  stopifnot(is.logical(ensemble))
-  stopifnot(is.logical(bins))
-  stopifnot(is.logical(frequencies))
-  if (length(rst)>4 & is.null(rst[[5]]) & frequencies) {
-     stop(Sys.time(), " Set frequencies as FALSE, not supported when loading and analsing data in chunks")
+    return(p)
 
   }
 
-  # messages
 
-  if (isTRUE(ensemble)) {
-    message(Sys.time(), paste0(ifelse(frequencies," Visualizing ensemble, frequencies ", " Visualizing ensemble ")))
-  } else {message(Sys.time(), paste0(ifelse(frequencies," Visualizing individual members (frequencies)", " Visualizing individual members ")))}
+#' @export
 
-  message(Sys.time(), " Prepare for plotting")
+plotting.CAVAanalytics_ccs <-
+  function(rst,
+           palette = NULL,
+           legend_range = NULL,
+           plot_titles,
+           ensemble,
+           bins = FALSE,
+           n.bins = NULL,
+           alpha = NA,
+           stat = "mean") {
+    # checking requirements
+    stopifnot(is.logical(ensemble))
+    stopifnot(is.logical(bins))
+    match.arg(stat, choices = c("mean", "sd"))
 
-  # retrieve the right raster stack based on how trends was run
-if (!frequencies) {
+    # messages
 
-  if (length(rst)>4) { # trends were run on projections
-    if (ensemble) {
-      members <- length(unique(stringr::str_match(names((rst[[3]])), "Member.\\d")))
-      rst <- rst[1:2]
-
+    if (isTRUE(ensemble)) {
+      cli::cli_alert_info(paste0(" Visualizing ensemble ", stat))
     } else {
-
-      rst <- rst[3:4]
+      cli::cli_alert_info(" Visualizing individual members, argument stat is ignored")
     }
 
-  } # to be compledted for observaions
 
-  # Set default colors for legend
-  colors <- if (is.null(palette)) c("blue", "cyan", "green", "yellow", "orange", "red", "black") else palette
+    # retrieve the right spatraster based on the ensemble argument
 
-  # Set default range for legend
-  legend_range <- if (is.null(legend_range)) {
-    if (!ensemble) {
-      c(range(raster::values(rst[[1]]), na.rm = TRUE))} else {
+    rst <-
+      if (isTRUE(ensemble) &
+          stat == "mean")
+        rst[[1]]
+    else if (isTRUE(ensemble) & stat == "sd")
+      rst[[2]]
+    else
+      rst[[3]]
 
-        c(-members, members)
+    # Set default colors for legend
+    colors <-
+      if (is.null(palette))
+        c("blue", "cyan", "green", "yellow", "orange", "red", "black")
+    else
+      palette
+
+    # Set default range for legend
+    legend_range <-
+      if (is.null(legend_range))
+        c(range(terra::values(rst), na.rm = TRUE))
+    else
+      legend_range
+
+    # Suppress warnings
+    options(warn = -1)
+
+    # Get countries data
+    countries <-
+      rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
+
+    # Convert SpatRaster to dataframe
+
+    cli::cli_progress_step("Plotting")
+
+    rs_df <- terra::as.data.frame(rst, xy = TRUE, na.rm = TRUE) %>%
+      tidyr::pivot_longer(cols = 3:ncol(.),
+                          values_to = "value",
+                          names_to = "long_name") %>%  {
+                            if (ensemble) {
+                              # Extract scenario and time frame from column names
+                              dplyr::mutate(
+                                .,
+                                scenario = stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 2),
+                                time_frame =  stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 3)
+                              ) %>%
+                                # Replace "." with "-" in time frame
+                                dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
+
+                            } else {
+                              # Extract Member, scenario and time frame from column names
+                              dplyr::mutate(
+                                .,
+                                member =   stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 1),
+                                scenario =  stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 2),
+                                time_frame =  stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 3)
+                              ) %>%
+                                # Replace "." with "-" in time frame
+                                dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
+
+                            }
+                          }
+
+    p <- ggplot2::ggplot() +
+      ggplot2::geom_sf(
+        fill = 'antiquewhite1',
+        color = "black",
+        data = countries
+      ) +
+      ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
+                           data = rs_df,
+                           alpha = alpha) +
+      {
+        if (!bins) {
+          ggplot2::scale_fill_gradientn(
+            colors = colors,
+            limits = legend_range,
+            na.value = "transparent",
+            n.breaks = 10,
+            guide = ggplot2::guide_colourbar(
+              ticks.colour = "black",
+              ticks.linewidth = 1,
+              title.position = "top",
+              title.hjust = 0.5,
+              label.theme = ggplot2::element_text(angle = 45),
+              label.hjust = 1
+            )
+          )
+        } else {
+          ggplot2::scale_fill_stepsn(
+            colors = colors,
+            limits = legend_range,
+            na.value = "transparent",
+            n.breaks = ifelse(is.null(n.bins), 10, n.bins),
+            guide = ggplot2::guide_colourbar(
+              ticks.colour = "black",
+              ticks.linewidth = 1,
+              title.position = "top",
+              title.hjust = 0.5,
+              label.theme = ggplot2::element_text(angle = 45),
+              label.hjust = 1
+            )
+          )
+        }
+      } +
+      ggplot2::coord_sf(
+        xlim = c(range(rs_df$x)[[1]] - 1, range(rs_df$x)[[2]] + 1),
+        ylim = c(range(rs_df$y)[[1]] - 1, range(rs_df$y)[[2]] + 1),
+        expand = F,
+        ndiscr = 500
+      ) +
+      {
+        if (ensemble) {
+          ggplot2::facet_grid(time_frame ~ scenario)
+        } else {
+          ggh4x::facet_nested(scenario ~ time_frame   + member)
+        }
+      } +
+      ggplot2::labs(fill = plot_titles, x = "", y = "") +
+      ggplot2::theme_bw(base_size = 12) +
+      ggplot2::theme(
+        plot.background = ggplot2::element_blank(),
+        panel.background = ggplot2::element_rect(fill = 'aliceblue'),
+        panel.border = ggplot2::element_blank(),
+        panel.grid.major = ggplot2::element_blank(),
+        panel.grid.minor = ggplot2::element_blank(),
+        axis.text.x = ggplot2::element_blank(),
+        axis.text.y = ggplot2::element_blank(),
+        axis.ticks = ggplot2::element_blank(),
+        axis.title = ggplot2::element_blank(),
+        legend.position = "bottom",
+        legend.direction = "horizontal",
+        legend.key.height = ggplot2::unit(0.5, 'cm'),
+        legend.key.width = ggplot2::unit(2, 'cm'),
+        legend.box.spacing = ggplot2::unit(0, "pt")
+      )
+
+    cli::cli_progress_done()
+
+    return(p)
+
+  }
+
+
+
+#' @export
+
+plotting.CAVAanalytics_trends <-
+  function(rst,
+           palette = NULL,
+           legend_range = NULL,
+           plot_titles,
+           ensemble,
+           bins = FALSE,
+           n.bins = NULL,
+           alpha = NA,
+           frequencies,
+           n.groups = 3) {
+    # checking requirements
+    stopifnot(is.logical(ensemble))
+    stopifnot(is.logical(bins))
+    stopifnot(is.logical(frequencies))
+
+    # retrieve the right spatRaster based on how trends was run
+    if (!frequencies) {
+      if (length(rst) > 4) {
+        # trends was run on projections
+        historical <- FALSE
+        if (ensemble) {
+          members <-
+            length(unique(stringr::str_match(names((
+              rst[[3]]
+            )), "Member.\\d")))
+          rst <- rst[1:2]
+
+        } else {
+          rst <- rst[3:4]
+        }
+
+      } else {
+        # trends was run for observations
+        historical <- TRUE
+        rst <- rst[1:2]
       }
-  } else {
-    legend_range}
+
+      # Messages
+      if (!historical) {
+        if (ensemble) {
+          cli::cli_alert_info(paste0(
+            ifelse(
+              frequencies,
+              " Visualizing ensemble, frequencies ",
+              " Visualizing ensemble "
+            )
+          ))
+        } else {
+          cli::cli_alert_info(paste0(
+            ifelse(
+              frequencies,
+              " Visualizing individual members (frequencies)",
+              " Visualizing individual members "
+            )
+          ))
+        }
+      } else {
+        # when historical is TRUE
+
+        cli::cli_alert_warning(
+          paste0(
+            "Argument ensemble is ignored, trends were applied to observations.",
+            ifelse(frequencies, " Visualizing frequencies", "")
+          )
+        )
+      }
+
+      # Set default colors for legend
+      colors <-
+        if (is.null(palette))
+          c("blue", "cyan", "green", "yellow", "orange", "red", "black")
+      else
+        palette
+
+      # Set default range for legend
+      legend_range <- if (is.null(legend_range)) {
+        if (!ensemble | historical) {
+          c(range(terra::values(rst[[1]], na.rm = TRUE)))
+        } else {
+          c(-members, members)
+        }
+      } else {
+        legend_range
+      }
 
 
-  # Get countries data
-  countries <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
+      # Get countries data
+      countries <-
+        rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
 
-  # Convert raster to dataframe for both coefficients and p.values
+      # Convert spatraster to dataframe for both coefficients and p.values
 
-  rs_df <-
-    purrr::map(
-      rst,
-      ~ raster::as.data.frame(.x, xy = TRUE, na.rm = TRUE) %>%
-        tidyr::pivot_longer(
-          cols = 3:ncol(.),
-          values_to = "value",
-          names_to = "long_name",
-        ) %>%
+      cli::cli_progress_step("Plotting")
+
+      rs_df <-
+        purrr::map(
+          rst,
+          ~ terra::as.data.frame(.x, xy = TRUE, na.rm = TRUE) %>%
+            tidyr::pivot_longer(
+              cols = 3:ncol(.),
+              values_to = "value",
+              names_to = "long_name",
+            ) %>%
+            {
+              if (!historical) {
+                if (ensemble) {
+                  # Extract scenario and time frame from column names
+                  dplyr::mutate(
+                    .,
+                    scenario = stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 1),
+                    time_frame =  stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 3)
+                  ) %>%
+                    # Replace "." with "-" in time frame
+                    dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-")) %>%
+                    dplyr::mutate(., value = ifelse(value == 999, NA, value)) # 999 is the value assigned instead of NA
+
+                } else {
+                  # Extract Member, scenario and time frame from column names
+                  dplyr::mutate(
+                    .,
+                    member =   stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 1),
+                    scenario =  stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 2),
+                    time_frame =  stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 4)
+                  ) %>%
+                    # Replace "." with "-" in time frame
+                    dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
+
+                }
+              } else {
+                # when historical
+
+                dplyr::mutate(
+                  .,
+                  scenario = stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 1),
+                  time_frame =  stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 3)
+                ) %>%
+                  # Replace "." with "-" in time frame
+                  dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
+
+              }
+            }
+        )
+
+      p <- ggplot2::ggplot() +
+        ggplot2::geom_sf(
+          fill = 'antiquewhite1',
+          color = "black",
+          data = countries
+        ) +
+        ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
+                             data = rs_df[[1]],
+                             alpha = alpha) +
         {
-          if(ensemble) {
-            # Extract scenario and time frame from column names
-            dplyr::mutate(., scenario = stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 1),
-                          time_frame =  stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 3)) %>%
-              # Replace "." with "-" in time frame
-              dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-")) %>%
-              dplyr::mutate(., value=ifelse(value==999, NA, value)) # 999 is the value assigned instead of NA
-
+          if (!bins) {
+            ggplot2::scale_fill_gradientn(
+              colors = colors,
+              limits = legend_range,
+              na.value = "transparent",
+              n.breaks = 10,
+              guide = ggplot2::guide_colourbar(
+                ticks.colour = "black",
+                ticks.linewidth = 1,
+                title.position = "top",
+                title.hjust = 0.5,
+                label.theme = ggplot2::element_text(angle = 45),
+                label.hjust = 1
+              )
+            )
           } else {
-            # Extract Member, scenario and time frame from column names
-            dplyr::mutate(., member=   stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 1),
-                          scenario =  stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 2),
-                          time_frame =  stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 4)) %>%
-              # Replace "." with "-" in time frame
-              dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
-
+            ggplot2::scale_fill_stepsn(
+              colors = colors,
+              limits = legend_range,
+              na.value = "transparent",
+              n.breaks = ifelse(is.null(n.bins), 10, n.bins),
+              guide = ggplot2::guide_colourbar(
+                ticks.colour = "black",
+                ticks.linewidth = 1,
+                title.position = "top",
+                title.hjust = 0.5,
+                label.theme = ggplot2::element_text(angle = 45),
+                label.hjust = 1
+              )
+            )
           }
-        })
+        } +
+        ggplot2::geom_point(
+          data = dplyr::filter(rs_df[[2]], value < 0.05),
+          size = 0.1,
+          alpha = 0.4,
+          color = "black",
+          ggplot2::aes(x, y)
+        ) +
+        ggplot2::coord_sf(
+          xlim = c(range(rs_df[[2]]$x)[[1]] - 1, range(rs_df[[2]]$x)[[2]] + 1),
+          ylim = c(range(rs_df[[2]]$y)[[1]] - 1, range(rs_df[[2]]$y)[[2]] + 1),
+          expand = F,
+          ndiscr = 500
+        ) +
+        {
+          if (ensemble | historical) {
+            ggplot2::facet_grid(time_frame ~ scenario)
+          } else {
+            ggh4x::facet_nested(scenario ~ time_frame   + member)
+          }
+        } +
+        ggplot2::labs(fill = plot_titles, x = "", y = "") +
+        ggplot2::theme_bw(base_size = 12) +
+        ggplot2::theme(
+          plot.background = ggplot2::element_blank(),
+          panel.background = ggplot2::element_rect(fill = 'aliceblue'),
+          panel.border = ggplot2::element_blank(),
+          panel.grid.major = ggplot2::element_blank(),
+          panel.grid.minor = ggplot2::element_blank(),
+          axis.text.x = ggplot2::element_blank(),
+          axis.text.y = ggplot2::element_blank(),
+          axis.ticks = ggplot2::element_blank(),
+          axis.title = ggplot2::element_blank(),
+          legend.position = "bottom",
+          legend.direction = "horizontal",
+          legend.key.height = ggplot2::unit(0.5, 'cm'),
+          legend.key.width = ggplot2::unit(2, 'cm'),
+          legend.box.spacing = ggplot2::unit(0, "pt")
+        )
 
-  p <- ggplot2::ggplot() +
-    ggplot2::geom_sf(fill = 'antiquewhite1',
-                     color = "black",
-                     data = countries) +
-    ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
-                         data = rs_df[[1]],  alpha=alpha) +
-    {
-      if(!bins) {
+      cli::cli_process_done()
 
-        ggplot2::scale_fill_gradientn(
-          colors = colors,
-          limits = legend_range,
-          na.value = "transparent",
-          n.breaks = 10,
-          guide=ggplot2::guide_colourbar(ticks.colour = "black",
-                                         ticks.linewidth = 1, title.position="top", title.hjust=0.5, label.theme = ggplot2::element_text(angle = 45),  label.hjust = 1))
-      } else {
-
-        ggplot2::scale_fill_stepsn(
-          colors = colors,
-          limits = legend_range,
-          na.value = "transparent",
-          n.breaks = ifelse(is.null(n.bins), 10, n.bins),
-          guide= ggplot2::guide_colourbar(ticks.colour = "black",
-                                          ticks.linewidth = 1, title.position="top", title.hjust=0.5, label.theme = ggplot2::element_text(angle = 45),  label.hjust = 1))
-      }
-    } +
-    ggplot2::geom_point(
-      data = dplyr::filter(rs_df[[2]], value < 0.05),
-      size = 0.1,
-      alpha=0.4,
-      color = "black",
-      ggplot2::aes(x, y)
-    ) +
-    ggplot2::coord_sf(
-      xlim = c(range(rs_df[[2]]$x)[[1]] - 1, range(rs_df[[2]]$x)[[2]] + 1),
-      ylim = c(range(rs_df[[2]]$y)[[1]] - 1, range(rs_df[[2]]$y)[[2]] + 1),
-      expand = F,
-      ndiscr = 500
-    ) +
-    {
-      if(ensemble) {
-
-        ggplot2::facet_grid(time_frame ~scenario  )
-      } else {
-
-        ggh4x::facet_nested(scenario ~ time_frame   + member)
-      }
-    } +
-    ggplot2::labs(fill = plot_titles, x="", y="") +
-    ggplot2::theme_bw(base_size = 12) +
-    ggplot2::theme(
-      plot.background = ggplot2::element_blank(),
-      panel.background = ggplot2::element_rect(fill = 'aliceblue'),
-      panel.border = ggplot2::element_blank(),
-      panel.grid.major = ggplot2::element_blank(),
-      panel.grid.minor = ggplot2::element_blank(),
-      axis.text.x = ggplot2::element_blank(),
-      axis.text.y = ggplot2::element_blank(),
-      axis.ticks= ggplot2::element_blank(),
-      axis.title= ggplot2::element_blank(),
-      legend.position = "bottom",
-      legend.direction = "horizontal",
-      legend.key.height= ggplot2::unit(0.5, 'cm'),
-      legend.key.width= ggplot2::unit(2, 'cm'),
-      legend.box.spacing=ggplot2::unit(0, "pt")
-    )
-
-  message(Sys.time(), " Done")
-
-  return(p)
-} else { # when frequencies is set as T
-
-message(Sys.time(), " Arguments bins, legend_range, plot_titles and palette are ignored")
-
-  if (length(rst)>4) { # trends were run on projections
-    if (ensemble) {
-      members <- length(unique(stringr::str_match(names((rst[[3]])), "Member.\\d")))
-      rst <- rst[[5]]
-      plts <- suppressMessages(purrr::map(unique(rst$forcing), ~ ridgeline(dplyr::filter(rst, forcing==.x), group_col = 'date', z_col = 'value', num_grps = n.groups)+
-                           ggplot2::ggtitle(.x)+
-                           ggplot2::theme_bw()+
-                           ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5), legend.position = "none",
-                                          legend.key.height= ggplot2::unit(0.2, 'cm'), legend.key.width= ggplot2::unit(1, 'cm'))))
-
-      p <- patchwork::wrap_plots(plts)
       return(p)
-
     } else {
+      # when frequencies is set as T
 
-      rst <- rst[[6]]
-      plts <- suppressMessages(purrr::map(unique(rst$forcing), ~ purrr::map(unique(rst$Var1), function(model)
+      cli::cli_alert_warning(" Arguments bins, legend_range, plot_titles and palette are ignored")
 
-        ridgeline(dplyr::filter(rst, forcing==.x, Var1==model), group_col = 'date', z_col = 'value', num_grps = n.groups)+
-          ggplot2::ggtitle(paste0(model, "_", .x))+
-          ggplot2::theme_bw()+
-          ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5), legend.position = "none",
-                         legend.key.height= ggplot2::unit(0.2, 'cm'), legend.key.width= ggplot2::unit(1, 'cm')))
+      if (length(rst) > 4) {
+        # trends were run on projections
+        if (ensemble) {
+          members <-
+            length(unique(stringr::str_match(names((
+              rst[[3]]
+            )), "Member.\\d")))
+          rst <- rst[[5]]
+          plts <-
+            suppressMessages(
+              purrr::map(
+                unique(rst$experiment),
+                ~ ridgeline(
+                  dplyr::filter(rst, experiment == .x),
+                  group_col = 'date',
+                  z_col = 'value',
+                  num_grps = n.groups
+                ) +
+                  ggplot2::ggtitle(.x) +
+                  ggplot2::theme_bw() +
+                  ggplot2::theme(
+                    plot.title = ggplot2::element_text(hjust = 0.5),
+                    legend.position = "none",
+                    legend.key.height = ggplot2::unit(0.2, 'cm'),
+                    legend.key.width = ggplot2::unit(1, 'cm')
+                  )
+              )
+            )
 
-      )
-      )
+          p <- patchwork::wrap_plots(plts)
+          return(p)
 
-      # Combine plots
-     p <- patchwork::wrap_plots(plts[[1]]) /  patchwork::wrap_plots(plts[[2]])
-     return(p)
+        } else {
+          rst <- rst[[6]]
+          plts <-
+            suppressMessages(purrr::map(
+              unique(rst$experiment),
+              ~ purrr::map(unique(rst$Var1), function(model)
+
+                ridgeline(
+                  dplyr::filter(rst, experiment == .x, Var1 == model),
+                  group_col = 'date',
+                  z_col = 'value',
+                  num_grps = n.groups
+                ) +
+                  ggplot2::ggtitle(paste0(model, "_", .x)) +
+                  ggplot2::theme_bw() +
+                  ggplot2::theme(
+                    plot.title = ggplot2::element_text(hjust = 0.5),
+                    legend.position = "none",
+                    legend.key.height = ggplot2::unit(0.2, 'cm'),
+                    legend.key.width = ggplot2::unit(1, 'cm')
+                  ))
+
+            ))
+
+          # Combine plots
+          p <-
+            patchwork::wrap_plots(plts[[1]]) /  patchwork::wrap_plots(plts[[2]])
+          return(p)
+
+        }
+
+      } else {
+        # when trends is run for the historical period and frequencies is true
+
+        rst <- rst[[3]][[1]]
+        p <-
+          suppressMessages(
+            ridgeline(
+              rst,
+              group_col = 'date',
+              z_col = 'value',
+              num_grps = n.groups
+            ) +
+              ggplot2::ggtitle("obs") +
+              ggplot2::theme_bw() +
+              ggplot2::theme(
+                plot.title = ggplot2::element_text(hjust = 0.5),
+                legend.position = "none",
+                legend.key.height = ggplot2::unit(0.2, 'cm'),
+                legend.key.width = ggplot2::unit(1, 'cm')
+              )
+          )
+
+        return(p)
+
+
+      }
+
 
     }
-
-  } # to complete for observation
-
-
-}
-}
-
-
-
+  }

@@ -10,9 +10,8 @@ projections(
   uppert = NULL,
   lowert = NULL,
   season,
-  scaling.type = "additive",
   consecutive = F,
-  n.cores = 1,
+  n.sessions = 1,
   duration = "max"
 )
 }
@@ -27,22 +26,20 @@ projections(
 
 \item{season}{numeric, seasons to select. For example, 1:12}
 
-\item{scaling.type}{character, default to "additive". Indicates whether to use multiplicative or additive approach for bias correction}
-
 \item{consecutive}{logical, to use in conjunction with lowert or uppert}
 
-\item{n.cores}{numeric, number of cores to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage}
+\item{n.sessions}{numeric, number of sessions to use, default is one. Parallelization can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelizing will increase RAM usage}
 
-\item{duration}{character, either "max" or "total"}
+\item{duration}{character, either "max" or "total". Used only when consecutive is TRUE}
 }
 \value{
-list with raster stacks. .[[1]] contains the raster stack for the ensemble mean. .[[2]] contains the rasterstack for the ensemble sd and .[[3]] conins the rasterstack for individual models
+list with SpatRaster. .[[1]] contains SpatRaster for the ensemble mean. .[[2]] contains SpatRaster for the ensemble sd and .[[3]] conins SpatRaster for individual models
 }
 \description{
 Automatically process climate model projections and compute useful statistics
 }
 \examples{
-load_data(country = "Somalia", variable="tas", years.hist=2000, years.proj=2010,
+load_data(country = "Togo", variable="tas", years.hist=2000, years.proj=2010,
               path.to.data = "CORDEX-CORE", domain="AFR-22") \%>\%
 projections(., season = 1:12)
 }

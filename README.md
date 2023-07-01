@@ -9,9 +9,7 @@
 
 ## Current status
 
-**CAVAanalytics is currently in pre-release.** You can install it
-locally but only few climate models are available for remote access. It
-would work if you have data locally available or whether you have access to the Jupyerhub of University of Cantabria.
+**CAVAanalytics is currently in its first release** Data is availbale for the CORDEX-CORE domain AFR-22 alongside W5E5 v2 and ERA5. Examples in the tutorial folder
 
 ## Table of Contents
 - [Introduction: What is CAVA?](#introduction-what-is-cava)

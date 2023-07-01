@@ -9,7 +9,7 @@
 
 ## Current status
 
-**CAVAanalytics is currently in its first release** Data is availbale for the CORDEX-CORE domain AFR-22 alongside W5E5 v2 and ERA5. Examples in the tutorial folder
+**CAVAanalytics is currently in its first release**. Data is availbale for the CORDEX-CORE domain AFR-22 alongside W5E5 v2 and ERA5. Examples in the tutorial folder
 
 ## Table of Contents
 - [Introduction: What is CAVA?](#introduction-what-is-cava)

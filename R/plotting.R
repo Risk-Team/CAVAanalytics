@@ -390,17 +390,17 @@ plotting.CAVAanalytics_trends <-
            alpha = NA,
            frequencies,
            n.groups = 3,
-           linear_trends) {
+           spatial_aggr) {
     # checking requirements
     stopifnot(is.logical(ensemble))
     stopifnot(is.logical(bins))
     stopifnot(is.logical(frequencies))
-    stopifnot(is.logical(linear_trends))
+    stopifnot(is.logical(spatial_aggr))
 
-    if (frequencies & linear_trends) cli::cli_abort("frequencies and linear_trends cannot be both equal TRUE")
+    if (frequencies & spatial_aggr) cli::cli_abort("frequencies and spatial_aggr cannot be both equal TRUE")
 
     # retrieve the right spatRaster based on how trends was run
-    if (!frequencies & !linear_trends) {
+    if (!frequencies & !spatial_aggr) {
       if (length(rst) > 4) {
         # trends was run on projections
         historical <- FALSE
@@ -611,7 +611,7 @@ plotting.CAVAanalytics_trends <-
       cli::cli_process_done()
 
       return(p)
-    } else {  # when frequencies or linear_trends is set as T
+    } else {  # when frequencies or spatial_aggr is set as T
 
       if (frequencies) {# when frequencies is TRUE
       cli::cli_alert_warning(" Arguments bins, legend_range, plot_titles and palette are ignored. Change number of group intervals with n.groups")
@@ -706,7 +706,7 @@ plotting.CAVAanalytics_trends <-
 
       }
 
-      } else { # when linear_trends is TRUE
+      } else { # when spatial_aggr is TRUE
 
     cli::cli_alert_warning(" Arguments bins and legend_range are ignored")
 
@@ -769,7 +769,7 @@ plotting.CAVAanalytics_trends <-
           }
 
         } else {
-          # when trends is run for the historical period and linear_trends is true
+          # when trends is run for the historical period and spatial_aggr is true
 
        # to complete
         }

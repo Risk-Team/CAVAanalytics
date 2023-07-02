@@ -27,7 +27,11 @@ plotting(
 
 \item{ensemble}{logical. Whether to visualize the ensemble mean or each individual model}
 
-\item{alpha}{numeric. Transparency of the raster colors}
+\item{bins}{logical. Whether to visualize colors as a gradient or in bins}
+
+\item{n.bins}{numeric. Controlling the number of bins when bins equal TRUE}
+
+\item{alpha}{numeric. Transparency of colors}
 }
 \value{
 ggplot object

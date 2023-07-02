@@ -19,7 +19,7 @@
 #' @param duration character, either "max" or "total"
 #' @param n.sessions numeric, number of sessions to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage
 #' @param chunk.size numeric, indicating the number of chunks. The smaller the better when working with limited RAM
-#' @param overlap numeric, amount of overlap needed to create the composite. Default 0.25
+#' @param overlap numeric, amount of overlap needed to create the composite. Default 0.5
 #' @param intraannual_var logical, whether linear regression is applied to annual variability, measured as standard deviation
 #' @importFrom magrittr %>%
 #' @return list with merged raster stacks. To explore the output run attributes(output)
@@ -40,7 +40,7 @@ load_data_and_trends <- function(variable,
                                  aggr.m = "none",
                                  domain = NULL,
                                  chunk.size,
-                                 overlap = 0.25,
+                                 overlap = 0.5,
                                  season,
                                  lowert = NULL,
                                  uppert = NULL,

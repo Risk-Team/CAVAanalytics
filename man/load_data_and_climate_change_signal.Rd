@@ -15,7 +15,7 @@ load_data_and_climate_change_signal(
   aggr.m = "none",
   domain,
   chunk.size,
-  overlap = 0.25,
+  overlap = 0.5,
   season,
   lowert = NULL,
   uppert = NULL,
@@ -48,7 +48,7 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 
 \item{chunk.size}{numeric, indicating the number of chunks to. The smaller the better when working with limited RAM.}
 
-\item{overlap}{numeric, amount of overlap needed to create the composite. This would depend on the resolution of your data. For example, if your data is at 50 Km resolution, overlap could be 0.5. If your data is at 1 Km resolution, overlap can be 0.1}
+\item{overlap}{numeric, amount of overlap needed to create the composite. Default 0.5}
 
 \item{season}{numeric, seasons to select. For example, 1:12}
 

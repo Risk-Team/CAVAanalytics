@@ -19,7 +19,7 @@
 #' @param duration character, either "max" or "total"
 #' @param n.sessions numeric, number of sessions to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage
 #' @param chunk.size numeric, indicating the number of chunks. The smaller the better when working with limited RAM
-#' @param overlap numeric, amount of overlap needed to create the composite. Default 0.25
+#' @param overlap numeric, amount of overlap needed to create the composite. Default 0.5
 #' @importFrom magrittr %>%
 #' @return list with SpatRaster. .[[1]] contains SpatRaster for the ensemble mean. .[[2]] contains SpatRaster for the ensemble sd and .[[3]] conins SpatRaster for individual models
 #' @export

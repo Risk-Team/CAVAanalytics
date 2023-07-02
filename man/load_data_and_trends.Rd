@@ -15,7 +15,7 @@ load_data_and_trends(
   aggr.m = "none",
   domain = NULL,
   chunk.size,
-  overlap = 0.25,
+  overlap = 0.5,
   season,
   lowert = NULL,
   uppert = NULL,
@@ -49,7 +49,7 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 
 \item{chunk.size}{numeric, indicating the number of chunks. The smaller the better when working with limited RAM}
 
-\item{overlap}{numeric, amount of overlap needed to create the composite. Default 0.25}
+\item{overlap}{numeric, amount of overlap needed to create the composite. Default 0.5}
 
 \item{season}{numeric, seasons to select. For example, 1:12}
 

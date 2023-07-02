@@ -19,7 +19,7 @@
 #' @param n.sessions numeric, number of sessions to use in parallel processing. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary
 #' @param duration character, either "max" or "total"
 #' @param chunk.size numeric, indicating the number of chunks to. The smaller the better when working with limited RAM.
-#' @param overlap numeric, amount of overlap needed to create the composite. This would depend on the resolution of your data. For example, if your data is at 50 Km resolution, overlap could be 0.5. If your data is at 1 Km resolution, overlap can be 0.1
+#' @param overlap numeric, amount of overlap needed to create the composite. Default 0.5
 #' @importFrom magrittr %>%
 #' @return list with SpatRasters. .[[1]] contains SpatRaster for the ensemble mean. .[[2]] contains SpatRaster for the ensemble sd and .[[3]] contains SpatRaster for individual models
 #' @export
@@ -40,7 +40,7 @@ load_data_and_climate_change_signal <-
            aggr.m = "none",
            domain,
            chunk.size,
-           overlap = 0.25,
+           overlap = 0.5,
            season,
            lowert = NULL,
            uppert = NULL,

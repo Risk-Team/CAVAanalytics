@@ -9,7 +9,9 @@
 #' @param legend_range  numeric. Fix legend limits
 #' @param plot_titles character. Title of the plot legend
 #' @param ensemble logical. Whether to visualize the ensemble mean or each individual model
-#' @param alpha numeric. Transparency of the raster colors
+#' @param bins logical. Whether to visualize colors as a gradient or in bins
+#' @param n.bins numeric. Controlling the number of bins when bins equal TRUE
+#' @param alpha numeric. Transparency of colors
 #' @return ggplot object
 #' @examples
 #'load_data(country = "Somalia", variable="tas", years.hist=2000, years.proj=2010,
@@ -387,14 +389,18 @@ plotting.CAVAanalytics_trends <-
            n.bins = NULL,
            alpha = NA,
            frequencies,
-           n.groups = 3) {
+           n.groups = 3,
+           linear_trends) {
     # checking requirements
     stopifnot(is.logical(ensemble))
     stopifnot(is.logical(bins))
     stopifnot(is.logical(frequencies))
+    stopifnot(is.logical(linear_trends))
+
+    if (frequencies & linear_trends) cli::cli_abort("frequencies and linear_trends cannot be both equal TRUE")
 
     # retrieve the right spatRaster based on how trends was run
-    if (!frequencies) {
+    if (!frequencies & !linear_trends) {
       if (length(rst) > 4) {
         # trends was run on projections
         historical <- FALSE
@@ -605,10 +611,10 @@ plotting.CAVAanalytics_trends <-
       cli::cli_process_done()
 
       return(p)
-    } else {
-      # when frequencies is set as T
+    } else {  # when frequencies or linear_trends is set as T
 
-      cli::cli_alert_warning(" Arguments bins, legend_range, plot_titles and palette are ignored")
+      if (frequencies) {# when frequencies is TRUE
+      cli::cli_alert_warning(" Arguments bins, legend_range, plot_titles and palette are ignored. Change number of group intervals with n.groups")
 
       if (length(rst) > 4) {
         # trends were run on projections
@@ -642,7 +648,7 @@ plotting.CAVAanalytics_trends <-
           p <- patchwork::wrap_plots(plts)
           return(p)
 
-        } else {
+        } else { # for individual models
           rst <- rst[[6]]
           plts <-
             suppressMessages(purrr::map(
@@ -700,6 +706,73 @@ plotting.CAVAanalytics_trends <-
 
       }
 
+      } else { # when linear_trends is TRUE
 
+    cli::cli_alert_warning(" Arguments bins and legend_range are ignored")
+
+        if (length(rst) > 4) {
+          # trends were run on projections
+          if (ensemble) {
+
+            rst[[6]] %>%
+            dplyr::group_by(date, experiment) %>%
+              dplyr::summarise(sd=sd(value)/sqrt(length(unique(rst[[6]]$Var1))), value=mean(value)) %>%
+              ggplot2::ggplot()+
+              ggplot2::geom_line(ggplot2::aes(y=value, x=date, color=experiment))+
+              ggplot2::geom_point(ggplot2::aes(y=value, x=date, color=experiment), size = 2, alpha=0.3) +
+
+              ggplot2::geom_ribbon(ggplot2::aes(y=value, x=date, ymin = value - sd,
+                                                ymax = value + sd, fill = experiment), alpha = 0.1, show.legend = F) +
+              ggplot2::geom_label(
+                ggplot2:: aes(x=date, y=value, label = round(value, digits = 0), fill=experiment),
+                size=2,
+                nudge_x = 0.1,
+                nudge_y = 0.1,
+                color="black",
+                show.legend = FALSE,
+                alpha=0.5
+              ) +
+              ggplot2::scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
+              ggplot2::theme_bw()+
+              ggplot2::theme(legend.position = "bottom", axis.text.x = ggplot2::element_text(angle = 45, hjust = 1), legend.title = ggplot2::element_blank())+
+              ggplot2::labs(x = "Year", y = plot_titles)+
+              if (!is.null(palette)) {
+               list(ggplot2::scale_color_manual(values = palette),
+                ggplot2::scale_fill_manual(values = palette))
+              } else {
+                list(ggplot2::scale_color_identity(),
+                  ggplot2::scale_fill_identity())
+              }
+
+
+
+
+          } else { # for individual models
+            rst[[6]] %>%
+            dplyr::group_by(Var1, date, experiment) %>%
+              dplyr::summarise(value=mean(value)) %>%
+              ggplot2::ggplot()+
+              ggplot2::geom_line(ggplot2::aes(y=value, x=date, color=experiment))+
+              ggplot2::geom_point(ggplot2::aes(y=value, x=date, color=experiment), size = 2, alpha=0.3) +
+              ggplot2::facet_wrap(~Var1, ncol = 2)+
+              ggplot2::scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
+              ggplot2::theme_bw()+
+              ggplot2::theme(legend.position = "bottom", axis.text.x = ggplot2::element_text(angle = 45, hjust = 1), legend.title = ggplot2::element_blank())+
+              ggplot2::labs(x = "Year", y = plot_titles)+
+              if (!is.null(palette)) {
+                ggplot2::scale_color_manual(values = palette)
+              } else {
+                ggplot2::scale_color_identity()
+              }
+
+
+          }
+
+        } else {
+          # when trends is run for the historical period and linear_trends is true
+
+       # to complete
+        }
+}
     }
   }

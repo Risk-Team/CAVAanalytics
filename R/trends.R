@@ -462,7 +462,7 @@ trends = function(data,
           )
         ))
 
-      } else {
+      } else { # for historical
         invisible(structure(
           list(
             data_list$models_spat[[1]][[1]],

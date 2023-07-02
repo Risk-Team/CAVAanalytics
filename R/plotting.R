@@ -739,13 +739,7 @@ plotting.CAVAanalytics_trends <-
               if (!is.null(palette)) {
                list(ggplot2::scale_color_manual(values = palette),
                 ggplot2::scale_fill_manual(values = palette))
-              } else {
-                list(ggplot2::scale_color_identity(),
-                  ggplot2::scale_fill_identity())
               }
-
-
-
 
           } else { # for individual models
             rst[[6]] %>%
@@ -761,10 +755,7 @@ plotting.CAVAanalytics_trends <-
               ggplot2::labs(x = "Year", y = plot_titles)+
               if (!is.null(palette)) {
                 ggplot2::scale_color_manual(values = palette)
-              } else {
-                ggplot2::scale_color_identity()
               }
-
 
           }
 

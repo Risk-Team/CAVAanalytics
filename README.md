@@ -90,8 +90,6 @@ page](https://github.com/SantanderMetGroup/loadeR/wiki/Installation) to
 solve the issue. loadR.java depends on rJava and this installation can
 be troublesome.
 
-**Note than only very few climate models are currently available for remote data loading. **
-
 ### 2) JupyterHub
 
 You can request access to the University of Cantabria JupyterHub, where

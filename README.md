@@ -66,10 +66,10 @@ Based on how you want to use CAVAanalytics, there are three options.
 
 **If you are new to climate4R**, install its main packages first.
 You can do so by
-``` 
-    install.packages("rJava")
-    library(devtools)
-    install_github(c("SantanderMetGroup/loadeR.java",
+```
+install.packages("rJava")
+library(devtools)
+install_github(c("SantanderMetGroup/loadeR.java",
                      "SantanderMetGroup/climate4R.UDG",
                      "SantanderMetGroup/loadeR",
                      "SantanderMetGroup/transformeR",
@@ -79,7 +79,7 @@ You can do so by
 ```
 **Then**
 ```
-   install_github("Risk-Team/CAVAanalytics")
+install_github("Risk-Team/CAVAanalytics")
 ```
 it is possible that the installation of loadR.java fails. If so, have a
 look at the [loadR main

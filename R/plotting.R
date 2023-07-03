@@ -708,9 +708,10 @@ plotting.CAVAanalytics_trends <-
 
       } else { # when spatial_aggr is TRUE
 
-    cli::cli_alert_warning(" Arguments bins and legend_range are ignored")
+
 
         if (length(rst) > 4) {
+          cli::cli_alert_warning(" Arguments bins and legend_range are ignored")
           # trends were run on projections
           if (ensemble) {
 
@@ -759,10 +760,32 @@ plotting.CAVAanalytics_trends <-
 
           }
 
-        } else {
-          # when trends is run for the historical period and spatial_aggr is true
+        } else { # when trends is run for the historical period and spatial_aggr is true
+          cli::cli_alert_warning(" Arguments bins, ensemble and legend_range are ignored")
+          rst[[3]][[1]] %>%
+            dplyr::group_by(date, experiment) %>%
+            dplyr::summarise(value=mean(value)) %>%
+            ggplot2::ggplot()+
+            ggplot2::geom_line(ggplot2::aes(y=value, x=date, color=experiment))+
+            ggplot2::geom_point(ggplot2::aes(y=value, x=date, color=experiment), size = 2, alpha=0.3) +
+            ggplot2::geom_label(
+              ggplot2:: aes(x=date, y=value, label = round(value, digits = 0), fill=experiment),
+              size=2,
+              nudge_x = 0.1,
+              nudge_y = 0.1,
+              color="black",
+              show.legend = FALSE,
+              alpha=0.5
+            ) +
+            ggplot2::scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
+            ggplot2::theme_bw()+
+            ggplot2::theme(legend.position = "bottom", axis.text.x = ggplot2::element_text(angle = 45, hjust = 1), legend.title = ggplot2::element_blank())+
+            ggplot2::labs(x = "Year", y = plot_titles)+
+            if (!is.null(palette)) {
+              list(ggplot2::scale_color_manual(values = palette),
+                   ggplot2::scale_fill_manual(values = palette))
+            }
 
-       # to complete
         }
 }
     }

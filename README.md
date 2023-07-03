@@ -1,4 +1,4 @@
-# CAVAanalytics <img src="man/figures/hex.png" width = "150" height = "150" align="right" />
+# CAVAanalytics 
 
 <div>
    <img src="https://img.shields.io/github/v/release/Risk-team/CAVAanalytics?include_prereleases" alt="GitHub R package version" style="display: inline-block;">

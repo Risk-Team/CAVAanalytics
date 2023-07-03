@@ -76,7 +76,6 @@ You can do so by
                        "SantanderMetGroup/convertR",
                      "SantanderMetGroup/climate4R.indices",
                      "SantanderMetGroup/downscaleR"))
-                     
    install_github("Risk-Team/CAVAanalytics")
 
 it is possible that the installation of loadR.java fails. If so, have a

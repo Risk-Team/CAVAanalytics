@@ -64,13 +64,7 @@ Based on how you want to use CAVAanalytics, there are three options.
 
 ### 1) Locally
 
-If you have already installed most of the climaterR packages, you can
-simply install CAVAanalytics from GitHub:
-
-    library(devtools)
-    install_github("Risk-Team/CAVAanalytics")
-
-**If you are also new to climate4R**, install its main packages first.
+**If you are new to climate4R**, install its main packages first.
 You can do so by
 
     install.packages("rJava")
@@ -82,6 +76,8 @@ You can do so by
                        "SantanderMetGroup/convertR",
                      "SantanderMetGroup/climate4R.indices",
                      "SantanderMetGroup/downscaleR"))
+                     
+   install_github("Risk-Team/CAVAanalytics")
 
 it is possible that the installation of loadR.java fails. If so, have a
 look at the [loadR main

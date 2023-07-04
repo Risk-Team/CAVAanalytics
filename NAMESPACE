@@ -3,6 +3,7 @@
 S3method(plotting,CAVAanalytics_ccs)
 S3method(plotting,CAVAanalytics_projections)
 S3method(plotting,CAVAanalytics_trends)
+export(C4R_to_CAVA)
 export(climate_change_signal)
 export(common_dates)
 export(ens_trends)

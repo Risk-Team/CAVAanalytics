@@ -178,13 +178,6 @@ climate_change_signal <- function(data,
                                     extrapolation = "constant"
                                   )
                                 )
-                              mod_temp <-
-                                transformeR::intersectGrid.time(mod, bc, which.return = 2)
-                              mod_temp$Dates$start <-
-                                mod$Dates$start
-                              mod_temp$Dates$end <-  mod$Dates$end
-                              return(mod_temp)
-
                             } else {
                               bc <-
                                 suppressMessages(
@@ -201,14 +194,15 @@ climate_change_signal <- function(data,
                                     extrapolation = "constant"
                                   )
                                 )
-                              mod_temp <-
-                                transformeR::intersectGrid.time(mod, bc, which.return = 2)
-                              mod_temp$Dates$start <-
-                                mod$Dates$start
-                              mod_temp$Dates$end <-  mod$Dates$end
-                              return(mod_temp)
+
                             }
 
+                            mod_temp <-
+                              transformeR::intersectGrid.time(mod, bc, which.return = 2)
+                            mod_temp$Dates$start <-
+                              mod$Dates$start
+                            mod_temp$Dates$end <-  mod$Dates$end
+                            return(mod_temp)
                           }))
           } else
             .

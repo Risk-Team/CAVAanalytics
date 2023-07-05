@@ -31,7 +31,7 @@ state-of-the-art climate data. [CAVA is made of a Platform
 (GUI)](https://fao-cava.predictia.es/auth), which is freely accessible
 and satisfy the needs of most standard users, and a R package
 (**CAVAanalytics**) which allows remote access to climate data and
-several functions for more advance climate data analysis.
+several functions for more advanced climate data analyses.
 
 CAVAanalytics can be used locally (installation through GitHub),
 remotely (registered users can access the University of Cantabria
@@ -39,14 +39,14 @@ JupyterHub with 180 Gb RAM) and through a Docker image.
 
 |                                                                                           ![framework](https://github.com/Risk-Team/CAVAanalytics/assets/40058235/d0647a38-a128-496d-9d7b-81365c8c7f62)                                                                                            |
 |:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
-| *CAVA framework. CAVA can be used through a graphic user interface (CAVA Platform) or through the CAVAanalytics R package. The package can be used locally (GitHub installation), remotely (University of Cantabria JupyterHub) or locally but through a Docker image to solve dependencies issue* |
+| *CAVA framework. CAVA can be used through a graphic user interface (CAVA Platform) or through the CAVAanalytics R package. The package can be used locally (GitHub installation), remotely (University of Cantabria JupyterHub) or locally but through a Docker image to solve dependencies issues* |
 
 
 
 ## CAVAanalytics
 
 **CAVAanalytics** is a package that offers a consistent framework to
-load, analyse and visualize multi-model ensembles. **CAVAanalytics**
+load, analyze, and visualize multi-model ensembles. **CAVAanalytics**
 provides an access point for CORDEX-CORE simulations at 25 Km resolution
 already interpolated plus the W5E5 and ERA5 datasets. CAVAanalytics can
 be seen as a wrapper of several packages, but the main engine for

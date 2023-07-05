@@ -124,25 +124,12 @@ accessing the dataset stored remotely.
 library(CAVAanalytics)
   # 1st step
 remote.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1995, years.proj=2050:2055,
-              path.to.data = "CORDEX-CORE", path.to.obs="W5E5", domain="AFR-22")
+              path.to.data = "CORDEX-CORE", aggr.m="mean", domain="AFR-22")
   # 2nd step
   projections(remote.data, season=1:12, bias.correction = F) %>% 
   # 3rd step
-  plotting(., ensemble=T, plot_titles = "Average tasmax")
+  plotting(., ensemble=FALSE, plot_titles = "Average tasmax")
 ```
+![image190](https://github.com/Risk-Team/CAVAanalytics/assets/40058235/5100dbc5-19ee-4285-becf-44c82b9cfafd)
 
-![](README_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
 
-You can also look at individual models and specify agroclimatic
-indicators. For example, number of days with maximum temperature above
-45 °C.
-
-``` r
-  # 2nd step
-  projections(remote.data, season=1:12, uppert=42,  bias.correction = F) %>% 
-  # 3rd step
-  plotting(., ensemble=F, plot_titles = "N. days Tmax > 45 °C", 
-           palette=c("white", "orange", "red", "black"))
-```
-
-![](README_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->

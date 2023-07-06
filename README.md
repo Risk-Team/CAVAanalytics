@@ -8,7 +8,7 @@
 </div>
 
 ## Table of Contents
-- [Introduction: What is CAVA?](#introduction-what-is-cava)
+- [What is CAVA?](#what-is-cava)
 - [CAVAanalytics](#cavaanalytics)
 - [Installation](#installation)
     - [1) Locally](#1-locally)
@@ -19,7 +19,7 @@
     - [Loading Data, Processing and Visualizing Results](#loading-data-processing-and-visualizing-results)
 
 
-## Introduction: What is CAVA?
+## What is CAVA?
 
 CAVA (Climate and Agriculture Risk Visualization and Assessment) is a
 framework and approach to the analysis and visualization of

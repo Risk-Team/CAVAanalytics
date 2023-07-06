@@ -92,8 +92,8 @@ access these resources, you are welcome to contact
 
 ### 3) Docker
 
-A docker image will be made available soon, containing all the required
-software to immediately start working with CAVAanalytics.
+A Docker image will be made available soon, containing all the required
+software and libraries needed to immediately start working with CAVAanalytics.
 
 ## Using CAVAanalytics
 
@@ -107,9 +107,7 @@ models) and then work with the output of the load_data with other
 |:-------------------------------------------------------------------------------------------------------------------:|
 |                                                *CAVAanalytics steps*                                                |
 
-## Examples
-
-### Loading data, processing and visualizing results
+## Quick example
 
 **To load CORDEX-CORE data stored remotely**, set path.to.data to
 “CORDEX-CORE” and specify the domain. This will load CORDEX-CORE

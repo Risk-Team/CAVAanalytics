@@ -39,7 +39,8 @@ list with SpatRaster. .[[1]] contains SpatRaster for the ensemble mean. .[[2]] c
 Automatically process climate model projections and compute useful statistics
 }
 \examples{
-load_data(country = "Togo", variable="tas", years.hist=2000, years.proj=2010,
-              path.to.data = "CORDEX-CORE", domain="AFR-22") \%>\%
-projections(., season = 1:12)
+exmp <- load_data(country = "Togo", variable="tasmax", years.hist=2000, years.proj=2020:2025,
+              path.to.data = "CORDEX-CORE", domain="AFR-22")
+proj_exmp <- projections(exmp, season = 1:12)
+plotting(proj_exmp, ensemble=T, plot_titles="mean tasmax", palette=c("yellow", "orange", "red"))
 }

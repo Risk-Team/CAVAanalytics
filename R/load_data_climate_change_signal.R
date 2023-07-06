@@ -23,9 +23,6 @@
 #' @importFrom magrittr %>%
 #' @return list with SpatRasters. .[[1]] contains SpatRaster for the ensemble mean. .[[2]] contains SpatRaster for the ensemble sd and .[[3]] contains SpatRaster for individual models
 #' @export
-#' @examples
-#' out <- load_data_and_climate_change_signal(variable="tas", years.hist=2000:2005, years.proj=2010:2015,
-#'      path.to.data = "CORDEX-CORE", season=1:12, domain="AFR-22", xlim=c(0, 10), ylim=c(5, 10), chunk.size=2)
 
 
 

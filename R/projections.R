@@ -15,9 +15,10 @@
 #'
 #' @export
 #' @examples
-#' load_data(country = "Togo", variable="tas", years.hist=2000, years.proj=2010,
-#'               path.to.data = "CORDEX-CORE", domain="AFR-22") %>%
-#' projections(., season = 1:12)
+#' exmp <- load_data(country = "Togo", variable="tasmax", years.hist=2000, years.proj=2020:2025,
+#'               path.to.data = "CORDEX-CORE", domain="AFR-22")
+#' proj_exmp <- projections(exmp, season = 1:12)
+#' plotting(proj_exmp, ensemble=T, plot_titles="mean tasmax", palette=c("yellow", "orange", "red"))
 
 
 projections <-
@@ -231,7 +232,7 @@ projections <-
                 apply(ens$Data, c(2, 3), mean, na.rm = TRUE) # climatology
               ens$Data <- array_mean
               rs <- make_raster(ens) %>%
-                terra::crop(., country_shp, snap = "near") %>%
+                terra::crop(., country_shp, snap = "out") %>%
                 terra::mask(., country_shp)
               names(rs) <-
                 paste0(x, "_", names(rs))
@@ -245,7 +246,7 @@ projections <-
                 apply(ens$Data, c(2, 3), mean, na.rm = TRUE) # climatology
               ens$Data <- array_mean
               rs <- make_raster(ens) %>%
-                terra::crop(., country_shp, snap = "near") %>%
+                terra::crop(., country_shp, snap = "out") %>%
                 terra::mask(., country_shp)
               names(rs) <-
                 paste0(x, "_", names(rs))
@@ -261,7 +262,7 @@ projections <-
                   apply(y$Data[ens, , ,], c(2, 3), mean, na.rm = TRUE) # climatology per member adjusting by array dimension
                 y$Data <- array_mean
                 rs <- make_raster(y) %>%
-                  terra::crop(., country_shp, snap = "near") %>%
+                  terra::crop(., country_shp, snap = "out") %>%
                   terra::mask(., country_shp)
 
                 names(rs) <-

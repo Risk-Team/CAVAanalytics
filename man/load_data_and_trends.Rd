@@ -73,7 +73,3 @@ list with merged raster stacks. To explore the output run attributes(output)
 \description{
 Automatically load and process climate model projections in a memory efficient way. Useful for analysing large areas. Arguments historical and country are not available for this function.
 }
-\examples{
-out <- load_data_and_trends(variable="tas", years.hist=2000, years.proj=2010:2040,
-     path.to.data = "CORDEX-CORE", season=1:12, domain="AFR-22", xlim=c(0, 10), ylim=c(5, 10), chunk.size=2)
-}

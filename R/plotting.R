@@ -388,9 +388,9 @@ plotting.CAVAanalytics_trends <-
            bins = FALSE,
            n.bins = NULL,
            alpha = NA,
-           frequencies,
+           frequencies=F,
            n.groups = 3,
-           spatial_aggr) {
+           spatial_aggr=F) {
     # checking requirements
     stopifnot(is.logical(ensemble))
     stopifnot(is.logical(bins))

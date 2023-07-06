@@ -23,9 +23,6 @@
 #' @importFrom magrittr %>%
 #' @return list with SpatRaster. .[[1]] contains SpatRaster for the ensemble mean. .[[2]] contains SpatRaster for the ensemble sd and .[[3]] conins SpatRaster for individual models
 #' @export
-#' @examples
-#' out <- load_data_and_projections(variable="tas", years.hist=2000, years.proj=2010:2011,
-#'      path.to.data = "CORDEX-CORE", domain="AFR-22", xlim=c(0, 10), ylim=c(5, 10), chunk.size=2, season=1:12)
 
 
 load_data_and_projections <- function(variable,

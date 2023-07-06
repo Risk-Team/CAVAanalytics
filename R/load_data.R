@@ -209,7 +209,7 @@ load_data <-
           "Downloading CORDEX-CORE data (18 simulations). This might take a while. Using ",
           n.sessions,
           " sessions",
-          ifelse(n.sessions == 6, " by default...", "...")
+          ifelse(n.sessions == 6, " by default", "")
         )
       )
     else

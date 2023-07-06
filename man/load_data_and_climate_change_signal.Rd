@@ -70,7 +70,3 @@ list with SpatRasters. .[[1]] contains SpatRaster for the ensemble mean. .[[2]] 
 \description{
 Automatically load and process climate models in a memory efficient way. Useful for analysing large areas
 }
-\examples{
-out <- load_data_and_climate_change_signal(variable="tas", years.hist=2000:2005, years.proj=2010:2015,
-     path.to.data = "CORDEX-CORE", season=1:12, domain="AFR-22", xlim=c(0, 10), ylim=c(5, 10), chunk.size=2)
-}

@@ -15,9 +15,10 @@
 #'
 #' @export
 #' @examples
-#' load_data(country = "Togo", variable="tas", years.hist=2000, years.proj=2010,
-#'               path.to.data = "CORDEX-CORE", domain="AFR-22") |>
-#' climate_change_signal(., season = 1:12)
+#' exmp <- load_data(country = "Togo", variable="tasmax", years.hist=2000:2005, years.proj=2030:2035,
+#'               path.to.data = "CORDEX-CORE", domain="AFR-22")
+#' ccs_exmp <- climate_change_signal(exmp, season = 1:12)
+#' plotting(ccs_exmp, ensemble=T, plot_titles="mean delta tasmax", legend.range= c(-2, 2), palette=c("blue", "cyan", "white", "yellow", "red"))
 
 
 climate_change_signal <- function(data,
@@ -246,7 +247,7 @@ climate_change_signal <- function(data,
             y$Data <- array_mean
 
             rs <- make_raster(y)  %>%
-              terra::crop(., country_shp, snap = "near") %>%
+              terra::crop(., country_shp, snap = "out") %>%
               terra::mask(., country_shp)
 
             names(rs) <-

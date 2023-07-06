@@ -1,10 +1,10 @@
 Package: CAVAanalytics
 Type: Package
 Title: Easy loading and visualization of climate models
-Version: 1.1.6
+Version: 1.0.0
 Author: Riccardo Soldan
 Maintainer: Riccardo Soldan <riccardosoldan@hotmail.it>
-Description: A framework to work with multiple NetCDF files
+Description: A framework to easily work with miltimodel ensembles
 License: GPL-2 | GPL-3
 Encoding: UTF-8
 LazyData: true
@@ -38,5 +38,7 @@ Imports:
     cli
 Depends:
     loadeR.java
-   
-
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

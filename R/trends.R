@@ -17,9 +17,10 @@
 #'
 #' @export
 #' @examples
-#' exmp <- load_data(country = "Togo", variable="pr", years.hist=1995, years.proj=2030:2060,
-#' path.to.data = "CORDEX-CORE", path.to.obs="W5E5", domain="AFR-22", aggr.m="sum") %>%
-#' trends(., season = 1:12, historical=F, intraannual_var=F)
+#' exmp <- load_data(country = "Togo", variable="pr", years.hist=1995, years.proj=2030:2055,
+#' path.to.data = "CORDEX-CORE",domain="AFR-22", aggr.m="sum")
+#' trd_exmp <- trends(exmp, season = 1:12, historical=F, intraannual_var=F)
+#' plotting(trd_exmp, ensemble=F, plot_titles = "°C/year", frequencies=F, spatial_aggr=F)
 #'
 
 trends = function(data,
@@ -103,8 +104,8 @@ trends = function(data,
         } else {
           if (length(unique(
             stringr::str_extract(data[[1]]$obs[[1]]$Dates$start, "\\d{4}")
-          )) < 25)
-            cli::cli_abort(c("x" = "To analyse trends, consider having at least 25 years of observations"))
+          )) < 20)
+            cli::cli_abort(c("x" = "To analyse trends, consider having at least 20 years of observations"))
         }
         if (bias.correction) {
           cli::cli_abort(
@@ -122,9 +123,9 @@ trends = function(data,
 
       if (length(unique(
         stringr::str_extract(data[[1]]$models_mbrs[[2]]$Dates$start, "\\d{4}")
-      )) < 25) {
+      )) < 20) {
         if (!historical) {
-          cli::cli_abort(c("x" = "To analyse trends, consider having at least 25 years of data"))
+          cli::cli_abort(c("x" = "To analyse trends, consider having at least 20 years of data"))
         }
 
       }
@@ -305,14 +306,14 @@ trends = function(data,
                 x$Data <- results[2, , ] # p.value
 
                 coef <-  make_raster(c4R) %>%
-                  terra::crop(., country_shp, snap = "near") %>%
+                  terra::crop(., country_shp, snap = "out") %>%
                   terra::mask(., country_shp)
 
                 names(coef) <-
                   paste0(y, "_coef", "_", names(coef))
 
                 p.value <- make_raster(x) %>%
-                  terra::crop(., country_shp, snap = "near") %>%
+                  terra::crop(., country_shp, snap = "out") %>%
                   terra::mask(., country_shp)
 
                 names(p.value) <-
@@ -331,7 +332,7 @@ trends = function(data,
                   lapply(1:dim(c4R$Data)[1], function(i_mod) {
                     c4R$Data <- c4R$Data[i_mod, , ]
                     rst <- make_raster(c4R) %>%
-                      terra::crop(., country_shp, snap = "near") %>%
+                      terra::crop(., country_shp, snap = "out") %>%
                       terra::mask(., country_shp)
                     names(rst) <-
                       paste0("Member ", i_mod, "_", y, "_coef_" , names(rst))
@@ -342,7 +343,7 @@ trends = function(data,
                   lapply(1:dim(x$Data)[1], function(i_mod) {
                     x$Data <- x$Data[i_mod, , ]
                     rst <- make_raster(x) %>%
-                      terra::crop(., country_shp, snap = "near") %>%
+                      terra::crop(., country_shp, snap = "out") %>%
                       terra::mask(., country_shp)
                     names(rst) <-
                       paste0("Member ", i_mod, "_", y, "_p_" , names(rst))
@@ -394,12 +395,12 @@ trends = function(data,
                   x$Data <- results[2, , ] # p.value
 
                   coef <- make_raster(c4R) %>%
-                    terra::crop(., country_shp, snap = "near") %>%
+                    terra::crop(., country_shp, snap = "out") %>%
                     terra::mask(., country_shp)
                   names(coef) <-
                     paste0("obs", "_coef_", names(coef))
                   p.value <- make_raster(x) %>%
-                    terra::crop(., country_shp, snap = "near") %>%
+                    terra::crop(., country_shp, snap = "out") %>%
                     terra::mask(., country_shp)
 
                   names(p.value) <-

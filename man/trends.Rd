@@ -45,8 +45,9 @@ list with SpatRaster. To explore the output run attributes(output)
 Compute multivariate linear regression and linear regression through design-based inference
 }
 \examples{
-exmp <- load_data(country = "Togo", variable="pr", years.hist=1995, years.proj=2030:2060,
-path.to.data = "CORDEX-CORE", path.to.obs="W5E5", domain="AFR-22", aggr.m="sum") \%>\%
-trends(., season = 1:12, historical=F, intraannual_var=F)
+exmp <- load_data(country = "Togo", variable="pr", years.hist=1995, years.proj=2030:2055,
+path.to.data = "CORDEX-CORE",domain="AFR-22", aggr.m="sum")
+trd_exmp <- trends(exmp, season = 1:12, historical=F, intraannual_var=F)
+plotting(trd_exmp, ensemble=F, plot_titles = "°C/year", frequencies=F, spatial_aggr=F)
 
 }

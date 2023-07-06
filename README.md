@@ -8,10 +8,6 @@
    <img src="https://img.shields.io/github/license/Risk-team/CAVAanalytics";">
 </div>
 
-## Current status
-
-**CAVAanalytics is currently in its first release**. Data is available for the CORDEX-CORE domain AFR-22 alongside W5E5 v2 and ERA5. 
-
 ## Table of Contents
 - [Introduction: What is CAVA?](#introduction-what-is-cava)
 - [CAVAanalytics](#cavaanalytics)

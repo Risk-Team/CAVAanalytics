@@ -124,6 +124,6 @@ remote.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1995, 
   plotting(., ensemble=FALSE, plot_titles = "Average tasmax")
 ```
 
-| ![Average tasmax](https://github.com/Risk-Team/CAVAanalytics/assets/40058235/1fdaf590-d83d-4528-a2cd-4c38fffdb1dc) |
+| ![Rplot](https://github.com/Risk-Team/CAVAanalytics/assets/40058235/471c6fdc-713b-44c6-b130-f912f7bd6d23) |
 |:-------------------------------------------------------------------------------------------------------------------:|
 |              *Average annual projected maximum temperature in Sudan according to 6 CORDEX-CORE models*                                                |

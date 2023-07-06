@@ -14,7 +14,7 @@
     - [1) Locally](#1-locally)
     - [2) JupyterHub](#2-jupyterhub)
     - [3) Docker](#3-docker)
-- [Quick example](#examples)
+- [Quick example](#quick-example)
 
 
 

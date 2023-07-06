@@ -14,9 +14,8 @@
     - [1) Locally](#1-locally)
     - [2) JupyterHub](#2-jupyterhub)
     - [3) Docker](#3-docker)
-- [Using CAVAanalytics](#using-cavaanalytics)
-- [Examples](#examples)
-    - [Loading Data, Processing and Visualizing Results](#loading-data-processing-and-visualizing-results)
+- [Quick example](#examples)
+
 
 
 ## What is CAVA?
@@ -95,7 +94,8 @@ access these resources, you are welcome to contact
 A Docker image will be made available soon, containing all the required
 software and libraries needed to immediately start working with CAVAanalytics.
 
-## Using CAVAanalytics
+
+## Quick example
 
 CAVAanalytics makes it easier to work with a large number of climate or
 impact model simulations (netCDF files) and perform meaningful analysis.
@@ -107,7 +107,6 @@ models) and then work with the output of the load_data with other
 |:-------------------------------------------------------------------------------------------------------------------:|
 |                                                *CAVAanalytics steps*                                                |
 
-## Quick example
 
 **To load CORDEX-CORE data stored remotely**, set path.to.data to
 “CORDEX-CORE” and specify the domain. This will load CORDEX-CORE

@@ -110,7 +110,7 @@ models) and then work with the output of the load_data with other
 
 ## Examples
 
-### Loading data, processing and visualizing results (more examples in the [tutorials folder](https://github.com/Risk-Team/CAVAanalytics/tree/main/tutorials))
+### Loading data, processing and visualizing results
 
 **To load CORDEX-CORE data stored remotely**, set path.to.data to
 “CORDEX-CORE” and specify the domain. This will load CORDEX-CORE
@@ -127,6 +127,5 @@ remote.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1995, 
   # 3rd step
   plotting(., ensemble=FALSE, plot_titles = "Average tasmax")
 ```
-![image190](https://github.com/Risk-Team/CAVAanalytics/assets/40058235/5100dbc5-19ee-4285-becf-44c82b9cfafd)
 
 

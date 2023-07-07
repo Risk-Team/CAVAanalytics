@@ -143,8 +143,8 @@ load_data <-
         cli::cli_abort(c("x" = "Either select a country or a region of interest, not both"))
       } else {
         country_shp = if (!is.null(country)) {
-          rnaturalearth::ne_countries(country = country, scale="medium", returnclass = "sf") %>%
-          sf::st_set_crs(., NA)
+          suppressMessages(rnaturalearth::ne_countries(country = country, scale="medium", returnclass = "sf") %>%
+          sf::st_set_crs(., NA))
         } else {
           sf::st_bbox(c(
             xmin = min(xlim),

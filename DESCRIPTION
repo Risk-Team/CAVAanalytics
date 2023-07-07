@@ -21,7 +21,6 @@ Imports:
     downscaleR,
     glue,
     rnaturalearth,
-    rnaturalearthhires,
     ggplot2,
     RColorBrewer,
     tidyr,

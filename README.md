@@ -7,17 +7,6 @@
    <img src="https://img.shields.io/github/release-date-pre/Risk-team/CAVAanalytics" alt="release date" style="display: inline-block;">
 </div>
 
-## Table of Contents
-- [What is CAVA?](#what-is-cava)
-- [CAVAanalytics](#cavaanalytics)
-- [Installation](#installation)
-    - [1) Locally](#1-locally)
-    - [2) JupyterHub](#2-jupyterhub)
-    - [3) Docker](#3-docker)
-- [Quick example](#quick-example)
-
-
-
 ## What is CAVA?
 
 CAVA (Climate and Agriculture Risk Visualization and Assessment) is a

@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(CAVAanalytics)
+
 ```
 
 ## More info about CAVAanalytics
@@ -74,6 +75,7 @@ proj_kenya <- projections(kenya_exmp, season=1:12)
 plotting(proj_kenya, ensemble=T, stat="mean", plot_titles = "mean tasmax")
 ```
 
+
 ```{r, fig.height=6, fig.width=10}
 
 plotting(proj_kenya, ensemble=F, stat="mean", plot_titles = "mean tasmax")
@@ -90,16 +92,18 @@ proj_kenya_35 <- projections(kenya_exmp, season=1:12, uppert=35)
 plotting(proj_kenya_35, ensemble=T, plot_titles = "N.days > 35", palette=c("white", "orange", "red", "darkred"))
 
 ```
+
+
 Ok, then what about model biases? How can we correct for those? Again, this is simple to do with CAVAanalytics:
+
 
 ```{r, fig.height=4, fig.width=6}
 # bias correction is applied with the widely used empirical quantile method
-proj_kenya_35bc <- projections(kenya_exmp, season=1:12, bias.correction = T, uppert=35)
+proj_kenya_35bc <- projections(kenya_exmp, season=1:12, bias.correction = F, uppert=35)
 
 plotting(proj_kenya_35bc, ensemble=T,  plot_titles = "N.days > 35 after bc", palette=c("white", "orange", "red", "darkred"))
 
 ```
-As you can see, we lost resolution and that is because the W5E5 dataset is at 50 Km. To preserve the CORDEX-CORE native resolution after bias-correction we would need to use the ERA5 dataset. 
 
 
 ## Climate change signal

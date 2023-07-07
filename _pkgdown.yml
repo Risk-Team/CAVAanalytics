@@ -1,10 +1,9 @@
-url: ~
 template:
   bootstrap: 5
-  bootswatch: lux
+  bootswatch: flatly
   bslib:
     pkgdown-nav-height: 100px
-
+title: "CAVAanalytics"
 reference:
 - title: "Main functions"
   desc: >
@@ -15,16 +14,18 @@ reference:
   - climate_change_signal
   - trends
   - plotting
+
 - title: "Memory efficient"
-   desc: >
+  desc: >
     Load and process in spatial chunks
   contents:
   - load_data_and_projections
   - load_data_and_climate_change_signal
   - load_data_and_trends
+
 - title: "Utils"
-   desc: >
-     accessory functions
+  desc: >
+    Accessory functions
   contents:
   - C4R_to_CAVA
   - common_dates
@@ -33,5 +34,11 @@ reference:
   - models_trends
   - thrs
   - thrs_consec
+- title: "Package"
+  desc: >
+    Description of CAVAanalytics
+  contents:
+  - CAVAanalytics
+
 
 

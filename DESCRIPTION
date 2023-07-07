@@ -8,7 +8,7 @@ Description: A framework to easily work with miltimodel ensembles
 License: GPL-2 | GPL-3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 Imports:
     dplyr, 
     furrr, 
@@ -23,11 +23,9 @@ Imports:
     rnaturalearth,
     rnaturalearthdata,
     ggplot2,
-    climate4R.indices,
     RColorBrewer,
     tidyr,
     ggh4x,
-    rgeos,
     rnaturalearthhires,
     mvabund,
     reshape2,
@@ -37,6 +35,7 @@ Imports:
     magrittr,
     cli
 Depends:
+    R(>= 3.5.0),
     loadeR.java
 Suggests: 
     knitr,

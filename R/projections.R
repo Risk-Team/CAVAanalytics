@@ -18,7 +18,7 @@
 #' exmp <- load_data(country = "Togo", variable="tasmax", years.hist=2000, years.proj=2020:2025,
 #'               path.to.data = "CORDEX-CORE", domain="AFR-22")
 #' proj_exmp <- projections(exmp, season = 1:12)
-#' plotting(proj_exmp, ensemble=T, plot_titles="mean tasmax", palette=c("yellow", "orange", "red"))
+#' plotting(proj_exmp, ensemble=T, plot_titles="mean tasmax", alpha=0.7)
 
 
 projections <-

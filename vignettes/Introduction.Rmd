@@ -99,7 +99,7 @@ Ok, then what about model biases? How can we correct for those? Again, this is s
 
 ```{r, fig.height=4, fig.width=6}
 # bias correction is applied with the widely used empirical quantile method
-proj_kenya_35bc <- projections(kenya_exmp, season=1:12, bias.correction = F, uppert=35)
+proj_kenya_35bc <- projections(kenya_exmp, season=1:12, bias.correction = T, uppert=35)
 
 plotting(proj_kenya_35bc, ensemble=T,  plot_titles = "N.days > 35 after bc", palette=c("white", "orange", "red", "darkred"))
 

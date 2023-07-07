@@ -54,6 +54,7 @@ You can do so by
 install.packages("rJava")
 library(devtools)
 install_github(c("SantanderMetGroup/loadeR.java",
+                 "SantanderMetGroup/climate4R.UDG",
                  "SantanderMetGroup/loadeR",
                  "SantanderMetGroup/transformeR",
                  "SantanderMetGroup/downscaleR"))

@@ -2,7 +2,7 @@
 % Please edit documentation in R/load_data.R
 \name{load_data}
 \alias{load_data}
-\title{Models upload}
+\title{Models download/upload}
 \usage{
 load_data(
   path.to.data,
@@ -53,7 +53,7 @@ list of length 3. List[[1]] contains a tibble with list columns. List[[2]] the b
 Automatically load models (netCDF/NcML) in a tidy format with acess to state-of-the-art climate models and reanalysis datasets
 }
 \examples{
-exmp <- load_data(country = "Togo", variable="tas", years.hist=2000, years.proj=2010,
-              path.to.data = "CORDEX-CORE", domain="AFR-22")
+"exmp <- load_data(country = "Togo", variable="tas", years.hist=2000, years.proj=2010,
+              path.to.data = "CORDEX-CORE", domain="AFR-22")"
 
 }

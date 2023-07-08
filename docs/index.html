@@ -5,14 +5,14 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="A framework to easily work with miltimodel ensembles">
-<title>Easy loading and visualization of climate models • CAVAanalytics</title>
+<meta name="description" content="A system for working with multiple models in NetCDF or Ncml fomat, with remote access to state-of-the-art dinamycallt downscaled climate models and reanalyses dataset ">
+<title>Easily process and visualize multimodel ensembles with a focus on climate models • CAVAanalytics</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.2.2/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Easy loading and visualization of climate models">
-<meta property="og:description" content="A framework to easily work with miltimodel ensembles">
+<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Easily process and visualize multimodel ensembles with a focus on climate models">
+<meta property="og:description" content="A system for working with multiple models in NetCDF or Ncml fomat, with remote access to state-of-the-art dinamycallt downscaled climate models and reanalyses dataset ">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -66,23 +66,23 @@
 <div class="section level2">
 <h2 id="what-is-cava">What is CAVA?<a class="anchor" aria-label="anchor" href="#what-is-cava"></a>
 </h2>
-<p>CAVA (Climate and Agriculture Risk Visualization and Assessment) is a framework and approach to the analysis and visualization of state-of-the-art climate data. <a href="https://fao-cava.predictia.es/auth" class="external-link">CAVA is made of a Platform (GUI)</a>, which is freely accessible and satisfy the needs of most standard users, and a R package (<strong>CAVAanalytics</strong>) which allows remote access to climate data and several functions for more advanced climate data analyses.</p>
+<p>CAVA (Climate and Agriculture Risk Visualization and Assessment) is a framework and approach to the analysis and visualization of climate data. <a href="https://fao-cava.predictia.es/auth" class="external-link">CAVA is made of a Platform (GUI)</a>, which is freely accessible and satisfy the needs of most standard users interested in climate models and a R package (<strong>CAVAanalytics</strong>), which allows remote access to high-resolution climate information and a unified approach to working with NetCDF files in general.</p>
 <p>CAVAanalytics can be used locally (installation through GitHub), remotely (registered users can access the University of Cantabria JupyterHub with 180 Gb RAM) and through a Docker image.</p>
 <table class="table">
 <colgroup><col width="100%"></colgroup>
 <thead><tr class="header">
-<th align="center"><img src="https://github.com/Risk-Team/CAVAanalytics/assets/40058235/d0647a38-a128-496d-9d7b-81365c8c7f62" alt="framework"></th>
+<th align="center"><img src="https://github.com/Risk-Team/CAVAanalytics/assets/40058235/ac4cfeae-d6d7-49eb-85c2-bfb6c44f39f6" alt="framework"></th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="center"><em>CAVA framework. CAVA can be used through a graphic user interface (CAVA Platform) or through the CAVAanalytics R package. The package can be used locally (GitHub installation), remotely (University of Cantabria JupyterHub) or locally but through a Docker image to solve dependencies issues</em></td>
+<td align="center"><em>CAVA framework. CAVA can be used through a graphic user interface (CAVA Platform) or through the CAVAanalytics R package. The package can be used locally (GitHub installation), remotely (University of Cantabria JupyterHub), or locally but through a Docker image to solve dependencies issues</em></td>
 </tr></tbody>
 </table>
 </div>
 <div class="section level2">
 <h2 id="cavaanalytics-1">CAVAanalytics<a class="anchor" aria-label="anchor" href="#cavaanalytics-1"></a>
 </h2>
-<p><strong>CAVAanalytics</strong> is a package that offers a consistent framework to load, analyze, and visualize multi-model ensembles. <strong>CAVAanalytics</strong> provides an access point for CORDEX-CORE simulations at 25 Km resolution already interpolated plus the W5E5 and ERA5 datasets. CAVAanalytics can be seen as a wrapper of several packages, but the main engine for loading and processing climate models is the <a href="https://github.com/SantanderMetGroup/climate4R" class="external-link">climate4R framework</a>, applied with a tidyverse approach.</p>
-<p>CAVAanalytics is being developed with climate models in mind, but it can be used for any model, like impact models (ISIMIP) if data is locally available.</p>
+<p><strong>CAVAanalytics</strong> is a package that offers a consistent framework to load, analyze, and visualize multi-model ensembles (this usually happens when working with climate models, but impact models can also be analysed with CAVAanalytics). <strong>CAVAanalytics</strong> provides an access point for CORDEX-CORE simulations at 25 Km resolution already interpolated (EPSG:4326) plus the W5E5 and ERA5 datasets. CAVAanalytics can be seen as a wrapper of several packages, but the main engine for loading and processing climate models is the <a href="https://github.com/SantanderMetGroup/climate4R" class="external-link">climate4R framework</a>, applied with a tidyverse approach.</p>
+<p>CAVAanalytics is being developed with climate models in mind, but it can be used for any NetCDF file, like multiple impact models (e.g from ISIMIP) if data is locally available.</p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -92,21 +92,21 @@
 <h3 id="id_1-locally">1) Locally<a class="anchor" aria-label="anchor" href="#id_1-locally"></a>
 </h3>
 <p><strong>If you are new to climate4R</strong>, install its main packages first. You can do so by</p>
-<pre><code><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"rJava"</span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SantanderMetGroup/loadeR.java"</span>,</span>
+<pre><code><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rJava"</span>, <span class="st">"devtools"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SantanderMetGroup/loadeR.java"</span>,</span>
 <span>                 <span class="st">"SantanderMetGroup/climate4R.UDG"</span>,</span>
 <span>                 <span class="st">"SantanderMetGroup/loadeR"</span>,</span>
 <span>                 <span class="st">"SantanderMetGroup/transformeR"</span>,</span>
 <span>                 <span class="st">"SantanderMetGroup/downscaleR"</span><span class="op">)</span><span class="op">)</span></span></code></pre>
 <p><strong>Then</strong></p>
-<pre><code><span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"Risk-Team/CAVAanalytics"</span><span class="op">)</span></span></code></pre>
-<p>it is possible that the installation of loadR.java fails. If so, have a look at the <a href="https://github.com/SantanderMetGroup/loadeR" class="external-link">loadR main page</a> and the <a href="https://github.com/SantanderMetGroup/loadeR/wiki/Installation" class="external-link">wiki page</a> to solve the issue. loadR.java depends on rJava and this installation can be troublesome.</p>
+<pre><code><span><span class="fu">install_github</span><span class="op">(</span><span class="st">"Risk-Team/CAVAanalytics"</span><span class="op">)</span></span></code></pre>
+<p>It is possible that the installation of loadR.java fails. If so, have a look at the <a href="https://github.com/SantanderMetGroup/loadeR" class="external-link">loadR main page</a> and the <a href="https://github.com/SantanderMetGroup/loadeR/wiki/Installation" class="external-link">wiki page</a> to solve the issue. loadR.java depends on rJava and this installation can be troublesome.</p>
 </div>
 <div class="section level3">
 <h3 id="id_2-jupyterhub">2) JupyterHub<a class="anchor" aria-label="anchor" href="#id_2-jupyterhub"></a>
 </h3>
-<p>You can request access to the University of Cantabria JupyterHub, where CAVAanalytics is already installed. This will give you access to computational resources and you would be able to perform your climate analysis using a Jupyter Notebook environment. When using the JupyterHub you will be using data physically stored at Cantabria server. If you would like to access these resources, you are welcome to contact <a href="mailto:riccardo.soldan@fao.org" class="email">riccardo.soldan@fao.org</a> or <a href="mailto:Hideki.Kanamaru@fao.org" class="email">Hideki.Kanamaru@fao.org</a></p>
+<p>You can request access to the University of Cantabria JupyterHub, where CAVAanalytics is already installed. This will give you access to computational resources and you would be able to perform your climate analysis using a Jupyter Notebook environment. When using JupyterHub you will be using data physically stored at the Cantabria server. If you would like to access these resources, you are welcome to contact <a href="mailto:riccardo.soldan@fao.org" class="email">riccardo.soldan@fao.org</a> or <a href="mailto:Hideki.Kanamaru@fao.org" class="email">Hideki.Kanamaru@fao.org</a> stating your intended usage type.</p>
 </div>
 <div class="section level3">
 <h3 id="id_3-docker">3) Docker<a class="anchor" aria-label="anchor" href="#id_3-docker"></a>
@@ -117,7 +117,7 @@
 <div class="section level2">
 <h2 id="quick-example">Quick example<a class="anchor" aria-label="anchor" href="#quick-example"></a>
 </h2>
-<p>CAVAanalytics makes it easier to work with a large number of climate or impact model simulations (netCDF files) and perform meaningful analysis. The idea behind CAVAanalytics is to first load the data (multiple models) and then work with the output of the load_data with other <strong>CAVAanalytics</strong> functions.</p>
+<p>The idea behind CAVAanalytics is to divide the process of working with multiple models into 3 steps. <strong>Firstly</strong> download or upload data (multiple models), <strong>secondly</strong> perform the intended analysis, <strong>thirdly</strong> visualize the results. One nice thing about step 1, is that CAVAanalytics will automatically bind multiple members to create the multimodel ensemble and check temporal consistency. It will also automatically convert units (e.g. Kelvin into Celsius).</p>
 <table class="table">
 <colgroup><col width="100%"></colgroup>
 <thead><tr class="header">
@@ -127,6 +127,7 @@
 <td align="center"><em>CAVAanalytics steps</em></td>
 </tr></tbody>
 </table>
+<p>Below we give an example of how you can use CAVAanalytics to easily retrieve climate information (both past and future).</p>
 <p><strong>To load CORDEX-CORE data stored remotely</strong>, set path.to.data to “CORDEX-CORE” and specify the domain. This will load CORDEX-CORE simulations. Similarly, when path.to.obs is set to W5E5, you are accessing the dataset stored remotely.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">CAVAanalytics</span><span class="op">)</span></span>
@@ -168,7 +169,9 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Riccardo Soldan <br><small class="roles"> Maintainer </small>  </li>
+<li>Riccardo Soldan <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0003-2583-5840" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Rodrigo Manzanas <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-0001-3448" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Ana Casanueva <br><small class="roles"> Author </small>  </li>
 </ul>
 </div>
 
@@ -180,7 +183,7 @@
 
     <footer><div class="pkgdown-footer-left">
   <p></p>
-<p>Developed by Riccardo Soldan.</p>
+<p>Developed by Riccardo Soldan, Rodrigo Manzanas, Ana Casanueva.</p>
 </div>
 
 <div class="pkgdown-footer-right">

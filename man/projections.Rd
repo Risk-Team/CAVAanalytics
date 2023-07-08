@@ -2,7 +2,7 @@
 % Please edit documentation in R/projections.R
 \name{projections}
 \alias{projections}
-\title{Analysis of projections}
+\title{Analysis of future projections}
 \usage{
 projections(
   data,
@@ -39,8 +39,8 @@ list with SpatRaster. .[[1]] contains SpatRaster for the ensemble mean. .[[2]] c
 Automatically process climate model projections and compute useful statistics
 }
 \examples{
-exmp <- load_data(country = "Togo", variable="tasmax", years.hist=2000, years.proj=2020:2025,
-              path.to.data = "CORDEX-CORE", domain="AFR-22")
+exmp <- suppressMessages(load_data(country = "Togo", variable="tasmax", years.hist=2000, years.proj=2020:2025,
+              path.to.data = "CORDEX-CORE", domain="AFR-22"))
 proj_exmp <- projections(exmp, season = 1:12)
-plotting(proj_exmp, ensemble=T, plot_titles="mean tasmax", palette=c("yellow", "orange", "red"))
+plotting(proj_exmp, ensemble=T, plot_titles="mean tasmax", alpha=0.7)
 }

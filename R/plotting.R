@@ -1,6 +1,6 @@
-#' Step three: Visualization
+#' Visualize results
 #'
-#' Automatically plot results from CAVAanalytics step two
+#' Automatically plot results from CAVAanalytics main functions
 #' @export
 
 #' @import ggplot2

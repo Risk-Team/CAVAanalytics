@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotting.R
 \name{plotting}
 \alias{plotting}
-\title{Step three: Visualization}
+\title{Visualize results}
 \usage{
 plotting(
   rst,
@@ -37,7 +37,7 @@ plotting(
 ggplot object
 }
 \description{
-Automatically plot results from CAVAanalytics step two
+Automatically plot results from CAVAanalytics main functions
 }
 \examples{
 load_data(country = "Somalia", variable="tas", years.hist=2000, years.proj=2010,

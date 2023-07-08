@@ -42,7 +42,7 @@ Below we are automatically downloading all CORDEX-CORE simulations alongside the
 
 **Note that this process can take a while, depending on the size of the country and the number of years specified**
 
-```{r}
+```{r, message=F, warning=F}
 # to download a specific area, set country=NULL and specify xlim and ylim arguments
 kenya_exmp <- load_data(path.to.data = "CORDEX-CORE", country = "Kenya", variable = "tasmax", 
 years.proj = 2030:2055, years.hist = 1980:2005, domain = "AFR-22", path.to.obs = "W5E5")
@@ -51,7 +51,7 @@ years.proj = 2030:2055, years.hist = 1980:2005, domain = "AFR-22", path.to.obs =
 
 You can explore the output using attributes(kenya_exmp).
 
-```{r}
+```{r,  message=F, warning=F}
 # the main output of the loading function is a tibble with list column containing all the downloaded data
 class(kenya_exmp[[1]])
 colnames(kenya_exmp[[1]])
@@ -67,7 +67,7 @@ dim(kenya_exmp[[1]]$models_mbrs[[1]]$Data)
 What if you want to have a look at what will be the projected maximum temperature in Kenya for the 2030-2055 time period?
 This is easy to do with CAVAanalytics:
 
-```{r, fig.height=4, fig.width=6}
+```{r, fig.height=4, fig.width=6,  message=F, warning=F}
 # you can specify the season. In this case we are looking at the whole year
 proj_kenya <- projections(kenya_exmp, season=1:12)
 
@@ -76,7 +76,7 @@ plotting(proj_kenya, ensemble=T, stat="mean", plot_titles = "mean tasmax")
 ```
 
 
-```{r, fig.height=6, fig.width=10}
+```{r, fig.height=6, fig.width=10,  message=F, warning=F}
 
 plotting(proj_kenya, ensemble=F, stat="mean", plot_titles = "mean tasmax")
 
@@ -85,7 +85,7 @@ plotting(proj_kenya, ensemble=F, stat="mean", plot_titles = "mean tasmax")
 Sometime looking at mean temperatures is not useful. Maybe we are interested in understanding the number of days in which certain conditions are projected to occur. For example, the number of days with maximum temperatures above 35 °C.
 
 
-```{r, fig.height=4, fig.width=6}
+```{r, fig.height=4, fig.width=6,  message=F, warning=F}
 
 proj_kenya_35 <- projections(kenya_exmp, season=1:12, uppert=35)
 
@@ -94,10 +94,11 @@ plotting(proj_kenya_35, ensemble=T, plot_titles = "N.days > 35", palette=c("whit
 ```
 
 
-Ok, then what about model biases? How can we correct for those? Again, this is simple to do with CAVAanalytics:
+Ok, then what about model biases? How can we correct for those? Again, this is simple to do with CAVAanalytics, because it automatically implements bias correction with the empirical quantile mapping method. 
+**Note that the resolution has changed because we have downloaded the W5E5 dataset which is at 50 Km resolution. To preserve CORDEX-CORE resolution we need to use ERA5 for bias-correction.**
 
 
-```{r, fig.height=4, fig.width=6}
+```{r, fig.height=4, fig.width=6,  message=F, warning=F}
 # bias correction is applied with the widely used empirical quantile method
 proj_kenya_35bc <- projections(kenya_exmp, season=1:12, bias.correction = T, uppert=35)
 
@@ -110,7 +111,7 @@ plotting(proj_kenya_35bc, ensemble=T,  plot_titles = "N.days > 35 after bc", pal
 
 While looking at future periods might be useful, sometimes we are more interested in understanding delta changes, hence the relative increase or decrease in mean maximum temperatures compared to baseline. This is also possible with CAVAanalytics:
 
-```{r, fig.height=6, fig.width=10}
+```{r, fig.height=6, fig.width=10,  message=F, warning=F}
 
 ccs_kenya <- climate_change_signal(kenya_exmp, season=1:12)
 
@@ -121,7 +122,7 @@ plotting(ccs_kenya, ensemble=F, plot_titles = "Mean tasmax change", legend_range
 ## Trends
 While looking at delta changes and absolute values for projections is useful, it does not tell us about temporal trends. In CAVAanalytics, the function trends allow us to do just that. For example, let's assume we want to know whether Kenya is projected to register a significant increase in yearly maximum temperatures:
 
-```{r,  fig.height=6, fig.width=10}
+```{r,  fig.height=6, fig.width=10,  message=F, warning=F}
 # the historical argument allows us to study trends for the future or for the past. Note that for historical = T, we need to have specified path.to.obs because this option does not work with the historical experiment of climate models but with observation
 
 trd_kenya <- trends(kenya_exmp, season=1:12, historical = F)
@@ -132,7 +133,7 @@ plotting(trd_kenya, ensemble=F, plot_titles = "°C/year", frequencies = F, spati
 
 While we can visualize the results spatially, we can also look at temporal trends. Note that in the background, CAVAanalytics uses modern statistical techniques to draw conclusion on the significance of the slope parameter. 
 
-```{r, fig.width=8}
+```{r, fig.width=8,  message=F, warning=F}
 
 plotting(trd_kenya, ensemble=T, plot_titles = "°C/year", spatial_aggr = T, frequencies = F)
 
@@ -140,7 +141,7 @@ plotting(trd_kenya, ensemble=T, plot_titles = "°C/year", spatial_aggr = T, freq
 
 Rather than performing spatial averages and visualize trends, we can also appreciate the distribution of annual mean tasmax across Kenya by specifying frequencies =T
 
-```{r, fig.width=10}
+```{r, fig.width=10,  message=F, warning=F}
 
 plotting(trd_kenya, ensemble=T, spatial_aggr = F, frequencies = T, n.groups = 2)
 

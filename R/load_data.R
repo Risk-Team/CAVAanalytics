@@ -1,4 +1,4 @@
-#' Models upload
+#' Models download/upload
 #'
 #' Automatically load models (netCDF/NcML) in a tidy format with acess to state-of-the-art climate models and reanalysis datasets
 
@@ -21,8 +21,8 @@
 #' @importFrom loadeR loadGridData
 #' @importFrom magrittr %>%
 #' @examples
-#' exmp <- load_data(country = "Togo", variable="tas", years.hist=2000, years.proj=2010,
-#'               path.to.data = "CORDEX-CORE", domain="AFR-22")
+#' "exmp <- load_data(country = "Togo", variable="tas", years.hist=2000, years.proj=2010,
+#'               path.to.data = "CORDEX-CORE", domain="AFR-22")"
 #'
 #' @export
 

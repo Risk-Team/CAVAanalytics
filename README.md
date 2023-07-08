@@ -88,6 +88,7 @@ software and libraries needed to immediately start working with CAVAanalytics.
 
 The idea behind CAVAanalytics is to divide the process of working with multiple models into 3 steps. **Firstly**  download or upload data (multiple
 models), **secondly** perform the intended analysis, **thirdly** visualize the results.
+One nice thing about step 1, is that CAVAanalytics will automatically bind multiple members to create the multimodel ensemble and check temporal consistency. It will also automatically convert units (e.g. Kelvin into Celsius). 
 
 
 | ![Framework](https://user-images.githubusercontent.com/40058235/199256415-ed32c42b-e2f8-48e0-b4fe-558de6612038.png) |

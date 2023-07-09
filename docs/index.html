@@ -111,7 +111,24 @@
 <div class="section level3">
 <h3 id="id_3-docker">3) Docker<a class="anchor" aria-label="anchor" href="#id_3-docker"></a>
 </h3>
-<p>A Docker image will be made available soon, containing all the required software and libraries needed to immediately start working with CAVAanalytics.</p>
+<p>The Docker image is available at Docker.io, rso9192/cava. This docker image is built on top of <a href="https://davetang.org/muse/2021/04/24/running-rstudio-server-with-docker/" class="external-link">rocker/rstudio</a></p>
+<div class="section level4">
+<h4 id="linux">Linux<a class="anchor" aria-label="anchor" href="#linux"></a>
+</h4>
+<pre><code>sudo docker pull docker.io/rso9192/cava:version1.0
+
+sudo docker run --rm \
+           -p 8888:8787 \
+           -e PASSWORD=password \
+           rso9192/cava:version1.0
+</code></pre>
+<p>Now open your favourite browser and type <strong><a href="http://localhost:8888/" class="external-link uri">http://localhost:8888/</a></strong>. You should see a login page: enter the <strong>username “rstudio”</strong> and <strong>password “password”</strong> to login and that’s it! You can now use CAVAanalytics through Rstudio server.</p>
+</div>
+<div class="section level4">
+<h4 id="windows">Windows<a class="anchor" aria-label="anchor" href="#windows"></a>
+</h4>
+<p>If you are using Windows, you can install the Windows subsystem for Linux <a href="https://ubuntu.com/wsl" class="external-link">WSL</a>. Then you can run the above commands. Otherwise, you can install Docker Desktop.</p>
+</div>
 </div>
 </div>
 <div class="section level2">
@@ -129,7 +146,7 @@
 </table>
 <p>Below we give an example of how you can use CAVAanalytics to easily retrieve climate information (both past and future).</p>
 <p><strong>To load CORDEX-CORE data stored remotely</strong>, set path.to.data to “CORDEX-CORE” and specify the domain. This will load CORDEX-CORE simulations. Similarly, when path.to.obs is set to W5E5, you are accessing the dataset stored remotely.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">CAVAanalytics</span><span class="op">)</span></span>
 <span>  <span class="co"># 1st step</span></span>
 <span><span class="va">remote.data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/load_data.html">load_data</a></span><span class="op">(</span>country <span class="op">=</span> <span class="st">"Sudan"</span>, variable<span class="op">=</span><span class="st">"tasmax"</span>, years.hist<span class="op">=</span><span class="fl">1995</span>, years.proj<span class="op">=</span><span class="fl">2050</span><span class="op">:</span><span class="fl">2055</span>,</span>

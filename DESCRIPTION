@@ -43,3 +43,4 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+URL: https://risk-team.github.io/CAVAanalytics/

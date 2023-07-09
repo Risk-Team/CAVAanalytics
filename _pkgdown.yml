@@ -1,44 +1,40 @@
+url: https://risk-team.github.io/CAVAanalytics/
 template:
   bootstrap: 5
   bootswatch: flatly
   bslib:
     pkgdown-nav-height: 100px
-title: "CAVAanalytics"
+title: CAVAanalytics
 reference:
-- title: "Main functions"
-  desc: >
+- title: Main functions
+  desc: |
     Load, process and visualize
-  contents: 
+  contents:
   - load_data
   - projections
   - climate_change_signal
   - trends
   - plotting
-
-- title: "Memory efficient"
-  desc: >
+- title: Memory efficient
+  desc: |
     Load and process in spatial chunks
   contents:
   - load_data_and_projections
   - load_data_and_climate_change_signal
   - load_data_and_trends
-
-- title: "Utils"
-  desc: >
+- title: Utils
+  desc: |
     Accessory functions
   contents:
   - C4R_to_CAVA
   - common_dates
   - ens_trends
-  - make_raster	
+  - make_raster
   - models_trends
   - thrs
   - thrs_consec
-- title: "Package"
-  desc: >
+- title: Package
+  desc: |
     Description of CAVAanalytics
-  contents:
-  - CAVAanalytics
-
-
+  contents: CAVAanalytics
 

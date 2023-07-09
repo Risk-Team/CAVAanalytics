@@ -1,5 +1,5 @@
 # CAVAanalytics 
-<img src="man/figures/sticker.png" width = "200" height = "200" align="right" />
+<img src="man/figures/sticker.png" width = "250" height = "250" align="right" />
 
 <div>
    <img src="https://img.shields.io/github/v/release/Risk-team/CAVAanalytics?include_prereleases" alt="GitHub R package version" style="display: inline-block;">

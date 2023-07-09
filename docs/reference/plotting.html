@@ -102,58 +102,6 @@
 <p>ggplot object</p>
     </div>
 
-    <div class="section level2">
-    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="load_data.html">load_data</a></span><span class="op">(</span>country <span class="op">=</span> <span class="st">"Somalia"</span>, variable<span class="op">=</span><span class="st">"tas"</span>, years.hist<span class="op">=</span><span class="fl">2000</span>, years.proj<span class="op">=</span><span class="fl">2010</span>,</span></span>
-<span class="r-in"><span>              path.to.data <span class="op">=</span> <span class="st">"CORDEX-CORE"</span>, domain<span class="op">=</span><span class="st">"AFR-22"</span><span class="op">)</span> <span class="op">%&gt;%</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="projections.html">projections</a></span><span class="op">(</span><span class="va">.</span>, season <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span> <span class="op">%&gt;%</span></span></span>
-<span class="r-in"><span><span class="fu">plotting</span><span class="op">(</span>plot_titles<span class="op">=</span><span class="st">"hurs"</span>, ensemble<span class="op">=</span><span class="cn">T</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Accessing inventory</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Accessing inventory <span style="color: #B2B2B2;">[2.4s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Downloading CORDEX-CORE data (18 simulations). This might take a while. Using…</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The legacy packages maptools, rgdal, and rgeos, underpinning this package</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> will retire shortly. Please refer to R-spatial evolution reports on</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> https://r-spatial.org/r/2023/05/15/evolution4.html for details.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> This package is now running under evolution status 0 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The legacy packages maptools, rgdal, and rgeos, underpinning this package</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> will retire shortly. Please refer to R-spatial evolution reports on</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> https://r-spatial.org/r/2023/05/15/evolution4.html for details.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> This package is now running under evolution status 0 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The legacy packages maptools, rgdal, and rgeos, underpinning this package</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> will retire shortly. Please refer to R-spatial evolution reports on</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> https://r-spatial.org/r/2023/05/15/evolution4.html for details.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> This package is now running under evolution status 0 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The legacy packages maptools, rgdal, and rgeos, underpinning this package</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> will retire shortly. Please refer to R-spatial evolution reports on</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> https://r-spatial.org/r/2023/05/15/evolution4.html for details.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> This package is now running under evolution status 0 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The legacy packages maptools, rgdal, and rgeos, underpinning this package</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> will retire shortly. Please refer to R-spatial evolution reports on</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> https://r-spatial.org/r/2023/05/15/evolution4.html for details.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> This package is now running under evolution status 0 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The legacy packages maptools, rgdal, and rgeos, underpinning this package</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> will retire shortly. Please refer to R-spatial evolution reports on</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> https://r-spatial.org/r/2023/05/15/evolution4.html for details.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> This package is now running under evolution status 0 </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Downloading CORDEX-CORE data (18 simulations). This might take a while. Using…</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Downloaded 127.12 MB</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Binding members and checking temporal consistency</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Binding members and checking temporal consistency <span style="color: #B2B2B2;">[1.6s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Temperature has been converted into Celsius</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span>  projections, season 1-2-3-4-5-6-7-8-9-10-11-12. Calculation of mean  tas</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Performing calculations</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Performing calculations <span style="color: #B2B2B2;">[1.3s]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Visualizing ensemble mean</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Plotting</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Plotting <span style="color: #B2B2B2;">[19ms]</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-plt img"><img src="plotting-1.png" alt="" width="700" height="433"></span>
-</code></pre></div>
-    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 

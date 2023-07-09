@@ -96,8 +96,7 @@ sudo docker run --rm \
 Now open your favourite browser and type **http://localhost:8888/**. You should see a login page: enter the **username "rstudio"** and **password "password"** to login and that's it! You can now use CAVAanalytics through Rstudio server. 
 
 #### Windows
-
-
+If you are using Windows, you can install the Windows subsystem for Linux [WSL](https://ubuntu.com/wsl). Then you can run the above commands. Otherwise, you can install Docker Desktop. 
 
 ## Quick example
 

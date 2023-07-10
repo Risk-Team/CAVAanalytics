@@ -1,4 +1,4 @@
-# CAVAanalytics 
+
 <img src="man/figures/sticker.png" width = "250" height = "250" align="right" />
 
 <div>

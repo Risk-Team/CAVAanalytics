@@ -1,7 +1,7 @@
 <h1 align="center">
 <img src="man/figures/sticker.png" width = "300" height = "300" align="center" />
   <br>
-  CAVAanalytics: state-of-the-art climate models (and more) for R
+  <h2 align="center">CAVAanalytics: state-of-the-art climate models (and more) for R</h2>
   <br>
 <div>
    <img src="https://img.shields.io/github/v/release/Risk-team/CAVAanalytics?include_prereleases" alt="GitHub R package version" style="display: inline-block;">

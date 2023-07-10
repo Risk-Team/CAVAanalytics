@@ -1,23 +1,23 @@
+url: https://risk-team.github.io/CAVAanalytics/
 template:
   bootstrap: 5
   bootswatch: flatly
   bslib:
     pkgdown-nav-height: 100px
 title: CAVAanalytics
-
 navbar:
   left:
-    - text: "Articles"
-      icon: fas fa-book
-      menu:
-      -  text: Introduction
-         href: articles/Introduction.html
-    - icon: fa fa-file-code-o
-      text: "functions"
-      href: reference/index.html
-    - icon: fa fa-github fa-lg
-      text: "github"
-      href: https://github.com/Risk-team/CAVAanalytics/
+  - text: Articles
+    icon: fas fa-book
+    menu:
+    - text: Introduction
+      href: articles/Introduction.html
+  - icon: fa fa-file-code-o
+    text: functions
+    href: reference/index.html
+  - icon: fa fa-github fa-lg
+    text: github
+    href: https://github.com/Risk-team/CAVAanalytics/
 reference:
 - title: Main functions
   desc: |

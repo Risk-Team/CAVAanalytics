@@ -1,10 +1,10 @@
 <h1 align="center">
 <img src="man/figures/sticker.png" width = "350" height = "350" align="center" />
-<dev>
+<div>
    <img src="https://img.shields.io/github/v/release/Risk-team/CAVAanalytics?include_prereleases" alt="GitHub R package version" style="display: inline-block;">
   <img src="https://img.shields.io/github/commits-since/Risk-team/CAVAanalytics/v1.0.0-alpha?include_prereleases" alt="GitHub Commits Since" style="display: inline-block;">
    <img src="https://img.shields.io/github/release-date-pre/Risk-team/CAVAanalytics" alt="release date" style="display: inline-block;">
-<dev>
+</div>
 </h1>
 
 

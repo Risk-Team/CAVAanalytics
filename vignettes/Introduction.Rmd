@@ -1,5 +1,5 @@
 ---
-title: "Introduction"
+title: "More about CAVAanalytics"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Introduction}
@@ -14,12 +14,10 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r setup, message=F, warning=FALSE}
 library(CAVAanalytics)
-
 ```
 
-## More info about CAVAanalytics
 
 The main purpose of CAVAanalytics is making the processing and visualization of multiple climate models simple. Additionally, CAVAanalytics offers an access point to download CORDEX-CORE climate models, the high resolution (25 Km) dinamically-downscaled climate models used in the IPCC report AR5. CAVAanalytics also offers access to state-of-the-art reanalyses datasets, such as W5E5 and ERA5. 
 

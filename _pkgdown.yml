@@ -10,7 +10,7 @@ navbar:
   - text: Articles
     icon: fas fa-book
     menu:
-    - text: Introduction
+    - text: Getting started
       href: articles/Introduction.html
   - icon: fa fa-file-code-o
     text: functions

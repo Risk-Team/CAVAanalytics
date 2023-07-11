@@ -15,7 +15,7 @@
 
 CAVA (Climate and Agriculture Risk Visualization and Assessment) is a
 framework and approach to the analysis and visualization of
-climate data. [CAVA is made of a Platform
+climate data developed jointly by **The Food and Agriculture Organization of the United Nations (FAO) and the University of Cantabria**. [CAVA is made of a Platform
 (GUI)](https://fao-cava.predictia.es/auth), which is freely accessible
 and satisfy the needs of most standard users interested in climate models and a R package
 (**CAVAanalytics**), which allows remote access to high-resolution climate information and a unified approach to working with NetCDF files in general. 

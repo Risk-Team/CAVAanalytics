@@ -4,9 +4,9 @@ Title: Easily process and visualize multimodel ensembles with a focus on climate
 Version: 1.0.0
 Authors@R: c(person("Riccardo", "Soldan", , "riccardosoldan@hotmail.it", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-2583-5840")),
-           person("Rodrigo", "Manzanas", , "rodrigo.manzanas@unican.es", role = "ctb",
+           person("Rodrigo", "Manzanas", , "rodrigo.manzanas@unican.es", role = "aut",
            comment = c(ORCID = "0000-0002-0001-3448")),
-           person("Ana", "Casanueva", , "ana.casanueva@unican.es", role = "ctb"), 
+           person("Ana", "Casanueva", , "ana.casanueva@unican.es", role = "aut"), 
            person("Hideki", "Kanamaru", , "Hideki.kanamaru@fao.org", role = "ctb", comment=c(ORCID="0000-0002-5306-5022")), 
            person("Jorge", "Alvar-Beltrán", , "jorge.alvarbeltran@fao.org", role = "ctb",  comment = c(ORCID = "0000-0003-2454-0629")),
            person("Arianna", "Gialletti", , "Arianna.gialletti@fao.org", role = "ctb"))

@@ -12,7 +12,6 @@
 </h1>
 
 ## What is CAVA?
-[![HitCount](http://hits.dwyl.com/Risk-team/CAVAanalytics.svg)](http://hits.dwyl.com/Risk-team/CAVAanalytics)
 
 CAVA (Climate and Agriculture Risk Visualization and Assessment) is a
 framework and approach to the analysis and visualization of

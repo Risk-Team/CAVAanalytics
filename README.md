@@ -8,11 +8,11 @@
   <img src="https://img.shields.io/github/commits-since/Risk-team/CAVAanalytics/v1.0.0-alpha?include_prereleases" alt="GitHub Commits Since" style="display: inline-block;">
    <img src="https://img.shields.io/github/release-date-pre/Risk-team/CAVAanalytics" alt="release date" style="display: inline-block;">
 </div>
-<div align="center">
-[![HitCount](http://hits.dwyl.com/Risk-team/CAVAanalytics.svg)](http://hits.dwyl.com/Risk-team/CAVAanalytics)
-</div>
-</h1>
 
+
+
+</h1>
+[![HitCount](http://hits.dwyl.com/Risk-team/CAVAanalytics.svg)](http://hits.dwyl.com/Risk-team/CAVAanalytics)
 
 
 ## What is CAVA?

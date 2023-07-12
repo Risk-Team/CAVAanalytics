@@ -3,13 +3,11 @@
   <br>
   <h4 align="center">CAVAanalytics: state-of-the-art dynamically downscaled climate models (and more) for R</h4>
   <br>
-  <div align="center">
-    <img src="https://img.shields.io/github/v/release/Risk-team/CAVAanalytics?include_prereleases" alt="GitHub R package version" style="display: inline-block;">
-    <img src="https://img.shields.io/github/commits-since/Risk-team/CAVAanalytics/v1.0.0-alpha?include_prereleases" alt="GitHub Commits Since" style="display: inline-block;">
-    <img src="https://img.shields.io/github/release-date-pre/Risk-team/CAVAanalytics" alt="release date" style="display: inline-block;">
-    [![HitCount](http://hits.dwyl.com/Risk-team/CAVAanalytics.svg)](http://hits.dwyl.com/Risk-team/CAVAanalytics)
-  </div>
 </h1>
+[![GitHub R package version](https://img.shields.io/github/v/release/Risk-team/CAVAanalytics?include_prereleases)](https://github.com/Risk-team/CAVAanalytics/releases)
+[![GitHub Commits Since](https://img.shields.io/github/commits-since/Risk-team/CAVAanalytics/v1.0.0-alpha?include_prereleases)](https://github.com/Risk-team/CAVAanalytics/commits)
+[![Release Date](https://img.shields.io/github/release-date-pre/Risk-team/CAVAanalytics)](https://github.com/Risk-team/CAVAanalytics/releases)
+[![HitCount](http://hits.dwyl.com/Risk-team/CAVAanalytics.svg)](http://hits.dwyl.com/Risk-team/CAVAanalytics)
 
 
 

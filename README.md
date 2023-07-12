@@ -8,14 +8,11 @@
   <img src="https://img.shields.io/github/commits-since/Risk-team/CAVAanalytics/v1.0.0-alpha?include_prereleases" alt="GitHub Commits Since" style="display: inline-block;">
    <img src="https://img.shields.io/github/release-date-pre/Risk-team/CAVAanalytics" alt="release date" style="display: inline-block;">
 </div>
-
-
-
 </h1>
-[![HitCount](http://hits.dwyl.com/Risk-team/CAVAanalytics.svg)](http://hits.dwyl.com/Risk-team/CAVAanalytics)
-
 
 ## What is CAVA?
+[![HitCount](http://hits.dwyl.com/Risk-team/CAVAanalytics.svg)](http://hits.dwyl.com/Risk-team/CAVAanalytics)
+
 
 CAVA (Climate and Agriculture Risk Visualization and Assessment) is a
 framework and approach to the analysis and visualization of

@@ -21,8 +21,8 @@ load_data(
 )
 }
 \arguments{
-\item{path.to.data}{path to the directory containing the RCP/SSPs folders and historical simulations (optional). For example,
-home/user/data/. data would contain subfolders with the climate/impact models. Historical simulations have to be contained in a folder called historical. If path.to.data is set as CORDEX-CORE, CORDEX-CORE simulations will be loaded}
+\item{path.to.data}{NULL, CORDEX-CORE or path to local data. If the latter, path to the directory containing the RCP/SSPs folders and historical simulations (optional). For example,
+home/user/data/. data would contain subfolders with the climate/impact models. Historical simulations have to be contained in a folder called historical. If path.to.data is set as CORDEX-CORE, CORDEX-CORE simulations will be downloaded}
 
 \item{country}{character, in English, indicating the country of interest. To select a bounding box,
 set country to NULL and define arguments xlim and ylim}
@@ -33,9 +33,9 @@ set country to NULL and define arguments xlim and ylim}
 
 \item{ylim}{same as xlim, but for the selection of the latitudinal range}
 
-\item{years.hist}{numeric, specify year range for the historical experiment}
+\item{years.hist}{NULL or numeric, specify year range for the historical experiment}
 
-\item{years.proj}{numeric, specify year range for projections}
+\item{years.proj}{NULL or numeric, specify year range for projections}
 
 \item{path.to.obs}{character, default to NULL. To automatically load W5E5 or ERA5, specify W5E5 or ERA5. Otherwise, indicate the absolute path to the directory containing another observational dataset}
 
@@ -47,7 +47,7 @@ set country to NULL and define arguments xlim and ylim}
 
 \item{n.sessions}{numeric, number of sessions to use in parallel processing. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary}
 
-\item{years.obs}{numeric, specify year range for observation. Specifying years.obs will overwrite years.hist for observations}
+\item{years.obs}{NULL or numeric, specify year range for observation. Specifying years.obs will overwrite years.hist for observations}
 }
 \value{
 list of length 3. List[[1]] contains a tibble with list columns. List[[2]] the bbox and list[[3]] the temporal structure of the models

@@ -3,17 +3,17 @@
 #' Automatically load models (netCDF/NcML) in a tidy format with acess to state-of-the-art climate models and reanalysis datasets
 
 
-#' @param path.to.data path to the directory containing the RCP/SSPs folders and historical simulations (optional). For example,
-#' home/user/data/. data would contain subfolders with the climate/impact models. Historical simulations have to be contained in a folder called historical. If path.to.data is set as CORDEX-CORE, CORDEX-CORE simulations will be loaded
+#' @param path.to.data NULL, CORDEX-CORE or path to local data. If the latter, path to the directory containing the RCP/SSPs folders and historical simulations (optional). For example,
+#' home/user/data/. data would contain subfolders with the climate/impact models. Historical simulations have to be contained in a folder called historical. If path.to.data is set as CORDEX-CORE, CORDEX-CORE simulations will be downloaded
 #' @param country character, in English, indicating the country of interest. To select a bounding box,
 #' set country to NULL and define arguments xlim and ylim
 #' @param variable  character indicating the variable name
 #' @param xlim numeric of length = 2, with minimum and maximum longitude coordinates, in decimal degrees, of the bounding box of interest
 #' @param ylim same as xlim, but for the selection of the latitudinal range
 #' @param path.to.obs character, default to NULL. To automatically load W5E5 or ERA5, specify W5E5 or ERA5. Otherwise, indicate the absolute path to the directory containing another observational dataset
-#' @param years.proj numeric, specify year range for projections
-#' @param years.hist numeric, specify year range for the historical experiment
-#' @param years.obs numeric, specify year range for observation. Specifying years.obs will overwrite years.hist for observations
+#' @param years.proj NULL or numeric, specify year range for projections
+#' @param years.hist NULL or numeric, specify year range for the historical experiment
+#' @param years.obs NULL or numeric, specify year range for observation. Specifying years.obs will overwrite years.hist for observations
 #' @param domain charachter, specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE. Default is NULL
 #' @param buffer numeric, default is zero.
 #' @param aggr.m character, monthly aggregation. One of none, mean or sum

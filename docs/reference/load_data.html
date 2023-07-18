@@ -90,8 +90,8 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>path.to.data</dt>
-<dd><p>path to the directory containing the RCP/SSPs folders and historical simulations (optional). For example,
-home/user/data/. data would contain subfolders with the climate/impact models. Historical simulations have to be contained in a folder called historical. If path.to.data is set as CORDEX-CORE, CORDEX-CORE simulations will be loaded</p></dd>
+<dd><p>NULL, CORDEX-CORE or path to local data. If the latter, path to the directory containing the RCP/SSPs folders and historical simulations (optional). For example,
+home/user/data/. data would contain subfolders with the climate/impact models. Historical simulations have to be contained in a folder called historical. If path.to.data is set as CORDEX-CORE, CORDEX-CORE simulations will be downloaded</p></dd>
 
 
 <dt>country</dt>
@@ -112,11 +112,11 @@ set country to NULL and define arguments xlim and ylim</p></dd>
 
 
 <dt>years.hist</dt>
-<dd><p>numeric, specify year range for the historical experiment</p></dd>
+<dd><p>NULL or numeric, specify year range for the historical experiment</p></dd>
 
 
 <dt>years.proj</dt>
-<dd><p>numeric, specify year range for projections</p></dd>
+<dd><p>NULL or numeric, specify year range for projections</p></dd>
 
 
 <dt>path.to.obs</dt>
@@ -140,7 +140,7 @@ set country to NULL and define arguments xlim and ylim</p></dd>
 
 
 <dt>years.obs</dt>
-<dd><p>numeric, specify year range for observation. Specifying years.obs will overwrite years.hist for observations</p></dd>
+<dd><p>NULL or numeric, specify year range for observation. Specifying years.obs will overwrite years.hist for observations</p></dd>
 
 </dl></div>
     <div class="section level2">

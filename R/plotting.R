@@ -128,6 +128,9 @@ plotting.CAVAanalytics_projections <-
       ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
                            data = rs_df,
                            alpha = alpha) +
+      ggplot2::geom_sf(fill = NA,
+                       color = "black",
+                       data = countries) +
       {
         if (!bins) {
           ggplot2::scale_fill_gradientn(
@@ -303,6 +306,9 @@ plotting.CAVAanalytics_ccs <-
       ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
                            data = rs_df,
                            alpha = alpha) +
+      ggplot2::geom_sf(fill = NA,
+                       color = "black",
+                       data = countries) +
       {
         if (!bins) {
           ggplot2::scale_fill_gradientn(
@@ -539,6 +545,9 @@ plotting.CAVAanalytics_trends <-
         ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
                              data = rs_df[[1]],
                              alpha = alpha) +
+        ggplot2::geom_sf(fill = NA,
+                         color = "black",
+                         data = countries) +
         {
           if (!bins) {
             ggplot2::scale_fill_gradientn(
@@ -957,6 +966,9 @@ plotting.CAVAanalytics_observations <-
       ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
                            data = rs_df,
                            alpha = alpha) +
+      ggplot2::geom_sf(fill = NA,
+                       color = "black",
+                       data = countries) +
       {
         if (!bins) {
           ggplot2::scale_fill_gradientn(

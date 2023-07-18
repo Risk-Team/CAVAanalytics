@@ -70,6 +70,15 @@ climate_change_signal <- function(data,
         cli::cli_abort(c("x" = "Specify a threshold for which you want to calculate consecutive days"))
       if (any(stringr::str_detect(data$experiment, "hist")))
         cli::cli_abort(c("x" = "Please load historical data to use the climate_change_signal function"))
+
+      if (bias.correction) {
+        if (length(data[[1]]$obs[[1]]$xy$x) != length(data[[1]]$models_mbrs[[1]]$xy$x)) {
+          cli::cli_alert_warning(
+            "Observation and historical experiment do not have the same spatial resolution. Models will be interpolated to match the observational dataset"
+          )
+        }
+
+      }
     }
 
   # generate messages on the type of operations being performed
@@ -234,9 +243,9 @@ climate_change_signal <- function(data,
           rs_list <- purrr::map(1:dim(y$Data)[[1]], function(ens) {
             array_mean <-
               if (length(y$Dates$start) == 1)
-                apply(y$Data[ens, , ,], c(1, 2), mean, na.rm = TRUE)
+                apply(y$Data[ens, , , ], c(1, 2), mean, na.rm = TRUE)
             else
-              apply(y$Data[ens, , ,], c(2, 3), mean, na.rm = TRUE) # climatology per member adjusting by array dimension
+              apply(y$Data[ens, , , ], c(2, 3), mean, na.rm = TRUE) # climatology per member adjusting by array dimension
 
             y$Data <- array_mean
 

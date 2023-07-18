@@ -123,6 +123,15 @@ trends = function(data,
         }
 
       }
+
+      if (bias.correction) {
+        if (length(data[[1]]$obs[[1]]$xy$x) != length(data[[1]]$models_mbrs[[1]]$xy$x)) {
+          cli::cli_alert_warning(
+            "Observation and historical experiment do not have the same spatial resolution. Models will be interpolated to match the observational dataset"
+          )
+        }
+
+      }
     }
 
   # generate messages on the type of operations being performed
@@ -271,7 +280,8 @@ trends = function(data,
                           list(FUN = "sum")
                       } else if (var != "pr" &
                                  !consecutive &
-                                 (is.null(lowert) & is.null(uppert))) {
+                                 (is.null(lowert) &
+                                  is.null(uppert))) {
                         list(FUN = "mean")
                       } else if (consecutive) {
                         list(
@@ -296,8 +306,8 @@ trends = function(data,
                 cli::cli_alert_info(paste0("Processing ", y))
                 c4R <- x
                 results <- ens_trends(x)
-                c4R$Data <- results[1, , ] # coef
-                x$Data <- results[2, , ] # p.value
+                c4R$Data <- results[1, ,] # coef
+                x$Data <- results[2, ,] # p.value
 
                 coef <-  make_raster(c4R) %>%
                   terra::crop(., country_shp, snap = "out") %>%
@@ -320,11 +330,11 @@ trends = function(data,
                 cli::cli_alert_info(paste0(" Processing ", y))
                 c4R <- x
                 results <- models_trends(x)
-                c4R$Data <- results[1, , , ]# coef
-                x$Data <- results[2, , , ] # p.value
+                c4R$Data <- results[1, , ,]# coef
+                x$Data <- results[2, , ,] # p.value
                 rst_stack_coef <-
                   lapply(1:dim(c4R$Data)[1], function(i_mod) {
-                    c4R$Data <- c4R$Data[i_mod, , ]
+                    c4R$Data <- c4R$Data[i_mod, ,]
                     rst <- make_raster(c4R) %>%
                       terra::crop(., country_shp, snap = "out") %>%
                       terra::mask(., country_shp)
@@ -335,7 +345,7 @@ trends = function(data,
 
                 rst_stack_p <-
                   lapply(1:dim(x$Data)[1], function(i_mod) {
-                    x$Data <- x$Data[i_mod, , ]
+                    x$Data <- x$Data[i_mod, ,]
                     rst <- make_raster(x) %>%
                       terra::crop(., country_shp, snap = "out") %>%
                       terra::mask(., country_shp)
@@ -385,8 +395,8 @@ trends = function(data,
                   cli::cli_alert_info(" Processing observation")
                   c4R <- x
                   results <- models_trends(x, historical = T)
-                  c4R$Data <- results[1, , ]# coef
-                  x$Data <- results[2, , ] # p.value
+                  c4R$Data <- results[1, ,]# coef
+                  x$Data <- results[2, ,] # p.value
 
                   coef <- make_raster(c4R) %>%
                     terra::crop(., country_shp, snap = "out") %>%
@@ -457,7 +467,8 @@ trends = function(data,
           )
         ))
 
-      } else { # for historical
+      } else {
+        # for historical
         invisible(structure(
           list(
             data_list$models_spat[[1]][[1]],

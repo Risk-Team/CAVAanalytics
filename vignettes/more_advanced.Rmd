@@ -1,0 +1,71 @@
+---
+title: "The power of patchwork with CAVAanalytics"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, message=F, warning=FALSE}
+library(CAVAanalytics)
+library(patchwork)
+library(ggplot2)
+library(magrittr)
+```
+
+In the [getting started article](https://risk-team.github.io/CAVAanalytics/articles/Introduction.html), we have already explored some of the fundamental features of CAVAanalytics. Now, let's take our understanding to the next level as we delve into the full potential of CAVAanalytics, especially when synergized with the powerful library [patchwork](https://patchwork.data-imaginist.com/) for crafting stunning plots.
+So, without further ado, let's dive right in by loading the data.
+
+
+```{r, message=F, warning=F}
+# to download a specific area, set country=NULL and specify xlim and ylim arguments. 
+kenya_exmp <- load_data(path.to.data = "CORDEX-CORE", country = "Kenya", variable = "tasmax", 
+years.proj = 2030:2060, years.hist = NULL, domain = "AFR-22")
+
+```
+
+## Composite seasonal plot
+
+```{r,  warning=F, message=FALSE, fig.height=8, fig.width=10}
+# Here we use map from purrr to create seasonal plots for projections. Remember that the output of plotting is a ggplot object, hence you can add anything to it or change the scale, theme, etc
+
+sns_proj <- purrr::map(list(1:3, 4:6, 7:9, 10:12), ~ projections(kenya_exmp, season = .x) %>%
+  plotting(., plot_titles = "mean tasmax °C", ensemble = T, legend_range = c(20, 40))+
+    ggtitle(paste0("Season ", glue::glue_collapse(.x, "-")))+ # add title
+    theme(plot.title = element_text(hjust = 0.5))) # center title
+
+wrap_plots(sns_proj)
+
+
+```
+
+These plots have the same legends, thus we might want to collect them. 
+
+```{r,  warning=F, message=FALSE, fig.height=8, fig.width=10}
+
+(composite <- wrap_plots(sns_proj)+plot_layout(guides = "collect") & theme(legend.position = 'bottom'))
+
+```
+
+Now we add the the previous seasonal plot the overall trends
+
+```{r,  warning=F, message=FALSE, fig.height=9, fig.width=8}
+
+ind.models <- trends(kenya_exmp, season = 1:12, historical = F) %>%
+  plotting(., plot_titles = "°C/year", spatial_aggr = T, frequencies = F, ensemble=T, palette = c("blue", "red"))+
+  ggtitle("Season 1-12")+ # add title
+  theme(plot.title = element_text(hjust = 0.5))  # center title
+
+composite/ind.models
+
+```
+In a similar manner, other composite plots can be made, for example to combine different time frames instead of different seasons. 
+

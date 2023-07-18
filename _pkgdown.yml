@@ -7,11 +7,13 @@ template:
 title: CAVAanalytics
 navbar:
   left:
-  - text: articles
+  - text: guides
     icon: fas fa-book
     menu:
     - text: Getting started
       href: articles/Introduction.html
+    - text: Unlocking the power of CAVAanalytics with patchwork
+      href: articles/more_advanced.html
   - icon: fa fa-file-code-o
     text: functions
     href: reference/index.html

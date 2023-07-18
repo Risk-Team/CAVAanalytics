@@ -22,7 +22,7 @@ and satisfy the needs of most standard users interested in climate models and a 
 
 CAVAanalytics can be used locally (installation through GitHub),
 remotely (registered users can access the University of Cantabria
-JupyterHub with 180 Gb RAM) and through a Docker image.
+JupyterHub) and through a Docker image.
 
 **CAVA (both Platform and Analytics) will be officially launched after summer 2023, with dedicated workshops. Some updates are currently underway, in particular, related to CAVA Platform interface**
 

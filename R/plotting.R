@@ -27,6 +27,11 @@ plotting <-
     UseMethod("plotting")
   }
 
+
+
+# projections -------------------------------------------------------------
+
+
 #' @export
 
 plotting.CAVAanalytics_projections <-
@@ -117,11 +122,9 @@ plotting.CAVAanalytics_projections <-
                           }
 
     p <- ggplot2::ggplot() +
-      ggplot2::geom_sf(
-        fill = 'antiquewhite1',
-        color = "black",
-        data = countries
-      ) +
+      ggplot2::geom_sf(fill = 'antiquewhite1',
+                       color = "black",
+                       data = countries) +
       ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
                            data = rs_df,
                            alpha = alpha) +
@@ -197,6 +200,10 @@ plotting.CAVAanalytics_projections <-
     return(p)
 
   }
+
+
+# climate change signal ---------------------------------------------------
+
 
 
 #' @export
@@ -290,11 +297,9 @@ plotting.CAVAanalytics_ccs <-
                           }
 
     p <- ggplot2::ggplot() +
-      ggplot2::geom_sf(
-        fill = 'antiquewhite1',
-        color = "black",
-        data = countries
-      ) +
+      ggplot2::geom_sf(fill = 'antiquewhite1',
+                       color = "black",
+                       data = countries) +
       ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
                            data = rs_df,
                            alpha = alpha) +
@@ -370,8 +375,12 @@ plotting.CAVAanalytics_ccs <-
   }
 
 
+# trends ------------------------------------------------------------------
+
+
 
 #' @export
+
 
 plotting.CAVAanalytics_trends <-
   function(rst,
@@ -382,16 +391,18 @@ plotting.CAVAanalytics_trends <-
            bins = FALSE,
            n.bins = NULL,
            alpha = NA,
-           frequencies=F,
+           frequencies = F,
            n.groups = 3,
-           spatial_aggr=F) {
+           spatial_aggr = F) {
     # checking requirements
     stopifnot(is.logical(ensemble))
     stopifnot(is.logical(bins))
     stopifnot(is.logical(frequencies))
     stopifnot(is.logical(spatial_aggr))
 
-    if (frequencies & spatial_aggr) cli::cli_abort("frequencies and spatial_aggr cannot be both equal TRUE")
+    if (frequencies &
+        spatial_aggr)
+      cli::cli_abort("frequencies and spatial_aggr cannot be both equal TRUE")
 
     # retrieve the right spatRaster based on how trends was run
     if (!frequencies & !spatial_aggr) {
@@ -522,11 +533,9 @@ plotting.CAVAanalytics_trends <-
         )
 
       p <- ggplot2::ggplot() +
-        ggplot2::geom_sf(
-          fill = 'antiquewhite1',
-          color = "black",
-          data = countries
-        ) +
+        ggplot2::geom_sf(fill = 'antiquewhite1',
+                         color = "black",
+                         data = countries) +
         ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
                              data = rs_df[[1]],
                              alpha = alpha) +
@@ -605,102 +614,117 @@ plotting.CAVAanalytics_trends <-
       cli::cli_process_done()
 
       return(p)
-    } else {  # when frequencies or spatial_aggr is set as T
+    } else {
+      # when frequencies or spatial_aggr is set as T
 
-      if (frequencies) {# when frequencies is TRUE
-      cli::cli_alert_warning(" Arguments bins, legend_range, plot_titles and palette are ignored. Change number of group intervals with n.groups")
+      if (frequencies) {
+        # when frequencies is TRUE
 
-      if (length(rst) > 4) {
-        # trends were run on projections
-        if (ensemble) {
-          members <-
-            length(unique(stringr::str_match(names((
-              rst[[3]]
-            )), "Member.\\d")))
-          rst <- rst[[5]]
-          plts <-
-            suppressMessages(
-              purrr::map(
-                unique(rst$experiment),
-                ~ ridgeline(
-                  dplyr::filter(rst, experiment == .x),
-                  group_col = 'date',
-                  z_col = 'value',
-                  num_grps = n.groups
-                ) +
-                  ggplot2::ggtitle(.x) +
-                  ggplot2::theme_bw() +
-                  ggplot2::theme(
-                    plot.title = ggplot2::element_text(hjust = 0.5),
-                    legend.position = "none",
-                    legend.key.height = ggplot2::unit(0.2, 'cm'),
-                    legend.key.width = ggplot2::unit(1, 'cm')
-                  )
+        if (length(rst) > 4) {
+          # trends were run on projections
+          cli::cli_alert_warning(
+            " Arguments bins, legend_range, plot_titles and palette are ignored. Change number of group intervals with n.groups"
+          )
+
+          if (ensemble) {
+            members <-
+              length(unique(stringr::str_match(names((
+                rst[[3]]
+              )), "Member.\\d")))
+            rst <- rst[[5]]
+            plts <-
+              suppressMessages(
+                purrr::map(
+                  unique(rst$experiment),
+                  ~ ridgeline(
+                    dplyr::filter(rst, experiment == .x),
+                    group_col = 'date',
+                    z_col = 'value',
+                    num_grps = n.groups
+                  ) +
+                    ggplot2::ggtitle(.x) +
+                    ggplot2::theme_bw() +
+                    ggplot2::theme(
+                      plot.title = ggplot2::element_text(hjust = 0.5),
+                      legend.position = "none",
+                      legend.key.height = ggplot2::unit(0.2, 'cm'),
+                      legend.key.width = ggplot2::unit(1, 'cm')
+                    ) +
+                    ggplot2::scale_x_continuous(limits = c(
+                      min(rst$value), max(rst$value)
+                    ))
+                )
               )
+
+            p <- patchwork::wrap_plots(plts)
+            return(p)
+
+          } else {
+            # for individual models
+            rst <- rst[[6]]
+            plts <-
+              suppressMessages(purrr::map(
+                unique(rst$experiment),
+                ~ purrr::map(unique(rst$Var1), function(model)
+
+                  ridgeline(
+                    dplyr::filter(rst, experiment == .x, Var1 == model),
+                    group_col = 'date',
+                    z_col = 'value',
+                    num_grps = n.groups
+                  ) +
+                    ggplot2::ggtitle(paste0(model, "_", .x)) +
+                    ggplot2::theme_bw() +
+                    ggplot2::theme(
+                      plot.title = ggplot2::element_text(hjust = 0.5),
+                      legend.position = "none",
+                      legend.key.height = ggplot2::unit(0.2, 'cm'),
+                      legend.key.width = ggplot2::unit(1, 'cm')
+                    ) +
+                    ggplot2::scale_x_continuous(limits = c(
+                      min(rst$value), max(rst$value)
+                    )))
+
+              ))
+
+            # Combine plots
+            p <-
+              patchwork::wrap_plots(plts[[1]]) /  patchwork::wrap_plots(plts[[2]])
+            return(p)
+
+          }
+
+        } else {
+          # when trends is run for the historical period and frequencies is true
+          cli::cli_alert_warning(
+            " Arguments bins, legend_range, ensemble, plot_titles and palette are ignored. Change number of group intervals with n.groups"
+          )
+          rst <- rst[[3]][[1]]
+          p <-
+            suppressMessages(
+              ridgeline(
+                rst,
+                group_col = 'date',
+                z_col = 'value',
+                num_grps = n.groups
+              ) +
+                ggplot2::ggtitle("obs") +
+                ggplot2::theme_bw() +
+                ggplot2::theme(
+                  plot.title = ggplot2::element_text(hjust = 0.5),
+                  legend.position = "none",
+                  legend.key.height = ggplot2::unit(0.2, 'cm'),
+                  legend.key.width = ggplot2::unit(1, 'cm')
+                )
             )
 
-          p <- patchwork::wrap_plots(plts)
           return(p)
 
-        } else { # for individual models
-          rst <- rst[[6]]
-          plts <-
-            suppressMessages(purrr::map(
-              unique(rst$experiment),
-              ~ purrr::map(unique(rst$Var1), function(model)
-
-                ridgeline(
-                  dplyr::filter(rst, experiment == .x, Var1 == model),
-                  group_col = 'date',
-                  z_col = 'value',
-                  num_grps = n.groups
-                ) +
-                  ggplot2::ggtitle(paste0(model, "_", .x)) +
-                  ggplot2::theme_bw() +
-                  ggplot2::theme(
-                    plot.title = ggplot2::element_text(hjust = 0.5),
-                    legend.position = "none",
-                    legend.key.height = ggplot2::unit(0.2, 'cm'),
-                    legend.key.width = ggplot2::unit(1, 'cm')
-                  ))
-
-            ))
-
-          # Combine plots
-          p <-
-            patchwork::wrap_plots(plts[[1]]) /  patchwork::wrap_plots(plts[[2]])
-          return(p)
 
         }
 
       } else {
-        # when trends is run for the historical period and frequencies is true
-
-        rst <- rst[[3]][[1]]
-        p <-
-          suppressMessages(
-            ridgeline(
-              rst,
-              group_col = 'date',
-              z_col = 'value',
-              num_grps = n.groups
-            ) +
-              ggplot2::ggtitle("obs") +
-              ggplot2::theme_bw() +
-              ggplot2::theme(
-                plot.title = ggplot2::element_text(hjust = 0.5),
-                legend.position = "none",
-                legend.key.height = ggplot2::unit(0.2, 'cm'),
-                legend.key.width = ggplot2::unit(1, 'cm')
-              )
-          )
-
-        return(p)
-
-
-      }
-
-      } else { # when spatial_aggr is TRUE
+        # when spatial_aggr is TRUE
 
 
 
@@ -708,79 +732,294 @@ plotting.CAVAanalytics_trends <-
           cli::cli_alert_warning(" Arguments bins and legend_range are ignored")
           # trends were run on projections
           if (ensemble) {
-
             rst[[6]] %>%
-            dplyr::group_by(date, experiment) %>%
-              dplyr::summarise(sd=sd(value)/sqrt(length(unique(rst[[6]]$Var1))), value=mean(value)) %>%
-              ggplot2::ggplot()+
-              ggplot2::geom_line(ggplot2::aes(y=value, x=date, color=experiment))+
-              ggplot2::geom_point(ggplot2::aes(y=value, x=date, color=experiment), size = 2, alpha=0.3) +
+              dplyr::group_by(date, experiment) %>%
+              dplyr::summarise(sd = sd(value) / sqrt(length(unique(
+                rst[[6]]$Var1
+              ))),
+              value = mean(value)) %>%
+              ggplot2::ggplot() +
+              ggplot2::geom_line(ggplot2::aes(
+                y = value,
+                x = date,
+                color = experiment
+              )) +
+              ggplot2::geom_point(
+                ggplot2::aes(
+                  y = value,
+                  x = date,
+                  color = experiment
+                ),
+                size = 2,
+                alpha = 0.3
+              ) +
 
-              ggplot2::geom_ribbon(ggplot2::aes(y=value, x=date, ymin = value - sd,
-                                                ymax = value + sd, fill = experiment), alpha = 0.1, show.legend = F) +
+              ggplot2::geom_ribbon(
+                ggplot2::aes(
+                  y = value,
+                  x = date,
+                  ymin = value - sd,
+                  ymax = value + sd,
+                  fill = experiment
+                ),
+                alpha = 0.1,
+                show.legend = F
+              ) +
               ggplot2::geom_label(
-                ggplot2:: aes(x=date, y=value, label = round(value, digits = 0), fill=experiment),
-                size=2,
+                ggplot2::aes(
+                  x = date,
+                  y = value,
+                  label = round(value, digits = 0),
+                  fill = experiment
+                ),
+                size = 2,
                 nudge_x = 0.1,
                 nudge_y = 0.1,
-                color="black",
+                color = "black",
                 show.legend = FALSE,
-                alpha=0.5
+                alpha = 0.5
               ) +
               ggplot2::scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
-              ggplot2::theme_bw()+
-              ggplot2::theme(legend.position = "bottom", axis.text.x = ggplot2::element_text(angle = 45, hjust = 1), legend.title = ggplot2::element_blank())+
-              ggplot2::labs(x = "Year", y = plot_titles)+
+              ggplot2::theme_bw() +
+              ggplot2::theme(
+                legend.position = "bottom",
+                axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
+                legend.title = ggplot2::element_blank()
+              ) +
+              ggplot2::labs(x = "Year", y = plot_titles) +
               if (!is.null(palette)) {
-               list(ggplot2::scale_color_manual(values = palette),
-                ggplot2::scale_fill_manual(values = palette))
+                list(
+                  ggplot2::scale_color_manual(values = palette),
+                  ggplot2::scale_fill_manual(values = palette)
+                )
               }
 
-          } else { # for individual models
+          } else {
+            # for individual models
             rst[[6]] %>%
-            dplyr::group_by(Var1, date, experiment) %>%
-              dplyr::summarise(value=mean(value)) %>%
-              ggplot2::ggplot()+
-              ggplot2::geom_line(ggplot2::aes(y=value, x=date, color=experiment))+
-              ggplot2::geom_point(ggplot2::aes(y=value, x=date, color=experiment), size = 2, alpha=0.3) +
-              ggplot2::facet_wrap(~Var1, ncol = 2)+
+              dplyr::group_by(Var1, date, experiment) %>%
+              dplyr::summarise(value = mean(value)) %>%
+              ggplot2::ggplot() +
+              ggplot2::geom_line(ggplot2::aes(
+                y = value,
+                x = date,
+                color = experiment
+              )) +
+              ggplot2::geom_point(
+                ggplot2::aes(
+                  y = value,
+                  x = date,
+                  color = experiment
+                ),
+                size = 2,
+                alpha = 0.3
+              ) +
+              ggplot2::facet_wrap(~ Var1, ncol = 2) +
               ggplot2::scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
-              ggplot2::theme_bw()+
-              ggplot2::theme(legend.position = "bottom", axis.text.x = ggplot2::element_text(angle = 45, hjust = 1), legend.title = ggplot2::element_blank())+
-              ggplot2::labs(x = "Year", y = plot_titles)+
+              ggplot2::theme_bw() +
+              ggplot2::theme(
+                legend.position = "bottom",
+                axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
+                legend.title = ggplot2::element_blank()
+              ) +
+              ggplot2::labs(x = "Year", y = plot_titles) +
               if (!is.null(palette)) {
                 ggplot2::scale_color_manual(values = palette)
               }
 
           }
 
-        } else { # when trends is run for the historical period and spatial_aggr is true
+        } else {
+          # when trends is run for the historical period and spatial_aggr is true
           cli::cli_alert_warning(" Arguments bins, ensemble and legend_range are ignored")
           rst[[3]][[1]] %>%
             dplyr::group_by(date, experiment) %>%
-            dplyr::summarise(value=mean(value)) %>%
-            ggplot2::ggplot()+
-            ggplot2::geom_line(ggplot2::aes(y=value, x=date, color=experiment))+
-            ggplot2::geom_point(ggplot2::aes(y=value, x=date, color=experiment), size = 2, alpha=0.3) +
+            dplyr::summarise(value = mean(value)) %>%
+            ggplot2::ggplot() +
+            ggplot2::geom_line(ggplot2::aes(
+              y = value,
+              x = date,
+              color = experiment
+            )) +
+            ggplot2::geom_point(
+              ggplot2::aes(
+                y = value,
+                x = date,
+                color = experiment
+              ),
+              size = 2,
+              alpha = 0.3
+            ) +
             ggplot2::geom_label(
-              ggplot2:: aes(x=date, y=value, label = round(value, digits = 0), fill=experiment),
-              size=2,
+              ggplot2::aes(
+                x = date,
+                y = value,
+                label = round(value, digits = 0),
+                fill = experiment
+              ),
+              size = 2,
               nudge_x = 0.1,
               nudge_y = 0.1,
-              color="black",
+              color = "black",
               show.legend = FALSE,
-              alpha=0.5
+              alpha = 0.5
             ) +
             ggplot2::scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
-            ggplot2::theme_bw()+
-            ggplot2::theme(legend.position = "bottom", axis.text.x = ggplot2::element_text(angle = 45, hjust = 1), legend.title = ggplot2::element_blank())+
-            ggplot2::labs(x = "Year", y = plot_titles)+
+            ggplot2::theme_bw() +
+            ggplot2::theme(
+              legend.position = "bottom",
+              axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
+              legend.title = ggplot2::element_blank()
+            ) +
+            ggplot2::labs(x = "Year", y = plot_titles) +
             if (!is.null(palette)) {
-              list(ggplot2::scale_color_manual(values = palette),
-                   ggplot2::scale_fill_manual(values = palette))
+              list(
+                ggplot2::scale_color_manual(values = palette),
+                ggplot2::scale_fill_manual(values = palette)
+              )
             }
 
         }
-}
+      }
     }
+  }
+
+
+
+# observations ------------------------------------------------------------
+
+
+
+#' @export
+
+plotting.CAVAanalytics_observations <-
+  function(rst,
+           palette = NULL,
+           legend_range = NULL,
+           plot_titles,
+           ensemble = NULL,
+           bins = FALSE,
+           n.bins = NULL,
+           alpha = NA) {
+    # checking requirements
+    stopifnot(is.null(ensemble))
+    stopifnot(is.logical(bins))
+
+    # messages
+
+    cli::cli_alert_info("Argument ensemble is ignored when visualizing observations ")
+
+    # retrieve the right raster stack based on the ensemble argument
+
+    rst <- rst[[1]]
+
+    # Set default colors for legend
+    colors <-
+      if (is.null(palette))
+        c("blue", "cyan", "green", "yellow", "orange", "red", "black")
+    else
+      palette
+
+    # Set default range for legend
+    legend_range <-
+      if (is.null(legend_range))
+        c(range(terra::values(rst), na.rm = TRUE))
+    else
+      legend_range
+
+    # Suppress warnings
+    options(warn = -1)
+
+    # Get countries data
+    countries <-
+      rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
+
+    cli::cli_progress_step("Plotting")
+    # Convert SpatRaster to dataframe
+    rs_df <- terra::as.data.frame(rst, xy = TRUE, na.rm = TRUE) %>%
+      tidyr::pivot_longer(cols = 3:ncol(.),
+                          values_to = "value",
+                          names_to = "long_name") %>%
+      # Extract scenario and time frame from column names
+      dplyr::mutate(
+        .,
+        scenario = "observations",
+        time_frame =  stringr::str_extract(long_name, "_.*") %>%  stringr::str_remove(., "_")
+      ) %>%
+      # Replace "." with "-" in time frame
+      dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
+
+
+    p <- ggplot2::ggplot() +
+      ggplot2::geom_sf(fill = 'antiquewhite1',
+                       color = "black",
+                       data = countries) +
+      ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
+                           data = rs_df,
+                           alpha = alpha) +
+      {
+        if (!bins) {
+          ggplot2::scale_fill_gradientn(
+            colors = colors,
+            limits = legend_range,
+            na.value = "transparent",
+            n.breaks = 10,
+            guide = ggplot2::guide_colourbar(
+              ticks.colour = "black",
+              ticks.linewidth = 1,
+              title.position = "top",
+              title.hjust = 0.5,
+              label.theme = ggplot2::element_text(angle = 45),
+              label.hjust = 1
+            )
+          )
+        } else {
+          ggplot2::scale_fill_stepsn(
+            colors = colors,
+            limits = legend_range,
+            na.value = "transparent",
+            n.breaks = ifelse(is.null(n.bins), 10, n.bins),
+            guide = ggplot2::guide_colourbar(
+              ticks.colour = "black",
+              ticks.linewidth = 1,
+              title.position = "top",
+              title.hjust = 0.5,
+              label.theme = ggplot2::element_text(angle = 45),
+              label.hjust = 1
+            )
+          )
+
+        }
+
+      } +
+      ggplot2::coord_sf(
+        xlim = c(range(rs_df$x)[[1]] - 1, range(rs_df$x)[[2]] + 1),
+        ylim = c(range(rs_df$y)[[1]] - 1, range(rs_df$y)[[2]] + 1),
+        expand = F,
+        ndiscr = 500
+      ) +
+      ggplot2::facet_grid(time_frame ~ scenario) +
+      ggplot2::labs(fill = plot_titles, x = "", y = "") +
+      ggplot2::theme_bw(base_size = 12) +
+      ggplot2::theme(
+        plot.background = ggplot2::element_blank(),
+        panel.background = ggplot2::element_rect(fill = 'aliceblue'),
+        panel.border = ggplot2::element_blank(),
+        panel.grid.major = ggplot2::element_blank(),
+        panel.grid.minor = ggplot2::element_blank(),
+        axis.text.x = ggplot2::element_blank(),
+        axis.text.y = ggplot2::element_blank(),
+        axis.ticks = ggplot2::element_blank(),
+        axis.title = ggplot2::element_blank(),
+        legend.position = "bottom",
+        legend.direction = "horizontal",
+        legend.key.height = ggplot2::unit(0.5, 'cm'),
+        legend.key.width = ggplot2::unit(2, 'cm'),
+        legend.box.spacing = ggplot2::unit(0, "pt")
+      )
+
+    cli::cli_progress_done()
+
+    return(p)
+
   }

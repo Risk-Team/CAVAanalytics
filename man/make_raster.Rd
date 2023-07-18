@@ -13,5 +13,5 @@ make_raster(cl4.object)
 spatRaster
 }
 \description{
-Make a raster from a C4R list with dim(Data)=2
+Make a spatRaster from a C4R list with dim(Data)=2
 }

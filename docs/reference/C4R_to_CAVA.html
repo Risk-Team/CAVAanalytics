@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">CAVAanalytics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -70,7 +70,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">C4R_to_CAVA</span><span class="op">(</span>obs <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">projections</span>, <span class="va">historical</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">C4R_to_CAVA</span><span class="op">(</span>obs <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">projections</span>, historical <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -80,11 +80,11 @@
 
 
 <dt>projections</dt>
-<dd><p>named list containing a list of C4R lists. For example, list(rcp26=list(mod_1, mod_2), rcp85= list(mod_1, mod_2)) where mod_1 and mod_2 are C4R lists.</p></dd>
+<dd><p>named list containing a list of C4R lists or NULL. For example, list(rcp26=list(mod_1, mod_2), rcp85= list(mod_1, mod_2)) where mod_1 and mod_2 are C4R lists.</p></dd>
 
 
 <dt>historical</dt>
-<dd><p>list containing a list of C4R lists, one per model. For example, list(list(mod_1, mod_2)) where mod_1 and mod_2 are C4R lists.</p></dd>
+<dd><p>list containing a list of C4R lists, one per model or NULL. For example, list(list(mod_1, mod_2)) where mod_1 and mod_2 are C4R lists.</p></dd>
 
 </dl></div>
 

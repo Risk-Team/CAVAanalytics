@@ -38,9 +38,3 @@ list with SpatRasters. .[[1]] contains the SpatRasters for the ensemble mean. .[
 \description{
 Automatically computes climate change signal
 }
-\examples{
-exmp <- suppressMessages(load_data(country = "Togo", variable="tasmax", years.hist=2000:2005, years.proj=2030:2035,
-              path.to.data = "CORDEX-CORE", domain="AFR-22"))
-ccs_exmp <- climate_change_signal(exmp, season = 1:12)
-plotting(ccs_exmp, ensemble=T, plot_titles="mean delta tasmax", legend_range= c(-1.5, 1.5), palette=c("blue", "cyan", "white", "yellow", "red"), alpha=0.7)
-}

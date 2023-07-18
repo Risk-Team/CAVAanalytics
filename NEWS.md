@@ -9,6 +9,12 @@ output:
     toc_depth: 2
 ---
 
+## CAVAanalytics 1.1.0
+
+- Improved speed in load_data and improved flexibility (e.g observation can be uploaded without projections)
+- Fixed  x scale in plotting when frequencies = T
+- Added function observations to visualize the observational dataset
+
 ## CAVAanalytics 1.0.0
 
 - Made available the first CORDEX-CORE AFR-22 domain

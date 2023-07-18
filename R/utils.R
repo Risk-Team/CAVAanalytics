@@ -20,7 +20,7 @@ common_dates <- function(data) {
 
 #' make a raster
 #'
-#' Make a raster from a C4R list with dim(Data)=2
+#' Make a spatRaster from a C4R list with dim(Data)=2
 #'
 #' @param cl4.object A C4R list with the Data slot in two dimension
 #' @return spatRaster
@@ -94,7 +94,7 @@ thrs_consec = function(col, duration, lowert, uppert) {
 
   }
 
-  #get only copnsecutive days matching the threshold
+  #get only connsecutive days matching the threshold
 
   consec_days = consec$lengths[consec$values == TRUE]
 
@@ -139,8 +139,7 @@ thrs = function(col, lowert, uppert) {
 }
 
 
-
-# time of emergence. Yes when mean/SD > or < 1 for at least 5 consecutive years
+# ime of emergence. Yes when mean/SD > or < 1 for at least 5 consecutive years
 
 ToE <- function(x, array)  {
   array_names <- dimnames(array)[3]

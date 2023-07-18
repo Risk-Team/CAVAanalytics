@@ -30,6 +30,7 @@ reference:
   - projections
   - climate_change_signal
   - trends
+  - observations
   - plotting
 - title: Memory efficient
   desc: |

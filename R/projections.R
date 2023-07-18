@@ -14,11 +14,7 @@
 #' @return list with SpatRaster. .[[1]] contains SpatRaster for the ensemble mean. .[[2]] contains SpatRaster for the ensemble sd and .[[3]] conins SpatRaster for individual models
 #'
 #' @export
-#' @examples
-#' exmp <- suppressMessages(load_data(country = "Togo", variable="tasmax", years.hist=2000, years.proj=2020:2025,
-#'               path.to.data = "CORDEX-CORE", domain="AFR-22"))
-#' proj_exmp <- projections(exmp, season = 1:12)
-#' plotting(proj_exmp, ensemble=T, plot_titles="mean tasmax", alpha=0.7)
+
 
 
 projections <-
@@ -44,6 +40,7 @@ projections <-
           cli::cli_abort(c("x" = "The input data is not the output of CAVAanalytics load_data"))
         stopifnot(is.logical(consecutive), is.logical(bias.correction))
         match.arg(duration, c("max", "total"))
+        if (length(data[[1]]$experiment)==1 & data[[1]]$experiment[[1]]=="historical")   cli::cli_abort(c("x" = "Projections are not part of CAVAanalytics list"))
         if (!is.null(lowert) &
             !is.null(uppert))
           cli::cli_abort(c("x" = "select only one threshold"))

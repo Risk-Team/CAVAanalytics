@@ -16,12 +16,6 @@
 #' @return list with SpatRaster. To explore the output run attributes(output)
 #'
 #' @export
-#' @examples
-#' exmp <- suppressMessages(load_data(country = "Togo", variable="pr", years.hist=1995, years.proj=2030:2055,
-#' path.to.data = "CORDEX-CORE",domain="AFR-22", aggr.m="sum"))
-#' trd_exmp <- trends(exmp, season = 1:12, historical=F, intraannual_var=F)
-#' plotting(trd_exmp, ensemble=F, plot_titles = "°C/year", frequencies=F, spatial_aggr=F, alpha=0.8)
-#'
 
 trends = function(data,
                   bias.correction = FALSE,

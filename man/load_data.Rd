@@ -10,13 +10,14 @@ load_data(
   variable,
   xlim = NULL,
   ylim = NULL,
-  years.proj,
   years.hist = NULL,
+  years.proj,
   path.to.obs = NULL,
   buffer = 0,
   domain = NULL,
   aggr.m = "none",
-  n.sessions = 6
+  n.sessions = 6,
+  years.obs = NULL
 )
 }
 \arguments{
@@ -32,9 +33,9 @@ set country to NULL and define arguments xlim and ylim}
 
 \item{ylim}{same as xlim, but for the selection of the latitudinal range}
 
-\item{years.proj}{numeric, specify year range for projections}
-
 \item{years.hist}{numeric, specify year range for the historical experiment}
+
+\item{years.proj}{numeric, specify year range for projections}
 
 \item{path.to.obs}{character, default to NULL. To automatically load W5E5 or ERA5, specify W5E5 or ERA5. Otherwise, indicate the absolute path to the directory containing another observational dataset}
 
@@ -45,15 +46,12 @@ set country to NULL and define arguments xlim and ylim}
 \item{aggr.m}{character, monthly aggregation. One of none, mean or sum}
 
 \item{n.sessions}{numeric, number of sessions to use in parallel processing. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary}
+
+\item{years.obs}{numeric, specify year range for observation. Specifying years.obs will overwrite years.hist for observations}
 }
 \value{
 list of length 3. List[[1]] contains a tibble with list columns. List[[2]] the bbox and list[[3]] the temporal structure of the models
 }
 \description{
 Automatically load models (netCDF/NcML) in a tidy format with acess to state-of-the-art climate models and reanalysis datasets
-}
-\examples{
-"exmp <- load_data(country = "Togo", variable="tas", years.hist=2000, years.proj=2010,
-              path.to.data = "CORDEX-CORE", domain="AFR-22")"
-
 }

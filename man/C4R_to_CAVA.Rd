@@ -4,14 +4,14 @@
 \alias{C4R_to_CAVA}
 \title{Converting C4R lists into CAVAanalytics list}
 \usage{
-C4R_to_CAVA(obs = NULL, projections, historical)
+C4R_to_CAVA(obs = NULL, projections, historical = NULL)
 }
 \arguments{
 \item{obs}{default is NULL. List containing a C4R list. Example list(dataset) where dataset is a C4R list}
 
-\item{projections}{named list containing a list of C4R lists. For example, list(rcp26=list(mod_1, mod_2), rcp85= list(mod_1, mod_2)) where mod_1 and mod_2 are C4R lists.}
+\item{projections}{named list containing a list of C4R lists or NULL. For example, list(rcp26=list(mod_1, mod_2), rcp85= list(mod_1, mod_2)) where mod_1 and mod_2 are C4R lists.}
 
-\item{historical}{list containing a list of C4R lists, one per model. For example, list(list(mod_1, mod_2)) where mod_1 and mod_2 are C4R lists.}
+\item{historical}{list containing a list of C4R lists, one per model or NULL. For example, list(list(mod_1, mod_2)) where mod_1 and mod_2 are C4R lists.}
 }
 \description{
 Converting a series of C4R lists (output of loadeR::loadeGridData) into a CAVAanalytics list

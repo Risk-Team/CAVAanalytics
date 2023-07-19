@@ -4,7 +4,7 @@
 \alias{models_trends}
 \title{Apply linear regression to each member of multimember grid}
 \usage{
-models_trends(c4R, historical = F)
+models_trends(c4R, observation = F)
 }
 \value{
 array, without spatial averages, or dataframe, if spatial averages are performed

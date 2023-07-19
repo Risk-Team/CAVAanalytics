@@ -9,6 +9,10 @@ output:
     toc_depth: 2
 ---
 
+## CAVAanalytics 1.1.1
+- Improved clarity in the trends function by replacing the historical argument with observation
+- added warning message when cross year season are selecetd (e.g c(11,12,1))
+
 ## CAVAanalytics 1.1.0
 
 - Improved speed in load_data and improved flexibility (e.g observation can be uploaded without projections)
@@ -17,7 +21,6 @@ output:
 
 ## CAVAanalytics 1.0.0
 
-- Made available the first CORDEX-CORE AFR-22 domain
 - Moved from sp and raster to sf and terra
 - Moved from normal messages to cli messages
 - Improved documentation

@@ -59,7 +59,7 @@ Now we add the the previous seasonal plot the overall trends
 
 ```{r,  warning=F, message=FALSE, fig.height=9, fig.width=8}
 
-ind.models <- trends(kenya_exmp, season = 1:12, historical = F) %>%
+ind.models <- trends(kenya_exmp, season = 1:12, observation = F) %>%
   plotting(., plot_titles = "°C/year", spatial_aggr = T, frequencies = F, ensemble=T, palette = c("blue", "red"))+
   ggtitle("Season 1-12")+ # add title
   theme(plot.title = element_text(hjust = 0.5))  # center title

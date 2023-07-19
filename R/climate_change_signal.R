@@ -33,8 +33,6 @@ climate_change_signal <- function(data,
              consecutive,
              duration,
              bias.correction) {
-      if (class(data) != "CAVAanalytics_list")
-        cli::cli_abort(c("x" = "The input data is not the output of CAVAanalytics load_data"))
       stopifnot(is.logical(consecutive))
       match.arg(duration, c("max", "total"))
       if (!any(stringr::str_detect(colnames(data[[1]]), "obs")) &
@@ -138,8 +136,17 @@ climate_change_signal <- function(data,
 
   # subset based on a season of interest
   filter_data_by_season <- function(datasets, season) {
+    if (all(season == sort(season))) {
+
+    } else {
+      cli::cli_alert_warning(
+        "Some data will be lost on year-crossing season subset (see the 'Time slicing' section of subsetGrid documentation for more details)"
+      )
+    }
     datasets %>% dplyr::mutate_at(c("models_mbrs"),
-                                  ~ purrr::map(., ~ transformeR::subsetGrid(., season = season)))
+                                  ~ purrr::map(., ~ suppressMessages(
+                                    transformeR::subsetGrid(., season = season)
+                                  )))
   }
 
   # function used to perform the calculations
@@ -243,9 +250,9 @@ climate_change_signal <- function(data,
           rs_list <- purrr::map(1:dim(y$Data)[[1]], function(ens) {
             array_mean <-
               if (length(y$Dates$start) == 1)
-                apply(y$Data[ens, , , ], c(1, 2), mean, na.rm = TRUE)
+                apply(y$Data[ens, , ,], c(1, 2), mean, na.rm = TRUE)
             else
-              apply(y$Data[ens, , , ], c(2, 3), mean, na.rm = TRUE) # climatology per member adjusting by array dimension
+              apply(y$Data[ens, , ,], c(2, 3), mean, na.rm = TRUE) # climatology per member adjusting by array dimension
 
             y$Data <- array_mean
 
@@ -302,7 +309,8 @@ climate_change_signal <- function(data,
 
 
   # beginning of code -------------------------------------------------------
-
+  if (class(data) != "CAVAanalytics_list")
+    cli::cli_abort(c("x" = "The input data is not the output of CAVAanalytics load_data"))
   # check input requirements
   check_inputs(data, uppert, lowert, consecutive, duration, bias.correction)
 

@@ -13,7 +13,7 @@ trends(
   consecutive = FALSE,
   duration = "max",
   intraannual_var = FALSE,
-  historical = FALSE,
+  observation = FALSE,
   n.sessions = 1
 )
 }
@@ -34,7 +34,7 @@ trends(
 
 \item{intraannual_var}{logical, whether linear regression is applied to annual variability, measured as standard deviation}
 
-\item{historical}{logical, whether to visualize trends for the historical period or projections}
+\item{observation}{logical, whether to visualize trends for the observational dataset or projections}
 
 \item{n.sessions}{numeric, number of sessions to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage}
 }

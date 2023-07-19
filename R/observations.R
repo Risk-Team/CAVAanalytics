@@ -31,8 +31,6 @@ observations <-
                lowert,
                consecutive,
                duration) {
-        if (class(data) != "CAVAanalytics_list")
-          cli::cli_abort(c("x" = "The input data is not the output of CAVAanalytics load_data"))
         if (!any(stringr::str_detect(colnames(data[[1]]), "obs")))
           cli::cli_abort(
             c("x" = "Observational dataset not detected. To use this function you need to specify path.to.obs in load_data")
@@ -114,8 +112,17 @@ observations <-
 
     # subset based on a season of interest
     filter_data_by_season <- function(datasets, season) {
+      if (all(season == sort(season))) {
+
+      } else {
+        cli::cli_alert_warning(
+          "Some data will be lost on year-crossing season subset (see the 'Time slicing' section of subsetGrid documentation for more details)"
+        )
+      }
       datasets %>%  dplyr::mutate_at(c("obs"),
-                                     ~ purrr::map(., ~ transformeR::subsetGrid(., season = season)))
+                                     ~ purrr::map(., ~ suppressMessages(
+                                       transformeR::subsetGrid(., season = season)
+                                     )))
     }
 
     # function used to perform the calculations
@@ -183,7 +190,8 @@ observations <-
       }
 
     # beginning of code -------------------------------------------------------
-
+    if (class(data) != "CAVAanalytics_list")
+      cli::cli_abort(c("x" = "The input data is not the output of CAVAanalytics load_data"))
     # check input requirements
     check_inputs(data, uppert, lowert, consecutive, duration)
 

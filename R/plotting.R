@@ -911,7 +911,6 @@ plotting.CAVAanalytics_observations <-
            n.bins = NULL,
            alpha = NA) {
     # checking requirements
-    stopifnot(is.null(ensemble))
     stopifnot(is.logical(bins))
 
     # messages

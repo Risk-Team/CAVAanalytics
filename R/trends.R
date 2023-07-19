@@ -9,7 +9,7 @@
 #' @param season numeric, seasons to select. For example, 1:12
 #' @param consecutive logical, to use in conjunction with lowert or uppert
 #' @param duration character, either "max" or "total"
-#' @param historical logical, whether to visualize trends for the historical period or projections
+#' @param observation logical, whether to visualize trends for the observational dataset or projections
 #' @param intraannual_var logical, whether linear regression is applied to annual variability, measured as standard deviation
 #' @param n.sessions numeric, number of sessions to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage
 #' @importFrom magrittr %>%
@@ -25,7 +25,7 @@ trends = function(data,
                   consecutive = FALSE,
                   duration = "max",
                   intraannual_var = FALSE,
-                  historical = FALSE,
+                  observation = FALSE,
                   n.sessions = 1) {
   # intermediate functions --------------------------------------------------
 
@@ -35,18 +35,16 @@ trends = function(data,
     function(data,
              var,
              consecutive,
-             historical,
+             observation,
              bias.correction,
              uppert,
              lowert,
              duration,
              intraannual_var) {
-      if (class(data) != "CAVAanalytics_list")
-        cli::cli_abort(c("x" = "The input data is not the output of CAVAanalytics load_data"))
       stopifnot(
         is.logical(consecutive),
         is.logical(bias.correction),
-        is.logical(historical),
+        is.logical(observation),
         is.logical(intraannual_var)
       )
 
@@ -92,7 +90,7 @@ trends = function(data,
           is.null(lowert))
         cli::cli_abort(c("x" = "Specify a threshold for which you want to calculate consecutive days"))
       stopifnot(duration == "max" | duration == "total")
-      if (historical) {
+      if (observation) {
         if (!any(stringr::str_detect(colnames(data[[1]]), "obs"))) {
           cli::cli_abort(c("x" = "An observational dataset is needed for this option, check your data"))
         } else {
@@ -118,7 +116,7 @@ trends = function(data,
       if (length(unique(
         stringr::str_extract(data[[1]]$models_mbrs[[2]]$Dates$start, "\\d{4}")
       )) < 20) {
-        if (!historical) {
+        if (!observation) {
           cli::cli_abort(c("x" = "To analyse trends, consider having at least 20 years of data"))
         }
 
@@ -143,7 +141,7 @@ trends = function(data,
              lowert,
              consecutive,
              duration,
-             historical,
+            observation,
              intraannual_var) {
       if (is.null(uppert) & is.null(lowert)) {
         mes = paste0(
@@ -201,12 +199,23 @@ trends = function(data,
 
   # subset based on a season of interest
   filter_data_by_season <- function(datasets, season) {
+    if (all(season == sort(season))) {
+
+    } else {
+      cli::cli_alert_warning(
+        "Some data will be lost on year-crossing season subset (see the 'Time slicing' section of subsetGrid documentation for more details)"
+      )
+    }
     if (any(stringr::str_detect(colnames(datasets), "obs"))) {
       datasets %>%  dplyr::mutate_at(c("models_mbrs", "obs"),
-                                     ~ purrr::map(., ~ transformeR::subsetGrid(., season = season)))
+                                     ~ purrr::map(., ~ suppressMessages(
+                                       transformeR::subsetGrid(., season = season)
+                                     )))
     } else {
       datasets %>%  dplyr::mutate_at(c("models_mbrs"),
-                                     ~ purrr::map(., ~ transformeR::subsetGrid(., season = season)))
+                                     ~ purrr::map(., ~ suppressMessages(
+                                       transformeR::subsetGrid(., season = season)
+                                     )))
     }
   }
 
@@ -221,7 +230,7 @@ trends = function(data,
              duration,
              country_shp,
              bias.correction,
-             historical,
+             observation,
              intraannual_var) {
       gc()
 
@@ -264,7 +273,7 @@ trends = function(data,
             .
         }  %>%   # computing annual aggregation. if threshold is specified, first apply threshold
         dplyr::mutate(
-          models_agg_y = furrr::future_map(if (!historical)
+          models_agg_y = furrr::future_map(if (!observation)
             models_mbrs
             else
               obs, function(x)
@@ -299,15 +308,15 @@ trends = function(data,
         ) %>%
         dplyr::select(-models_mbrs) %>%
         {
-          if (!historical) {
+          if (!observation) {
             dplyr::mutate(
               .,
               ens_spat =  purrr::map2(models_agg_y, experiment, function(x, y) {
                 cli::cli_alert_info(paste0("Processing ", y))
                 c4R <- x
                 results <- ens_trends(x)
-                c4R$Data <- results[1, ,] # coef
-                x$Data <- results[2, ,] # p.value
+                c4R$Data <- results[1, , ] # coef
+                x$Data <- results[2, , ] # p.value
 
                 coef <-  make_raster(c4R) %>%
                   terra::crop(., country_shp, snap = "out") %>%
@@ -330,11 +339,11 @@ trends = function(data,
                 cli::cli_alert_info(paste0(" Processing ", y))
                 c4R <- x
                 results <- models_trends(x)
-                c4R$Data <- results[1, , ,]# coef
-                x$Data <- results[2, , ,] # p.value
+                c4R$Data <- results[1, , , ]# coef
+                x$Data <- results[2, , , ] # p.value
                 rst_stack_coef <-
                   lapply(1:dim(c4R$Data)[1], function(i_mod) {
-                    c4R$Data <- c4R$Data[i_mod, ,]
+                    c4R$Data <- c4R$Data[i_mod, , ]
                     rst <- make_raster(c4R) %>%
                       terra::crop(., country_shp, snap = "out") %>%
                       terra::mask(., country_shp)
@@ -345,7 +354,7 @@ trends = function(data,
 
                 rst_stack_p <-
                   lapply(1:dim(x$Data)[1], function(i_mod) {
-                    x$Data <- x$Data[i_mod, ,]
+                    x$Data <- x$Data[i_mod, , ]
                     rst <- make_raster(x) %>%
                       terra::crop(., country_shp, snap = "out") %>%
                       terra::mask(., country_shp)
@@ -388,15 +397,15 @@ trends = function(data,
 
 
           } else {
-            # if historical is TRUE
+            # if observation is TRUE
             dplyr::slice(., 1) %>%
               dplyr::mutate(
                 models_spat = purrr::map(models_agg_y, function(x) {
                   cli::cli_alert_info(" Processing observation")
                   c4R <- x
-                  results <- models_trends(x, historical = T)
-                  c4R$Data <- results[1, ,]# coef
-                  x$Data <- results[2, ,] # p.value
+                  results <- models_trends(x, observation = T)
+                  c4R$Data <- results[1, , ]# coef
+                  x$Data <- results[2, , ] # p.value
 
                   coef <- make_raster(c4R) %>%
                     terra::crop(., country_shp, snap = "out") %>%
@@ -432,7 +441,7 @@ trends = function(data,
 
         }
       gc()
-      if (!historical) {
+      if (!observation) {
         invisible(structure(
           list(
             do.call(c, purrr::map(
@@ -468,7 +477,7 @@ trends = function(data,
         ))
 
       } else {
-        # for historical
+        # for observation
         invisible(structure(
           list(
             data_list$models_spat[[1]][[1]],
@@ -491,6 +500,8 @@ trends = function(data,
     } # end of function
 
   # beginning of code -------------------------------------------------------
+  if (class(data) != "CAVAanalytics_list")
+    cli::cli_abort(c("x" = "The input data is not the output of CAVAanalytics load_data"))
   # retrieve information
   datasets <- data[[1]]
   country_shp <- data[[2]]
@@ -505,7 +516,7 @@ trends = function(data,
     data,
     var,
     consecutive,
-    historical,
+    observation,
     bias.correction,
     uppert,
     lowert,
@@ -524,7 +535,7 @@ trends = function(data,
       lowert,
       consecutive,
       duration,
-      historical,
+      observation,
       intraannual_var
     )
   # set parallel processing
@@ -535,7 +546,7 @@ trends = function(data,
 
   cli::cli_alert_info(paste0(
     " trends,",
-    ifelse(historical, " observations,", " projections,"),
+    ifelse(observation, " observations,", " projections,"),
     " season ",
     glue::glue_collapse(season, "-"),
     ". ",
@@ -554,7 +565,7 @@ trends = function(data,
       duration,
       country_shp,
       bias.correction,
-      historical,
+      observation,
       intraannual_var
     )
 

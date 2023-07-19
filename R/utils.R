@@ -279,24 +279,24 @@ ens_trends <- function(c4R) {
 #' @export
 
 
-models_trends <- function(c4R, historical = F) {
+models_trends <- function(c4R, observation = F) {
   if (length(dim(c4R$Data)) > 2) {
     # in cases in which there is a spatial dimension
     cli::cli_progress_step(
       paste0(
         " Applying linear regression to ",
-        ifelse(historical, "observation. ", "each ensemble member."),
+        ifelse(observation, "observation. ", "each ensemble member."),
         " P-value calculated using 999 iterations via residual (without replacement) resampling."
       )
     )
     # single model
 
-    if (dim(c4R$Data)[ifelse(historical, 1, 2)] > 100)
+    if (dim(c4R$Data)[ifelse(observation, 1, 2)] > 100)
       cli::cli_alert_warning("Check that your performed annual aggregation before using this function")
 
 
     ind.lm <-
-      apply(c4R$Data, if (historical)
+      apply(c4R$Data, if (observation)
         c(2, 3)
         else
           c(1, 3, 4), function(y) {
@@ -313,9 +313,9 @@ models_trends <- function(c4R, historical = F) {
     return(ind.lm)
   } else {
     # when spatial averages are performed
-    if (dim(c4R$Data)[ifelse(historical, 1, 2)] > 100)
+    if (dim(c4R$Data)[ifelse(observation, 1, 2)] > 100)
       cli::cli_alert_warning("Check that your performed annual aggregation before using this function")
-    if (!historical) {
+    if (!observation) {
       df_tm_series <- reshape2::melt(c4R$Data) %>%
         dplyr::group_by(Var1) %>%
         dplyr::mutate(

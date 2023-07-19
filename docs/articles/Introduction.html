@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">CAVAanalytics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -145,33 +145,53 @@ of the country and the number of years specified</strong></p>
 <span><span class="co">#&gt; [1]    6 9278   42   33</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="observations">Observations<a class="anchor" aria-label="anchor" href="#observations"></a>
+</h2>
+<p>We can examine historical data using the loaded observational
+dataset, which, in this case, is ERA5. In this case, we are looking at
+the mean historical maximum temperature for the whole year.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="va">kenya_obs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/observations.html">observations</a></span><span class="op">(</span><span class="va">kenya_exmp</span>, season<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">kenya_obs</span>, plot_titles <span class="op">=</span> <span class="st">"Mean tasmax"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Introduction_files/figure-html/unnamed-chunk-4-1.png" width="576"></p>
+<p>How many days above 40 °C occurred on average?</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="va">kenya_obs.40</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/observations.html">observations</a></span><span class="op">(</span><span class="va">kenya_exmp</span>, season<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span>, uppert<span class="op">=</span><span class="fl">40</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">kenya_obs.40</span>, plot_titles <span class="op">=</span> <span class="st">"N.days &gt; 40"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Introduction_files/figure-html/unnamed-chunk-5-1.png" width="576"></p>
+</div>
+<div class="section level2">
 <h2 id="projections">Projections<a class="anchor" aria-label="anchor" href="#projections"></a>
 </h2>
 <p>What if you want to have a look at what will be the projected maximum
 temperature in Kenya for the 2030-2055 time period? This is easy to do
 with CAVAanalytics:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># you can specify the season. In this case we are looking at the whole year</span></span>
 <span><span class="va">proj_kenya</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/projections.html">projections</a></span><span class="op">(</span><span class="va">kenya_exmp</span>, season<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># stat can take either mean or sd. It is used in combination with ensemble=T. Default is always mean</span></span>
 <span><span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">proj_kenya</span>, ensemble<span class="op">=</span><span class="cn">T</span>, stat<span class="op">=</span><span class="st">"mean"</span>, plot_titles <span class="op">=</span> <span class="st">"mean tasmax"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Introduction_files/figure-html/unnamed-chunk-4-1.png" width="576"></p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<p><img src="Introduction_files/figure-html/unnamed-chunk-6-1.png" width="576"></p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">proj_kenya</span>, ensemble<span class="op">=</span><span class="cn">F</span>, stat<span class="op">=</span><span class="st">"mean"</span>, plot_titles <span class="op">=</span> <span class="st">"mean tasmax"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Introduction_files/figure-html/unnamed-chunk-5-1.png" width="960"></p>
+<p><img src="Introduction_files/figure-html/unnamed-chunk-7-1.png" width="960"></p>
 <p>In certain cases, focusing solely on mean temperatures might not
 provide the insights we need. Instead, we might be interested in
 understanding the frequency of specific conditions projected to occur.
 For instance, we may want to determine the number of days with maximum
 temperatures above 35 °C.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">proj_kenya_35</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/projections.html">projections</a></span><span class="op">(</span><span class="va">kenya_exmp</span>, season<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span>, uppert<span class="op">=</span><span class="fl">35</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">proj_kenya_35</span>, ensemble<span class="op">=</span><span class="cn">T</span>, plot_titles <span class="op">=</span> <span class="st">"N.days &gt; 35"</span>, palette<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"white"</span>, <span class="st">"orange"</span>, <span class="st">"red"</span>, <span class="st">"darkred"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Introduction_files/figure-html/unnamed-chunk-6-1.png" width="576"></p>
+<p><img src="Introduction_files/figure-html/unnamed-chunk-8-1.png" width="576"></p>
 <p>When dealing with model biases, CAVAanalytics offers a
 straightforward solution by automatically implementing bias correction
 using the empirical quantile mapping method. This process allows us to
@@ -180,12 +200,12 @@ correct for discrepancies between observed data and model outputs.</p>
 W5E5 dataset will result in a change in spatial resolution to 50 Km. To
 maintain the original CORDEX-CORE resolution, it is crucial to perform
 bias correction using ERA5 instead</strong></p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># bias correction is applied with the widely used empirical quantile method</span></span>
 <span><span class="va">proj_kenya_35bc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/projections.html">projections</a></span><span class="op">(</span><span class="va">kenya_exmp</span>, season<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span>, bias.correction <span class="op">=</span> <span class="cn">T</span>, uppert<span class="op">=</span><span class="fl">35</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">proj_kenya_35bc</span>, ensemble<span class="op">=</span><span class="cn">T</span>,  plot_titles <span class="op">=</span> <span class="st">"N.days &gt; 35 after bc"</span>, palette<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"white"</span>, <span class="st">"orange"</span>, <span class="st">"red"</span>, <span class="st">"darkred"</span><span class="op">)</span>, legend_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">320</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Introduction_files/figure-html/unnamed-chunk-7-1.png" width="576"></p>
+<p><img src="Introduction_files/figure-html/unnamed-chunk-9-1.png" width="576"></p>
 </div>
 <div class="section level2">
 <h2 id="climate-change-signal">Climate change signal<a class="anchor" aria-label="anchor" href="#climate-change-signal"></a>
@@ -194,12 +214,12 @@ bias correction using ERA5 instead</strong></p>
 where we prioritize understanding delta changes, which represent the
 relative increase or decrease in mean maximum temperatures compared to a
 baseline. CAVAanalytics facilitates this analysis as well.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">ccs_kenya</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/climate_change_signal.html">climate_change_signal</a></span><span class="op">(</span><span class="va">kenya_exmp</span>, season<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">ccs_kenya</span>, ensemble<span class="op">=</span><span class="cn">F</span>, plot_titles <span class="op">=</span> <span class="st">"Mean tasmax change"</span>, legend_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span>, palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"blue"</span>, <span class="st">"cyan"</span>, <span class="st">"green"</span>, <span class="st">"white"</span>, <span class="st">"yellow"</span> ,<span class="st">"orange"</span>, <span class="st">"red"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Introduction_files/figure-html/unnamed-chunk-8-1.png" width="960"></p>
+<p><img src="Introduction_files/figure-html/unnamed-chunk-10-1.png" width="960"></p>
 </div>
 <div class="section level2">
 <h2 id="trends">Trends<a class="anchor" aria-label="anchor" href="#trends"></a>
@@ -207,31 +227,39 @@ baseline. CAVAanalytics facilitates this analysis as well.</p>
 <p>While examining delta changes and absolute values for projections
 provides valuable information, it may not offer insights into temporal
 trends. However, using the ‘trends’ function in CAVAanalytics allows us
-to address this limitation. For instance, we can determine if Kenya is
-projected to experience a noteworthy rise in yearly maximum
-temperatures.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># the historical argument allows us to study trends for the future or for the past. Note that for historical = T, we need to have specified path.to.obs because this option does not work with the historical experiment of climate models but with observation</span></span>
+to address this limitation. For instance, we can determine if Kenya has
+experienced or is projected to experience a noteworthy rise in yearly
+maximum temperatures.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># the observation argument allows us to study trends for the future or for the past. Note that for observation = T, we need to have specified path.to.obs because this option does not work with the historical experiment of climate models but with observation</span></span>
 <span></span>
-<span><span class="va">trd_kenya</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/trends.html">trends</a></span><span class="op">(</span><span class="va">kenya_exmp</span>, season<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span>, historical <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
+<span><span class="va">trd_kenya.obs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/trends.html">trends</a></span><span class="op">(</span><span class="va">kenya_exmp</span>, season<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span>,observation <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">trd_kenya</span>, ensemble<span class="op">=</span><span class="cn">F</span>, plot_titles <span class="op">=</span> <span class="st">"°C/year"</span>, frequencies <span class="op">=</span> <span class="cn">F</span>, spatial_aggr <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Introduction_files/figure-html/unnamed-chunk-9-1.png" width="960"></p>
+<span><span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">trd_kenya.obs</span>, ensemble<span class="op">=</span><span class="cn">F</span>, plot_titles <span class="op">=</span> <span class="st">"°C/year"</span>, frequencies <span class="op">=</span> <span class="cn">F</span>, spatial_aggr <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Introduction_files/figure-html/unnamed-chunk-11-1.png" width="576"></p>
+<p>We can look at trend for the future period as well by changing the
+observation argument to FALSE</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="va">trd_kenya.prj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/trends.html">trends</a></span><span class="op">(</span><span class="va">kenya_exmp</span>, season<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span>,observation <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">trd_kenya.prj</span>, ensemble<span class="op">=</span><span class="cn">F</span>, plot_titles <span class="op">=</span> <span class="st">"°C/year"</span>, frequencies <span class="op">=</span> <span class="cn">F</span>, spatial_aggr <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Introduction_files/figure-html/unnamed-chunk-12-1.png" width="960"></p>
 <p>Another feature of the trends function is that you can look at the
 global significance of the ensemble. The plot below shows you the number
 of models that agrees in a certain change (increase or decrease) while
 the global p.value is calculated based on the <a href="https://besjournals.onlinelibrary.wiley.com/doi/10.1111/j.2041-210X.2012.00190.x" class="external-link">manylm
 function of mvabund</a>.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">trd_kenya</span>, ensemble<span class="op">=</span><span class="cn">T</span>, plot_titles <span class="op">=</span> <span class="st">"N. members direction change"</span>, frequencies <span class="op">=</span> <span class="cn">F</span>, spatial_aggr <span class="op">=</span> <span class="cn">F</span>, palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"blue"</span>, <span class="st">"green"</span>, <span class="st">"white"</span>, <span class="st">"yellow"</span>, <span class="st">"red"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Introduction_files/figure-html/unnamed-chunk-10-1.png" width="576"></p>
+<span><span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">trd_kenya.prj</span>, ensemble<span class="op">=</span><span class="cn">T</span>, plot_titles <span class="op">=</span> <span class="st">"N. members direction change"</span>, frequencies <span class="op">=</span> <span class="cn">F</span>, spatial_aggr <span class="op">=</span> <span class="cn">F</span>, palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"blue"</span>, <span class="st">"green"</span>, <span class="st">"white"</span>, <span class="st">"yellow"</span>, <span class="st">"red"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Introduction_files/figure-html/unnamed-chunk-13-1.png" width="576"></p>
 <p>While we can visualize the results spatially, we can also look at
 temporal trends.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">trd_kenya</span>, ensemble<span class="op">=</span><span class="cn">T</span>, plot_titles <span class="op">=</span> <span class="st">"°C/year"</span>, spatial_aggr <span class="op">=</span> <span class="cn">T</span>, frequencies <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Introduction_files/figure-html/unnamed-chunk-11-1.png" width="768"></p>
+<span><span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">trd_kenya.prj</span>, ensemble<span class="op">=</span><span class="cn">T</span>, plot_titles <span class="op">=</span> <span class="st">"°C/year"</span>, spatial_aggr <span class="op">=</span> <span class="cn">T</span>, frequencies <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Introduction_files/figure-html/unnamed-chunk-14-1.png" width="768"></p>
 <p>In addition to performing spatial averages and visualizing trends, we
 can gain valuable insights by examining the distribution of annual mean
 tasmax (maximum temperature) across Kenya using the specified
@@ -241,23 +269,10 @@ temporally, potentially obscuring certain patterns. By utilizing the
 ‘frequencies=T’ option, we ensure a comprehensive understanding of both
 spatial and temporal attributes, allowing us to uncover hidden patterns
 in the data.”</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">trd_kenya</span>, ensemble<span class="op">=</span><span class="cn">T</span>, spatial_aggr <span class="op">=</span> <span class="cn">F</span>, frequencies <span class="op">=</span> <span class="cn">T</span>, n.groups <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Introduction_files/figure-html/unnamed-chunk-12-1.png" width="960"></p>
-</div>
-<div class="section level2">
-<h2 id="observations">Observations<a class="anchor" aria-label="anchor" href="#observations"></a>
-</h2>
-<p>Similar to analyzing projections, we can also examine historical data
-using the loaded observational dataset, which, in this case, is
-ERA5.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="va">proj_kenya_obs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/observations.html">observations</a></span><span class="op">(</span><span class="va">kenya_exmp</span>, season<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">proj_kenya_obs</span>, plot_titles <span class="op">=</span> <span class="st">"Mean tasmax"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Introduction_files/figure-html/unnamed-chunk-13-1.png" width="576"></p>
+<span><span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">trd_kenya.prj</span>, ensemble<span class="op">=</span><span class="cn">T</span>, spatial_aggr <span class="op">=</span> <span class="cn">F</span>, frequencies <span class="op">=</span> <span class="cn">T</span>, n.groups <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Introduction_files/figure-html/unnamed-chunk-15-1.png" width="960"></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

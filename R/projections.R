@@ -36,8 +36,6 @@ projections <-
                lowert,
                consecutive,
                duration) {
-        if (class(data) != "CAVAanalytics_list")
-          cli::cli_abort(c("x" = "The input data is not the output of CAVAanalytics load_data"))
         stopifnot(is.logical(consecutive), is.logical(bias.correction))
         match.arg(duration, c("max", "total"))
         if (length(data[[1]]$experiment) == 1 &
@@ -142,12 +140,23 @@ projections <-
 
     # subset based on a season of interest
     filter_data_by_season <- function(datasets, season) {
+      if (all(season == sort(season))) {
+
+      } else {
+        cli::cli_alert_warning(
+          "Some data will be lost on year-crossing season subset (see the 'Time slicing' section of subsetGrid documentation for more details)"
+        )
+      }
       if (any(stringr::str_detect(colnames(datasets), "obs"))) {
         datasets %>%  dplyr::mutate_at(c("models_mbrs", "obs"),
-                                       ~ purrr::map(., ~ transformeR::subsetGrid(., season = season)))
+                                       ~ purrr::map(., ~ suppressMessages(
+                                         transformeR::subsetGrid(., season = season)
+                                       )))
       } else {
         datasets %>%  dplyr::mutate_at(c("models_mbrs"),
-                                       ~ purrr::map(., ~ transformeR::subsetGrid(., season = season)))
+                                       ~ purrr::map(., ~ suppressMessages(
+                                         transformeR::subsetGrid(., season = season)
+                                       )))
       }
     }
 
@@ -265,9 +274,9 @@ projections <-
               rs_list <- purrr::map(1:dim(y$Data)[[1]], function(ens) {
                 array_mean <-
                   if (length(y$Dates$start) == 1)
-                    apply(y$Data[ens, , , ], c(1, 2), mean, na.rm = TRUE)
+                    apply(y$Data[ens, , ,], c(1, 2), mean, na.rm = TRUE)
                 else
-                  apply(y$Data[ens, , , ], c(2, 3), mean, na.rm = TRUE) # climatology per member adjusting by array dimension
+                  apply(y$Data[ens, , ,], c(2, 3), mean, na.rm = TRUE) # climatology per member adjusting by array dimension
                 y$Data <- array_mean
                 rs <- make_raster(y) %>%
                   terra::crop(., country_shp, snap = "out") %>%
@@ -300,7 +309,8 @@ projections <-
       }
 
     # beginning of code -------------------------------------------------------
-
+    if (class(data) != "CAVAanalytics_list")
+      cli::cli_abort(c("x" = "The input data is not the output of CAVAanalytics load_data"))
     # check input requirements
     check_inputs(data, bias.correction, uppert, lowert, consecutive, duration)
 

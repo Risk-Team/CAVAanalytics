@@ -11,7 +11,7 @@ output:
 
 ## CAVAanalytics 1.1.1
 - Improved clarity in the trends function by replacing the historical argument with observation
-- added warning message when cross year season are selecetd (e.g c(11,12,1))
+- added warning message when cross year season are selected (e.g c(11,12,1))
 
 ## CAVAanalytics 1.1.0
 

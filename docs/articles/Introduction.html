@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">CAVAanalytics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,8 +42,8 @@
     guides
   </a>
   <div class="dropdown-menu" aria-labelledby="dropdown--guides">
-    <a class="dropdown-item" href="../articles/Introduction.html">Getting started</a>
-    <a class="dropdown-item" href="../articles/more_advanced.html">Unlocking the power of CAVAanalytics with patchwork</a>
+    <a class="dropdown-item" href="../articles/Introduction.html">start here</a>
+    <a class="dropdown-item" href="../articles/more_advanced.html">more advanced examples</a>
   </div>
 </li>
 <li class="nav-item">
@@ -255,10 +255,11 @@ function of mvabund</a>.</p>
 <span><span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">trd_kenya.prj</span>, ensemble<span class="op">=</span><span class="cn">T</span>, plot_titles <span class="op">=</span> <span class="st">"N. members direction change"</span>, frequencies <span class="op">=</span> <span class="cn">F</span>, spatial_aggr <span class="op">=</span> <span class="cn">F</span>, palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"blue"</span>, <span class="st">"green"</span>, <span class="st">"white"</span>, <span class="st">"yellow"</span>, <span class="st">"red"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Introduction_files/figure-html/unnamed-chunk-13-1.png" width="576"></p>
 <p>While we can visualize the results spatially, we can also look at
-temporal trends.</p>
+temporal trends. In this case, a general additive model using a cubic
+regression spline is applied to better capture non-linear patterns.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">trd_kenya.prj</span>, ensemble<span class="op">=</span><span class="cn">T</span>, plot_titles <span class="op">=</span> <span class="st">"°C/year"</span>, spatial_aggr <span class="op">=</span> <span class="cn">T</span>, frequencies <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">trd_kenya.prj</span>, ensemble<span class="op">=</span><span class="cn">T</span>, plot_titles <span class="op">=</span> <span class="st">"°C"</span>, spatial_aggr <span class="op">=</span> <span class="cn">T</span>, frequencies <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Introduction_files/figure-html/unnamed-chunk-14-1.png" width="768"></p>
 <p>In addition to performing spatial averages and visualizing trends, we
 can gain valuable insights by examining the distribution of annual mean

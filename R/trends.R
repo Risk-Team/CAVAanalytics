@@ -141,7 +141,7 @@ trends = function(data,
              lowert,
              consecutive,
              duration,
-            observation,
+             observation,
              intraannual_var) {
       if (is.null(uppert) & is.null(lowert)) {
         mes = paste0(
@@ -263,11 +263,13 @@ trends = function(data,
                                 )
                               )
 
-                            out <-
+                            mod_temp <-
                               transformeR::intersectGrid.time(x, bc, which.return = 2)
-                            out$Dates$start <- x$Dates$start
-                            out$Dates$end <-  x$Dates$end
-                            return(out)
+                            mod_temp$Dates$start <- x$Dates$start
+                            mod_temp$Dates$end <-  x$Dates$end
+                            if (any(is.na(mod_temp$Data)))
+                              cli::cli_alert_info("Bias correction has introduced NA values in certain pixels. Proceed with care")
+                            return(mod_temp)
                           }))
           } else
             .
@@ -315,8 +317,8 @@ trends = function(data,
                 cli::cli_alert_info(paste0("Processing ", y))
                 c4R <- x
                 results <- ens_trends(x)
-                c4R$Data <- results[1, , ] # coef
-                x$Data <- results[2, , ] # p.value
+                c4R$Data <- results[1, ,] # coef
+                x$Data <- results[2, ,] # p.value
 
                 coef <-  make_raster(c4R) %>%
                   terra::crop(., country_shp, snap = "out") %>%
@@ -339,11 +341,11 @@ trends = function(data,
                 cli::cli_alert_info(paste0(" Processing ", y))
                 c4R <- x
                 results <- models_trends(x)
-                c4R$Data <- results[1, , , ]# coef
-                x$Data <- results[2, , , ] # p.value
+                c4R$Data <- results[1, , ,]# coef
+                x$Data <- results[2, , ,] # p.value
                 rst_stack_coef <-
                   lapply(1:dim(c4R$Data)[1], function(i_mod) {
-                    c4R$Data <- c4R$Data[i_mod, , ]
+                    c4R$Data <- c4R$Data[i_mod, ,]
                     rst <- make_raster(c4R) %>%
                       terra::crop(., country_shp, snap = "out") %>%
                       terra::mask(., country_shp)
@@ -354,7 +356,7 @@ trends = function(data,
 
                 rst_stack_p <-
                   lapply(1:dim(x$Data)[1], function(i_mod) {
-                    x$Data <- x$Data[i_mod, , ]
+                    x$Data <- x$Data[i_mod, ,]
                     rst <- make_raster(x) %>%
                       terra::crop(., country_shp, snap = "out") %>%
                       terra::mask(., country_shp)
@@ -404,8 +406,8 @@ trends = function(data,
                   cli::cli_alert_info(" Processing observation")
                   c4R <- x
                   results <- models_trends(x, observation = T)
-                  c4R$Data <- results[1, , ]# coef
-                  x$Data <- results[2, , ] # p.value
+                  c4R$Data <- results[1, ,]# coef
+                  x$Data <- results[2, ,] # p.value
 
                   coef <- make_raster(c4R) %>%
                     terra::crop(., country_shp, snap = "out") %>%

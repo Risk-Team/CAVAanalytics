@@ -142,9 +142,7 @@ plotting.CAVAanalytics_projections <-
               ticks.colour = "black",
               ticks.linewidth = 1,
               title.position = "top",
-              title.hjust = 0.5,
-              label.theme = ggplot2::element_text(angle = 45),
-              label.hjust = 1
+              title.hjust = 0.5
             )
           )
         } else {
@@ -157,9 +155,7 @@ plotting.CAVAanalytics_projections <-
               ticks.colour = "black",
               ticks.linewidth = 1,
               title.position = "top",
-              title.hjust = 0.5,
-              label.theme = ggplot2::element_text(angle = 45),
-              label.hjust = 1
+              title.hjust = 0.5
             )
           )
 
@@ -195,7 +191,8 @@ plotting.CAVAanalytics_projections <-
         legend.direction = "horizontal",
         legend.key.height = ggplot2::unit(0.5, 'cm'),
         legend.key.width = ggplot2::unit(2, 'cm'),
-        legend.box.spacing = ggplot2::unit(0, "pt")
+        legend.box.spacing = ggplot2::unit(0, "pt"),
+        legend.text =  ggplot2::element_text(angle = 45, hjust = 1)
       )
 
     cli::cli_progress_done()
@@ -320,9 +317,7 @@ plotting.CAVAanalytics_ccs <-
               ticks.colour = "black",
               ticks.linewidth = 1,
               title.position = "top",
-              title.hjust = 0.5,
-              label.theme = ggplot2::element_text(angle = 45),
-              label.hjust = 1
+              title.hjust = 0.5
             )
           )
         } else {
@@ -335,9 +330,7 @@ plotting.CAVAanalytics_ccs <-
               ticks.colour = "black",
               ticks.linewidth = 1,
               title.position = "top",
-              title.hjust = 0.5,
-              label.theme = ggplot2::element_text(angle = 45),
-              label.hjust = 1
+              title.hjust = 0.5
             )
           )
         }
@@ -371,7 +364,8 @@ plotting.CAVAanalytics_ccs <-
         legend.direction = "horizontal",
         legend.key.height = ggplot2::unit(0.5, 'cm'),
         legend.key.width = ggplot2::unit(2, 'cm'),
-        legend.box.spacing = ggplot2::unit(0, "pt")
+        legend.box.spacing = ggplot2::unit(0, "pt"),
+        legend.text =  ggplot2::element_text(angle = 45, hjust = 1)
       )
 
     cli::cli_progress_done()
@@ -559,9 +553,7 @@ plotting.CAVAanalytics_trends <-
                 ticks.colour = "black",
                 ticks.linewidth = 1,
                 title.position = "top",
-                title.hjust = 0.5,
-                label.theme = ggplot2::element_text(angle = 45),
-                label.hjust = 1
+                title.hjust = 0.5
               )
             )
           } else {
@@ -574,9 +566,7 @@ plotting.CAVAanalytics_trends <-
                 ticks.colour = "black",
                 ticks.linewidth = 1,
                 title.position = "top",
-                title.hjust = 0.5,
-                label.theme = ggplot2::element_text(angle = 45),
-                label.hjust = 1
+                title.hjust = 0.5
               )
             )
           }
@@ -613,11 +603,27 @@ plotting.CAVAanalytics_trends <-
           axis.text.y = ggplot2::element_blank(),
           axis.ticks = ggplot2::element_blank(),
           axis.title = ggplot2::element_blank(),
-          legend.position = "bottom",
-          legend.direction = "horizontal",
-          legend.key.height = ggplot2::unit(0.5, 'cm'),
-          legend.key.width = ggplot2::unit(2, 'cm'),
-          legend.box.spacing = ggplot2::unit(0, "pt")
+          legend.position = if (historical)
+            "right"
+          else
+            "bottom",
+          legend.direction = if (historical)
+            "vertical"
+          else
+            "horizontal",
+          legend.key.height = ggplot2::unit(if (historical)
+            1
+            else
+              0.5, 'cm'),
+          legend.key.width = ggplot2::unit(if (historical)
+            0.3
+            else
+              2, 'cm'),
+          legend.box.spacing = ggplot2::unit(0, "pt"),
+          legend.text =  ggplot2::element_text(angle = if (historical)
+            360
+            else
+              45, hjust = 1)
         )
 
       cli::cli_process_done()
@@ -742,27 +748,32 @@ plotting.CAVAanalytics_trends <-
           # trends were run on projections
           if (ensemble) {
             rst[[6]] %>%
+              dplyr::group_by(date, experiment, Var1) %>%
+              dplyr::summarise(value = median(value)) %>%  # spatial aggregation
               dplyr::group_by(date, experiment) %>%
-              dplyr::summarise(sd = sd(value) / sqrt(length(unique(
-                rst[[6]]$Var1
-              ))),
+              dplyr::summarise(sd = sd(value),
               value = mean(value)) %>%
               ggplot2::ggplot() +
-              ggplot2::geom_line(ggplot2::aes(
-                y = value,
-                x = date,
-                color = experiment
-              )) +
-              ggplot2::geom_point(
+              ggplot2::geom_line(
                 ggplot2::aes(
                   y = value,
                   x = date,
                   color = experiment
                 ),
-                size = 2,
-                alpha = 0.3
+                linetype = "dotted",
+                alpha = 0.5
               ) +
-
+              ggplot2::geom_smooth(
+                ggplot2::aes(
+                  y = value,
+                  x = date,
+                  color = experiment
+                ),
+                se = F,
+                linewidth = 0.5,
+                method = "gam",
+                formula = y ~ x
+              ) +
               ggplot2::geom_ribbon(
                 ggplot2::aes(
                   y = value,
@@ -774,21 +785,7 @@ plotting.CAVAanalytics_trends <-
                 alpha = 0.1,
                 show.legend = F
               ) +
-              ggplot2::geom_label(
-                ggplot2::aes(
-                  x = date,
-                  y = value,
-                  label = round(value, digits = 0),
-                  fill = experiment
-                ),
-                size = 2,
-                nudge_x = 0.1,
-                nudge_y = 0.1,
-                color = "black",
-                show.legend = FALSE,
-                alpha = 0.5
-              ) +
-              ggplot2::scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
+              ggplot2::scale_x_date(date_breaks = "4 years", date_labels = "%Y") +
               ggplot2::theme_bw() +
               ggplot2::theme(
                 legend.position = "bottom",
@@ -809,22 +806,28 @@ plotting.CAVAanalytics_trends <-
               dplyr::group_by(Var1, date, experiment) %>%
               dplyr::summarise(value = mean(value)) %>%
               ggplot2::ggplot() +
-              ggplot2::geom_line(ggplot2::aes(
-                y = value,
-                x = date,
-                color = experiment
-              )) +
-              ggplot2::geom_point(
+              ggplot2::geom_line(
                 ggplot2::aes(
                   y = value,
                   x = date,
                   color = experiment
                 ),
-                size = 2,
-                alpha = 0.3
+                linetype = "dotted",
+                alpha = 0.7
               ) +
-              ggplot2::facet_wrap(~ Var1, ncol = 2) +
-              ggplot2::scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
+              ggplot2::geom_smooth(
+                ggplot2::aes(
+                  y = value,
+                  x = date,
+                  color = experiment
+                ),
+                se = F,
+                linewidth = 0.5,
+                method = "gam",
+                formula = y ~ x
+              ) +
+              ggplot2::facet_wrap( ~ Var1, ncol = 2) +
+              ggplot2::scale_x_date(date_breaks = "4 years", date_labels = "%Y") +
               ggplot2::theme_bw() +
               ggplot2::theme(
                 legend.position = "bottom",
@@ -845,35 +848,27 @@ plotting.CAVAanalytics_trends <-
             dplyr::group_by(date, experiment) %>%
             dplyr::summarise(value = mean(value)) %>%
             ggplot2::ggplot() +
-            ggplot2::geom_line(ggplot2::aes(
-              y = value,
-              x = date,
-              color = experiment
-            )) +
-            ggplot2::geom_point(
+            ggplot2::geom_line(
               ggplot2::aes(
                 y = value,
                 x = date,
                 color = experiment
               ),
-              size = 2,
-              alpha = 0.3
+              linetype = "dotted",
+              alpha = 0.7
             ) +
-            ggplot2::geom_label(
+            ggplot2::geom_smooth(
               ggplot2::aes(
-                x = date,
                 y = value,
-                label = round(value, digits = 0),
-                fill = experiment
+                x = date,
+                color = experiment
               ),
-              size = 2,
-              nudge_x = 0.1,
-              nudge_y = 0.1,
-              color = "black",
-              show.legend = FALSE,
-              alpha = 0.5
+              se = F,
+              linewidth = 0.5,
+              method = "gam",
+              formula = y ~ x
             ) +
-            ggplot2::scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
+            ggplot2::scale_x_date(date_breaks = "4 years", date_labels = "%Y") +
             ggplot2::theme_bw() +
             ggplot2::theme(
               legend.position = "bottom",
@@ -980,7 +975,6 @@ plotting.CAVAanalytics_observations <-
               ticks.linewidth = 1,
               title.position = "top",
               title.hjust = 0.5,
-              label.theme = ggplot2::element_text(angle = 45),
               label.hjust = 1
             )
           )
@@ -995,7 +989,6 @@ plotting.CAVAanalytics_observations <-
               ticks.linewidth = 1,
               title.position = "top",
               title.hjust = 0.5,
-              label.theme = ggplot2::element_text(angle = 45),
               label.hjust = 1
             )
           )
@@ -1022,11 +1015,10 @@ plotting.CAVAanalytics_observations <-
         axis.text.y = ggplot2::element_blank(),
         axis.ticks = ggplot2::element_blank(),
         axis.title = ggplot2::element_blank(),
-        legend.position = "bottom",
-        legend.direction = "horizontal",
-        legend.key.height = ggplot2::unit(0.5, 'cm'),
-        legend.key.width = ggplot2::unit(2, 'cm'),
-        legend.box.spacing = ggplot2::unit(0, "pt")
+        legend.position = "right",
+        legend.key.height = unit(1, 'cm'),
+        legend.key.width = unit(0.3, 'cm'),
+        legend.box.spacing = unit(0.2, "pt")
       )
 
     cli::cli_progress_done()

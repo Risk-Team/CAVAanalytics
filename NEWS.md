@@ -9,6 +9,10 @@ output:
     toc_depth: 2
 ---
 
+## CAVAanalytics 1.1.2
+- Changed appearance of temporal trends when spatial.aggr=T
+- Made resulting ggplot object of plotting more easily customizable 
+
 ## CAVAanalytics 1.1.1
 - Improved clarity in the trends function by replacing the historical argument with observation
 - added warning message when cross year season are selected (e.g c(11,12,1))

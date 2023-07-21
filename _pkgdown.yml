@@ -10,9 +10,9 @@ navbar:
   - text: guides
     icon: fas fa-book
     menu:
-    - text: Getting started
+    - text: start here
       href: articles/Introduction.html
-    - text: Unlocking the power of CAVAanalytics with patchwork
+    - text: more advanced examples
       href: articles/more_advanced.html
   - icon: fa fa-file-code-o
     text: functions

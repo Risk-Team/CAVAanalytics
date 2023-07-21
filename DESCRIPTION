@@ -1,7 +1,7 @@
 Package: CAVAanalytics
 Type: Package
 Title: Easily process and visualize multimodel ensembles with a focus on climate models
-Version: 1.1.1
+Version: 1.1.2
 Authors@R: c(person("Riccardo", "Soldan", , "riccardosoldan@hotmail.it", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-2583-5840")),
            person("Rodrigo", "Manzanas", , "rodrigo.manzanas@unican.es", role = "aut",

@@ -208,6 +208,8 @@ projections <-
                               mod_temp$Dates$start <-
                                 mod$Dates$start
                               mod_temp$Dates$end <-  mod$Dates$end
+                              if (any(is.na(mod_temp$Data)))
+                                cli::cli_alert_info("Bias correction has introduced NA values in certain pixels. Proceed with care")
                               return(mod_temp)
                             }, .progress = T))
             } else
@@ -274,9 +276,9 @@ projections <-
               rs_list <- purrr::map(1:dim(y$Data)[[1]], function(ens) {
                 array_mean <-
                   if (length(y$Dates$start) == 1)
-                    apply(y$Data[ens, , ,], c(1, 2), mean, na.rm = TRUE)
+                    apply(y$Data[ens, , , ], c(1, 2), mean, na.rm = TRUE)
                 else
-                  apply(y$Data[ens, , ,], c(2, 3), mean, na.rm = TRUE) # climatology per member adjusting by array dimension
+                  apply(y$Data[ens, , , ], c(2, 3), mean, na.rm = TRUE) # climatology per member adjusting by array dimension
                 y$Data <- array_mean
                 rs <- make_raster(y) %>%
                   terra::crop(., country_shp, snap = "out") %>%

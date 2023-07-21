@@ -171,11 +171,11 @@ plotting(trd_kenya.prj, ensemble=T, plot_titles = "N. members direction change",
 ```
 
 
-While we can visualize the results spatially, we can also look at temporal trends. 
+While we can visualize the results spatially, we can also look at temporal trends. In this case, a general additive model using a cubic regression spline is applied to better capture non-linear patterns. 
 
 ```{r, fig.width=8,  message=F, warning=F}
 
-plotting(trd_kenya.prj, ensemble=T, plot_titles = "°C/year", spatial_aggr = T, frequencies = F)
+plotting(trd_kenya.prj, ensemble=T, plot_titles = "°C", spatial_aggr = T, frequencies = F)
 
 ```
 

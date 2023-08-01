@@ -100,7 +100,7 @@ load_data_and_trends <- function(variable,
               consecutive = consecutive,
               duration =  duration,
               intraannual_var = intraannual_var,
-              historical = F,
+              observation = F,
               n.sessions = n.sessions
             )
         )

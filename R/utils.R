@@ -397,3 +397,4 @@ ridgeline <- function(x,
     ggplot2::ylab(ylab) +
     ggplot2::xlab(xlab)
 }
+

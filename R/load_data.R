@@ -190,7 +190,8 @@ load_data <-
           )) %>%
             sf::st_as_sfc() %>%
             data.frame(geometry = .) %>%
-            sf::st_as_sf()
+            sf::st_as_sf()%>%
+            sf::st_set_crs("EPSG:4326")
         }
 
         xlim <-

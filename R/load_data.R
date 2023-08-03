@@ -191,7 +191,7 @@ load_data <-
             sf::st_as_sfc() %>%
             data.frame(geometry = .) %>%
             sf::st_as_sf()%>%
-            sf::st_set_crs("EPSG:4326")
+            sf::st_set_crs(., NA)
         }
 
         xlim <-
@@ -341,11 +341,11 @@ load_data <-
 
       cli::cli_progress_done()
       size <- as.numeric(object.size(models_df))
-      cli::cli_alert_info(
+      cli::cli_text(
         if (path.to.data == "CORDEX-CORE")
-          "Downloaded {prettyunits::pretty_bytes(size)}"
+          "{cli::symbol$arrow_right} Downloaded {prettyunits::pretty_bytes(size)}"
         else
-          "Uploaded {prettyunits::pretty_bytes(size)}"
+          "{cli::symbol$arrow_right} Uploaded {prettyunits::pretty_bytes(size)}"
       )
 
       cli::cli_progress_step("Binding members and checking temporal consistency")
@@ -425,9 +425,9 @@ load_data <-
 
     if (path.to.data == "CORDEX-CORE") {
       if (variable == "pr")  {
-        cli::cli_alert_info("Precipitation data from CORDEX-CORE has been converted into mm/day")
+        cli::cli_text("{cli::symbol$arrow_right} Precipitation data from CORDEX-CORE has been converted into mm/day")
       }  else if (stringr::str_detect(variable, "tas")) {
-        cli::cli_alert_info("Temperature data from CORDEX-CORE has been converted into Celsius")
+        cli::cli_text("{cli::symbol$arrow_right} Temperature data from CORDEX-CORE has been converted into Celsius")
       }
 
     }
@@ -435,17 +435,17 @@ load_data <-
     if (!is.null(path.to.obs)) {
       if (path.to.obs %in% c("W5E5", "ERA5")) {
         if (variable == "pr")  {
-          cli::cli_alert_info(
-            paste0(
-              "Precipitation data from ",
+          cli::cli_text(
+            paste0("{cli::symbol$arrow_right}",
+              " Precipitation data from ",
               path.to.obs,
               " has been converted into mm/day"
             )
           )
         }  else if (stringr::str_detect(variable, "tas")) {
-          cli::cli_alert_info(
-            paste0(
-              "Temperature data from ",
+          cli::cli_text(
+            paste0("{cli::symbol$arrow_right}",
+              " Temperature data from ",
               path.to.obs,
               " has been converted into Celsius"
             )

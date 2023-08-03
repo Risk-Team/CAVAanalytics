@@ -238,8 +238,8 @@ trends = function(data,
         dplyr::filter(experiment != "historical") %>%
         {
           if (bias.correction) {
-            cli::cli_alert_info(
-              paste(
+            cli::cli_text(
+              paste("{cli::symbol$arrow_right}",
                 " Performing bias correction with the empirical quantile mapping",
                 " method, for each model and month separately. This can take a while. Season",
                 glue::glue_collapse(season, "-")
@@ -268,7 +268,7 @@ trends = function(data,
                             mod_temp$Dates$start <- x$Dates$start
                             mod_temp$Dates$end <-  x$Dates$end
                             if (any(is.na(mod_temp$Data)))
-                              cli::cli_alert_info("Bias correction has introduced NA values in certain pixels. Proceed with care")
+                              cli::cli_text("{cli::symbol$arrow_right} Bias correction has introduced NA values in certain pixels. Proceed with care")
                             return(mod_temp)
                           }))
           } else
@@ -314,23 +314,18 @@ trends = function(data,
             dplyr::mutate(
               .,
               ens_spat =  purrr::map2(models_agg_y, experiment, function(x, y) {
-                cli::cli_alert_info(paste0("Processing ", y))
+                cli::cli_text(paste0("{cli::symbol$arrow_right}", " Processing ", y))
                 c4R <- x
                 results <- ens_trends(x)
-                c4R$Data <- results[1, ,] # coef
-                x$Data <- results[2, ,] # p.value
+                c4R$Data <- results[1, , ] # coef
+                x$Data <- results[2, , ] # p.value
 
-                coef <-  make_raster(c4R) %>%
-                  terra::crop(., country_shp, snap = "out") %>%
-                  terra::mask(., country_shp)
+                coef <-  make_raster(c4R, c(1, 2), country_shp)
 
                 names(coef) <-
                   paste0(y, "_coef", "_", names(coef))
 
-                p.value <- make_raster(x) %>%
-                  terra::crop(., country_shp, snap = "out") %>%
-                  terra::mask(., country_shp)
-
+                p.value <- make_raster(x, c(1, 2), country_shp)
                 names(p.value) <-
                   paste0(y, "_p", "_", names(p.value))
 
@@ -338,17 +333,15 @@ trends = function(data,
 
               }),
               models_spat = purrr::map2(models_agg_y, experiment, function(x, y) {
-                cli::cli_alert_info(paste0(" Processing ", y))
+                cli::cli_text(paste0("{cli::symbol$arrow_right}"," Processing ", y))
                 c4R <- x
                 results <- models_trends(x)
-                c4R$Data <- results[1, , ,]# coef
-                x$Data <- results[2, , ,] # p.value
+                c4R$Data <- results[1, , , ]# coef
+                x$Data <- results[2, , , ] # p.value
                 rst_stack_coef <-
                   lapply(1:dim(c4R$Data)[1], function(i_mod) {
-                    c4R$Data <- c4R$Data[i_mod, ,]
-                    rst <- make_raster(c4R) %>%
-                      terra::crop(., country_shp, snap = "out") %>%
-                      terra::mask(., country_shp)
+                    c4R$Data <- c4R$Data[i_mod, , ]
+                    rst <- make_raster(c4R, c(1, 2), country_shp)
                     names(rst) <-
                       paste0("Member ", i_mod, "_", y, "_coef_" , names(rst))
                     return(rst)
@@ -356,10 +349,8 @@ trends = function(data,
 
                 rst_stack_p <-
                   lapply(1:dim(x$Data)[1], function(i_mod) {
-                    x$Data <- x$Data[i_mod, ,]
-                    rst <- make_raster(x) %>%
-                      terra::crop(., country_shp, snap = "out") %>%
-                      terra::mask(., country_shp)
+                    x$Data <- x$Data[i_mod, , ]
+                    rst <- make_raster(x, c(1, 2), country_shp)
                     names(rst) <-
                       paste0("Member ", i_mod, "_", y, "_p_" , names(rst))
                     return(rst)
@@ -403,20 +394,16 @@ trends = function(data,
             dplyr::slice(., 1) %>%
               dplyr::mutate(
                 models_spat = purrr::map(models_agg_y, function(x) {
-                  cli::cli_alert_info(" Processing observation")
+                  cli::cli_text("{cli::symbol$arrow_right} Processing observation")
                   c4R <- x
                   results <- models_trends(x, observation = T)
-                  c4R$Data <- results[1, ,]# coef
-                  x$Data <- results[2, ,] # p.value
+                  c4R$Data <- results[1, , ]# coef
+                  x$Data <- results[2, , ] # p.value
 
-                  coef <- make_raster(c4R) %>%
-                    terra::crop(., country_shp, snap = "out") %>%
-                    terra::mask(., country_shp)
+                  coef <- make_raster(c4R, c(1, 2), country_shp)
                   names(coef) <-
                     paste0("obs", "_coef_", names(coef))
-                  p.value <- make_raster(x) %>%
-                    terra::crop(., country_shp, snap = "out") %>%
-                    terra::mask(., country_shp)
+                  p.value <- make_raster(x, c(1, 2), country_shp)
 
                   names(p.value) <-
                     paste0("obs", "_p_", names(p.value))
@@ -442,7 +429,7 @@ trends = function(data,
 
 
         }
-      gc()
+
       if (!observation) {
         invisible(structure(
           list(
@@ -546,7 +533,7 @@ trends = function(data,
   # filter data by season
   datasets <- filter_data_by_season(datasets, season)
 
-  cli::cli_alert_info(paste0(
+  cli::cli_text(paste0("{cli::symbol$arrow_right}",
     " trends,",
     ifelse(observation, " observations,", " projections,"),
     " season ",

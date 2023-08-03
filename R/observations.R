@@ -9,7 +9,7 @@
 #' @param consecutive logical, to use in conjunction with lowert or uppert
 #' @param duration character, either "max" or "total". Used only when consecutive is TRUE
 #' @importFrom magrittr %>%
-#' @return list with SpatRaster. .[[1]]
+#' @return list with SpatRaster. To explore the output run attributes(output)
 #'
 #' @export
 
@@ -168,12 +168,8 @@ observations <-
           dplyr::select(-models_mbrs) %>%
           # Obs mean
           dplyr::mutate(rst_mean = purrr::map(obs_agg_y, function(obs_agg) {
-            array_mean <-
-              apply(obs_agg$Data, c(2, 3), mean, na.rm = TRUE) # climatology
-            obs_agg$Data <- array_mean
-            rs <- make_raster(obs_agg) %>%
-              terra::crop(., country_shp, snap = "out") %>%
-              terra::mask(., country_shp)
+
+            rs <- make_raster(obs_agg, if (length(obs_agg$Dates$start) == 1) c(1,2) else c(2,3), country_shp ) # adjust by array dimension
             names(rs) <-
               paste0("obs", "_", names(rs))
             return(rs)
@@ -210,7 +206,7 @@ observations <-
 
     # filter data by season
     datasets <- filter_data_by_season(datasets, season)
-    cli::cli_alert_info(paste0(
+    cli::cli_text(paste0("{cli::symbol$arrow_right}",
       " projections, season ",
       glue::glue_collapse(season, "-"),
       ". ",

@@ -36,7 +36,7 @@ Available variables are:
 * Daily solar radiation (rsds)
 
 ## Loading CORDEX-CORE data
-Below we are automatically downloading all CORDEX-CORE simulations alongside the observational dataset W5E5 for Kenya. As you can see, it is extremely simple. We will see how to work with locally available models in another vignette.  
+Below we are automatically downloading all CORDEX-CORE simulations alongside the observational dataset ERA5 for Kenya. As you can see, it is extremely simple. We will see how to work with locally available models in another vignette.  
 **Note that this process can take a while, depending on the size of the country and the number of years specified**
 
 ```{r, message=FALSE, warning=F}
@@ -53,78 +53,77 @@ You can explore the output using attributes(kenya_exmp).
 class(kenya_exmp[[1]])
 colnames(kenya_exmp[[1]])
 kenya_exmp[[1]]$experiment
-
 # the column models_mbrs stands for model members. The structure of this element comes from the loadeR package. The data is contained in the data element, and as you can see, it has 6 members. CAVAanalytics automatically binds together multiple models and checks for temporal consistency.
 dim(kenya_exmp[[1]]$models_mbrs[[1]]$Data)
-
 ```
 
 ## Observations
 
 We can examine historical data using the loaded observational dataset, which, in this case, is ERA5. In this case, we are looking at the mean historical maximum temperature for the whole year. 
 
-```{r, fig.height=4, fig.width=6,  message=F, warning=F}
-
+```{r, fig.height=3, fig.width=4, fig.align="center",  message=F, warning=F}
 kenya_obs <- observations(kenya_exmp, season=1:12)
-
 plotting(kenya_obs, plot_titles = "Mean tasmax")
-
 ```
 
-How many days above 40 °C occurred on average?
+How many days above 35 °C occurred on average?
 
-```{r, fig.height=4, fig.width=6,  message=F, warning=F}
-
-kenya_obs.40 <- observations(kenya_exmp, season=1:12, uppert=40)
-
-plotting(kenya_obs.40, plot_titles = "N.days > 40")
-
+```{r, fig.height=3, fig.width=4, fig.align="center",  message=F, warning=F}
+kenya_obs.35 <- observations(kenya_exmp, season=1:12, uppert=35)
+plotting(kenya_obs.35, plot_titles = "N.days > 35")
 ```
 
+## Model biases
+
+Before diving into the analyses of climate model projections, it is essential to examine model biases. Defining biases can be somewhat arbitrary as it depends on the specific and intended usage of climate models. However, CAVAanalytics offers a flexible and straightforward approach to conducting this analysis. Let's begin by exploring the differences in mean climatology between the CORDEX-CORE historical experiments and ERA5.
+
+```{r, fig.height=3, fig.width=10,  message=F, warning=F}
+# you can specify the season. In this case we are looking at the whole year
+biases_kenya <- model_biases(kenya_exmp, season=1:12)
+plotting(biases_kenya, ensemble=F, trends=F, plot_titles = "mean tasmax biases")
+```
+
+```{r, fig.height=3, fig.width=10,  message=F, warning=F}
+plotting(biases_kenya, ensemble=F, trends=T, plot_titles = "mean tasmax biases")+ggplot2::ggtitle("Before bias correction")
+```
+As we can see, the biases are mainly positive, hence CORDEX-CORE models are warmer than the "observed" data. However, what happens if we bias correct the data?
+The results look much better now and mean biases are reduced thanks to bias correction. 
+
+```{r, fig.height=3, fig.width=10,  message=F, warning=F}
+biases_kenya.bs <- model_biases(kenya_exmp, season=1:12, bias.correction = T)
+plotting(biases_kenya.bs, ensemble=F, trends=T, plot_titles = "mean tasmax biases")+ggplot2::ggtitle("After bias correction")
+```
 
 ## Projections
 
-What if you want to have a look at what will be the projected maximum temperature in Kenya for the 2030-2055 time period?
-This is easy to do with CAVAanalytics:
+Now that we looked at model biases, we can start exploring future projections. For example, what if you want to have a look at what will be the projected maximum temperature in Kenya for the 2030-2055 time period? **Let's remember that these models have positive biases though.**
 
-```{r, fig.height=4, fig.width=6,  message=F, warning=F}
+```{r, fig.height=3, fig.width=4, fig.align="center",  message=F, warning=F}
 # you can specify the season. In this case we are looking at the whole year
 proj_kenya <- projections(kenya_exmp, season=1:12)
-
 # stat can take either mean or sd. It is used in combination with ensemble=T. Default is always mean
 plotting(proj_kenya, ensemble=T, stat="mean", plot_titles = "mean tasmax")
 ```
 
 
-```{r, fig.height=6, fig.width=10,  message=F, warning=F}
-
+```{r, fig.height=4, fig.width=10,  message=F, warning=F}
 plotting(proj_kenya, ensemble=F, stat="mean", plot_titles = "mean tasmax")
-
 ```
 
 In certain cases, focusing solely on mean temperatures might not provide the insights we need. Instead, we might be interested in understanding the frequency of specific conditions projected to occur. For instance, we may want to determine the number of days with maximum temperatures above 35 °C.
 
 
-```{r, fig.height=4, fig.width=6,  message=F, warning=F}
-
+```{r, fig.height=3, fig.width=4, fig.align="center",  message=F, warning=F}
 proj_kenya_35 <- projections(kenya_exmp, season=1:12, uppert=35)
-
 plotting(proj_kenya_35, ensemble=T, plot_titles = "N.days > 35", palette=c("white", "orange", "red", "darkred"))
-
 ```
-
 
 When dealing with model biases, CAVAanalytics offers a straightforward solution by automatically implementing bias correction using the empirical quantile mapping method. This process allows us to correct for discrepancies between observed data and model outputs.
 
-**it is essential to consider that bias correction with the W5E5 dataset will result in a change in spatial resolution to 50 Km. To maintain the original CORDEX-CORE resolution, it is crucial to perform bias correction using ERA5 instead**
-
-
-```{r, fig.height=4, fig.width=6,  message=F, warning=F}
+```{r, fig.height=3, fig.width=4, fig.align="center", message=F, warning=F}
 # bias correction is applied with the widely used empirical quantile method
 proj_kenya_35bc <- projections(kenya_exmp, season=1:12, bias.correction = T, uppert=35)
-
 plotting(proj_kenya_35bc, ensemble=T,  plot_titles = "N.days > 35 after bc", palette=c("white", "orange", "red", "darkred"), legend_range = c(0, 320))
-
 ```
 
 
@@ -132,59 +131,44 @@ plotting(proj_kenya_35bc, ensemble=T,  plot_titles = "N.days > 35 after bc", pal
 
 While analyzing future periods can be beneficial, there are instances where we prioritize understanding delta changes, which represent the relative increase or decrease in mean maximum temperatures compared to a baseline. CAVAanalytics facilitates this analysis as well.
 
-```{r, fig.height=6, fig.width=10,  message=F, warning=F}
-
+```{r, fig.height=4, fig.width=10,  message=F, warning=F}
 ccs_kenya <- climate_change_signal(kenya_exmp, season=1:12)
-
 plotting(ccs_kenya, ensemble=F, plot_titles = "Mean tasmax change", legend_range = c(-3, 3), palette = c("blue", "cyan", "green", "white", "yellow" ,"orange", "red"))
-
 ```
 
 ## Trends
 While examining delta changes and absolute values for projections provides valuable information, it may not offer insights into temporal trends. However, using the 'trends' function in CAVAanalytics allows us to address this limitation. For instance, we can determine if Kenya has experienced or is projected to experience a noteworthy rise in yearly maximum temperatures.
 
-```{r,  fig.height=4, fig.width=6,  message=F, warning=F}
+```{r,  fig.height=3, fig.width=4, fig.align="center",  message=F, warning=F}
 # the observation argument allows us to study trends for the future or for the past. Note that for observation = T, we need to have specified path.to.obs because this option does not work with the historical experiment of climate models but with observation
-
 trd_kenya.obs <- trends(kenya_exmp, season=1:12,observation = T)
-
 plotting(trd_kenya.obs, ensemble=F, plot_titles = "°C/year", frequencies = F, spatial_aggr = F)
-
 ```
 
 We can look at trend for the future period as well by changing the observation argument to FALSE
 
-```{r,  fig.height=6, fig.width=10,  message=F, warning=F}
-
+```{r,  fig.height=4, fig.width=10,  message=F, warning=F}
 trd_kenya.prj <- trends(kenya_exmp, season=1:12,observation = F)
-
 plotting(trd_kenya.prj, ensemble=F, plot_titles = "°C/year", frequencies = F, spatial_aggr = F)
-
 ```
 
 Another feature of the trends function is that you can look at the global significance of the ensemble. The plot below shows you the number of models that agrees in a certain change (increase or decrease) while the global p.value is calculated based on the [manylm function of mvabund](https://besjournals.onlinelibrary.wiley.com/doi/10.1111/j.2041-210X.2012.00190.x). 
 
-```{r,  fig.height=4, fig.width=6,  message=F, warning=F}
-
+```{r,  fig.height=3, fig.width=4, fig.align="center",  message=F, warning=F}
 plotting(trd_kenya.prj, ensemble=T, plot_titles = "N. members direction change", frequencies = F, spatial_aggr = F, palette = c("blue", "green", "white", "yellow", "red"))
-
 ```
 
 
 While we can visualize the results spatially, we can also look at temporal trends. In this case, a general additive model using a cubic regression spline is applied to better capture non-linear patterns. 
 
-```{r, fig.width=8,  message=F, warning=F}
-
+```{r, fig.width=6,fig.height=2.5,  message=F, warning=F}
 plotting(trd_kenya.prj, ensemble=T, plot_titles = "°C", spatial_aggr = T, frequencies = F)
-
 ```
 
 In addition to performing spatial averages and visualizing trends, we can gain valuable insights by examining the distribution of annual mean tasmax (maximum temperature) across Kenya using the specified frequencies, denoted as 'TRUE.' This approach is particularly valuable because many analyses tend to aggregate data either spatially or temporally, potentially obscuring certain patterns. By utilizing the 'frequencies=T' option, we ensure a comprehensive understanding of both spatial and temporal attributes, allowing us to uncover hidden patterns in the data."
 
 ```{r, fig.width=10,  message=F, warning=F}
-
 plotting(trd_kenya.prj, ensemble=T, spatial_aggr = F, frequencies = T, n.groups = 2)
-
 ```
 
 

@@ -64,7 +64,7 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 \item{n.sessions}{numeric, number of sessions to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage}
 }
 \value{
-list with SpatRaster. .[[1]] contains SpatRaster for the ensemble mean. .[[2]] contains SpatRaster for the ensemble sd and .[[3]] conins SpatRaster for individual models
+list with SpatRaster. To explore the output run attributes(output)
 }
 \description{
 Automatically load and process climate model projections in a memory efficient way. Useful for analysing large areas

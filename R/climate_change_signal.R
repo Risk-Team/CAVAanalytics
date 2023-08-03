@@ -11,7 +11,7 @@
 #' @param bias.correction logical
 #' @param n.sessions numeric, number of sessions to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage
 #' @importFrom magrittr %>%
-#' @return list with SpatRasters. .[[1]] contains the SpatRasters for the ensemble mean. .[[2]] contains the SpatRasters for the ensemble sd and .[[3]] conins the SpatRasters for individual models
+#' @return list with SpatRaster. To explore the output run attributes(output)
 #'
 #' @export
 
@@ -165,8 +165,8 @@ climate_change_signal <- function(data,
       data_list <- datasets  %>%
         {
           if (bias.correction) {
-            cli::cli_alert_info(
-              paste(
+            cli::cli_text(
+              paste("{cli::symbol$arrow_right}",
                 " Performing bias correction with the empirical quantile mapping",
                 " method, for each model and month separately. This can take a while. Season",
                 glue::glue_collapse(season, "-")
@@ -214,7 +214,7 @@ climate_change_signal <- function(data,
                               mod$Dates$start
                             mod_temp$Dates$end <-  mod$Dates$end
                             if (any(is.na(mod_temp$Data)))
-                              cli::cli_alert_info("Bias correction has introduced NA values in certain pixels. Proceed with care")
+                              cli::cli_text("{cli::symbol$arrow_right} Bias correction has introduced NA values in certain pixels. Proceed with care")
                             return(mod_temp)
                           }))
           } else
@@ -252,15 +252,13 @@ climate_change_signal <- function(data,
           rs_list <- purrr::map(1:dim(y$Data)[[1]], function(ens) {
             array_mean <-
               if (length(y$Dates$start) == 1)
-                apply(y$Data[ens, , , ], c(1, 2), mean, na.rm = TRUE)
+                apply(y$Data[ens, , ,], c(1, 2), mean, na.rm = TRUE)
             else
-              apply(y$Data[ens, , , ], c(2, 3), mean, na.rm = TRUE) # climatology per member adjusting by array dimension
+              apply(y$Data[ens, , ,], c(2, 3), mean, na.rm = TRUE) # climatology per member adjusting by array dimension
 
             y$Data <- array_mean
 
-            rs <- make_raster(y)  %>%
-              terra::crop(., country_shp, snap = "out") %>%
-              terra::mask(., country_shp)
+            rs <- make_raster(y, c(1, 2), country_shp)
 
             names(rs) <-
               paste0("Member ", ens, "_", x, "_", names(rs))
@@ -335,7 +333,7 @@ climate_change_signal <- function(data,
 
   # filter data by season
   datasets <- filter_data_by_season(datasets, season)
-  cli::cli_alert_info(paste0(
+  cli::cli_text(paste0("{cli::symbol$arrow_right}",
     " climate change signal, season ",
     glue::glue_collapse(season, "-"),
     ". ",

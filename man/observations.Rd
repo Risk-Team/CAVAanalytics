@@ -27,7 +27,7 @@ observations(
 \item{duration}{character, either "max" or "total". Used only when consecutive is TRUE}
 }
 \value{
-list with SpatRaster. .[[1]]
+list with SpatRaster. To explore the output run attributes(output)
 }
 \description{
 Automatically process the observational period and compute user-defined indicators

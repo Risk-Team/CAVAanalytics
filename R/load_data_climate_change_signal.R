@@ -21,7 +21,7 @@
 #' @param chunk.size numeric, indicating the number of chunks to. The smaller the better when working with limited RAM.
 #' @param overlap numeric, amount of overlap needed to create the composite. Default 0.5
 #' @importFrom magrittr %>%
-#' @return list with SpatRasters. .[[1]] contains SpatRaster for the ensemble mean. .[[2]] contains SpatRaster for the ensemble sd and .[[3]] contains SpatRaster for individual models
+#' @return list with SpatRaster. To explore the output run attributes(output)
 #' @export
 
 

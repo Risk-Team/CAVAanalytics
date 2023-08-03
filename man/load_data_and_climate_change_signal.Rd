@@ -65,7 +65,7 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 \item{n.sessions}{numeric, number of sessions to use in parallel processing. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary}
 }
 \value{
-list with SpatRasters. .[[1]] contains SpatRaster for the ensemble mean. .[[2]] contains SpatRaster for the ensemble sd and .[[3]] contains SpatRaster for individual models
+list with SpatRaster. To explore the output run attributes(output)
 }
 \description{
 Automatically load and process climate models in a memory efficient way. Useful for analysing large areas

@@ -33,7 +33,7 @@ climate_change_signal(
 \item{n.sessions}{numeric, number of sessions to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage}
 }
 \value{
-list with SpatRasters. .[[1]] contains the SpatRasters for the ensemble mean. .[[2]] contains the SpatRasters for the ensemble sd and .[[3]] conins the SpatRasters for individual models
+list with SpatRaster. To explore the output run attributes(output)
 }
 \description{
 Automatically computes climate change signal

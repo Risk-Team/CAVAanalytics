@@ -52,9 +52,11 @@ plotting.CAVAanalytics_projections <-
     # messages
 
     if (isTRUE(ensemble)) {
-      cli::cli_alert_info(paste0("Visualizing ensemble ", stat))
+      cli::cli_text(paste0("{cli::symbol$arrow_right}", " Visualizing ensemble ", stat))
     } else {
-      cli::cli_alert_info("Visualizing individual members, argument stat is ignored")
+      cli::cli_text(
+        "{cli::symbol$arrow_right} Visualizing individual members, argument stat is ignored"
+      )
     }
 
 
@@ -189,8 +191,8 @@ plotting.CAVAanalytics_projections <-
         axis.title = ggplot2::element_blank(),
         legend.position = "bottom",
         legend.direction = "horizontal",
-        legend.key.height = ggplot2::unit(0.5, 'cm'),
-        legend.key.width = ggplot2::unit(2, 'cm'),
+        legend.key.height = ggplot2::unit(0.3, 'cm'),
+        legend.key.width = ggplot2::unit(1.8, 'cm'),
         legend.box.spacing = ggplot2::unit(0, "pt"),
         legend.text =  ggplot2::element_text(angle = 45, hjust = 1)
       )
@@ -226,9 +228,11 @@ plotting.CAVAanalytics_ccs <-
     # messages
 
     if (isTRUE(ensemble)) {
-      cli::cli_alert_info(paste0(" Visualizing ensemble ", stat))
+      cli::cli_text(paste0("{cli::symbol$arrow_right}", " Visualizing ensemble ", stat))
     } else {
-      cli::cli_alert_info(" Visualizing individual members, argument stat is ignored")
+      cli::cli_text(
+        "{cli::symbol$arrow_right} Visualizing individual members, argument stat is ignored"
+      )
     }
 
 
@@ -362,8 +366,8 @@ plotting.CAVAanalytics_ccs <-
         axis.title = ggplot2::element_blank(),
         legend.position = "bottom",
         legend.direction = "horizontal",
-        legend.key.height = ggplot2::unit(0.5, 'cm'),
-        legend.key.width = ggplot2::unit(2, 'cm'),
+        legend.key.height = ggplot2::unit(0.3, 'cm'),
+        legend.key.width = ggplot2::unit(1.8, 'cm'),
         legend.box.spacing = ggplot2::unit(0, "pt"),
         legend.text =  ggplot2::element_text(angle = 45, hjust = 1)
       )
@@ -429,7 +433,8 @@ plotting.CAVAanalytics_trends <-
       # Messages
       if (!historical) {
         if (ensemble) {
-          cli::cli_alert_info(paste0(
+          cli::cli_text(paste0(
+            "{cli::symbol$arrow_right}",
             ifelse(
               frequencies,
               " Visualizing ensemble, frequencies ",
@@ -437,7 +442,8 @@ plotting.CAVAanalytics_trends <-
             )
           ))
         } else {
-          cli::cli_alert_info(paste0(
+          cli::cli_text(paste0(
+            "{cli::symbol$arrow_right}",
             ifelse(
               frequencies,
               " Visualizing individual members (frequencies)",
@@ -614,11 +620,11 @@ plotting.CAVAanalytics_trends <-
           legend.key.height = ggplot2::unit(if (historical)
             1
             else
-              0.5, 'cm'),
+              0.3, 'cm'),
           legend.key.width = ggplot2::unit(if (historical)
             0.3
             else
-              2, 'cm'),
+              1.8, 'cm'),
           legend.box.spacing = ggplot2::unit(0, "pt"),
           legend.text =  ggplot2::element_text(angle = if (historical)
             360
@@ -752,7 +758,7 @@ plotting.CAVAanalytics_trends <-
               dplyr::summarise(value = median(value)) %>%  # spatial aggregation
               dplyr::group_by(date, experiment) %>%
               dplyr::summarise(sd = sd(value),
-              value = mean(value)) %>%
+                               value = mean(value)) %>%
               ggplot2::ggplot() +
               ggplot2::geom_line(
                 ggplot2::aes(
@@ -826,7 +832,7 @@ plotting.CAVAanalytics_trends <-
                 method = "gam",
                 formula = y ~ x
               ) +
-              ggplot2::facet_wrap( ~ Var1, ncol = 2) +
+              ggplot2::facet_wrap(~ Var1, ncol = 2) +
               ggplot2::scale_x_date(date_breaks = "4 years", date_labels = "%Y") +
               ggplot2::theme_bw() +
               ggplot2::theme(
@@ -910,7 +916,9 @@ plotting.CAVAanalytics_observations <-
 
     # messages
 
-    cli::cli_alert_info("Argument ensemble is ignored when visualizing observations ")
+    cli::cli_text(
+      "{cli::symbol$arrow_right} Argument ensemble is ignored when visualizing observations "
+    )
 
     # retrieve the right raster stack based on the ensemble argument
 
@@ -1024,5 +1032,264 @@ plotting.CAVAanalytics_observations <-
     cli::cli_progress_done()
 
     return(p)
+
+  }
+
+
+
+# biases ------------------------------------------------------------------
+
+
+#' @export
+
+plotting.CAVAanalytics_model_biases <-
+  function(rst,
+           palette = NULL,
+           legend_range = NULL,
+           plot_titles,
+           ensemble,
+           bins = FALSE,
+           n.bins = NULL,
+           alpha = NA,
+           trends = F) {
+    # checking requirements
+    stopifnot(is.logical(ensemble))
+    stopifnot(is.logical(bins))
+
+    # messages
+
+    if (ensemble) {
+      cli::cli_text(
+        if (trends)
+          "{cli::symbol$arrow_right} Visualizing the ensemble bias for spatially aggregated data"
+        else
+          "{cli::symbol$arrow_right} Visualizing the ensemble bias for temporally aggregated data"
+      )
+    } else {
+      cli::cli_text(
+        if (trends)
+          "{cli::symbol$arrow_right} Visualizing individual member biases for spatially aggregated data"
+        else
+          "{cli::symbol$arrow_right} Visualizing individual member biases for temporally aggregated data"
+      )
+    }
+
+
+    # retrieve the right spatraster based on the ensemble argument
+
+    rst <-
+      if (ensemble &
+          !trends)
+        rst[[1]]
+    else if (!ensemble & !trends)
+      rst[[2]]
+    else
+      rst[[3]]
+
+    if (!trends) {
+      # Set default colors for legend
+      colors <-
+        if (is.null(palette))
+          c("blue", "cyan", "green", "white", "orange", "red", "black")
+      else
+        palette
+
+      # Set default range for legend
+      legend_range <-
+        if (is.null(legend_range))
+          c(-max(abs(range(
+            terra::values(rst), na.rm = TRUE
+          ))), +max(abs(range(
+            terra::values(rst), na.rm = TRUE
+          ))))
+      else
+        legend_range
+
+      # Suppress warnings
+      options(warn = -1)
+
+      # Get countries data
+      countries <-
+        rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
+
+      # Convert SpatRaster to dataframe
+
+      cli::cli_progress_step("Plotting")
+
+      rs_df <-
+        terra::as.data.frame(rst, xy = TRUE, na.rm = TRUE) %>%
+        tidyr::pivot_longer(cols = 3:ncol(.),
+                            values_to = "value",
+                            names_to = "long_name") %>%  {
+                              if (ensemble) {
+                                # Extract scenario and time frame from column names
+                                dplyr::mutate(
+                                  .,
+                                  scenario = stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 2),
+                                  time_frame =  stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 3)
+                                ) %>%
+                                  # Replace "." with "-" in time frame
+                                  dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
+
+                              } else {
+                                # Extract Member, scenario and time frame from column names
+                                dplyr::mutate(
+                                  .,
+                                  member =   stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 1),
+                                  scenario =  stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 2),
+                                  time_frame =  stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 3)
+                                ) %>%
+                                  # Replace "." with "-" in time frame
+                                  dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
+
+                              }
+                            }
+
+      p <- ggplot2::ggplot() +
+        ggplot2::geom_sf(fill = 'antiquewhite1',
+                         color = "black",
+                         data = countries) +
+        ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
+                             data = rs_df,
+                             alpha = alpha) +
+        ggplot2::geom_sf(fill = NA,
+                         color = "black",
+                         data = countries) +
+        {
+          if (!bins) {
+            ggplot2::scale_fill_gradientn(
+              colors = colors,
+              limits = legend_range,
+              na.value = "transparent",
+              n.breaks = 10,
+              guide = ggplot2::guide_colourbar(
+                ticks.colour = "black",
+                ticks.linewidth = 1,
+                title.position = "top",
+                title.hjust = 0.5
+              )
+            )
+          } else {
+            ggplot2::scale_fill_stepsn(
+              colors = colors,
+              limits = legend_range,
+              na.value = "transparent",
+              n.breaks = ifelse(is.null(n.bins), 10, n.bins),
+              guide = ggplot2::guide_colourbar(
+                ticks.colour = "black",
+                ticks.linewidth = 1,
+                title.position = "top",
+                title.hjust = 0.5
+              )
+            )
+          }
+        } +
+        ggplot2::coord_sf(
+          xlim = c(range(rs_df$x)[[1]] - 1, range(rs_df$x)[[2]] + 1),
+          ylim = c(range(rs_df$y)[[1]] - 1, range(rs_df$y)[[2]] + 1),
+          expand = F,
+          ndiscr = 500
+        ) +
+        {
+          if (ensemble) {
+            ggplot2::facet_grid(time_frame ~ scenario)
+          } else {
+            ggh4x::facet_nested(scenario ~ time_frame   + member)
+          }
+        } +
+        ggplot2::labs(fill = plot_titles, x = "", y = "") +
+        ggplot2::theme_bw(base_size = 12) +
+        ggplot2::theme(
+          plot.background = ggplot2::element_blank(),
+          panel.background = ggplot2::element_rect(fill = 'aliceblue'),
+          panel.border = ggplot2::element_blank(),
+          panel.grid.major = ggplot2::element_blank(),
+          panel.grid.minor = ggplot2::element_blank(),
+          axis.text.x = ggplot2::element_blank(),
+          axis.text.y = ggplot2::element_blank(),
+          axis.ticks = ggplot2::element_blank(),
+          axis.title = ggplot2::element_blank(),
+          legend.position = "bottom",
+          legend.direction = "horizontal",
+          legend.key.height = ggplot2::unit(0.3, 'cm'),
+          legend.key.width = ggplot2::unit(2, 'cm'),
+          legend.box.spacing = ggplot2::unit(0, "pt"),
+          legend.text =  ggplot2::element_text(angle = 45, hjust = 1)
+        )
+
+      cli::cli_progress_done()
+
+      return(p)
+
+    } else {
+      # to look at temporal trends
+
+      cli::cli_alert_warning(" Arguments bins, n.bins, palette and alpha are ignored")
+      cli::cli_progress_step("Plotting")
+      if (ensemble) {
+        p <- rst %>%
+          dplyr::mutate(value = value - obs_value) %>%
+          dplyr::group_by(date) %>%
+          dplyr::summarise(sd = sd(value),
+                           value = mean(value)) %>%
+          ggplot2::ggplot() +
+          ggplot2::geom_hline(yintercept = 0,
+                              linetype = "dashed",
+                              color = "red") +
+          ggplot2::geom_line(ggplot2::aes(y = value,
+                                          x = date),
+                             alpha = 0.5) +
+          ggplot2::geom_ribbon(
+            ggplot2::aes(
+              y = value,
+              x = date,
+              ymin = value - sd,
+              ymax = value + sd
+            ),
+            alpha = 0.1,
+            show.legend = F
+          ) +
+          ggplot2::scale_x_date(date_breaks = "4 years", date_labels = "%Y") +
+          ggplot2::theme_bw() +
+          ggplot2::theme(
+            legend.position = "bottom",
+            axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
+            legend.title = ggplot2::element_blank()
+          ) +
+          ggplot2::labs(x = "Year", y = plot_titles) +
+          if (!is.null(legend_range)) {
+            ggplot2::scale_y_continuous(limits = legend_range)
+          }
+
+      } else {
+        p <- rst %>%
+          dplyr::mutate(value = value - obs_value) %>%
+          ggplot2::ggplot() +
+          ggplot2::geom_hline(yintercept = 0,
+                              linetype = "dashed",
+                              color = "red") +
+          ggplot2::geom_line(ggplot2::aes(y = value,
+                                          x = date),
+                             alpha = 0.5) +
+          ggplot2::scale_x_date(date_breaks = "4 years", date_labels = "%Y") +
+          ggplot2::facet_wrap(. ~ Var1) +
+          ggplot2::theme_bw() +
+          ggplot2::labs(x = "Year", y = plot_titles) +
+          ggplot2::theme(
+            legend.position = "bottom",
+            axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
+            legend.title = ggplot2::element_blank()
+          ) +
+          if (!is.null(legend_range)) {
+            ggplot2::scale_y_continuous(limits = legend_range)
+          }
+
+
+
+      }
+      cli::cli_process_done()
+      return(p)
+    }
+
 
   }

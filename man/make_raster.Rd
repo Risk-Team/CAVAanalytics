@@ -4,10 +4,14 @@
 \alias{make_raster}
 \title{make a raster}
 \usage{
-make_raster(cl4.object)
+make_raster(cl4.object, dimensions, shape.file)
 }
 \arguments{
 \item{cl4.object}{A C4R list with the Data slot in two dimension}
+
+\item{dimensions}{vector specifying which dimensions corresponds to lat and lon. The rest will be averaged}
+
+\item{shape.file}{sf object for which to crop and mask the spatRaster}
 }
 \value{
 spatRaster

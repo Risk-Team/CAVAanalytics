@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">CAVAanalytics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,13 +71,21 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">make_raster</span><span class="op">(</span><span class="va">cl4.object</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">make_raster</span><span class="op">(</span><span class="va">cl4.object</span>, <span class="va">dimensions</span>, <span class="va">shape.file</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>cl4.object</dt>
 <dd><p>A C4R list with the Data slot in two dimension</p></dd>
+
+
+<dt>dimensions</dt>
+<dd><p>vector specifying which dimensions corresponds to lat and lon. The rest will be averaged</p></dd>
+
+
+<dt>shape.file</dt>
+<dd><p>sf object for which to crop and mask the spatRaster</p></dd>
 
 </dl></div>
     <div class="section level2">

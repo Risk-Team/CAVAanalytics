@@ -124,9 +124,11 @@ plotting.CAVAanalytics_projections <-
                           }
 
     p <- ggplot2::ggplot() +
-      ggplot2::geom_sf(fill = 'antiquewhite1',
-                       color = "black",
-                       data = countries) +
+      ggplot2::geom_sf(
+        fill = 'antiquewhite1',
+        color = "black",
+        data = countries
+      ) +
       ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
                            data = rs_df,
                            alpha = alpha) +
@@ -301,9 +303,11 @@ plotting.CAVAanalytics_ccs <-
                           }
 
     p <- ggplot2::ggplot() +
-      ggplot2::geom_sf(fill = 'antiquewhite1',
-                       color = "black",
-                       data = countries) +
+      ggplot2::geom_sf(
+        fill = 'antiquewhite1',
+        color = "black",
+        data = countries
+      ) +
       ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
                            data = rs_df,
                            alpha = alpha) +
@@ -539,9 +543,11 @@ plotting.CAVAanalytics_trends <-
         )
 
       p <- ggplot2::ggplot() +
-        ggplot2::geom_sf(fill = 'antiquewhite1',
-                         color = "black",
-                         data = countries) +
+        ggplot2::geom_sf(
+          fill = 'antiquewhite1',
+          color = "black",
+          data = countries
+        ) +
         ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
                              data = rs_df[[1]],
                              alpha = alpha) +
@@ -644,73 +650,57 @@ plotting.CAVAanalytics_trends <-
         if (length(rst) > 4) {
           # trends were run on projections
           cli::cli_alert_warning(
-            " Arguments bins, legend_range, plot_titles and palette are ignored. Change number of group intervals with n.groups"
+            " Arguments bins, legend_range and plot_titles are ignored. Change number of group intervals with n.groups"
           )
 
           if (ensemble) {
-            members <-
-              length(unique(stringr::str_match(names((
-                rst[[3]]
-              )), "Member.\\d")))
             rst <- rst[[5]]
-            plts <-
+            p <-
               suppressMessages(
-                purrr::map(
-                  unique(rst$experiment),
-                  ~ ridgeline(
-                    dplyr::filter(rst, experiment == .x),
-                    group_col = 'date',
-                    z_col = 'value',
-                    num_grps = n.groups
+                ridgeline(
+                  rst,
+                  group_col = 'date',
+                  z_col = 'value',
+                  num_grps = n.groups,
+                  fill = 'experiment'
+                ) +
+                  ggplot2::theme_bw() +
+                  ggplot2::theme(
+                    legend.position = "bottom",
+                    legend.title = ggplot2::element_blank()
                   ) +
-                    ggplot2::ggtitle(.x) +
-                    ggplot2::theme_bw() +
-                    ggplot2::theme(
-                      plot.title = ggplot2::element_text(hjust = 0.5),
-                      legend.position = "none",
-                      legend.key.height = ggplot2::unit(0.2, 'cm'),
-                      legend.key.width = ggplot2::unit(1, 'cm')
-                    ) +
-                    ggplot2::scale_x_continuous(limits = c(
-                      min(rst$value), max(rst$value)
-                    ))
-                )
+                  if (!is.null(palette)) {
+                    ggplot2::scale_fill_manual(values = palette)
+                  }
               )
 
-            p <- patchwork::wrap_plots(plts)
             return(p)
 
           } else {
             # for individual models
             rst <- rst[[6]]
-            plts <-
-              suppressMessages(purrr::map(
-                unique(rst$experiment),
-                ~ purrr::map(unique(rst$Var1), function(model)
-
-                  ridgeline(
-                    dplyr::filter(rst, experiment == .x, Var1 == model),
-                    group_col = 'date',
-                    z_col = 'value',
-                    num_grps = n.groups
-                  ) +
-                    ggplot2::ggtitle(paste0(model, "_", .x)) +
-                    ggplot2::theme_bw() +
-                    ggplot2::theme(
-                      plot.title = ggplot2::element_text(hjust = 0.5),
-                      legend.position = "none",
-                      legend.key.height = ggplot2::unit(0.2, 'cm'),
-                      legend.key.width = ggplot2::unit(1, 'cm')
-                    ) +
-                    ggplot2::scale_x_continuous(limits = c(
-                      min(rst$value), max(rst$value)
-                    )))
-
-              ))
-
-            # Combine plots
             p <-
-              patchwork::wrap_plots(plts[[1]]) /  patchwork::wrap_plots(plts[[2]])
+              suppressMessages(
+                ridgeline(
+                  rst,
+                  group_col = 'date',
+                  z_col = 'value',
+                  num_grps = n.groups,
+                  fill = 'experiment',
+                  facet = 'Var1'
+                ) +
+                  ggplot2::theme_bw() +
+                  ggplot2::theme(
+                    legend.position = "bottom",
+                    legend.title = ggplot2::element_blank()
+                  ) +
+                  if (!is.null(palette)) {
+                    ggplot2::scale_fill_manual(values = palette)
+                  }
+
+              )
+
+
             return(p)
 
           }
@@ -729,14 +719,11 @@ plotting.CAVAanalytics_trends <-
                 z_col = 'value',
                 num_grps = n.groups
               ) +
-                ggplot2::ggtitle("obs") +
                 ggplot2::theme_bw() +
-                ggplot2::theme(
-                  plot.title = ggplot2::element_text(hjust = 0.5),
-                  legend.position = "none",
-                  legend.key.height = ggplot2::unit(0.2, 'cm'),
-                  legend.key.width = ggplot2::unit(1, 'cm')
-                )
+                ggplot2::theme(legend.position = "none") +
+                if (!is.null(palette)) {
+                  ggplot2::scale_fill_manual(values = palette)
+                }
             )
 
           return(p)
@@ -746,8 +733,6 @@ plotting.CAVAanalytics_trends <-
 
       } else {
         # when spatial_aggr is TRUE
-
-
 
         if (length(rst) > 4) {
           cli::cli_alert_warning(" Arguments bins and legend_range are ignored")
@@ -832,7 +817,7 @@ plotting.CAVAanalytics_trends <-
                 method = "gam",
                 formula = y ~ x
               ) +
-              ggplot2::facet_wrap(~ Var1, ncol = 2) +
+              ggplot2::facet_wrap( ~ Var1, ncol = 2) +
               ggplot2::scale_x_date(date_breaks = "4 years", date_labels = "%Y") +
               ggplot2::theme_bw() +
               ggplot2::theme(
@@ -962,9 +947,11 @@ plotting.CAVAanalytics_observations <-
 
 
     p <- ggplot2::ggplot() +
-      ggplot2::geom_sf(fill = 'antiquewhite1',
-                       color = "black",
-                       data = countries) +
+      ggplot2::geom_sf(
+        fill = 'antiquewhite1',
+        color = "black",
+        data = countries
+      ) +
       ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
                            data = rs_df,
                            alpha = alpha) +
@@ -1099,7 +1086,7 @@ plotting.CAVAanalytics_model_biases <-
         if (is.null(legend_range))
           c(-max(abs(range(
             terra::values(rst), na.rm = TRUE
-          ))), +max(abs(range(
+          ))),+max(abs(range(
             terra::values(rst), na.rm = TRUE
           ))))
       else
@@ -1146,9 +1133,11 @@ plotting.CAVAanalytics_model_biases <-
                             }
 
       p <- ggplot2::ggplot() +
-        ggplot2::geom_sf(fill = 'antiquewhite1',
-                         color = "black",
-                         data = countries) +
+        ggplot2::geom_sf(
+          fill = 'antiquewhite1',
+          color = "black",
+          data = countries
+        ) +
         ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
                              data = rs_df,
                              alpha = alpha) +

@@ -33,12 +33,12 @@ make_raster <- function(cl4.object, dimensions, shape.file) {
     if (is.null(cl4.object$xyCoords$lon))
       min(cl4.object$xyCoords$x)
   else
-    min(cl4.object$xyCoords$lon[1,])
+    min(cl4.object$xyCoords$lon[1, ])
   xmax <-
     if (is.null(cl4.object$xyCoords$lon))
       max(cl4.object$xyCoords$x)
   else
-    max(cl4.object$xyCoords$lon[1,])
+    max(cl4.object$xyCoords$lon[1, ])
   ymin <-
     if (is.null(cl4.object$xyCoords$lat))
       min(cl4.object$xyCoords$y)
@@ -50,7 +50,8 @@ make_raster <- function(cl4.object, dimensions, shape.file) {
   else
     max(cl4.object$xyCoords$lat[, 1])
 
-  array_mean <- apply(cl4.object$Data, dimensions, mean, na.rm = TRUE)
+  array_mean <-
+    apply(cl4.object$Data, dimensions, mean, na.rm = TRUE)
 
   cl4.object$Data <- array_mean
 
@@ -223,14 +224,14 @@ ens_trends <- function(c4R) {
       out <- anova(mnlm, p.uni = "adjusted")
 
       sig.models <-
-        names(out$uni.p[2,][out$uni.p[2,] < 0.05]) # names of models with significance (p.value < 0.05)
+        names(out$uni.p[2, ][out$uni.p[2, ] < 0.05]) # names of models with significance (p.value < 0.05)
       colnames(mnlm$coefficients) <- paste0("X", 1:mbrs)
       coef_res <- mnlm$coefficients[2,  sig.models]
       prop_res <-
         if (length(coef_res) == 0)
           999
       else
-        sum(ifelse(coef_res  >= 0, 1, -1)) # number of models, with significance, that shows an increaseor decraese. 999 assign to NA
+        sum(ifelse(coef_res  >= 0, 1,-1)) # number of models, with significance, that shows an increaseor decraese. 999 assign to NA
       cbind(prop_res, out$table[2, 4])
 
     })
@@ -249,14 +250,14 @@ ens_trends <- function(c4R) {
     out <- anova(mnlm, p.uni = "adjusted")
 
     sig.models <-
-      names(out$uni.p[2,][out$uni.p[2,] < 0.05]) # names of models with significance (p.value < 0.05)
+      names(out$uni.p[2, ][out$uni.p[2, ] < 0.05]) # names of models with significance (p.value < 0.05)
     colnames(mnlm$coefficients) <- paste0("X", 1:mbrs)
     coef_res <- mnlm$coefficients[2,  sig.models]
     prop_res <-
       if (length(coef_res) == 0)
         999
     else
-      sum(ifelse(coef_res  >= 0, 1, -1)) # number of models, with significance, that shows an increase or decraese. 999 assign to NA
+      sum(ifelse(coef_res  >= 0, 1,-1)) # number of models, with significance, that shows an increase or decraese. 999 assign to NA
 
     df_tm_series <- reshape2::melt(c4R$Data)  %>%
       dplyr::select(-Var2) %>%
@@ -368,7 +369,9 @@ ridgeline <- function(x,
                       title = "",
                       legend_title = "z",
                       group_col,
-                      z_col) {
+                      z_col,
+                      fill = NULL,
+                      facet = NULL) {
   if (missing(x)) {
     stop("Empty dataframe x. Please give a proper input.")
   }
@@ -385,20 +388,35 @@ ridgeline <- function(x,
   ctgrp <- x <- NULL
   grp <- df[, group_col]
   z <- df[, z_col]
+  f <- df[, fill]
+  fc <- df[, facet]
 
 
-  df2 <- data.frame(grp = grp, z = z)
+  df2 <- data.frame(grp = grp,
+                    z = z,
+                    f = f,
+                    fc = fc)
   df2$ctgrp <- cut(df2$grp, breaks = num_grps)
 
+
   ggplot2::ggplot(df2,
-                  ggplot2::aes(
-                    x = z,
-                    y = ctgrp,
-                    group = ctgrp,
-                    fill = after_stat(x)
-                  )) +
-    ggridges::geom_density_ridges_gradient(scale = 1, rel_min_height = 0.01) +
-    ggplot2::scale_fill_viridis_c(name = legend_title,  option = "C") +
+                  ggplot2::aes(y = ctgrp)) +
+    ggridges::geom_density_ridges(
+      ggplot2::aes(x = z, fill = if (!is.null(fill))
+        f
+        else
+          NULL),
+      scale = 1,
+      rel_min_height = 0.01,
+      alpha = .8,
+      color = "white"
+    ) +
+    ggplot2::scale_y_discrete(expand = c(0, 0)) +
+    ggplot2::scale_x_continuous(expand = c(0, 0)) +
     ggplot2::ylab(ylab) +
-    ggplot2::xlab(xlab)
+    ggplot2::xlab(xlab) +
+    if (!is.null(facet)) {
+      ggplot2::facet_wrap(. ~ fc)
+    }
+
 }

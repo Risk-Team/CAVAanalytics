@@ -173,13 +173,14 @@ frequencies = F, spatial_aggr = F, palette = c("blue", "green", "white", "yellow
 While we can visualize the results spatially, we can also look at temporal trends. In this case, a general additive model using a cubic regression spline is applied to better capture non-linear patterns. 
 
 ```{r, fig.width=6,fig.height=2.5,  message=F, warning=F}
-plotting(trd_kenya.prj, ensemble=T, plot_titles = "°C", spatial_aggr = T, frequencies = F)
+plotting(trd_kenya.prj, ensemble=T, 
+plot_titles = "°C", spatial_aggr = T, frequencies = F)
 ```
 
 In addition to performing spatial averages and visualizing trends, we can gain valuable insights by examining the distribution of annual mean tasmax (maximum temperature) across Kenya using the specified frequencies, denoted as 'TRUE.' This approach is particularly valuable because many analyses tend to aggregate data either spatially or temporally, potentially obscuring certain patterns. By utilizing the 'frequencies=T' option, we ensure a comprehensive understanding of both spatial and temporal attributes, allowing us to uncover hidden patterns in the data."
 
 ```{r, fig.width=6,  message=F, warning=F}
-plotting(trd_kenya.prj, ensemble=T, spatial_aggr = F, 
+plotting(trd_kenya.prj, ensemble=T, spatial_aggr = F, plot_titles = "°C", 
 frequencies = T, n.groups = 2,palette=c("blue","red"))
 ```
 

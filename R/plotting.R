@@ -650,7 +650,7 @@ plotting.CAVAanalytics_trends <-
         if (length(rst) > 4) {
           # trends were run on projections
           cli::cli_alert_warning(
-            " Arguments bins, legend_range and plot_titles are ignored. Change number of group intervals with n.groups"
+            " Arguments bins and legend_range are ignored. Change number of group intervals with n.groups"
           )
 
           if (ensemble) {
@@ -669,6 +669,7 @@ plotting.CAVAanalytics_trends <-
                     legend.position = "bottom",
                     legend.title = ggplot2::element_blank()
                   ) +
+                  ggplot2::labs(x = plot_titles)+
                   if (!is.null(palette)) {
                     ggplot2::scale_fill_manual(values = palette)
                   }
@@ -694,6 +695,7 @@ plotting.CAVAanalytics_trends <-
                     legend.position = "bottom",
                     legend.title = ggplot2::element_blank()
                   ) +
+                  ggplot2::labs(x = plot_titles)+
                   if (!is.null(palette)) {
                     ggplot2::scale_fill_manual(values = palette)
                   }
@@ -708,7 +710,7 @@ plotting.CAVAanalytics_trends <-
         } else {
           # when trends is run for the historical period and frequencies is true
           cli::cli_alert_warning(
-            " Arguments bins, legend_range, ensemble, plot_titles and palette are ignored. Change number of group intervals with n.groups"
+            " Arguments bins, legend_range, ensemble and palette are ignored. Change number of group intervals with n.groups"
           )
           rst <- rst[[3]][[1]]
           p <-
@@ -721,6 +723,7 @@ plotting.CAVAanalytics_trends <-
               ) +
                 ggplot2::theme_bw() +
                 ggplot2::theme(legend.position = "none") +
+                ggplot2::labs(x = plot_titles)+
                 if (!is.null(palette)) {
                   ggplot2::scale_fill_manual(values = palette)
                 }

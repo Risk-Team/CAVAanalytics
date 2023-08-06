@@ -41,7 +41,7 @@ set country to NULL and define arguments xlim and ylim}
 
 \item{buffer}{numeric, default is zero.}
 
-\item{domain}{charachter, specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE. Default is NULL}
+\item{domain}{charachter, specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE. Default is NULL. List of domain names can be found at https://cordex.org/domains/}
 
 \item{aggr.m}{character, monthly aggregation. One of none, mean or sum}
 

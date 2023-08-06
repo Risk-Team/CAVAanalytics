@@ -128,18 +128,8 @@ them.</p>
 <code class="sourceCode R"><span></span>
 <span><span class="op">(</span><span class="va">composite</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://patchwork.data-imaginist.com/reference/wrap_plots.html" class="external-link">wrap_plots</a></span><span class="op">(</span><span class="va">sns_proj</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_layout.html" class="external-link">plot_layout</a></span><span class="op">(</span>guides <span class="op">=</span> <span class="st">"collect"</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">'bottom'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="more_advanced_files/figure-html/unnamed-chunk-4-1.png" width="960"></p>
-<p>Now we add the the previous seasonal plot the overall trends</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="va">ind.models</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/trends.html">trends</a></span><span class="op">(</span><span class="va">kenya_exmp</span>, season <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">12</span>, observation <span class="op">=</span> <span class="cn">F</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">.</span>, plot_titles <span class="op">=</span> <span class="st">"°C/year"</span>, spatial_aggr <span class="op">=</span> <span class="cn">T</span>, frequencies <span class="op">=</span> <span class="cn">F</span>, ensemble<span class="op">=</span><span class="cn">T</span>, palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"blue"</span>, <span class="st">"red"</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Season 1-12"</span><span class="op">)</span><span class="op">+</span> <span class="co"># add title</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span>  <span class="co"># center title</span></span>
-<span></span>
-<span><span class="va">composite</span><span class="op">/</span><span class="va">ind.models</span></span></code></pre></div>
-<p><img src="more_advanced_files/figure-html/unnamed-chunk-5-1.png" width="768">
-In a similar manner, other composite plots can be made, for example to
-combine different time frames instead of different seasons.</p>
+<p>In a similar manner, other composite plots can be made, for example
+to combine different time frames instead of different seasons.</p>
 </div>
   </main>
 </div>

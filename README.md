@@ -91,12 +91,12 @@ The Docker image is available at Docker.io, rso9192/cava. This docker image is b
 #### Linux
 
 ```
-sudo docker pull docker.io/rso9192/cava:version1.1
+sudo docker pull docker.io/rso9192/cava:version1.1.3
 
 sudo docker run --rm \
            -p 8888:8787 \
            -e PASSWORD=password \
-           rso9192/cava:version1.1
+           rso9192/cava:version1.1.3
 
 ```
 Now open your favourite browser and type **http://localhost:8888/**. You should see a login page: enter the **username "rstudio"** and **password "password"** to login and that's it! You can now use CAVAanalytics through Rstudio server. 

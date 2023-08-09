@@ -122,6 +122,8 @@ Below we give an example of how you can use CAVAanalytics to easily retrieve cli
 simulations. Similarly, when path.to.obs is set to W5E5, you are
 accessing the dataset stored remotely.
 
+**Please note that only the AFR-22 domain is available as of September 2023. Tentatively, we will be releasing one domain per month afterwards**
+
 ``` r
 library(CAVAanalytics)
   # 1st step

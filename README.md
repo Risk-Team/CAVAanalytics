@@ -144,3 +144,9 @@ remote.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1995, 
 ## Applications
 
 CAVAanalytics has been used by the Risk-team at FAO to lead the development of climate change impact potential assessments for the Green Climate Fund (GCF). Nonetheless, CAVAanalytics can be used by anyone interested in simple and more advanced climate change analyses or retrieving CORDEX-CORE data to be used in impact models. 
+
+## Contributing and user support
+
+You are welcome to contribute to `CAVAanalytics` by forking this repository and suggesting new analyses.
+
+If you find any bugs, you can open a new issue and we will try to fix it. 

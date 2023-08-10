@@ -126,14 +126,15 @@ accessing the dataset stored remotely.
 
 ``` r
 library(CAVAanalytics)
-  # 1st step
-remote.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1990:1999, years.proj=2050:2059,
-                         path.to.data = "CORDEX-CORE", aggr.m="mean", domain="AFR-22")
-  # 2nd step
-  climate_change_signal(remote.data, season=1:12, bias.correction = F) %>% 
-  # 3rd step
-  plotting(., ensemble=FALSE, plot_titles = "temperature change",
-  palette=IPCC_palette(type = "tmp", divergent = F), bins=T)
+# 1st step
+ remote.data <- load_data(country = "Sudan", variable="tasmax",
+ years.hist=1990:1999, years.proj=2050:2059,
+ path.to.data = "CORDEX-CORE", aggr.m="mean", domain="AFR-22")
+# 2nd step
+ climate_change_signal(remote.data, season=1:12, bias.correction = F) %>% 
+# 3rd step
+ plotting(., ensemble=FALSE, plot_titles = "temperature change",
+ palette=IPCC_palette(type = "tmp", divergent = F), bins=T)
 ```
 
 | ![Rplot](https://github.com/Risk-Team/CAVAanalytics/assets/40058235/7240d4fc-a768-4a39-9848-ee0c28645424) |

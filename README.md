@@ -128,7 +128,7 @@ accessing the dataset stored remotely.
 library(CAVAanalytics)
   # 1st step
 remote.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1990:1999, years.proj=2050:2059,
-                         path.to.data = "CORDEX-CORE", aggr.m="sum", domain="AFR-22")
+                         path.to.data = "CORDEX-CORE", aggr.m="mean", domain="AFR-22")
   # 2nd step
   climate_change_signal(remote.data, season=1:12, bias.correction = F) %>% 
   # 3rd step

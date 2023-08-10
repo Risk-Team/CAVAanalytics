@@ -127,17 +127,18 @@ accessing the dataset stored remotely.
 ``` r
 library(CAVAanalytics)
   # 1st step
-remote.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1995, years.proj=2050:2055,
-              path.to.data = "CORDEX-CORE", aggr.m="mean", domain="AFR-22")
+remote.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1990:1999, years.proj=2050:2059,
+                         path.to.data = "CORDEX-CORE", aggr.m="sum", domain="AFR-22")
   # 2nd step
-  projections(remote.data, season=1:12, bias.correction = F) %>% 
+  climate_change_signal(remote.data, season=1:12, bias.correction = F) %>% 
   # 3rd step
-  plotting(., ensemble=FALSE, plot_titles = "Average tasmax")
+  plotting(., ensemble=FALSE, plot_titles = "temperature change", palette=IPCC_palette(type = "tmp", divergent = F), bins=T)
 ```
 
-| ![Rplot](https://github.com/Risk-Team/CAVAanalytics/assets/40058235/471c6fdc-713b-44c6-b130-f912f7bd6d23) |
+|  |![Rplot](https://github.com/Risk-Team/CAVAanalytics/assets/40058235/9b55801e-c259-4dc3-876f-4c71d207050f)
+
 |:-------------------------------------------------------------------------------------------------------------------:|
-|              *Average annual projected maximum temperature in Sudan according to 6 CORDEX-CORE models*                                                |
+| *Average annual projected change in maximum temperature compared to the 1990-1999 baseline period in Sudan (mean of 6 CORDEX-CORE models)*  |
 
 
 

@@ -135,7 +135,7 @@ remote.data <- load_data(country = "Sudan", variable="tasmax", years.hist=1990:1
   plotting(., ensemble=FALSE, plot_titles = "temperature change", palette=IPCC_palette(type = "tmp", divergent = F), bins=T)
 ```
 
-| ![Rplot01](https://github.com/Risk-Team/CAVAanalytics/assets/40058235/c23f9b2c-6dbd-487d-ae1e-c5a02c0ecaa2) |
+| ![Rplot](https://github.com/Risk-Team/CAVAanalytics/assets/40058235/7240d4fc-a768-4a39-9848-ee0c28645424) |
 |:-------------------------------------------------------------------------------------------------------------------:|
 | *Average annual projected change in maximum temperature compared to the 1990-1999 baseline period in Sudan (mean of 6 CORDEX-CORE models)* |
 

@@ -174,14 +174,15 @@ sudo docker run --rm \
 <p><strong>Please note that only the AFR-22 domain is available as of September 2023. Tentatively, we will be releasing one domain per month afterwards</strong></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://risk-team.github.io/CAVAanalytics/">CAVAanalytics</a></span><span class="op">)</span></span>
-<span>  <span class="co"># 1st step</span></span>
-<span><span class="va">remote.data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/load_data.html">load_data</a></span><span class="op">(</span>country <span class="op">=</span> <span class="st">"Sudan"</span>, variable<span class="op">=</span><span class="st">"tasmax"</span>, years.hist<span class="op">=</span><span class="fl">1990</span><span class="op">:</span><span class="fl">1999</span>, years.proj<span class="op">=</span><span class="fl">2050</span><span class="op">:</span><span class="fl">2059</span>,</span>
-<span>                         path.to.data <span class="op">=</span> <span class="st">"CORDEX-CORE"</span>, aggr.m<span class="op">=</span><span class="st">"mean"</span>, domain<span class="op">=</span><span class="st">"AFR-22"</span><span class="op">)</span></span>
-<span>  <span class="co"># 2nd step</span></span>
-<span>  <span class="fu"><a href="reference/climate_change_signal.html">climate_change_signal</a></span><span class="op">(</span><span class="va">remote.data</span>, season<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span>, bias.correction <span class="op">=</span> <span class="cn">F</span><span class="op">)</span> <span class="op">%&gt;%</span> </span>
-<span>  <span class="co"># 3rd step</span></span>
-<span>  <span class="fu"><a href="reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">.</span>, ensemble<span class="op">=</span><span class="cn">FALSE</span>, plot_titles <span class="op">=</span> <span class="st">"temperature change"</span>,</span>
-<span>  palette<span class="op">=</span><span class="fu"><a href="reference/IPCC_palette.html">IPCC_palette</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"tmp"</span>, divergent <span class="op">=</span> <span class="cn">F</span><span class="op">)</span>, bins<span class="op">=</span><span class="cn">T</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># 1st step</span></span>
+<span> <span class="va">remote.data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/load_data.html">load_data</a></span><span class="op">(</span>country <span class="op">=</span> <span class="st">"Sudan"</span>, variable<span class="op">=</span><span class="st">"tasmax"</span>,</span>
+<span> years.hist<span class="op">=</span><span class="fl">1990</span><span class="op">:</span><span class="fl">1999</span>, years.proj<span class="op">=</span><span class="fl">2050</span><span class="op">:</span><span class="fl">2059</span>,</span>
+<span> path.to.data <span class="op">=</span> <span class="st">"CORDEX-CORE"</span>, aggr.m<span class="op">=</span><span class="st">"mean"</span>, domain<span class="op">=</span><span class="st">"AFR-22"</span><span class="op">)</span></span>
+<span><span class="co"># 2nd step</span></span>
+<span> <span class="fu"><a href="reference/climate_change_signal.html">climate_change_signal</a></span><span class="op">(</span><span class="va">remote.data</span>, season<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span>, bias.correction <span class="op">=</span> <span class="cn">F</span><span class="op">)</span> <span class="op">%&gt;%</span> </span>
+<span><span class="co"># 3rd step</span></span>
+<span> <span class="fu"><a href="reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">.</span>, ensemble<span class="op">=</span><span class="cn">FALSE</span>, plot_titles <span class="op">=</span> <span class="st">"temperature change"</span>,</span>
+<span> palette<span class="op">=</span><span class="fu"><a href="reference/IPCC_palette.html">IPCC_palette</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"tmp"</span>, divergent <span class="op">=</span> <span class="cn">F</span><span class="op">)</span>, bins<span class="op">=</span><span class="cn">T</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup><col width="100%"></colgroup>
 <thead><tr class="header">

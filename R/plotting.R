@@ -127,7 +127,8 @@ plotting.CAVAanalytics_projections <-
       ggplot2::geom_sf(
         fill = 'antiquewhite1',
         color = "black",
-        data = countries
+        data = countries,
+        alpha=0.5
       ) +
       ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
                            data = rs_df,
@@ -306,7 +307,8 @@ plotting.CAVAanalytics_ccs <-
       ggplot2::geom_sf(
         fill = 'antiquewhite1',
         color = "black",
-        data = countries
+        data = countries,
+        alpha=0.5
       ) +
       ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
                            data = rs_df,
@@ -546,7 +548,8 @@ plotting.CAVAanalytics_trends <-
         ggplot2::geom_sf(
           fill = 'antiquewhite1',
           color = "black",
-          data = countries
+          data = countries,
+          alpha=0.5
         ) +
         ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
                              data = rs_df[[1]],
@@ -953,7 +956,8 @@ plotting.CAVAanalytics_observations <-
       ggplot2::geom_sf(
         fill = 'antiquewhite1',
         color = "black",
-        data = countries
+        data = countries,
+        alpha=0.5
       ) +
       ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
                            data = rs_df,
@@ -1139,7 +1143,8 @@ plotting.CAVAanalytics_model_biases <-
         ggplot2::geom_sf(
           fill = 'antiquewhite1',
           color = "black",
-          data = countries
+          data = countries,
+          alpha=0.5
         ) +
         ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
                              data = rs_df,

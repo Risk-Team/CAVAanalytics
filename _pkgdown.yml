@@ -47,6 +47,7 @@ reference:
     Accessory functions
   contents:
   - C4R_to_CAVA
+  - IPCC_palette
   - common_dates
   - ens_trends
   - make_raster

@@ -1,9 +1,8 @@
 #' Date selection
 #'
 #' automatically select common dates among C4R objects
-#' @export
 #' @param data list containing C4R objects, which are the outputs of the loadGridata function
-
+#' @export
 
 common_dates <- function(data) {
   all_dates <- lapply(data, function(x)
@@ -419,4 +418,65 @@ ridgeline <- function(x,
       ggplot2::facet_wrap(. ~ fc)
     }
 
+}
+
+#' IPCC color palette
+#'
+#' automatically use the suggested IPCC colors for precipitation and temperature.
+#' @param type character, one of tmp or pr.
+#' @param divergent logical. If TRUE, divergent palette are used. Useful in combination with legend.range to assign central colors in the palette to zero values
+#' @export
+IPCC_palette <- function(type, divergent) {
+  stopifnot(is.logical(divergent))
+  match.arg(type, c("pr", "tmp"))
+  if (type == "pr" & divergent) {
+    c(
+      rgb(84, 48, 5, maxColorValue = 255),
+      rgb(140, 81, 10, maxColorValue = 255),
+      rgb(191, 129, 45, maxColorValue = 255),
+      rgb(223, 194, 125, maxColorValue = 255),
+      rgb(246, 232, 195, maxColorValue = 255),
+      "white",
+      rgb(199, 234, 229, maxColorValue = 255),
+      rgb(128, 205, 193, maxColorValue = 255),
+      rgb(53, 151, 143, maxColorValue = 255),
+      rgb(1, 102, 94, maxColorValue = 255),
+      rgb(0, 60, 48, maxColorValue = 255)
+    )
+  } else if (type == "tmp" & divergent) {
+    c(
+      rgb(5, 48, 97, maxColorValue = 255),
+      rgb(33, 102, 172, maxColorValue = 255),
+      rgb(67, 147, 195, maxColorValue = 255),
+      rgb(146, 197, 222, maxColorValue = 255),
+      rgb(209, 229, 240, maxColorValue = 255),
+      "white",
+      rgb(253, 219, 199, maxColorValue = 255),
+      rgb(244 , 165, 130, maxColorValue = 255),
+      rgb(214, 96, 77, maxColorValue = 255),
+      rgb(178, 24, 43, maxColorValue = 255),
+      rgb(103, 0, 31, maxColorValue = 255)
+    )
+
+  } else if (type == "pr" & !divergent) {
+    c(
+      rgb(255, 255, 204, maxColorValue = 255),
+      rgb(237, 248, 177, maxColorValue = 255),
+      rgb(161, 218, 180, maxColorValue = 255),
+      rgb(65, 182, 196, maxColorValue = 255),
+      rgb(44, 127, 184, maxColorValue = 255),
+      rgb(37, 52, 148, maxColorValue = 255),
+
+    )
+  } else {
+    c(
+      rgb(255, 255, 178, maxColorValue = 255),
+      rgb(254, 204, 92, maxColorValue = 255),
+      rgb(253, 141, 60, maxColorValue = 255),
+      rgb(240, 59, 32, maxColorValue = 255),
+      rgb(189, 0, 38, maxColorValue = 255),
+      "#660000"
+    )
+
+  }
 }

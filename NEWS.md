@@ -13,6 +13,7 @@ output:
 - Added function model_biases to look at the delta between observation and model simulations
 - Customized cli messages and improved clarity
 - Improved visualization of spatial-temporal plots using ggridges
+- Added option to use colors suggested by the IPCC by using the IPCC_palette function
 
 ## CAVAanalytics 1.1.2
 - Changed appearance of temporal trends when spatial.aggr=T

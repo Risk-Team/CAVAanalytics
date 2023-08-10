@@ -65,9 +65,14 @@ We can examine historical data using the loaded observational dataset, which, in
 kenya_obs <- observations(kenya_exmp, season=1:12)
 plotting(kenya_obs, plot_titles = "Mean tasmax")
 ```
+If you want, you can also use pre-defined IPCC color palettes. You can type ?IPCC_palette for more info
+
+```{r, fig.height=3, fig.width=4, fig.align="center",  message=F, warning=F}
+plotting(kenya_obs, plot_titles = "Mean tasmax", 
+palette = IPCC_palette(type = "tmp", divergent = F))
+```
 
 How many days above 35 °C occurred on average?
-
 ```{r, fig.height=3, fig.width=4, fig.align="center",  message=F, warning=F}
 kenya_obs.35 <- observations(kenya_exmp, season=1:12, uppert=35)
 plotting(kenya_obs.35, plot_titles = "N.days > 35")
@@ -81,7 +86,7 @@ Before diving into the analyses of climate model projections, it is essential to
 # you can specify the season. In this case we are looking at the whole year
 biases_kenya <- model_biases(kenya_exmp, season=1:12)
 plotting(biases_kenya, ensemble=F, 
-trends=F, plot_titles = "mean tasmax biases")
+trends=F, plot_titles = "mean tasmax biases", palette = IPCC_palette(type="tmp", divergent = T))
 ```
 
 ```{r, fig.height=3, fig.width=10,  message=F, warning=F}

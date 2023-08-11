@@ -62,7 +62,8 @@ load_data <-
         if (missing(variable))
           cli::cli_abort(c("x" = "argument variable as no default"))
 
-        if (!is.null(path.to.data) && path.to.data == "CORDEX-CORE") {
+        if (!is.null(path.to.data) &&
+            path.to.data == "CORDEX-CORE") {
           if (is.null(domain))
             cli::cli_abort(c("x" = "domain has no default when uploading CORDEX-CORE data remotely"))
           if (is.null(years.proj) &
@@ -72,8 +73,13 @@ load_data <-
           if (!is.null(years.hist) & !is.null(years.obs))
             cli::cli_alert_warning(c("!" = "years.obs overwrite years.hist for the observational dataset"))
 
-          if (any(!(years.hist %in% 1980:2005)))
-            cli::cli_abort(c("x" = "Available years for the historical period are 1980:2005"))
+          if (any(!(years.hist %in% 1976:2005)) &
+              is.null(years.obs))
+            cli::cli_abort(c("x" = "Available years for the historical period are 1976:2005"))
+
+          if (!is.null(years.obs) &
+              any(!(years.obs %in% 1980:2016)))
+            cli::cli_abort(c("x" = "Available years for observations are 1980:2016"))
 
           if (any(!(years.proj %in% 2006:2099)))
             cli::cli_abort(c("x" = "Available years for projections are 2006:2099"))
@@ -190,7 +196,7 @@ load_data <-
           )) %>%
             sf::st_as_sfc() %>%
             data.frame(geometry = .) %>%
-            sf::st_as_sf()%>%
+            sf::st_as_sf() %>%
             sf::st_set_crs(., NA)
         }
 
@@ -425,9 +431,13 @@ load_data <-
 
     if (path.to.data == "CORDEX-CORE") {
       if (variable == "pr")  {
-        cli::cli_text("{cli::symbol$arrow_right} Precipitation data from CORDEX-CORE has been converted into mm/day")
+        cli::cli_text(
+          "{cli::symbol$arrow_right} Precipitation data from CORDEX-CORE has been converted into mm/day"
+        )
       }  else if (stringr::str_detect(variable, "tas")) {
-        cli::cli_text("{cli::symbol$arrow_right} Temperature data from CORDEX-CORE has been converted into Celsius")
+        cli::cli_text(
+          "{cli::symbol$arrow_right} Temperature data from CORDEX-CORE has been converted into Celsius"
+        )
       }
 
     }
@@ -436,7 +446,8 @@ load_data <-
       if (path.to.obs %in% c("W5E5", "ERA5")) {
         if (variable == "pr")  {
           cli::cli_text(
-            paste0("{cli::symbol$arrow_right}",
+            paste0(
+              "{cli::symbol$arrow_right}",
               " Precipitation data from ",
               path.to.obs,
               " has been converted into mm/day"
@@ -444,7 +455,8 @@ load_data <-
           )
         }  else if (stringr::str_detect(variable, "tas")) {
           cli::cli_text(
-            paste0("{cli::symbol$arrow_right}",
+            paste0(
+              "{cli::symbol$arrow_right}",
               " Temperature data from ",
               path.to.obs,
               " has been converted into Celsius"

@@ -146,9 +146,8 @@ library(CAVAanalytics)
 ## Applications
 
 CAVAanalytics has been used by the Risk-team at FAO to lead the development of climate change impact potential assessments for the Green Climate Fund (GCF). Nonetheless, CAVAanalytics can be used by anyone interested in simple and more advanced climate change analyses or retrieving CORDEX-CORE data to be used in impact models. 
+Additionally, the raw but interpolated CORDEX-CORE models can be accessed at [University of Cantabria server]( https://hub.climate4r.ifca.es/thredds/catalog/files/ESGF/interp025/CORDEX/output/catalog.html).
 
-## Contributing and user support
+## Contributing
 
-You are welcome to contribute to `CAVAanalytics` by forking this repository and suggesting new analyses.
-
-If you find any bugs, you can open a new issue and we will try to fix it. 
+You are welcome to contribute to `CAVAanalytics` by forking this repository.

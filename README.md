@@ -115,7 +115,7 @@ One nice thing about step 1, is that CAVAanalytics will automatically bind multi
 |:-------------------------------------------------------------------------------------------------------------------:|
 |                                                *CAVAanalytics steps*                                                |
 
-Below we give an example of how you can use CAVAanalytics to easily retrieve climate information (both past and future).
+Below we give an example of how you can use CAVAanalytics to easily retrieve climate information (both past and future). More examples are available from the [CAVAanalytics website](file:///home/riccardo/Dropbox/RIKI/FAO/tools/CAVAanalytics/docs/articles/Introduction.html).
 
 **To load CORDEX-CORE data stored remotely**, set path.to.data to
 “CORDEX-CORE” and specify the domain. This will load CORDEX-CORE

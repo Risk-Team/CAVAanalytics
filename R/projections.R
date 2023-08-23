@@ -215,7 +215,7 @@ projections <-
           }  %>%   # computing annual aggregation. if threshold is specified, first apply threshold
           dplyr::mutate(models_agg_y = furrr::future_map(models_mbrs, function(x)
             suppressMessages(
-              transformeR::aggregateGrid(# perform aggregation based on seasonended output
+              transformeR::aggregateGrid(# perform aggregation based on season and output
                 x, aggr.y =
                   if (var == "pr" &
                       !consecutive &

@@ -139,7 +139,7 @@ library(CAVAanalytics)
 
 | ![Rplot](https://github.com/Risk-Team/CAVAanalytics/assets/40058235/7240d4fc-a768-4a39-9848-ee0c28645424) |
 |:-------------------------------------------------------------------------------------------------------------------:|
-| *Average annual projected change in maximum temperature compared to the 1990-1999 baseline period in Sudan (mean of 6 CORDEX-CORE models)* |
+| *Average annual projected change in maximum temperature compared to the 1990-1999 baseline period in Sudan* |
 
 
 

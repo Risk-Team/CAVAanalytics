@@ -11,7 +11,8 @@
 </div>
 </h1>
 
-**CAVA (both Platform and Analytics) will be officially launched after summer 2023, with dedicated workshops. Some updates are currently underway, in particular, related to CAVA Platform interface**
+
+CAVA (both Platform and Analytics) will be officially launched after summer 2023, with dedicated workshops. Some updates are currently underway, in particular, related to CAVA Platform interface
 
 ## What is CAVA?
 

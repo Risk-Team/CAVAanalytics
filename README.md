@@ -16,8 +16,9 @@
 
 ## Updates
 
-**Some updates are currently underway, in particular, related to CAVA Platform interface**
-**Python support is coming soon. This will allow Python users to access CORDEX-CORE models available for CAVAanalytics through xclim**
+**Some updates are currently underway, in particular, related to CAVA Platform interface**.
+
+Python support is coming soon. This will allow Python users to access CORDEX-CORE models available for CAVAanalytics through xclim.
 
 ## What is CAVA?
 

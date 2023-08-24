@@ -11,6 +11,8 @@
 </div>
 </h1>
 
+**CAVA (both Platform and Analytics) will be officially launched after summer 2023, with dedicated workshops. Some updates are currently underway, in particular, related to CAVA Platform interface**
+
 ## What is CAVA?
 
 CAVA (Climate and Agriculture Risk Visualization and Assessment) is a
@@ -23,7 +25,6 @@ CAVAanalytics can be used locally (installation through GitHub),
 remotely (registered users can access the University of Cantabria
 JupyterHub) and through a Docker image.
 
-**CAVA (both Platform and Analytics) will be officially launched after summer 2023, with dedicated workshops. Some updates are currently underway, in particular, related to CAVA Platform interface**
 
 | ![framework](https://github.com/Risk-Team/CAVAanalytics/assets/40058235/ac4cfeae-d6d7-49eb-85c2-bfb6c44f39f6) |
 |:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|

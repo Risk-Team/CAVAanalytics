@@ -10,7 +10,7 @@ Authors@R: c(person("Riccardo", "Soldan", , "riccardosoldan@hotmail.it", role = 
            person("Hideki", "Kanamaru", , "Hideki.kanamaru@fao.org", role = "ctb", comment=c(ORCID="0000-0002-5306-5022")), 
            person("Jorge", "Alvar-Beltrán", , "jorge.alvarbeltran@fao.org", role = "ctb",  comment = c(ORCID = "0000-0003-2454-0629")),
            person("Arianna", "Gialletti", , "Arianna.gialletti@fao.org", role = "ctb"))
-Description: A system for working with multiple models in NetCDF or Ncml fomat, with remote access to state-of-the-art dinamycallt downscaled climate models and reanalyses dataset 
+Description: CAVAanalytics is an operational R library for climate services, providing direct and easy access to CORDEX-CORE models and reanalysis datasets
 License: GPL-2 | GPL-3
 Encoding: UTF-8
 LazyData: true

@@ -13,7 +13,7 @@
 
 
 **Some updates are currently underway, in particular, related to CAVA Platform interface**
-**Python support coming soon**
+
 
 ## What is CAVA?
 

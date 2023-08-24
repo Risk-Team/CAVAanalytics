@@ -5,7 +5,7 @@
 \alias{CAVAanalytics}
 \title{CAVAanalytics Package}
 \description{
-Contains functions to load and visualize climate models
+Operational R package for climate services
 }
 \author{
 Riccardo Soldan \email{riccardosoldan@hotmail.it}

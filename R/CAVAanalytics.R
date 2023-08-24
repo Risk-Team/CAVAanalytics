@@ -1,6 +1,6 @@
 #' CAVAanalytics Package
 #'
-#' Contains functions to load and visualize climate models
+#' Operational R package for climate services
 #' @docType package
 #'
 #' @author Riccardo Soldan \email{riccardosoldan@hotmail.it}

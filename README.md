@@ -159,7 +159,8 @@ CORDEX-CORE domain:
 - [ ] WAS-22
 - [ ] AUS-22
 - [ ] EUR-22
-- :white_large_square
+
+:white_large_square
 
 ## Applications
 

@@ -148,6 +148,7 @@ library(CAVAanalytics)
 Observational datasets:
 - [x] W5E5
 - [x] ERA5
+
 CORDEX-CORE domain:
 - [x] AFR-22
 - [ ] SEA-22

@@ -161,7 +161,7 @@ CORDEX-CORE domain:
 - [ ] EUR-22
 
 ## Python
-Additionally, the raw but interpolated CORDEX-CORE models can also be accessed using xarray (support coming soon). For example:
+CORDEX-CORE models and observational datasets can also be accessed using xarray (support coming soon). For example:
 
 ```
 import xarray as xr

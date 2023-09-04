@@ -90,13 +90,13 @@ CAVAanalytics: Operational R package for climate services
 <div class="section level4">
 <h4 id="updates">**Updates<a class="anchor" aria-label="anchor" href="#updates"></a>
 </h4>
-<p><strong>Some updates are currently underway, in particular, related to CAVA Platform interface</strong>.</p>
+<p><strong>Some updates are currently underway, in particular, related to CAVA Platform interface. Please note that only the CORDEX-CORE AFR-22 domain is available as of September 2023. Tentatively, we will be releasing one domain per month afterward</strong>.</p>
 <p>Python support is coming soon. This will allow Python users to access CORDEX-CORE models available for CAVAanalytics through xclim.</p>
 </div>
 <div class="section level2">
 <h2 id="what-is-cava">What is CAVA?<a class="anchor" aria-label="anchor" href="#what-is-cava"></a>
 </h2>
-<p>CAVA (Climate and Agriculture Risk Visualization and Assessment) is a framework and approach to climate services developed jointly by <strong>The Food and Agriculture Organization of the United Nations (FAO) and the University of Cantabria</strong>. <a href="https://fao-cava.predictia.es/auth" class="external-link">CAVA is made of a Platform (GUI)</a>, which is freely accessible and satisfy the needs of most standard users interested in agroclimatic indicators and an R package (<strong>CAVAanalytics</strong>), which empowers users with direct access to high-resolution climate models and means for easily working and calculating climatic indicators on multi-model ensembles.</p>
+<p>CAVA (Climate and Agriculture Risk Visualization and Assessment) is a framework and approach to climate services developed jointly by <strong>The Food and Agriculture Organization of the United Nations (FAO) and the University of Cantabria</strong>. <a href="https://fao-cava.predictia.es/auth" class="external-link">CAVA is made of a Platform (GUI)</a>, which is freely accessible and satisfy the needs of most standard users interested in agroclimatic indicators and an R package (<a href="https://risk-team.github.io/CAVAanalytics/"><strong>CAVAanalytics</strong></a>), which empowers users with direct access to high-resolution climate models and means for easily working and calculating climatic indicators on multi-model ensembles.</p>
 <p>CAVAanalytics can be used locally (installation through GitHub), remotely (registered users can access the University of Cantabria JupyterHub) and through a Docker image.</p>
 <table class="table">
 <colgroup><col width="100%"></colgroup>
@@ -111,7 +111,7 @@ CAVAanalytics: Operational R package for climate services
 <div class="section level2">
 <h2 id="cavaanalytics">CAVAanalytics<a class="anchor" aria-label="anchor" href="#cavaanalytics"></a>
 </h2>
-<p><strong>CAVAanalytics</strong> is an operational package for climate services. It offers a consistent framework to load, analyze, calculate indicators, and visualize results for multi-model ensembles (this usually happens when working with climate models, but impact models can also be analysed with CAVAanalytics). <strong>CAVAanalytics</strong> provides an access point for CORDEX-CORE simulations at 25 Km resolution already interpolated (EPSG:4326) plus the W5E5 and ERA5 datasets. CAVAanalytics can be seen as a wrapper of several packages, but the main engine for loading and processing climate models is the <a href="https://github.com/SantanderMetGroup/climate4R" class="external-link">climate4R framework</a>, applied with a tidyverse approach.</p>
+<p><a href="https://risk-team.github.io/CAVAanalytics/"><strong>CAVAanalytics</strong></a> is an operational package for climate services. It offers a consistent framework to load, analyze, calculate indicators, and visualize results for multi-model ensembles (this usually happens when working with climate models, but impact models can also be analysed with CAVAanalytics). <a href="https://risk-team.github.io/CAVAanalytics/"><strong>CAVAanalytics</strong></a> provides an access point for CORDEX-CORE simulations at 25 Km resolution already interpolated (EPSG:4326) plus the W5E5 and ERA5 datasets. CAVAanalytics can be seen as a wrapper of several packages, but the main engine for loading and processing climate models is the <a href="https://github.com/SantanderMetGroup/climate4R" class="external-link">climate4R framework</a>, applied with a tidyverse approach.</p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -175,7 +175,6 @@ sudo docker run --rm \
 </table>
 <p>Below we give an example of how you can use CAVAanalytics to easily retrieve climate information (both past and future). More examples are available from the <a href="https://risk-team.github.io/CAVAanalytics/articles/Introduction.html">CAVAanalytics website</a>.</p>
 <p><strong>To load CORDEX-CORE data stored remotely</strong>, set path.to.data to “CORDEX-CORE” and specify the domain. This will load CORDEX-CORE simulations. Similarly, when path.to.obs is set to W5E5, you are accessing the dataset stored remotely.</p>
-<p><strong>Please note that only the AFR-22 domain is available as of September 2023. Tentatively, we will be releasing one domain per month afterwards</strong></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://risk-team.github.io/CAVAanalytics/">CAVAanalytics</a></span><span class="op">)</span></span>
 <span><span class="co"># 1st step</span></span>
@@ -198,14 +197,20 @@ sudo docker run --rm \
 </table>
 </div>
 <div class="section level2">
-<h2 id="applications">Applications<a class="anchor" aria-label="anchor" href="#applications"></a>
+<h2 id="python">Python<a class="anchor" aria-label="anchor" href="#python"></a>
 </h2>
-<p>CAVAanalytics has been used by the Risk-team at FAO to lead the development of climate change impact potential assessments for the Green Climate Fund (GCF). Nonetheless, CAVAanalytics can be used by anyone interested in simple and more advanced climate change analyses or retrieving CORDEX-CORE data to be used in impact models. Additionally, the raw but interpolated CORDEX-CORE models can be accessed at <a href="https://hub.climate4r.ifca.es/thredds/catalog/files/ESGF/interp025/CORDEX/output/catalog.html" class="external-link">University of Cantabria server</a>.</p>
+<p>CORDEX-CORE models and observational datasets can also be accessed using xarray (support coming soon). For example:</p>
+<pre><code>import xarray as xr
+
+# URL to ERA5 data
+obs_url =  "https://data.meteo.unican.es/thredds/dodsC/copernicus/cds/ERA5_0.25"
+# Open dataset
+ds = xr.open_dataset(obs_url)</code></pre>
 </div>
 <div class="section level2">
-<h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
+<h2 id="applications">Applications<a class="anchor" aria-label="anchor" href="#applications"></a>
 </h2>
-<p>You are welcome to contribute to <code>CAVAanalytics</code> by forking this repository.</p>
+<p>CAVAanalytics has been used by the Risk-team at FAO to lead the development of climate change impact potential assessments for the Green Climate Fund (GCF). Nonetheless, CAVAanalytics can be used by anyone interested in simple and more advanced climate change analyses or retrieving CORDEX-CORE data to be used in impact models.</p>
 </div>
 
   </main><aside class="col-md-3"><div class="license">

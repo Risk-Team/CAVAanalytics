@@ -26,7 +26,7 @@ CAVA (Climate and Agriculture Risk Visualization and Assessment) is a
 framework and approach to climate services developed jointly by **The Food and Agriculture Organization of the United Nations (FAO) and the University of Cantabria**. [CAVA is made of a Platform
 (GUI)](https://fao-cava.predictia.es/auth), which is freely accessible
 and satisfy the needs of most standard users interested in agroclimatic indicators and an R package
-(**CAVAanalytics**), which empowers users with direct access to high-resolution climate models and means for easily working and calculating climatic indicators on multi-model ensembles. 
+([**CAVAanalytics**](https://risk-team.github.io/CAVAanalytics/)), which empowers users with direct access to high-resolution climate models and means for easily working and calculating climatic indicators on multi-model ensembles. 
 
 CAVAanalytics can be used locally (installation through GitHub),
 remotely (registered users can access the University of Cantabria
@@ -41,8 +41,8 @@ JupyterHub) and through a Docker image.
 
 ## CAVAanalytics
 
-**CAVAanalytics** is an operational package for climate services. It offers a consistent framework to
-load, analyze, calculate indicators, and visualize results for multi-model ensembles (this usually happens when working with climate models, but impact models can also be analysed with CAVAanalytics). **CAVAanalytics**
+[**CAVAanalytics**](https://risk-team.github.io/CAVAanalytics/) is an operational package for climate services. It offers a consistent framework to
+load, analyze, calculate indicators, and visualize results for multi-model ensembles (this usually happens when working with climate models, but impact models can also be analysed with CAVAanalytics). [**CAVAanalytics**](https://risk-team.github.io/CAVAanalytics/)
 provides an access point for CORDEX-CORE simulations at 25 Km resolution
 already interpolated (EPSG:4326) plus the W5E5 and ERA5 datasets. CAVAanalytics can
 be seen as a wrapper of several packages, but the main engine for

@@ -146,19 +146,19 @@ library(CAVAanalytics)
 
 ## Available data
 Observational datasets:
-- [x] W5E5
-- [x] ERA5
+- **W5E5**
+- **ERA5**
 
 CORDEX-CORE domain:
-- [x] AFR-22
-- [ ] SEA-22
-- [ ] EAS-22
-- [ ] CAS-22
-- [ ] CAM-22
-- [ ] SAM-22
-- [ ] WAS-22
-- [ ] AUS-22
-- [ ] EUR-22
+- **AFR-22**
+- SEA-22
+- EAS-22
+- CAS-22
+- CAM-22
+- SAM-22
+- WAS-22
+- AUS-22
+- EUR-22
 
 ## Python
 CORDEX-CORE models and observational datasets can also be accessed using xarray (support coming soon). For example:

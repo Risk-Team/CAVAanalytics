@@ -16,9 +16,10 @@
 
 #### **Updates
 
-**Some updates are currently underway, in particular, related to CAVA Platform interface**.
+**Some updates are currently underway, in particular, related to CAVA Platform interface. Please note that only the CORDEX-CORE AFR-22 domain is available as of September 2023. Tentatively, we will be releasing one domain per month afterward**.
 
 Python support is coming soon. This will allow Python users to access CORDEX-CORE models available for CAVAanalytics through xclim.
+
 
 ## What is CAVA?
 
@@ -125,7 +126,6 @@ Below we give an example of how you can use CAVAanalytics to easily retrieve cli
 simulations. Similarly, when path.to.obs is set to W5E5, you are
 accessing the dataset stored remotely.
 
-**Please note that only the AFR-22 domain is available as of September 2023. Tentatively, we will be releasing one domain per month afterwards**
 
 ``` r
 library(CAVAanalytics)

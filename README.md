@@ -144,22 +144,6 @@ library(CAVAanalytics)
 |:-------------------------------------------------------------------------------------------------------------------:|
 | *Average annual projected change in maximum temperature compared to the 1990-1999 baseline period in Sudan* |
 
-## Available data
-Observational datasets:
-- **W5E5**
-- **ERA5**
-
-CORDEX-CORE domain:
-- **AFR-22**
-- SEA-22
-- EAS-22
-- CAS-22
-- CAM-22
-- SAM-22
-- WAS-22
-- AUS-22
-- EUR-22
-
 ## Python
 CORDEX-CORE models and observational datasets can also be accessed using xarray (support coming soon). For example:
 

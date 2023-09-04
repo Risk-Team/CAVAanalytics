@@ -163,7 +163,16 @@ CORDEX-CORE domain:
 ## Applications
 
 CAVAanalytics has been used by the Risk-team at FAO to lead the development of climate change impact potential assessments for the Green Climate Fund (GCF). Nonetheless, CAVAanalytics can be used by anyone interested in simple and more advanced climate change analyses or retrieving CORDEX-CORE data to be used in impact models. 
-Additionally, the raw but interpolated CORDEX-CORE models can be accessed at [University of Cantabria server]( https://hub.climate4r.ifca.es/thredds/catalog/files/ESGF/interp025/CORDEX/output/catalog.html).
+Additionally, the raw but interpolated CORDEX-CORE models can also be accessed using xarray (support coming soon). For example:
+
+```
+import xarray as xr
+
+# URL to ERA5 data
+obs_url =  "https://data.meteo.unican.es/thredds/dodsC/copernicus/cds/ERA5_0.25"
+# Open dataset
+ds = xr.open_dataset(obs_url)
+```
 
 ## Contributing
 

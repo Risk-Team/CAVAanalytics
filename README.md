@@ -174,6 +174,3 @@ obs_url =  "https://data.meteo.unican.es/thredds/dodsC/copernicus/cds/ERA5_0.25"
 ds = xr.open_dataset(obs_url)
 ```
 
-## Contributing
-
-You are welcome to contribute to `CAVAanalytics` by forking this repository.

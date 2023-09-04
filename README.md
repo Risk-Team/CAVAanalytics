@@ -144,7 +144,20 @@ library(CAVAanalytics)
 |:-------------------------------------------------------------------------------------------------------------------:|
 | *Average annual projected change in maximum temperature compared to the 1990-1999 baseline period in Sudan* |
 
-
+## Available data
+Observational datasets:
+- [x] W5E5
+- [x] ERA5
+CORDEX-CORE domain:
+- [x] AFR-22
+- [ ] SEA-22
+- [ ] EAS-22
+- [ ] CAS-22
+- [ ] CAM-22
+- [ ] SAM-22
+- [ ] WAS-22
+- [ ] AUS-22
+- [ ] EUR-22
 
 ## Applications
 

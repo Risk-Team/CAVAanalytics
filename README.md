@@ -25,7 +25,7 @@ Python support is coming soon. This will allow Python users to access CORDEX-COR
 
 CAVA (Climate and Agriculture Risk Visualization and Assessment) is a
 framework and approach to climate services developed jointly by **The Food and Agriculture Organization of the United Nations (FAO) and the University of Cantabria**. [CAVA is made of a Platform
-(GUI)](https://fao-cava.predictia.es/auth), which is freely accessible
+(GUI)](https://fao-cava.predictia.es/), which is freely accessible
 and satisfy the needs of most standard users interested in agroclimatic indicators and an R package
 ([**CAVAanalytics**](https://risk-team.github.io/CAVAanalytics/)), which empowers users with direct access to high-resolution climate models and means for easily working and calculating climatic indicators on multi-model ensembles. 
 

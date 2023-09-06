@@ -91,7 +91,7 @@ CAVAanalytics: Operational R package for climate services
 <h4 id="updates">**Updates<a class="anchor" aria-label="anchor" href="#updates"></a>
 </h4>
 <p><strong>Some updates are currently underway, in particular, related to CAVA Platform interface. Please note that only the CORDEX-CORE AFR-22 domain is available as of September 2023. Tentatively, we will be releasing one domain per month afterward</strong>.</p>
-<p>Python support is coming soon. This will allow Python users to access CORDEX-CORE models available for CAVAanalytics through xclim.</p>
+<p>Dedicated <strong>Python</strong> support is coming soon. In the meantime, see below section.</p>
 </div>
 <div class="section level2">
 <h2 id="what-is-cava">What is CAVA?<a class="anchor" aria-label="anchor" href="#what-is-cava"></a>
@@ -199,7 +199,8 @@ sudo docker run --rm \
 <div class="section level2">
 <h2 id="python">Python<a class="anchor" aria-label="anchor" href="#python"></a>
 </h2>
-<p>CORDEX-CORE models and observational datasets can also be accessed using xarray (more support coming soon). For example:</p>
+<p><strong>Firstly, why Python?</strong></p>
+<p>While CAVAanalytics was built on top of R packages, such as <code>climate4R</code> and <code>tidyverse</code> to allow users to focus on results rather than the code, R does not leverage the same level of “computational efficiency” as Python. This is mainly because Python offers out-of-memory computation for arrays thanks to the integration between <code>xarray</code> and <code>dask</code>. R does not have this feature for arrays, which is typically the way in which climate data is used. This means that CAVAanalytics largely works on memory (RAM), effectively limiting the geographical area in which analyses can be performed (<a href="https://risk-team.github.io/CAVAanalytics/reference/index.html">check out the memory-efficient functions available from CAVAanalytics though</a>). CAVAanalytics would not allow users to perform analyses for entire CORDEX domains very efficiently because it would need a lot of RAM. However, CAVAanalytics was mainly developed for country-level assessment and never conceived to be used for large-scale climate data analyses. This is where Python comes in. The regridded CORDEX-CORE models and all observational datasets used by CAVAanalytics can also be accessed using Python. <strong>The benefit of using our data is that we provide one URL per model for all supported variables and that we have already regridded CORDEX-CORE models, making retrieving the data extremely easy</strong>. See below an example:</p>
 <pre><code>import xarray as xr
 
 # URL to ERA5 data
@@ -219,6 +220,7 @@ data = data.dropna(subset=['activity'])
 
 filtered_data = data[data['activity'].str.contains("FAO")]
 </code></pre>
+<p>A dedicated function to automatically perform these steps will be made available soon.</p>
 </div>
 <div class="section level2">
 <h2 id="applications">Applications<a class="anchor" aria-label="anchor" href="#applications"></a>

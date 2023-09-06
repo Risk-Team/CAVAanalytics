@@ -199,13 +199,26 @@ sudo docker run --rm \
 <div class="section level2">
 <h2 id="python">Python<a class="anchor" aria-label="anchor" href="#python"></a>
 </h2>
-<p>CORDEX-CORE models and observational datasets can also be accessed using xarray (support coming soon). For example:</p>
+<p>CORDEX-CORE models and observational datasets can also be accessed using xarray (more support coming soon). For example:</p>
 <pre><code>import xarray as xr
 
 # URL to ERA5 data
 obs_url =  "https://data.meteo.unican.es/thredds/dodsC/copernicus/cds/ERA5_0.25"
+# URL to W5E5 V2 data
+obs_url =    "https://data.meteo.unican.es/thredds/dodsC/mirrors/W5E5/W5E5_v2"
 # Open dataset
 ds = xr.open_dataset(obs_url)</code></pre>
+<p>The list of available CORDEX-CORE models can be accessed with:</p>
+<pre><code>import pandas as pd
+
+csv_url = "https://data.meteo.unican.es/inventory.csv"
+data = pd.read_csv(csv_url)
+
+# Drop rows with missing values in the 'activity' column
+data = data.dropna(subset=['activity'])
+
+filtered_data = data[data['activity'].str.contains("FAO")]
+</code></pre>
 </div>
 <div class="section level2">
 <h2 id="applications">Applications<a class="anchor" aria-label="anchor" href="#applications"></a>

@@ -18,7 +18,7 @@
 
 **Some updates are currently underway, in particular, related to CAVA Platform interface. Please note that only the CORDEX-CORE AFR-22 domain is available as of September 2023. Tentatively, we will be releasing one domain per month afterward**.
 
-Python support is coming soon. This will allow Python users to access CORDEX-CORE models available for CAVAanalytics through xclim.
+Dedicated Python support is coming soon. In the meantime, see below section.
 
 
 ## What is CAVA?

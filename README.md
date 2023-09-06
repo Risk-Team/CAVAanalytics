@@ -145,16 +145,34 @@ library(CAVAanalytics)
 | *Average annual projected change in maximum temperature compared to the 1990-1999 baseline period in Sudan* |
 
 ## Python
-CORDEX-CORE models and observational datasets can also be accessed using xarray (support coming soon). For example:
+CORDEX-CORE models and observational datasets can also be accessed using xarray (more support coming soon). For example:
 
 ```
 import xarray as xr
 
 # URL to ERA5 data
 obs_url =  "https://data.meteo.unican.es/thredds/dodsC/copernicus/cds/ERA5_0.25"
+# URL to W5E5 V2 data
+obs_url =    "https://data.meteo.unican.es/thredds/dodsC/mirrors/W5E5/W5E5_v2"
 # Open dataset
 ds = xr.open_dataset(obs_url)
 ```
+
+The list of available CORDEX-CORE models can be accessed with:
+
+```
+import pandas as pd
+
+csv_url = "https://data.meteo.unican.es/inventory.csv"
+data = pd.read_csv(csv_url)
+
+# Drop rows with missing values in the 'activity' column
+data = data.dropna(subset=['activity'])
+
+filtered_data = data[data['activity'].str.contains("FAO")]
+
+```
+
 ## Applications
 
 CAVAanalytics has been used by the Risk-team at FAO to lead the development of climate change impact potential assessments for the Green Climate Fund (GCF). Nonetheless, CAVAanalytics can be used by anyone interested in simple and more advanced climate change analyses or retrieving CORDEX-CORE data to be used in impact models. 

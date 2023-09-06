@@ -145,7 +145,8 @@ library(CAVAanalytics)
 | *Average annual projected change in maximum temperature compared to the 1990-1999 baseline period in Sudan* |
 
 ## Python
-CORDEX-CORE models and observational datasets can also be accessed using xarray (more support coming soon). For example:
+**Firstly, why Python?** 
+While CAVAanalytics was built on top of R packages, such as `climate4R` and `tidyverse` to allow users to focus on results rather than the code, R does not leverage the same level of "computational efficiency" as Python. This is mainly because Python offers out-of-memory computation for arrays thanks to the integration between `xarray` and `dask`. R does not have this feature for arrays, which is typically the way in which climate data is used. This means that CAVAanalytics largely works on memory (RAM), effectively limiting the geographical area in which analyses can be performed [check out the memory-efficient functions available from CAVAanalytics though](https://risk-team.github.io/CAVAanalytics/reference/index.html). CAVAanalytics would not allow users to perform analyses for entire CORDEX domains very efficiently. However, CAVAanalytics was mainly developed for country-level assessment and never conceived to be used for large-scale climate data analyses. This is where Python comes in. The regridded CORDEX-CORE models and all observational datasets used by CAVAanalytics can also be accessed using Python. **The benefit of using our data is that we provide one URL per model for all supported variables and that we have already regridded CORDEX-CORE models, making retrieving the data extremely easy**. See below an example:
 
 ```
 import xarray as xr
@@ -172,6 +173,7 @@ data = data.dropna(subset=['activity'])
 filtered_data = data[data['activity'].str.contains("FAO")]
 
 ```
+A dedicated function to automatically perform these steps will be made available soon. 
 
 ## Applications
 

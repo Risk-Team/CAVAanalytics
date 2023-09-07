@@ -20,8 +20,20 @@
 
 Dedicated **Python** support is coming soon. In the meantime, see below section.
 
+## Quick intro on CAVA and climate models
+CAVA (Climate and Agriculture Risk Visualization and Assessment) is a
+framework and approach to climate services developed jointly by **The Food and Agriculture Organization of the United Nations (FAO) and the University of Cantabria**. CAVA makes use of climate models to inform users about future climate conditions (climate projections in jargon). Climate modeling is a complex subject but a very good introduction to this topic is given by Andy Pitman and colleagues and can be downloaded [here](https://climateextremes.org.au/wp-content/uploads/Climate-modelling-an-overview-The-ARC-Centre-of-Excellence-for-Climate-Extremes.pdf). You are strongly encouraged to read it if you are new to this topic.  
 
-## What is CAVA?
+CAVA makes use of particular types of climate models, called Regional Climate Models. These models are used to downscale Global Climate Models at higher spatial resolution. The project in charge of providing Regional Climate Models is called CORDEX (Coordinated Regional Climate Downscaling Experiment). These models are available for specific geographical areas around the world, called domain. 
+
+
+| ![CORDEX domains](https://github.com/Risk-Team/CAVAanalytics/assets/40058235/c0e559d9-0372-4d8a-a3cd-e1b58fcef2b0) |
+|:-------------------------------------------------------------------------------------------------------------------:|
+|                                                *Boundaries of the fourteen official CORDEX domains. [Source](https://cordex.org/data-access/regional-climate-change-simulations-for-cordex-domains/)*                                                |
+
+
+
+## More about CAVA
 
 CAVA (Climate and Agriculture Risk Visualization and Assessment) is a
 framework and approach to climate services developed jointly by **The Food and Agriculture Organization of the United Nations (FAO) and the University of Cantabria**. [CAVA is made of a Platform

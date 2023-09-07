@@ -94,7 +94,22 @@ CAVAanalytics: Operational R package for climate services
 <p>Dedicated <strong>Python</strong> support is coming soon. In the meantime, see below section.</p>
 </div>
 <div class="section level2">
-<h2 id="what-is-cava">What is CAVA?<a class="anchor" aria-label="anchor" href="#what-is-cava"></a>
+<h2 id="quick-intro-on-cava-and-climate-models">Quick intro on CAVA and climate models<a class="anchor" aria-label="anchor" href="#quick-intro-on-cava-and-climate-models"></a>
+</h2>
+<p>CAVA (Climate and Agriculture Risk Visualization and Assessment) is a framework and approach to climate services developed jointly by <strong>The Food and Agriculture Organization of the United Nations (FAO) and the University of Cantabria</strong>. CAVA makes use of climate models to inform users about future climate conditions (climate projections in jargon). Climate modeling is a complex subject but a very good introduction to this topic is given by Andy Pitman and colleagues and can be downloaded <a href="https://climateextremes.org.au/wp-content/uploads/Climate-modelling-an-overview-The-ARC-Centre-of-Excellence-for-Climate-Extremes.pdf" class="external-link">here</a>. You are strongly encouraged to read it if you are new to this topic.</p>
+<p>CAVA makes use of particular types of climate models, called Regional Climate Models. These models are used to downscale Global Climate Models at higher spatial resolution. The project in charge of providing Regional Climate Models is called CORDEX (Coordinated Regional Climate Downscaling Experiment). These models are available for specific geographical areas around the world, called domains. More information about the data behind CAVA can be found <a href="https://risk-team.github.io/CAVAanalytics/articles/Introduction.html">here</a>.</p>
+<table class="table">
+<colgroup><col width="100%"></colgroup>
+<thead><tr class="header">
+<th align="center"><img src="https://github.com/Risk-Team/CAVAanalytics/assets/40058235/a8e85a4b-86e5-4fdf-ad18-755df4264aeb" alt="CORDEX domains"></th>
+</tr></thead>
+<tbody><tr class="odd">
+<td align="center"><em>Boundaries of the fourteen official CORDEX domains. <a href="https://cordex.org/data-access/regional-climate-change-simulations-for-cordex-domains/" class="external-link">Source</a></em></td>
+</tr></tbody>
+</table>
+</div>
+<div class="section level2">
+<h2 id="more-about-cava">More about CAVA<a class="anchor" aria-label="anchor" href="#more-about-cava"></a>
 </h2>
 <p>CAVA (Climate and Agriculture Risk Visualization and Assessment) is a framework and approach to climate services developed jointly by <strong>The Food and Agriculture Organization of the United Nations (FAO) and the University of Cantabria</strong>. <a href="https://fao-cava.predictia.es/" class="external-link">CAVA is made of a Platform (GUI)</a>, which is freely accessible and satisfy the needs of most standard users interested in agroclimatic indicators and an R package (<a href="https://risk-team.github.io/CAVAanalytics/"><strong>CAVAanalytics</strong></a>), which empowers users with direct access to high-resolution climate models and means for easily working and calculating climatic indicators on multi-model ensembles.</p>
 <p>CAVAanalytics can be used locally (installation through GitHub), remotely (registered users can access the University of Cantabria JupyterHub) and through a Docker image.</p>

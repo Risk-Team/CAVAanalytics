@@ -26,8 +26,7 @@ framework and approach to climate services developed jointly by **The Food and A
 
 CAVA makes use of particular types of climate models, called Regional Climate Models. These models are used to downscale Global Climate Models at higher spatial resolution. The project in charge of providing Regional Climate Models is called CORDEX (Coordinated Regional Climate Downscaling Experiment). These models are available for specific geographical areas around the world, called domains. More information about the data behind CAVA can be found [here](https://risk-team.github.io/CAVAanalytics/articles/Introduction.html).
 
-
-| ![CORDEX domains](https://github.com/Risk-Team/CAVAanalytics/assets/40058235/c0e559d9-0372-4d8a-a3cd-e1b58fcef2b0) |
+| ![CORDEX domains](https://github.com/Risk-Team/CAVAanalytics/assets/40058235/a8e85a4b-86e5-4fdf-ad18-755df4264aeb) |
 |:-------------------------------------------------------------------------------------------------------------------:|
 |    *Boundaries of the fourteen official CORDEX domains. [Source](https://cordex.org/data-access/regional-climate-change-simulations-for-cordex-domains/)*  |
 

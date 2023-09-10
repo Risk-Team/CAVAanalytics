@@ -47,7 +47,7 @@ JupyterHub) and through a Docker image.
 
 | ![framework](https://github.com/Risk-Team/CAVAanalytics/assets/40058235/1d2a9f7c-6157-4227-8d01-ac8beedbb7a3) |
 |:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
-| *CAVA framework. CAVA can be used through a graphic user interface (CAVA Platform) or through the CAVAanalytics R package. The package can be used locally (GitHub installation), remotely (University of Cantabria JupyterHub), or locally but through a Docker image to solve dependencies issues* |
+| *CAVA framework. CAVA can be used through a graphic user interface (CAVA Platform) or through the CAVAanalytics R package. The package can be used locally (GitHub installation), remotely (University of Cantabria JupyterHub), or locally but through a Docker image to solve dependencies issues. CAVA Platform offers three types of automatic reports, namely climate, agroclimatic, and agriculture. The climate and agroclimatic reports are produced with CAVAanalytics.* |
 
 
 

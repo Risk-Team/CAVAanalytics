@@ -165,7 +165,7 @@ observations <-
                          lowert = lowert)
                   })
             ))) %>%
-          dplyr::select(-models_mbrs) %>%
+          dplyr::select(obs_agg_y) %>%
           # Obs mean
           dplyr::mutate(rst_mean = purrr::map(obs_agg_y, function(obs_agg) {
 
@@ -194,8 +194,8 @@ observations <-
     # retrieve information
     datasets <- data[[1]]
     country_shp <- data[[2]]
-    var <- datasets$models_mbrs[[1]]$Variable$varName
-    dates <- datasets$models_mbrs[[1]]$Dates$start
+    var <- datasets$obs[[1]]$Variable$varName
+    dates <- datasets$obs[[1]]$Dates$start
     dates <- as.Date(dates)
     # calculate the differences between consecutive dates to understand temporal resolution and adjust the window argument in bias correction
     diffs <- diff(dates)

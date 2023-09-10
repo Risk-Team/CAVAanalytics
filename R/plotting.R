@@ -898,7 +898,7 @@ plotting.CAVAanalytics_observations <-
            palette = NULL,
            legend_range = NULL,
            plot_titles,
-           ensemble = NULL,
+           ensemble =FALSE,
            bins = FALSE,
            n.bins = NULL,
            alpha = NA) {

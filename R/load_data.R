@@ -55,6 +55,9 @@ load_data <-
                years.obs) {
         stopifnot(is.numeric(n.sessions))
         match.arg(aggr.m, choices = c("none", "sum", "mean"))
+        if (!is.null(domain)) {
+        match.arg(domain, choices = c("AFR-22", "SEA-22", "AUS-22", "EAS-22", "CAM-22", "SAM-22"))
+        if (domain!="AFR-22") cli::cli_abort(c("x" = "Only AFR-22 is available as of September 2023"))}
         if (is.null(years.proj) &
             is.null(years.hist) & is.null(years.obs))
           cli::cli_abort(c("x" = "select at least one of years.hist, years.proj or years.obs"))
@@ -78,7 +81,7 @@ load_data <-
             cli::cli_abort(c("x" = "Available years for the historical period are 1976:2005"))
 
           if (!is.null(years.obs) &
-              any(!(years.obs %in% 1980:2016)))
+              any(!(years.obs %in% 1980:2019)))
             cli::cli_abort(c("x" = "Available years for observations are 1980:2016"))
 
           if (any(!(years.proj %in% 2006:2099)))
@@ -90,7 +93,7 @@ load_data <-
 
         } else if (is.null(path.to.data)) {
           cli::cli_alert_warning(
-            c("!" = "Only observations will be uploaded, which limits the functionalities of CAVAanalytics to one function only")
+            c("!" = "Only observations will be uploaded")
           )
         } else {
           if (!is.null(domain))
@@ -264,7 +267,7 @@ load_data <-
         paste0(
           "Downloading CORDEX-CORE data (" ,
           ifelse(is.null(years.hist), 12, ifelse(is.null(years.proj), 6, 18)),
-          " simulations). This might take a while. Using ",
+          " simulations). This might take hours. Using ",
           n.sessions,
           " sessions",
           ifelse(n.sessions == 6, " by default", "")
@@ -364,7 +367,7 @@ load_data <-
     } else {
       # when path.to.data is NULL and only observations are needed
 
-      models_df <- dplyr::tibble() # empty tibble to add obs later
+      models_df <- dplyr::tibble(obs=NA) # empty tibble to add obs later
 
     }
 
@@ -379,7 +382,7 @@ load_data <-
         path.to.obs
       ))
 
-      out_obs <- list(suppressMessages(
+      out_obs <- suppressMessages(list(
         loadGridData(
           obs.file,
           var = if (path.to.obs == "ERA5")
@@ -402,7 +405,7 @@ load_data <-
           season = 1:12,
           aggr.m = aggr.m
         )
-      ) %>%
+      %>%
         {
           if (path.to.obs == "ERA5" | path.to.obs == "W5E5") {
             if (stringr::str_detect(variable, "tas")) {
@@ -415,31 +418,30 @@ load_data <-
           } else {
             .
           }
-        })
+        }))
 
       cli::cli_progress_done()
+
     }
 
     # Add obs to models_df if loaded
-    models_df <- models_df %>%
-      dplyr::mutate(obs = if (!is.null(path.to.obs))
-        out_obs
-        else
-          NULL)
+
+    models_df$obs <-  if (!is.null(path.to.obs)) out_obs else NULL
 
     # Conversion of units messages
+    if (!is.null(path.to.data)) {
+      if (path.to.data == "CORDEX-CORE") {
+        if (variable == "pr")  {
+          cli::cli_text(
+            "{cli::symbol$arrow_right} Precipitation data from CORDEX-CORE has been converted into mm/day"
+          )
+        }  else if (stringr::str_detect(variable, "tas")) {
+          cli::cli_text(
+            "{cli::symbol$arrow_right} Temperature data from CORDEX-CORE has been converted into Celsius"
+          )
+        }
 
-    if (path.to.data == "CORDEX-CORE") {
-      if (variable == "pr")  {
-        cli::cli_text(
-          "{cli::symbol$arrow_right} Precipitation data from CORDEX-CORE has been converted into mm/day"
-        )
-      }  else if (stringr::str_detect(variable, "tas")) {
-        cli::cli_text(
-          "{cli::symbol$arrow_right} Temperature data from CORDEX-CORE has been converted into Celsius"
-        )
       }
-
     }
 
     if (!is.null(path.to.obs)) {

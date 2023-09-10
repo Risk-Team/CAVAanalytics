@@ -45,7 +45,7 @@ remotely (registered users can access the University of Cantabria
 JupyterHub) and through a Docker image.
 
 
-| ![framework](https://github.com/Risk-Team/CAVAanalytics/assets/40058235/ac4cfeae-d6d7-49eb-85c2-bfb6c44f39f6) |
+| ![framework](https://github.com/Risk-Team/CAVAanalytics/assets/40058235/cbaa3be1-4520-4bd7-9690-227dd82ecca5) |
 |:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
 | *CAVA framework. CAVA can be used through a graphic user interface (CAVA Platform) or through the CAVAanalytics R package. The package can be used locally (GitHub installation), remotely (University of Cantabria JupyterHub), or locally but through a Docker image to solve dependencies issues* |
 

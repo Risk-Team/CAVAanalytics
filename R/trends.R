@@ -47,7 +47,8 @@ trends = function(data,
         is.logical(observation),
         is.logical(intraannual_var)
       )
-
+      if (is.null(data[[1]]$models_mbrs))
+        cli::cli_abort(c("x" = "trends require projections even when observation is TRUE"))
       if (var != "pr" &
           intraannual_var)
         cli::cli_abort(c("x" = "intraannual variability is only meaningful for precipitation"))
@@ -74,7 +75,7 @@ trends = function(data,
         cli::cli_abort(c("x" = "select only one threshold"))
       if (!is.null(lowert) |
           !is.null(uppert)) {
-        dates <- data[[1]]$models_mbrs[[1]]$Dates$start
+        dates <-  data[[1]]$models_mbrs[[1]]$Dates$start
         dates <- as.Date(dates)
         # calculate the differences between consecutive dates
         diffs <- diff(dates)
@@ -93,11 +94,6 @@ trends = function(data,
       if (observation) {
         if (!any(stringr::str_detect(colnames(data[[1]]), "obs"))) {
           cli::cli_abort(c("x" = "An observational dataset is needed for this option, check your data"))
-        } else {
-          if (length(unique(
-            stringr::str_extract(data[[1]]$obs[[1]]$Dates$start, "\\d{4}")
-          )) < 20)
-            cli::cli_abort(c("x" = "To analyse trends, consider having at least 20 years of observations"))
         }
         if (bias.correction) {
           cli::cli_abort(
@@ -110,15 +106,6 @@ trends = function(data,
         cli::cli_abort(
           c("x" = "Bias correction cannot be performed, no observational dataset found. Set as F")
         )
-
-      }
-
-      if (length(unique(
-        stringr::str_extract(data[[1]]$models_mbrs[[2]]$Dates$start, "\\d{4}")
-      )) < 20) {
-        if (!observation) {
-          cli::cli_abort(c("x" = "To analyse trends, consider having at least 20 years of data"))
-        }
 
       }
 
@@ -239,7 +226,8 @@ trends = function(data,
         {
           if (bias.correction) {
             cli::cli_text(
-              paste("{cli::symbol$arrow_right}",
+              paste(
+                "{cli::symbol$arrow_right}",
                 " Performing bias correction with the empirical quantile mapping",
                 " method, for each model and month separately. This can take a while. Season",
                 glue::glue_collapse(season, "-")
@@ -268,7 +256,9 @@ trends = function(data,
                             mod_temp$Dates$start <- x$Dates$start
                             mod_temp$Dates$end <-  x$Dates$end
                             if (any(is.na(mod_temp$Data)))
-                              cli::cli_text("{cli::symbol$arrow_right} Bias correction has introduced NA values in certain pixels. Proceed with care")
+                              cli::cli_text(
+                                "{cli::symbol$arrow_right} Bias correction has introduced NA values in certain pixels. Proceed with care"
+                              )
                             return(mod_temp)
                           }))
           } else
@@ -317,8 +307,8 @@ trends = function(data,
                 cli::cli_text(paste0("{cli::symbol$arrow_right}", " Processing ", y))
                 c4R <- x
                 results <- ens_trends(x)
-                c4R$Data <- results[1, , ] # coef
-                x$Data <- results[2, , ] # p.value
+                c4R$Data <- results[1, ,] # coef
+                x$Data <- results[2, ,] # p.value
 
                 coef <-  make_raster(c4R, c(1, 2), country_shp)
 
@@ -333,14 +323,14 @@ trends = function(data,
 
               }),
               models_spat = purrr::map2(models_agg_y, experiment, function(x, y) {
-                cli::cli_text(paste0("{cli::symbol$arrow_right}"," Processing ", y))
+                cli::cli_text(paste0("{cli::symbol$arrow_right}", " Processing ", y))
                 c4R <- x
                 results <- models_trends(x)
-                c4R$Data <- results[1, , , ]# coef
-                x$Data <- results[2, , , ] # p.value
+                c4R$Data <- results[1, , ,]# coef
+                x$Data <- results[2, , ,] # p.value
                 rst_stack_coef <-
                   lapply(1:dim(c4R$Data)[1], function(i_mod) {
-                    c4R$Data <- c4R$Data[i_mod, , ]
+                    c4R$Data <- c4R$Data[i_mod, ,]
                     rst <- make_raster(c4R, c(1, 2), country_shp)
                     names(rst) <-
                       paste0("Member ", i_mod, "_", y, "_coef_" , names(rst))
@@ -349,7 +339,7 @@ trends = function(data,
 
                 rst_stack_p <-
                   lapply(1:dim(x$Data)[1], function(i_mod) {
-                    x$Data <- x$Data[i_mod, , ]
+                    x$Data <- x$Data[i_mod, ,]
                     rst <- make_raster(x, c(1, 2), country_shp)
                     names(rst) <-
                       paste0("Member ", i_mod, "_", y, "_p_" , names(rst))
@@ -397,8 +387,8 @@ trends = function(data,
                   cli::cli_text("{cli::symbol$arrow_right} Processing observation")
                   c4R <- x
                   results <- models_trends(x, observation = T)
-                  c4R$Data <- results[1, , ]# coef
-                  x$Data <- results[2, , ] # p.value
+                  c4R$Data <- results[1, ,]# coef
+                  x$Data <- results[2, ,] # p.value
 
                   coef <- make_raster(c4R, c(1, 2), country_shp)
                   names(coef) <-
@@ -494,8 +484,8 @@ trends = function(data,
   # retrieve information
   datasets <- data[[1]]
   country_shp <- data[[2]]
-  var <- datasets$models_mbrs[[1]]$Variable$varName
-  dates <-  datasets$models_mbrs[[1]]$Dates$start
+  var <-  datasets$models_mbrs[[1]]$Variable$varName
+  dates <- datasets$models_mbrs[[1]]$Dates$start
   dates <- as.Date(dates)
   # calculate the differences between consecutive dates to understand temporal resolution and adjust the window argument in bias correction
   diffs <- diff(dates)
@@ -533,14 +523,17 @@ trends = function(data,
   # filter data by season
   datasets <- filter_data_by_season(datasets, season)
 
-  cli::cli_text(paste0("{cli::symbol$arrow_right}",
-    " trends,",
-    ifelse(observation, " observations,", " projections,"),
-    " season ",
-    glue::glue_collapse(season, "-"),
-    ". ",
-    mes
-  ))
+  cli::cli_text(
+    paste0(
+      "{cli::symbol$arrow_right}",
+      " trends,",
+      ifelse(observation, " observations,", " projections,"),
+      " season ",
+      glue::glue_collapse(season, "-"),
+      ". ",
+      mes
+    )
+  )
 
   # perform operations
 

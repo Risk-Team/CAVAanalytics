@@ -65,7 +65,7 @@ load_data_and_trends <- function(variable,
       # set xlim and ylim for current chunk
       xlim_chunk <- c(x_chunks[i] - overlap, x_chunks[i + 1])
       ylim_chunk <- c(y_chunks[j] - overlap, y_chunks[j + 1])
-      cli::cli_alert_success(paste(
+      cli::cli_progress_step(paste(
         paste0("Loading and processing spatial CHUNK_", i, "_", j),
         ". Coordinates ",
         "xlim=",
@@ -107,7 +107,7 @@ load_data_and_trends <- function(variable,
 
       # add chunk to output list
       out_list[[paste0("chunk_", i, "_", j)]] <- proj_chunk
-
+      cli::cli_process_done()
     }
   }
   cli::cli_progress_step("Merging rasters")

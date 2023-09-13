@@ -29,6 +29,7 @@ reference:
     Load, process and visualize
   contents:
   - load_data
+  - load_data_hub
   - model_biases
   - projections
   - climate_change_signal

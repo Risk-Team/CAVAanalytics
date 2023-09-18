@@ -17,6 +17,7 @@
 #' @param aggr.m character, monthly aggregation. One of none, mean or sum
 #' @return list of length 2. List[[1]] contains a tibble with list columns and List[[2]] the bbox
 #' @importFrom magrittr %>%
+#' @importFrom loadeR loadGridData
 #'
 #' @export
 
@@ -194,7 +195,7 @@ load_data_hub <-
         climate_data = furrr::future_map(path,   function(x)  {
           if (stringr::str_detect(x, "historical"))
             suppressMessages(
-              loadeR::loadGridData(
+              loadGridData(
                 dataset = x,
                 var = variable,
                 years = years.hist,
@@ -206,7 +207,7 @@ load_data_hub <-
 
           else
             suppressMessages(
-              loadeR::loadGridData(
+              loadGridData(
                 dataset = x,
                 var = variable,
                 years = years.proj,
@@ -256,7 +257,7 @@ load_data_hub <-
         paste0(path.to.data,"/observations/ERA5/v1.0/w5e5_v1.0.ncml")
 
       obs = list(suppressMessages(
-        loadeR::loadGridData(
+        loadGridData(
           path,
           var = variable,
           years = if (is.null(years.obs))

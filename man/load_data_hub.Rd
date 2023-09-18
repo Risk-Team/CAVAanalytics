@@ -5,6 +5,7 @@
 \title{Models upload (only works from the University of Cantabria Jupyter HUB environment)}
 \usage{
 load_data_hub(
+  path.to.data = "/home/jovyan/shared/data",
   country,
   variable,
   xlim = NULL,
@@ -19,6 +20,8 @@ load_data_hub(
 )
 }
 \arguments{
+\item{path.to.data}{character, indicating the shared path to the data. Leave as default unless necessary}
+
 \item{country}{character, in English, indicating the country of interest. To select a bounding box,
 set country to NULL and define arguments xlim and ylim}
 

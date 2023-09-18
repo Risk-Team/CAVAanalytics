@@ -2,7 +2,7 @@
 #'
 #' Automatically upload CORDEX-CORE models available at UC servers
 
-
+#' @param path.to.data character, indicating the shared path to the data. Leave as default unless necessary
 #' @param country character, in English, indicating the country of interest. To select a bounding box,
 #' set country to NULL and define arguments xlim and ylim
 #' @param variable  character indicating the variable name
@@ -22,7 +22,8 @@
 
 
 load_data_hub <-
-  function(country,
+  function(path.to.data="/home/jovyan/shared/data",
+           country,
            variable,
            xlim = NULL,
            ylim = NULL,
@@ -137,7 +138,7 @@ load_data_hub <-
 
     # making the dataset
     start <-
-      paste0("/home/jovyan/shared/data/ncml/ESGF/interp05/CORDEX/output/",
+      paste0(path.to.data, "/ncml/ESGF/interp05/CORDEX/output/",
              domain,
              "//")
     run <-
@@ -250,9 +251,9 @@ load_data_hub <-
     if (!is.null(path.to.obs)) {
       path <-
         if (path.to.obs == "W5E5")
-          "/home/jovyan/shared/data/observations/W5E5/v1.0/w5e5_v1.0.ncml"
+          paste0(path.to.data, "/observations/W5E5/v1.0/w5e5_v1.0.ncml")
       else
-        "/home/jovyan/shared/data/observations/ERA5/v1.0/w5e5_v1.0.ncml"
+        paste0(path.to.data,"/observations/ERA5/v1.0/w5e5_v1.0.ncml")
 
       obs = list(suppressMessages(
         loadeR::loadGridData(

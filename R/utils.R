@@ -109,7 +109,7 @@ thrs_consec = function(col, duration, lowert, uppert) {
     return(max(consec_days))
 
   } else{
-    return(sum(consec_days[consec_days >= 6]))
+    return(sum(consec_days[consec_days >= 6], na.rm=T))
 
   }
 
@@ -134,56 +134,15 @@ thrs = function(col, lowert, uppert) {
     stop("input has to be a numeric vector")
 
   if (!is.null(lowert)) {
-    sum(col < lowert)
+    sum(col < lowert, na.rm=T)
 
   } else{
-    sum(col > uppert)
+    sum(col > uppert, na.rm = T)
 
   }
 
 }
 
-
-# ime of emergence. Yes when mean/SD > or < 1 for at least 5 consecutive years
-
-ToE <- function(x, array)  {
-  array_names <- dimnames(array)[3]
-  if (is.null(array_names))
-    stop("Your array does not have named 3rd dimension. Check your input")
-  array_names <- as.numeric(unlist(array_names))
-
-  if (length(x) < 5)
-    stop("your data contains 6 time series only")
-
-  tmp <- vector(mode = "numeric", length = (length(x) - 5))
-
-  for (i in 1:(length(x) - 5)) {
-    if (x[i] >= 1 &
-        x[i + 1] >= 1  & x[i + 2] >= 1 &
-        x[i + 3] >= 1 & x[i + 4] >= 1 & x[i + 5] >= 1) {
-      tmp[i] <- array_names[i]
-
-    } else if (x[i] <= -1 &
-               x[i + 1] <= -1  &
-               x[i + 2] <= -1  & x[i + 3] <= -1  & x[i + 4] <= -1  &
-               x[i + 5] <= -1) {
-      tmp[i] <- -array_names[i]
-
-    }  else
-      tmp[i]  <- NA
-
-  }
-
-  if (any(is.numeric(tmp)))  {
-    tmp <- tmp[!is.na(tmp)] [1]
-
-  } else {
-    tmp <- tmp[is.na(tmp)][1]
-  }
-
-  return(tmp)
-
-}
 
 
 #' Apply multivariate linear regression to a multimember grid

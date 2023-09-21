@@ -49,7 +49,8 @@ load_data_and_projections <- function(variable,
   }
   x_chunks <- seq(from = xlim[1], to = xlim[2], by = chunk.size)
   y_chunks <- seq(from = ylim[1], to = ylim[2], by = chunk.size)
-
+  x_chunks <- if (length(x_chunks)<2)  xlim else x_chunks
+  y_chunks <- if (length(y_chunks)<2)  ylim else y_chunks
   # create empty list to store output
   out_list <- list()
   # set parallel processing

@@ -20,7 +20,7 @@
 
 The load_data function from CAVAanalytics can be relatively slow but in the next release, we will use xarray in the background to speed up the process. 
 
-## Quick intro on CAVA and climate models
+## Quick intro on climate models
 CAVA (Climate and Agriculture Risk Visualization and Assessment) is a
 framework and approach to climate services developed jointly by **The Food and Agriculture Organization of the United Nations (FAO) and the University of Cantabria**. CAVA makes use of climate models to inform users about future climate conditions (climate projections in jargon). Climate modeling is a complex subject but a very good and gentle introduction to this topic is given by Andy Pitman and colleagues and can be downloaded [here](https://climateextremes.org.au/wp-content/uploads/Climate-modelling-an-overview-The-ARC-Centre-of-Excellence-for-Climate-Extremes.pdf). You are strongly encouraged to read it if you are new to this topic.  
 
@@ -31,11 +31,13 @@ CAVA makes use of particular types of climate models, called Regional Climate Mo
 |    *Boundaries of the fourteen official CORDEX domains. [Source](https://cordex.org/data-access/regional-climate-change-simulations-for-cordex-domains/)*  |
 
 
-
 ## More about CAVA
 
+Traditionally, the approach to climate science consisted of providing means for visualizing climate models and information (e.g IPCC Interactive Atlas) or access points to the raw data (ESGF, Copernicus). These two approaches mainly serve basic users (the former) or advanced users (the latter). 
+
 CAVA (Climate and Agriculture Risk Visualization and Assessment) is a
-framework and approach to climate services developed jointly by **The Food and Agriculture Organization of the United Nations (FAO) and the University of Cantabria**. [CAVA is made of a Platform
+framework and approach to climate services developed jointly by **The Food and Agriculture Organization of the United Nations (FAO) and the University of Cantabria** that aim at serving both standard users (users who need a GUI) and intermediate users (users with some programming skills who needs easy access to climate data and downstream analyses).
+Therefore, [CAVA is made of a Platform
 (GUI)](https://fao-cava.predictia.es/), which is freely accessible
 and satisfy the needs of most standard users interested in climate and climate change impacts in agriculture and an R package
 ([**CAVAanalytics**](https://risk-team.github.io/CAVAanalytics/)), which empowers users with direct access to high-resolution climate models and means for easily working and calculating climatic indicators on multi-model ensembles. 

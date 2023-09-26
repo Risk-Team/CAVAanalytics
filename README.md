@@ -16,9 +16,9 @@
 
 #### **Updates
 
-**Some updates are currently underway, in particular, related to CAVA Platform interface. Please note that only the CORDEX-CORE AFR-22 domain is available as of September 2023. Tentatively, we will be releasing one domain per month afterward**.
+**Please note that only the CORDEX-CORE AFR-22 domain is available as of September 2023. Tentatively, we will be releasing one domain per month afterward**.
 
-Dedicated **Python** support is coming soon. The load_data function from CAVAanalytics can be relatively slow but in the next release of CAVAanalytics we will use xarray in the background to speed up the process. 
+The load_data function from CAVAanalytics can be relatively slow but in the next release, we will use xarray in the background to speed up the process. 
 
 ## Quick intro on CAVA and climate models
 CAVA (Climate and Agriculture Risk Visualization and Assessment) is a

@@ -37,9 +37,10 @@ Traditionally, the approach to climate science consisted of providing means for 
 
 CAVA (Climate and Agriculture Risk Visualization and Assessment) is a
 framework and approach to climate services developed jointly by **The Food and Agriculture Organization of the United Nations (FAO) and the University of Cantabria** that aim at serving both standard users (users who need a GUI) and intermediate users (users with some programming skills who needs easy access to climate data and downstream analyses).
+
 Therefore, [CAVA is made of a Platform
 (GUI)](https://fao-cava.predictia.es/), which is freely accessible
-and satisfy the needs of most standard users interested in climate and climate change impacts in agriculture and an R package
+and satisfy the needs of most standard users interested in climate (and climate change impacts in agriculture) and an R package
 ([**CAVAanalytics**](https://risk-team.github.io/CAVAanalytics/)), which empowers users with direct access to high-resolution climate models and means for easily working and calculating climatic indicators on multi-model ensembles. 
 
 CAVAanalytics can be used locally (installation through GitHub),

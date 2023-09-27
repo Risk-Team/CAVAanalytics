@@ -142,6 +142,11 @@ of the country and the number of years specified</strong></p>
 <span><span class="co"># the column models_mbrs stands for model members. The structure of this element comes from the loadeR package. The data is contained in the data element, and as you can see, it has 6 members. CAVAanalytics automatically binds together multiple models and checks for temporal consistency.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">kenya_exmp</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">models_mbrs</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">Data</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1]    6 9278   42   33</span></span></code></pre></div>
+<p>When uploading CORDEX-CORE data it is important to understand the
+concept of CORDEX domains. The domain argument in load_data needs to be
+correctly specified. Below is an example of the available CORDEX
+domains.</p>
+<p><img src="domains.png" id="fig:figure-1"></p>
 </div>
 <div class="section level2">
 <h2 id="observations">Observations<a class="anchor" aria-label="anchor" href="#observations"></a>

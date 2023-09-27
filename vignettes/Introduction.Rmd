@@ -35,6 +35,7 @@ Available variables are:
 * Daily wind speed (sfcWind)
 * Daily solar radiation (rsds)
 
+
 ## Loading CORDEX-CORE data
 Below we are automatically downloading all CORDEX-CORE simulations alongside the observational dataset ERA5 for Kenya. As you can see, it is extremely simple. We will see how to work with locally available models in another vignette.  
 **Note that this process can take a while, depending on the size of the country and the number of years specified**
@@ -56,6 +57,10 @@ kenya_exmp[[1]]$experiment
 # the column models_mbrs stands for model members. The structure of this element comes from the loadeR package. The data is contained in the data element, and as you can see, it has 6 members. CAVAanalytics automatically binds together multiple models and checks for temporal consistency.
 dim(kenya_exmp[[1]]$models_mbrs[[1]]$Data)
 ```
+
+When uploading CORDEX-CORE data it is important to understand the concept of CORDEX domains. The domain argument in load_data needs to be correctly specified. Below is an example of the available CORDEX domains.
+
+![](domains.png){#fig:figure-1}
 
 ## Observations
 

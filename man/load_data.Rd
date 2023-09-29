@@ -17,7 +17,8 @@ load_data(
   domain = NULL,
   aggr.m = "none",
   n.sessions = 6,
-  years.obs = NULL
+  years.obs = NULL,
+  xarray = F
 )
 }
 \arguments{
@@ -48,6 +49,8 @@ set country to NULL and define arguments xlim and ylim}
 \item{n.sessions}{numeric, number of sessions to use in parallel processing. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary}
 
 \item{years.obs}{NULL or numeric, specify year range for observation. Specifying years.obs will overwrite years.hist for observations}
+
+\item{xarray}{logical, whether to use xarray for uploading the data. This option results in 4x speed increase but it requires reticulate (R package) and xarray (python package) to be installed.}
 }
 \value{
 list of length 3. List[[1]] contains a tibble with list columns. List[[2]] the bbox and list[[3]] the temporal structure of the models

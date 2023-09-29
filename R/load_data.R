@@ -18,8 +18,8 @@
 #' @param buffer numeric, default is zero.
 #' @param aggr.m character, monthly aggregation. One of none, mean or sum
 #' @param n.sessions numeric, number of sessions to use in parallel processing. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary
+#' @param xarray logical, whether to use xarray for uploading the data. This option results in 2x speed increase but it requires reticulate (R package) and xarray (python package) to be installed.
 #' @return list of length 3. List[[1]] contains a tibble with list columns. List[[2]] the bbox and list[[3]] the temporal structure of the models
-#' @importFrom loadeR loadGridData
 #' @importFrom magrittr %>%
 #'
 #' @export
@@ -38,7 +38,8 @@ load_data <-
            domain = NULL,
            aggr.m = "none",
            n.sessions = 6,
-           years.obs = NULL) {
+           years.obs = NULL,
+           xarray = F) {
     # intermediate functions --------------------------------------------------
 
     # check that the arguments have been correctly specified and return an error when not
@@ -52,12 +53,23 @@ load_data <-
                aggr.m,
                n.sessions,
                path.to.obs,
-               years.obs) {
+               years.obs,
+               xarray) {
         stopifnot(is.numeric(n.sessions))
         match.arg(aggr.m, choices = c("none", "sum", "mean"))
         if (!is.null(domain)) {
-        match.arg(domain, choices = c("AFR-22", "SEA-22", "AUS-22", "EAS-22", "CAM-22", "SAM-22"))
-        if (domain!="AFR-22") cli::cli_abort(c("x" = "Only AFR-22 is available as of September 2023"))}
+          match.arg(domain,
+                    choices = c(
+                      "AFR-22",
+                      "SEA-22",
+                      "AUS-22",
+                      "EAS-22",
+                      "CAM-22",
+                      "SAM-22"
+                    ))
+          if (domain != "AFR-22")
+            cli::cli_abort(c("x" = "Only AFR-22 is available as of September 2023"))
+        }
         if (is.null(years.proj) &
             is.null(years.hist) & is.null(years.obs))
           cli::cli_abort(c("x" = "select at least one of years.hist, years.proj or years.obs"))
@@ -92,9 +104,7 @@ load_data <-
                       choices = c("tas", "tasmax", "tasmin", "hurs", "rsds", "sfcWind", "pr"))
 
         } else if (is.null(path.to.data)) {
-          cli::cli_alert_warning(
-            c("!" = "Only observations will be uploaded")
-          )
+          cli::cli_alert_warning(c("!" = "Only observations will be uploaded"))
         } else {
           if (!is.null(domain))
             cli::cli_alert_warning(c("!" = "Argument domain is ignored"))
@@ -132,7 +142,9 @@ load_data <-
 
     # create the file names used later for the loadGridData function for remote upload
 
-    load_cordex_data <- function(domain) {
+    load_cordex_data <- function(domain, xarray) {
+      if (xarray)
+        cli::cli_alert_warning("Option xarray=TRUE requires reticulate and xarray. Use xarray=F if uploading local data")
       cli::cli_progress_step("Accessing inventory")
       csv_url <- "https://data.meteo.unican.es/inventory.csv"
       data <- read.csv(url(csv_url)) %>%
@@ -236,7 +248,7 @@ load_data <-
     if (is.null(path.to.data)) {
 
     } else if (path.to.data == "CORDEX-CORE") {
-      files <- load_cordex_data(domain)
+      files <- load_cordex_data(domain, xarray)
       experiment <-
         if (!is.null(years.hist) & !is.null(years.proj))
           c("historical", "rcp26", "rcp85")
@@ -267,7 +279,9 @@ load_data <-
         paste0(
           "Downloading CORDEX-CORE data (" ,
           ifelse(is.null(years.hist), 12, ifelse(is.null(years.proj), 6, 18)),
-          " simulations). This might take hours. Using ",
+          " simulations)",
+          ifelse(xarray, " using xarray", ""),
+          ". Using ",
           n.sessions,
           " sessions",
           ifelse(n.sessions == 6, " by default", "")
@@ -277,31 +291,37 @@ load_data <-
       cli::cli_progress_step("Uploading local data...")
     }
 
+    load_data_sel <-
+      if (xarray)
+        match.fun("loadGridData_xarray")
+    else
+      get("loadGridData", envir = asNamespace("loadeR"))
+
     if (!is.null(path.to.data)) {
       # when observations only are to be loaded or downloaded
 
       models_df <-
         dplyr::tibble(path = files, experiment = experiment) %>%
         tidyr::unnest(cols = path) %>%
-        dplyr::mutate(models = furrr::future_map(unlist(files), function(x)  {
+        dplyr::mutate(models = suppressWarnings(furrr::future_map(unlist(files), function(x)  {
           if (stringr::str_detect(x, "historical")) {
-            data <- suppressMessages(
-              loadGridData(
-                dataset = x,
-                var = variable,
-                years = years.hist,
-                lonLim = xlim,
-                latLim = ylim,
-                season = 1:12,
-                aggr.m =  aggr.m
-              )
-            ) %>%
+            data <-
+              suppressMessages(
+                load_data_sel(
+                  dataset = x,
+                  var = variable,
+                  years = years.hist,
+                  lonLim = xlim,
+                  latLim = ylim,
+                  aggr.m =  aggr.m
+                )
+              ) %>%
               {
                 if (path.to.data == "CORDEX-CORE") {
                   if (stringr::str_detect(variable, "tas")) {
-                    transformeR::gridArithmetics(., 273.15, operator = "-")
+                    suppressMessages(transformeR::gridArithmetics(., 273.15, operator = "-"))
                   } else if (stringr::str_detect(variable, "pr")) {
-                    transformeR::gridArithmetics(., 86400, operator = "*")
+                    suppressMessages(transformeR::gridArithmetics(., 86400, operator = "*"))
 
                   }
 
@@ -314,23 +334,23 @@ load_data <-
 
             return(data)
           } else {
-            data <- suppressMessages(
-              loadGridData(
-                dataset = x,
-                var = variable,
-                years = years.proj,
-                lonLim = xlim,
-                latLim = ylim,
-                season = 1:12,
-                aggr.m =  aggr.m
-              )
-            ) %>%
+            data <-
+              suppressMessages(
+                load_data_sel(
+                  dataset = x,
+                  var = variable,
+                  years = years.proj,
+                  lonLim = xlim,
+                  latLim = ylim,
+                  aggr.m =  aggr.m
+                )
+              ) %>%
               {
                 if (path.to.data == "CORDEX-CORE") {
                   if (stringr::str_detect(variable, "tas")) {
-                    transformeR::gridArithmetics(., 273.15, operator = "-")
+                    suppressMessages(transformeR::gridArithmetics(., 273.15, operator = "-"))
                   } else if (stringr::str_detect(variable, "pr")) {
-                    transformeR::gridArithmetics(., 86400, operator = "*")
+                    suppressMessages(transformeR::gridArithmetics(., 86400, operator = "*"))
 
                   }
 
@@ -344,7 +364,7 @@ load_data <-
             return(data)
           }
 
-        })) %>%
+        }))) %>%
         dplyr::group_by(experiment) %>%
         dplyr::summarise(models_mbrs = list(models))
 
@@ -367,7 +387,8 @@ load_data <-
     } else {
       # when path.to.data is NULL and only observations are needed
 
-      models_df <- dplyr::tibble(obs=NA) # empty tibble to add obs later
+      models_df <-
+        dplyr::tibble(obs = NA) # empty tibble to add obs later
 
     }
 
@@ -383,7 +404,7 @@ load_data <-
       ))
 
       out_obs <- suppressMessages(list(
-        loadGridData(
+        load_data_sel(
           obs.file,
           var = if (path.to.obs == "ERA5")
             c(
@@ -402,23 +423,23 @@ load_data <-
             years.hist,
           lonLim = xlim,
           latLim = ylim,
-          season = 1:12,
           aggr.m = aggr.m
         )
-      %>%
-        {
-          if (path.to.obs == "ERA5" | path.to.obs == "W5E5") {
-            if (stringr::str_detect(variable, "tas")) {
-              transformeR::gridArithmetics(., 273.15, operator = "-")
-            } else if (stringr::str_detect(variable, "pr")) {
-              transformeR::gridArithmetics(.,
-                                           ifelse(path.to.obs == "ERA5", 1000, 86400),
-                                           operator = "*")
+        %>%
+          {
+            if (path.to.obs == "ERA5" | path.to.obs == "W5E5") {
+              if (stringr::str_detect(variable, "tas")) {
+                transformeR::gridArithmetics(., 273.15, operator = "-")
+              } else if (stringr::str_detect(variable, "pr")) {
+                transformeR::gridArithmetics(.,
+                                             ifelse(path.to.obs == "ERA5", 1000, 86400),
+                                             operator = "*")
+              }
+            } else {
+              .
             }
-          } else {
-            .
           }
-        }))
+      ))
 
       cli::cli_progress_done()
 
@@ -426,7 +447,10 @@ load_data <-
 
     # Add obs to models_df if loaded
 
-    models_df$obs <-  if (!is.null(path.to.obs)) out_obs else NULL
+    models_df$obs <-  if (!is.null(path.to.obs))
+      out_obs
+    else
+      NULL
 
     # Conversion of units messages
     if (!is.null(path.to.data)) {

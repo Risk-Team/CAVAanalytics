@@ -9,6 +9,9 @@ output:
     toc_depth: 2
 ---
 
+## CAVAanalytics 1.2.0
+- Added xarray option in load_data to increase speed
+
 ## CAVAanalytics 1.1.3
 - Added function model_biases to look at the delta between observation and model simulations
 - Customized cli messages and improved clarity

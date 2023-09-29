@@ -17,6 +17,114 @@ common_dates <- function(data) {
   return(transformeR::bindGrid(data.filt, dimension = "member"))
 }
 
+#' Load data using xarray
+#'
+#' automatically using xarray and converting into C4R list for remote data access. Only works for data stored at UC server
+#' @export
+
+loadGridData_xarray <-
+  function(dataset,
+           var,
+           lonLim,
+           latLim,
+           years,
+           aggr.m = "none") {
+    cli::cli_inform("This function requires reticulate and xarray!")
+    cli::cli_progress_step("Downloading data")
+    library(reticulate)
+    xarray <- import("xarray")
+
+    # opne the dataset. W5E5 has a different structure
+    ds <- if (stringr::str_detect(dataset, "W5E5")) {
+      xarray$open_dataset(dataset)$sel(
+        lat = seq(
+          from = latLim[2],
+          to = latLim[1],
+          by = -0.5
+        ),
+        lon = seq(lonLim[2], lonLim[1], by = -0.5),
+        method = "nearest"
+      )[[var]]
+
+
+    } else {
+      xarray$open_dataset(dataset)$sel(
+        latitude = seq(
+          from = latLim[2],
+          to = latLim[1],
+          by = -0.25
+        ),
+        longitude = seq(lonLim[2], lonLim[1], by = -0.25),
+        method = "nearest"
+      )[[var]]
+
+    }
+
+    # select years
+
+    time_mask = (ds['time']$dt$year$values >= years[1]) &
+      (ds['time']$dt$year$values <= years[length(years)])
+
+    ds_time <- ds$sel(time = time_mask)
+
+    # retrieve dates. Some RCMs have dates in cftime so it needs converstion
+    dates <-
+      if (any(stringr::str_detect(class(ds_time$time$values[[1]]), "cftime"))) {
+        date <-
+          xarray$cftime_range(start = ds_time$time$values[[1]],
+                              periods = length(ds_time$time))
+
+        date$strftime(date_format = "%Y-%m-%d")$values
+
+      } else {
+        ds_time$time$values
+
+      }
+
+    # building C4R object
+
+    C4R <- if (stringr::str_detect(dataset, "W5E5")) {
+      list(
+        Variable = list(varName = var),
+        Data = ds_time$values,
+        xyCoords = list(x = as.numeric(rev(
+          ds_time$lon$values
+        )), y = as.numeric(rev(
+          ds_time$lat$values
+        ))),
+        Dates = list(start = as.character(dates), end = as.character(dates))
+      )
+
+    } else {
+      list(
+        Variable = list(varName = var),
+        Data = ds_time$values,
+        xyCoords = list(x = as.numeric(rev(
+          ds_time$longitude$values
+        )), y = as.numeric(rev(
+          ds_time$latitude$values
+        ))),
+        Dates = list(start = as.character(dates), end = as.character(dates))
+      )
+
+
+    }
+
+    attributes(C4R$Data) <-
+      list(dimensions = c("time", "lat", "lon"),
+           dim = dim(C4R$Data))
+
+    cli::cli_progress_done()
+
+    if (aggr.m == "none") {
+      invisible(C4R)
+    } else {
+      invisible(transformeR::aggregateGrid(C4R, aggr.m = list(FUN = aggr.m)))
+
+    }
+
+  }
+
 #' make a raster
 #'
 #' Make a spatRaster from a C4R list with dim(Data)=2
@@ -32,12 +140,12 @@ make_raster <- function(cl4.object, dimensions, shape.file) {
     if (is.null(cl4.object$xyCoords$lon))
       min(cl4.object$xyCoords$x)
   else
-    min(cl4.object$xyCoords$lon[1, ])
+    min(cl4.object$xyCoords$lon[1,])
   xmax <-
     if (is.null(cl4.object$xyCoords$lon))
       max(cl4.object$xyCoords$x)
   else
-    max(cl4.object$xyCoords$lon[1, ])
+    max(cl4.object$xyCoords$lon[1,])
   ymin <-
     if (is.null(cl4.object$xyCoords$lat))
       min(cl4.object$xyCoords$y)
@@ -109,7 +217,7 @@ thrs_consec = function(col, duration, lowert, uppert) {
     return(max(consec_days))
 
   } else{
-    return(sum(consec_days[consec_days >= 6], na.rm=T))
+    return(sum(consec_days[consec_days >= 6], na.rm = T))
 
   }
 
@@ -134,7 +242,7 @@ thrs = function(col, lowert, uppert) {
     stop("input has to be a numeric vector")
 
   if (!is.null(lowert)) {
-    sum(col < lowert, na.rm=T)
+    sum(col < lowert, na.rm = T)
 
   } else{
     sum(col > uppert, na.rm = T)
@@ -182,14 +290,14 @@ ens_trends <- function(c4R) {
       out <- anova(mnlm, p.uni = "adjusted")
 
       sig.models <-
-        names(out$uni.p[2, ][out$uni.p[2, ] < 0.05]) # names of models with significance (p.value < 0.05)
+        names(out$uni.p[2,][out$uni.p[2,] < 0.05]) # names of models with significance (p.value < 0.05)
       colnames(mnlm$coefficients) <- paste0("X", 1:mbrs)
       coef_res <- mnlm$coefficients[2,  sig.models]
       prop_res <-
         if (length(coef_res) == 0)
           999
       else
-        sum(ifelse(coef_res  >= 0, 1,-1)) # number of models, with significance, that shows an increaseor decraese. 999 assign to NA
+        sum(ifelse(coef_res  >= 0, 1, -1)) # number of models, with significance, that shows an increaseor decraese. 999 assign to NA
       cbind(prop_res, out$table[2, 4])
 
     })
@@ -208,14 +316,14 @@ ens_trends <- function(c4R) {
     out <- anova(mnlm, p.uni = "adjusted")
 
     sig.models <-
-      names(out$uni.p[2, ][out$uni.p[2, ] < 0.05]) # names of models with significance (p.value < 0.05)
+      names(out$uni.p[2,][out$uni.p[2,] < 0.05]) # names of models with significance (p.value < 0.05)
     colnames(mnlm$coefficients) <- paste0("X", 1:mbrs)
     coef_res <- mnlm$coefficients[2,  sig.models]
     prop_res <-
       if (length(coef_res) == 0)
         999
     else
-      sum(ifelse(coef_res  >= 0, 1,-1)) # number of models, with significance, that shows an increase or decraese. 999 assign to NA
+      sum(ifelse(coef_res  >= 0, 1, -1)) # number of models, with significance, that shows an increase or decraese. 999 assign to NA
 
     df_tm_series <- reshape2::melt(c4R$Data)  %>%
       dplyr::select(-Var2) %>%

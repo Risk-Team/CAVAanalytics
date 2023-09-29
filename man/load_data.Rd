@@ -50,7 +50,7 @@ set country to NULL and define arguments xlim and ylim}
 
 \item{years.obs}{NULL or numeric, specify year range for observation. Specifying years.obs will overwrite years.hist for observations}
 
-\item{xarray}{logical, whether to use xarray for uploading the data. This option results in 4x speed increase but it requires reticulate (R package) and xarray (python package) to be installed.}
+\item{xarray}{logical, whether to use xarray for uploading the data. This option results in 2x speed increase but it requires reticulate (R package) and xarray (python package) to be installed.}
 }
 \value{
 list of length 3. List[[1]] contains a tibble with list columns. List[[2]] the bbox and list[[3]] the temporal structure of the models

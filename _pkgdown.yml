@@ -36,6 +36,7 @@ reference:
   - trends
   - observations
   - plotting
+  - extract_raster
 - title: Memory efficient
   desc: |
     Load and process in spatial chunks

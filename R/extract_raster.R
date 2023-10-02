@@ -15,6 +15,7 @@ extract_raster <-
     UseMethod("extract_raster")
   }
 
+#' @export
 extract_raster.CAVAanalytics_observations <- function(step2, filename, stat="mean", ensemble=F) {
 
 if (!stringr::str_ends(filename, ".tif")) cli::cli_abort("Your filename needs to have .tif extension")
@@ -25,7 +26,7 @@ terra::writeRaster(step2[[1]], filename = filename)
 cli::cli_process_done()
 
 }
-
+#' @export
 extract_raster.CAVAanalytics_projections <- function(step2, filename, stat="mean", ensemble=T) {
 if (!stringr::str_ends(filename, ".tif")) cli::cli_abort("Your filename needs to have .tif extension")
 match.arg(stat, choices = c("mean", "sd"))
@@ -51,7 +52,7 @@ cli::cli_process_done()
 
 }
 
-
+#' @export
 extract_raster.CAVAanalytics_ccs <- function(step2, filename, stat="mean", ensemble=T) {
   if (!stringr::str_ends(filename, ".tif")) cli::cli_abort("Your filename needs to have .tif extension")
   match.arg(stat, choices = c("mean", "sd"))
@@ -77,7 +78,7 @@ extract_raster.CAVAanalytics_ccs <- function(step2, filename, stat="mean", ensem
 
 }
 
-
+#' @export
 extract_raster.CAVAanalytics_trends <- function(step2, filename, stat="mean", ensemble=T) {
 
   cli::cli_alert_warning("Argument stat is ignored")

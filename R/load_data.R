@@ -271,7 +271,8 @@ load_data <-
     ylim <- result$ylim
 
     # making the dataset
-    future::plan(future::multisession, workers = if (n.sessions==6 & xarray) 5 else n.sessions)
+    n.sessions= if (n.sessions==6 & xarray) 5 else n.sessions
+    future::plan(future::multisession, workers = n.sessions)
     if (is.null(path.to.data)) {
 
     } else if (path.to.data == "CORDEX-CORE") {

@@ -153,7 +153,7 @@ library(CAVAanalytics)
  palette=IPCC_palette(type = "tmp", divergent = F), bins=T)
 ```
 
-| ![Rplot](https://github.com/Risk-Team/CAVAanalytics/assets/40058235/f8d30f00-597b-454b-9f44-52892e0ec211) |
+| ![Rplot01](https://github.com/Risk-Team/CAVAanalytics/assets/40058235/3dce772c-51e9-4cd1-9ad4-5ddfcdf75698) |
 |:-------------------------------------------------------------------------------------------------------------------:|
 | *Average annual projected change in maximum temperature compared to the 1990-2000 baseline period in Sudan* |
 

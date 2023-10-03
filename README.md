@@ -149,7 +149,7 @@ library(CAVAanalytics)
 # 2nd step
  climate_change_signal(remote.data, season=list(1:12), bias.correction = F) %>% 
 # 3rd step
- plotting(., ensemble=TRUE, plot_titles = "tmp change",
+ plotting(., ensemble=TRUE, plot_titles = "Temperature change (°C)",
  palette=IPCC_palette(type = "tmp", divergent = F), bins=T)
 ```
 

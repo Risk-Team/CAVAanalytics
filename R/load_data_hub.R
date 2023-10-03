@@ -15,6 +15,7 @@
 #' @param domain charachter, specify the CORDEX-CORE domain (e.g AFR-22, EAS-22).
 #' @param buffer numeric, default is zero.
 #' @param aggr.m character, monthly aggregation. One of none, mean or sum
+#' @param n.sessions numeric, number of sessions to use in parallel processing. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary
 #' @return list of length 2. List[[1]] contains a tibble with list columns and List[[2]] the bbox
 #' @importFrom magrittr %>%
 #' @importFrom loadeR loadGridData
@@ -34,7 +35,8 @@ load_data_hub <-
            domain,
            aggr.m = "none",
            path.to.obs = NULL,
-           years.obs = NULL) {
+           years.obs = NULL,
+           n.sessions=6) {
     # intermediate functions --------------------------------------------------
 
     # check that the arguments have been correctly specified and return an error when not
@@ -180,7 +182,7 @@ load_data_hub <-
       )  %>%
       list.files(., full.names = TRUE)
 
-    future::plan(future::multisession, workers = 6)
+    future::plan(future::multisession, workers = n.sessions)
     models_df <-
       dplyr::tibble(
         path = unlist(files),

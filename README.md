@@ -191,4 +191,8 @@ A dedicated function to automatically perform these steps will be made available
 
 ## Applications
 
-CAVAanalytics can be used by anyone interested in simple and more advanced climate change analyses or retrieving CORDEX-CORE data to be used in impact models. 
+CAVAanalytics can be used by anyone interested in simple and more advanced climate change analyses. You are also free to make use of the data as input for impact models. 
+
+## Contributing
+
+You are welcome to fork this repository and suggest new features. For any problem, you can open [issues](https://github.com/Risk-Team/CAVAanalytics/issues) by click on **New issue** 

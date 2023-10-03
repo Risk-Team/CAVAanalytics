@@ -180,7 +180,7 @@ load_data_hub <-
       )  %>%
       list.files(., full.names = TRUE)
 
-    future::plan(future::multisession, workers = n.sessions)
+    future::plan(future::multisession, workers = 6)
     models_df <-
       dplyr::tibble(
         path = unlist(files),

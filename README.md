@@ -18,7 +18,7 @@
 
 **Please note that only the CORDEX-CORE AFR-22 domain is available as of September 2023. Tentatively, we will be releasing one domain per month afterward**.
 
-**In the latest CAVAanalytics release the load_data function can use xarray to download data, considerably improving speed in certain cases**
+**In the latest CAVAanalytics release (v2) the load_data function can use xarray to download data, considerably improving speed in certain cases. Additionally, it is now possible to select multiple seasons at the same time.**
 
 ## Quick intro on climate models
 CAVA (Climate and Agriculture Risk Visualization and Assessment) is a

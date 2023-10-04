@@ -87,7 +87,7 @@ install_github("Risk-Team/CAVAanalytics")
 ```
 It is possible that the installation of loadR.java fails. The problem is probably related to the installation of rJava. Have a look at the [wiki
 page](https://github.com/SantanderMetGroup/loadeR/wiki/Installation) to
-solve the issue. If you are on windows, [follow this instructions](https://cimentadaj.github.io/blog/2018-05-25-installing-rjava-on-windows-10/installing-rjava-on-windows-10/)
+solve the issue. If you are on Windows, [follow this instructions](https://cimentadaj.github.io/blog/2018-05-25-installing-rjava-on-windows-10/installing-rjava-on-windows-10/).
 
 ### 2) JupyterHub
 

@@ -256,12 +256,22 @@ load_data_hub <-
         if (path.to.obs == "W5E5")
           paste0(path.to.data, "/observations/W5E5/v1.0/w5e5_v1.0.ncml")
       else
-        paste0(path.to.data,"/observations/ERA5/v1.0/w5e5_v1.0.ncml")
+        paste0(path.to.data,"/observations/ERA5/0.25/ERA5_025.ncml")
 
       obs = list(suppressMessages(
         loadGridData(
           path,
-          var = variable,
+          var = if (path.to.obs == "ERA5")
+            c(
+              "pr" = "tp",
+              "tasmax" = "t2mx",
+              "tasmin" = "t2mn",
+              "hurs" = "hurs",
+              "sfcWind" = "sfcwind",
+              "tas" = "t2m"
+            )[variable]
+          else
+            variable,
           years = if (is.null(years.obs))
             years.hist
           else
@@ -269,7 +279,20 @@ load_data_hub <-
           lonLim = xlim,
           latLim = ylim,
           season =1:12
-        )
+        )    %>%
+          {
+            if (path.to.obs == "ERA5") {
+              if (stringr::str_detect(variable, "tas")) {
+                transformeR::gridArithmetics(., 273.15, operator = "-")
+              } else if (stringr::str_detect(variable, "pr")) {
+                transformeR::gridArithmetics(.,
+                                              1000,
+                                             operator = "*")
+              }
+            } else {
+              .
+            }
+          }
       ))
 
       models_df$obs <- obs

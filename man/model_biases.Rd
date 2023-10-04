@@ -24,7 +24,7 @@ model_biases(
 
 \item{lowert}{numeric of length=1, lower threshold}
 
-\item{season}{numeric, seasons to select. For example, 1:12}
+\item{season}{list, containing seasons to select. For example, list(1:6, 7:12)}
 
 \item{consecutive}{logical, to use in conjunction with lowert or uppert}
 

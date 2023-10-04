@@ -6,7 +6,7 @@
 #' @param bias.correction logical
 #' @param uppert  numeric of length=1, upper threshold
 #' @param lowert numeric of length=1, lower threshold
-#' @param season numeric, seasons to select. For example, 1:12
+#' @param season list, containing seasons to select. For example, list(1:6, 7:12)
 #' @param consecutive logical, to use in conjunction with lowert or uppert
 #' @param duration either "max" or specify a number. Used only when consecutive is TRUE. For example, to know the number of consecutive days with tmax above 35, lasting more than 3 days, specify uppert=35, consecutive =T and duration=3
 #' @param n.sessions numeric, number of sessions to use, default is one. Parallelization can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelizing will increase RAM usage

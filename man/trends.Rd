@@ -26,11 +26,11 @@ trends(
 
 \item{lowert}{numeric of length=1, lower threshold}
 
-\item{season}{numeric, seasons to select. For example, 1:12}
+\item{season}{list, containing seasons to select. For example, list(1:6, 7:12)}
 
 \item{consecutive}{logical, to use in conjunction with lowert or uppert}
 
-\item{duration}{character, either "max" or "total"}
+\item{duration}{either "max" or specify a number. Used only when consecutive is TRUE. For example, to know the number of consecutive days with tmax above 35, lasting more than 3 days, specify uppert=35, consecutive =T and duration=3}
 
 \item{intraannual_var}{logical, whether linear regression is applied to annual variability, measured as standard deviation}
 

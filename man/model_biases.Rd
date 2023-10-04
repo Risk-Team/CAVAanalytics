@@ -30,7 +30,7 @@ model_biases(
 
 \item{n.sessions}{numeric, number of sessions to use, default is one. Parallelization can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelizing will increase RAM usage}
 
-\item{duration}{character, either "max" or "total". Used only when consecutive is TRUE}
+\item{duration}{either "max" or specify a number. Used only when consecutive is TRUE. For example, to know the number of consecutive days with tmax above 35, lasting more than 3 days, specify uppert=35, consecutive =T and duration=3}
 }
 \value{
 list with SpatRaster. To explore the output run attributes(output)

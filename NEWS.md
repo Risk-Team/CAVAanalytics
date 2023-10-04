@@ -9,8 +9,11 @@ output:
     toc_depth: 2
 ---
 
-## CAVAanalytics 1.2.0
+## CAVAanalytics 2.0.0
+- Season argument now takes a list for automatically plotting multiple season
+- duration when consecutive is TRUE can now take any number
 - Added xarray option in load_data to increase speed
+- Added extract_raster to automatically save rasters from step2 of CAVAanalytics
 
 ## CAVAanalytics 1.1.3
 - Added function model_biases to look at the delta between observation and model simulations

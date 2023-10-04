@@ -6,12 +6,12 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="description" content="CAVAanalytics">
-<title>The power of patchwork with CAVAanalytics • CAVAanalytics</title>
+<title>Climate indexes and composite plots • CAVAanalytics</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.2.2/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="The power of patchwork with CAVAanalytics">
+<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Climate indexes and composite plots">
 <meta property="og:description" content="CAVAanalytics">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -43,7 +43,7 @@
   </a>
   <div class="dropdown-menu" aria-labelledby="dropdown--guides">
     <a class="dropdown-item" href="../articles/Introduction.html">start here</a>
-    <a class="dropdown-item" href="../articles/more_advanced.html">more advanced examples</a>
+    <a class="dropdown-item" href="../articles/more_advanced.html">climate indexes</a>
   </div>
 </li>
 <li class="nav-item">
@@ -84,7 +84,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="" class="logo" alt=""><h1>The power of patchwork with CAVAanalytics</h1>
+      <img src="" class="logo" alt=""><h1>Climate indexes and composite plots</h1>
             
       
       
@@ -101,37 +101,47 @@
 <p>In the <a href="https://risk-team.github.io/CAVAanalytics/articles/Introduction.html">getting
 started article</a>, we have already explored some of the fundamental
 features of CAVAanalytics. Now, let’s take our understanding to the next
-level as we delve into the full potential of CAVAanalytics, especially
-when synergized with the powerful library <a href="https://patchwork.data-imaginist.com/" class="external-link">patchwork</a> for crafting
-stunning plots. So, without further ado, let’s dive right in by loading
-the data.</p>
+level as we delve into the full potential of CAVAanalytics.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># to download a specific area, set country=NULL and specify xlim and ylim arguments. </span></span>
 <span><span class="va">kenya_exmp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/load_data.html">load_data</a></span><span class="op">(</span>path.to.data <span class="op">=</span> <span class="st">"CORDEX-CORE"</span>, country <span class="op">=</span> <span class="st">"Kenya"</span>, variable <span class="op">=</span> <span class="st">"tasmax"</span>, </span>
-<span>years.proj <span class="op">=</span> <span class="fl">2030</span><span class="op">:</span><span class="fl">2060</span>, years.hist <span class="op">=</span> <span class="cn">NULL</span>, domain <span class="op">=</span> <span class="st">"AFR-22"</span><span class="op">)</span></span></code></pre></div>
+<span>                        years.proj <span class="op">=</span> <span class="fl">2030</span><span class="op">:</span><span class="fl">2060</span>, years.hist <span class="op">=</span> <span class="cn">NULL</span>, domain <span class="op">=</span> <span class="st">"AFR-22"</span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="composite-seasonal-plot">Composite seasonal plot<a class="anchor" aria-label="anchor" href="#composite-seasonal-plot"></a>
 </h2>
+<p>Creating plots for multiple seasons is very easy with CAVAanalytics.
+Simply specify season=list(1:3, 4:6), for example.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Here we use map from purrr to create seasonal plots for projections. Remember that the output of plotting is a ggplot object, hence you can add anything to it or change the scale, theme, etc</span></span>
-<span></span>
-<span><span class="va">sns_proj</span> <span class="op">&lt;-</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="fl">4</span><span class="op">:</span><span class="fl">6</span>, <span class="fl">7</span><span class="op">:</span><span class="fl">9</span>, <span class="fl">10</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span>, <span class="op">~</span> <span class="fu"><a href="../reference/projections.html">projections</a></span><span class="op">(</span><span class="va">kenya_exmp</span>, season <span class="op">=</span> <span class="va">.x</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">.</span>, plot_titles <span class="op">=</span> <span class="st">"mean tasmax °C"</span>, ensemble <span class="op">=</span> <span class="cn">T</span>, legend_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">40</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Season "</span>, <span class="fu">glue</span><span class="fu">::</span><span class="fu"><a href="https://glue.tidyverse.org/reference/glue_collapse.html" class="external-link">glue_collapse</a></span><span class="op">(</span><span class="va">.x</span>, <span class="st">"-"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">+</span> <span class="co"># add title</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="co"># center title</span></span>
-<span></span>
-<span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/wrap_plots.html" class="external-link">wrap_plots</a></span><span class="op">(</span><span class="va">sns_proj</span><span class="op">)</span></span></code></pre></div>
-<p><img src="more_advanced_files/figure-html/unnamed-chunk-3-1.png" width="960"></p>
-<p>These plots have the same legends, thus we might want to collect
-them.</p>
+<code class="sourceCode R"><span></span>
+<span><span class="fu"><a href="../reference/projections.html">projections</a></span><span class="op">(</span><span class="va">kenya_exmp</span>, season <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="fl">4</span><span class="op">:</span><span class="fl">6</span>, <span class="fl">7</span><span class="op">:</span><span class="fl">9</span>,<span class="fl">10</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">.</span>, plot_titles <span class="op">=</span> <span class="st">"mean tasmax °C"</span>, ensemble <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span></code></pre></div>
+<p><img src="more_advanced_files/figure-html/unnamed-chunk-3-1.png" width="576"></p>
+</div>
+<div class="section level2">
+<h2 id="climate-indicators">Climate indicators<a class="anchor" aria-label="anchor" href="#climate-indicators"></a>
+</h2>
+<p>What if we want to understand the projected duration of heat waves
+<strong>with at least 3 consecutive days</strong> with temperature above
+35 degrees. This can be done as follow. This can be done by specifying
+the threshold (uppert), with consecutive = TRUE and duration=4. Remember
+to type ?projections if you have any doubts about what each argument
+does.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="op">(</span><span class="va">composite</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://patchwork.data-imaginist.com/reference/wrap_plots.html" class="external-link">wrap_plots</a></span><span class="op">(</span><span class="va">sns_proj</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_layout.html" class="external-link">plot_layout</a></span><span class="op">(</span>guides <span class="op">=</span> <span class="st">"collect"</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">'bottom'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="more_advanced_files/figure-html/unnamed-chunk-4-1.png" width="960"></p>
-<p>In a similar manner, other composite plots can be made, for example
-to combine different time frames instead of different seasons.</p>
+<span><span class="fu"><a href="../reference/projections.html">projections</a></span><span class="op">(</span><span class="va">kenya_exmp</span>, season <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,<span class="fl">4</span><span class="op">:</span><span class="fl">6</span>,<span class="fl">7</span><span class="op">:</span><span class="fl">9</span>, <span class="fl">10</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span>, consecutive<span class="op">=</span><span class="cn">T</span>, duration<span class="op">=</span><span class="fl">3</span>, uppert<span class="op">=</span><span class="fl">35</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">.</span>, plot_titles <span class="op">=</span> <span class="st">"N.days"</span>, ensemble <span class="op">=</span> <span class="cn">T</span>, palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"white"</span>, <span class="st">"orange"</span>, <span class="st">"red"</span>, <span class="st">"darkred"</span>, <span class="st">"brown"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="more_advanced_files/figure-html/unnamed-chunk-4-1.png" width="576"></p>
+<p>As always you can also look at the individual models</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="fu"><a href="../reference/projections.html">projections</a></span><span class="op">(</span><span class="va">kenya_exmp</span>, season <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,<span class="fl">4</span><span class="op">:</span><span class="fl">6</span>,<span class="fl">7</span><span class="op">:</span><span class="fl">9</span>, <span class="fl">10</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span>, consecutive<span class="op">=</span><span class="cn">T</span>, duration<span class="op">=</span><span class="fl">3</span>, uppert<span class="op">=</span><span class="fl">35</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">.</span>, plot_titles <span class="op">=</span> <span class="st">"N.days"</span>, ensemble <span class="op">=</span> <span class="cn">F</span>, palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"white"</span>, <span class="st">"orange"</span>, <span class="st">"red"</span>, <span class="st">"darkred"</span>, <span class="st">"brown"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="more_advanced_files/figure-html/unnamed-chunk-5-1.png" width="1440"></p>
+<p>The same concept applies to all other functions available in
+CAVAanalytics step 2.</p>
 </div>
-  </main>
+  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 

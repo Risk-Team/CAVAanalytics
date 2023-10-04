@@ -26,7 +26,7 @@
   </a>
   <div class="dropdown-menu" aria-labelledby="dropdown--guides">
     <a class="dropdown-item" href="../articles/Introduction.html">start here</a>
-    <a class="dropdown-item" href="../articles/more_advanced.html">more advanced examples</a>
+    <a class="dropdown-item" href="../articles/more_advanced.html">climate indexes</a>
   </div>
 </li>
 <li class="active nav-item">
@@ -83,7 +83,8 @@
 <span>  <span class="va">domain</span>,</span>
 <span>  aggr.m <span class="op">=</span> <span class="st">"none"</span>,</span>
 <span>  path.to.obs <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  years.obs <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  years.obs <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  n.sessions <span class="op">=</span> <span class="fl">6</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -136,6 +137,10 @@ set country to NULL and define arguments xlim and ylim</p></dd>
 
 <dt>years.obs</dt>
 <dd><p>NULL or numeric, specify year range for observation. Specifying years.obs will overwrite years.hist for observations</p></dd>
+
+
+<dt>n.sessions</dt>
+<dd><p>numeric, number of sessions to use in parallel processing. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary</p></dd>
 
 </dl></div>
     <div class="section level2">

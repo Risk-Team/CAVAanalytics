@@ -196,7 +196,9 @@ thrs_consec = function(col, duration, lowert, uppert) {
 
     stop("input has to be a numeric vector")
 
-  duration = match.arg(duration, choices = c("max", "total"))
+  if (!(duration == "max" || is.numeric(duration))) {
+    stop("duration must be 'max' or a number")
+  }
   #analyse consecutive days
 
   if (!is.null(lowert)) {
@@ -214,10 +216,11 @@ thrs_consec = function(col, duration, lowert, uppert) {
   #return values out
 
   if (duration == "max") {
-    return(max(consec_days))
+    val <- max(consec_days, na.rm = T)
+    return(if(val=="-Inf") 0 else val)
 
   } else{
-    return(sum(consec_days[consec_days >= 6], na.rm = T))
+    return(sum(consec_days[consec_days > duration], na.rm = T))
 
   }
 
@@ -437,7 +440,8 @@ ridgeline <- function(x,
                       group_col,
                       z_col,
                       fill = NULL,
-                      facet = NULL) {
+                      facet1 = NULL,
+                      facet2=NULL) {
   if (missing(x)) {
     stop("Empty dataframe x. Please give a proper input.")
   }
@@ -455,13 +459,15 @@ ridgeline <- function(x,
   grp <- df[, group_col]
   z <- df[, z_col]
   f <- df[, fill]
-  fc <- df[, facet]
+  fc1 <- df[, facet1]
+  fc2 <- df[, facet2]
 
 
   df2 <- data.frame(grp = grp,
                     z = z,
                     f = f,
-                    fc = fc)
+                    fc1 = fc1,
+                    fc2=fc2)
   df2$ctgrp <- cut(df2$grp, breaks = num_grps)
 
 
@@ -481,10 +487,13 @@ ridgeline <- function(x,
     ggplot2::scale_x_continuous(expand = c(0, 0)) +
     ggplot2::ylab(ylab) +
     ggplot2::xlab(xlab) +
-    if (!is.null(facet)) {
-      ggplot2::facet_wrap(. ~ fc)
+    if (!is.null(facet1) & !is.null(facet2) ) {
+      ggplot2::facet_grid(fc1 ~ fc2)
+    } else if (!is.null(facet1) & is.null(facet2)) {
+      ggplot2::facet_grid(fc1 ~ .)
+    } else if (is.null(facet1) & !is.null(facet2)) {
+      ggplot2::facet_grid(fc2 ~ .)
     }
-
 }
 
 #' IPCC color palette

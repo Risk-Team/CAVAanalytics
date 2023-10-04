@@ -30,6 +30,7 @@ Available variables are:
 
 * Daily maximum temperature (tasmax)
 * Daily minimum temperature (tasmin)
+* Daily mean temperature (tas)
 * Daily precipitation (pr)
 * Daily relative humidity (hurs)
 * Daily wind speed (sfcWind)
@@ -67,7 +68,7 @@ When uploading CORDEX-CORE data it is important to understand the concept of COR
 We can examine historical data using the loaded observational dataset, which, in this case, is ERA5. In this case, we are looking at the mean historical maximum temperature for the whole year. 
 
 ```{r, fig.height=3, fig.width=4, fig.align="center",  message=F, warning=F}
-kenya_obs <- observations(kenya_exmp, season=1:12)
+kenya_obs <- observations(kenya_exmp, season=list(1:12))
 plotting(kenya_obs, plot_titles = "Mean tasmax")
 ```
 If you want, you can also use pre-defined IPCC color palettes. You can type ?IPCC_palette for more info
@@ -79,7 +80,14 @@ palette = IPCC_palette(type = "tmp", divergent = F))
 
 How many days above 35 °C occurred on average?
 ```{r, fig.height=3, fig.width=4, fig.align="center",  message=F, warning=F}
-kenya_obs.35 <- observations(kenya_exmp, season=1:12, uppert=35)
+kenya_obs.35 <- observations(kenya_exmp, season=list(1:12), uppert=35)
+plotting(kenya_obs.35, plot_titles = "N.days > 35")
+```
+
+You can also specify more than one season at a time
+
+```{r, fig.height=4, fig.width=4, fig.align="center",  message=F, warning=F}
+kenya_obs.35 <- observations(kenya_exmp, season=list(1:6, 7:12), uppert=35)
 plotting(kenya_obs.35, plot_titles = "N.days > 35")
 ```
 
@@ -89,7 +97,7 @@ Before diving into the analyses of climate model projections, it is essential to
 
 ```{r, fig.height=3, fig.width=10,  message=F, warning=F}
 # you can specify the season. In this case we are looking at the whole year
-biases_kenya <- model_biases(kenya_exmp, season=1:12)
+biases_kenya <- model_biases(kenya_exmp, season=list(1:12))
 plotting(biases_kenya, ensemble=F, 
 trends=F, plot_titles = "mean tasmax biases", palette = IPCC_palette(type="tmp", divergent = T))
 ```
@@ -102,7 +110,7 @@ As we can see, the biases are mainly positive, hence CORDEX-CORE models are warm
 The results look much better now and mean biases are reduced thanks to bias correction. 
 
 ```{r, fig.height=3, fig.width=10,  message=F, warning=F}
-biases_kenya.bs <- model_biases(kenya_exmp, season=1:12, bias.correction = T)
+biases_kenya.bs <- model_biases(kenya_exmp, season=list(1:12), bias.correction = T)
 plotting(biases_kenya.bs, ensemble=F, trends=T, plot_titles = "mean tasmax biases")+ggplot2::ggtitle("After bias correction")
 ```
 
@@ -110,9 +118,9 @@ plotting(biases_kenya.bs, ensemble=F, trends=T, plot_titles = "mean tasmax biase
 
 Now that we looked at model biases, we can start exploring future projections. For example, what if you want to have a look at what will be the projected maximum temperature in Kenya for the 2030-2055 time period? **Let's remember that these models have positive biases though.**
 
-```{r, fig.height=3, fig.width=4, fig.align="center",  message=F, warning=F}
+```{r, fig.height=4, fig.width=3, fig.align="center",  message=F, warning=F}
 # you can specify the season. In this case we are looking at the whole year
-proj_kenya <- projections(kenya_exmp, season=1:12)
+proj_kenya <- projections(kenya_exmp, season=list(1:12))
 # stat can take either mean or sd. It is used in combination with ensemble=T. Default is always mean
 plotting(proj_kenya, ensemble=T, stat="mean", plot_titles = "mean tasmax")
 ```
@@ -125,19 +133,19 @@ plotting(proj_kenya, ensemble=F, stat="mean", plot_titles = "mean tasmax")
 In certain cases, focusing solely on mean temperatures might not provide the insights we need. Instead, we might be interested in understanding the frequency of specific conditions projected to occur. For instance, we may want to determine the number of days with maximum temperatures above 35 °C.
 
 
-```{r, fig.height=3, fig.width=4, fig.align="center",  message=F, warning=F}
-proj_kenya_35 <- projections(kenya_exmp, season=1:12, uppert=35)
+```{r, fig.height=4, fig.width=5, fig.align="center",  message=F, warning=F}
+proj_kenya_35 <- projections(kenya_exmp, season=list(1:6, 7:12), uppert=35)
 plotting(proj_kenya_35, ensemble=T, 
-plot_titles = "N.days > 35", palette=c("white", "orange", "red", "darkred"))
+plot_titles = "N > 35", palette=c("white", "orange", "red", "darkred"))
 ```
 
 When dealing with model biases, CAVAanalytics offers a straightforward solution by automatically implementing bias correction using the empirical quantile mapping method. This process allows us to correct for discrepancies between observed data and model outputs.
 
-```{r, fig.height=3, fig.width=4, fig.align="center", message=F, warning=F}
+```{r, fig.height=4, fig.width=5, fig.align="center", message=F, warning=F}
 # bias correction is applied with the widely used empirical quantile method
-proj_kenya_35bc <- projections(kenya_exmp, season=1:12, bias.correction = T, uppert=35)
+proj_kenya_35bc <- projections(kenya_exmp, season=list(1:6, 7:12), bias.correction = T, uppert=35)
 plotting(proj_kenya_35bc, ensemble=T,  
-plot_titles = "N.days > 35 after bc", 
+plot_titles = "N > 35 bc", 
 palette=c("white", "orange", "red", "darkred"), legend_range = c(0, 320))
 ```
 
@@ -147,7 +155,7 @@ palette=c("white", "orange", "red", "darkred"), legend_range = c(0, 320))
 While analyzing future periods can be beneficial, there are instances where we prioritize understanding delta changes, which represent the relative increase or decrease in mean maximum temperatures compared to a baseline. CAVAanalytics facilitates this analysis as well.
 
 ```{r, fig.height=4, fig.width=10,  message=F, warning=F}
-ccs_kenya <- climate_change_signal(kenya_exmp, season=1:12)
+ccs_kenya <- climate_change_signal(kenya_exmp, season=list(1:12))
 plotting(ccs_kenya, ensemble=F, plot_titles = "Mean tasmax change", 
 legend_range = c(-3, 3), 
 palette = c("blue", "cyan", "green", "white", "yellow" ,"orange", "red"))
@@ -158,24 +166,23 @@ While examining delta changes and absolute values for projections provides valua
 
 ```{r,  fig.height=3, fig.width=4, fig.align="center",  message=F, warning=F}
 # the observation argument allows us to study trends for the future or for the past. Note that for observation = T, we need to have specified path.to.obs because this option does not work with the historical experiment of climate models but with observation
-trd_kenya.obs <- trends(kenya_exmp, season=1:12,observation = T)
-plotting(trd_kenya.obs, ensemble=F, 
-plot_titles = "°C/year", frequencies = F, spatial_aggr = F)
+trd_kenya.obs <- trends(kenya_exmp, season=list(1:12),observation = T)
+plotting(trd_kenya.obs, plot_titles = "°C/year", frequencies = F, spatial_aggr = F)
 ```
 
 We can look at trend for the future period as well by changing the observation argument to FALSE
 
 ```{r,  fig.height=4, fig.width=10,  message=F, warning=F}
-trd_kenya.prj <- trends(kenya_exmp, season=1:12,observation = F)
+trd_kenya.prj <- trends(kenya_exmp, season=list(1:12),observation = F)
 plotting(trd_kenya.prj, ensemble=F, 
 plot_titles = "°C/year", frequencies = F, spatial_aggr = F)
 ```
 
 Another feature of the trends function is that you can look at the global significance of the ensemble. The plot below shows you the number of models that agrees in a certain change (increase or decrease) while the global p.value is calculated based on the [manylm function of mvabund](https://besjournals.onlinelibrary.wiley.com/doi/10.1111/j.2041-210X.2012.00190.x). 
 
-```{r,  fig.height=3, fig.width=4, fig.align="center",  message=F, warning=F}
+```{r,  fig.height=4, fig.width=5, fig.align="center",  message=F, warning=F}
 plotting(trd_kenya.prj, ensemble=T, 
-plot_titles = "N. members direction change",
+plot_titles = "N. memb",
 frequencies = F, spatial_aggr = F, palette = c("blue", "green", "white", "yellow", "red"))
 ```
 

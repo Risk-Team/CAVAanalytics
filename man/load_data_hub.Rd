@@ -16,7 +16,8 @@ load_data_hub(
   domain,
   aggr.m = "none",
   path.to.obs = NULL,
-  years.obs = NULL
+  years.obs = NULL,
+  n.sessions = 6
 )
 }
 \arguments{
@@ -44,6 +45,8 @@ set country to NULL and define arguments xlim and ylim}
 \item{path.to.obs}{character, default to NULL. To automatically load W5E5 or ERA5, specify W5E5 or ERA5.}
 
 \item{years.obs}{NULL or numeric, specify year range for observation. Specifying years.obs will overwrite years.hist for observations}
+
+\item{n.sessions}{numeric, number of sessions to use in parallel processing. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary}
 }
 \value{
 list of length 2. List[[1]] contains a tibble with list columns and List[[2]] the bbox

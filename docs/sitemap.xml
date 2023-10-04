@@ -43,7 +43,13 @@
     <loc>https://risk-team.github.io/CAVAanalytics/reference/ens_trends.html</loc>
   </url>
   <url>
+    <loc>https://risk-team.github.io/CAVAanalytics/reference/extract_raster.html</loc>
+  </url>
+  <url>
     <loc>https://risk-team.github.io/CAVAanalytics/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>https://risk-team.github.io/CAVAanalytics/reference/loadGridData_xarray.html</loc>
   </url>
   <url>
     <loc>https://risk-team.github.io/CAVAanalytics/reference/load_data.html</loc>

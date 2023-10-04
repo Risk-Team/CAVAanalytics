@@ -6,9 +6,9 @@
 #' @param bias.correction logical
 #' @param uppert  numeric of length=1, upper threshold
 #' @param lowert numeric of length=1, lower threshold
-#' @param season numeric, seasons to select. For example, 1:12
+#' @param season list, containing seasons to select. For example, list(1:6, 7:12)
 #' @param consecutive logical, to use in conjunction with lowert or uppert
-#' @param duration character, either "max" or "total". Used only when consecutive is TRUE
+#' @param duration either "max" or specify a number. Used only when consecutive is TRUE. For example, to know the number of consecutive days with tmax above 35, lasting more than 3 days, specify uppert=35, consecutive =T and duration=3
 #' @param n.sessions numeric, number of sessions to use, default is one. Parallelization can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelizing will increase RAM usage
 #' @importFrom magrittr %>%
 #' @return list with SpatRaster. To explore the output run attributes(output)
@@ -35,9 +35,14 @@ projections <-
                uppert,
                lowert,
                consecutive,
-               duration) {
+               duration,
+               season) {
+        if (!is.list(season))
+          cli::cli_abort("season needs to be a list, for example, list(1:3)")
         stopifnot(is.logical(consecutive), is.logical(bias.correction))
-        match.arg(duration, c("max", "total"))
+        if (!(duration == "max" || is.numeric(duration))) {
+          cli::cli_abort("duration must be 'max' or a number")
+        }
         if (length(data[[1]]$experiment) == 1 &
             data[[1]]$experiment[[1]] == "historical")
           cli::cli_abort(c("x" = "Projections are not part of CAVAanalytics list"))
@@ -124,10 +129,10 @@ projections <-
         }
         else if ((!is.null(uppert) |
                   !is.null(lowert)) &
-                 (consecutive & duration == "total")) {
+                 (consecutive & is.numeric(duration))) {
           paste0(
             var,
-            ". Calculation of total total number of consecutive days with duration longer than 6 days, ",
+            ". Calculation of total total number of consecutive days with duration longer than ", duration, " days, ",
             ifelse(
               !is.null(lowert),
               paste0("below threshold of ", lowert),
@@ -171,12 +176,18 @@ projections <-
                lowert,
                consecutive,
                duration,
-               country_shp) {
+               country_shp,
+               season) {
+        season_name <-
+          paste0(lubridate::month(season[[1]], label = T),
+                 "-",
+                 lubridate::month(season[[length(season)]], label = T))
         data_list <- datasets %>%
           dplyr::filter(experiment != "historical") %>%
           {
             if (bias.correction) {
-              cli::cli_text("{cli::symbol$arrow_right}",
+              cli::cli_text(
+                "{cli::symbol$arrow_right}",
                 paste(
                   " Performing monthly bias correction with the empirical quantile mapping",
                   " method, for each model and month separately. This can take a while. Season",
@@ -207,7 +218,9 @@ projections <-
                                 mod$Dates$start
                               mod_temp$Dates$end <-  mod$Dates$end
                               if (any(is.na(mod_temp$Data)))
-                                cli::cli_text("{cli::symbol$arrow_right} Bias correction has introduced NA values in certain pixels. Proceed with care")
+                                cli::cli_text(
+                                  "{cli::symbol$arrow_right} Bias correction has introduced NA values in certain pixels. Proceed with care"
+                                )
                               return(mod_temp)
                             }, .progress = T))
             } else
@@ -251,7 +264,7 @@ projections <-
                   else
                     c(2, 3), country_shp) # adjust by array dimension
               names(rs) <-
-                paste0(x, "_", names(rs))
+                paste0(x, "_", names(rs), "_", season_name)
               return(rs)
             }),
             # ensemble SD
@@ -264,7 +277,7 @@ projections <-
                   else
                     c(2, 3), country_shp)
               names(rs) <-
-                paste0(x, "_", names(rs))
+                paste0(x, "_", names(rs), "_", season_name)
               return(rs)
             }),
             # individual models
@@ -272,13 +285,13 @@ projections <-
               rs_list <- purrr::map(1:dim(y$Data)[[1]], function(ens) {
                 array_mean <-
                   if (length(y$Dates$start) == 1)
-                    apply(y$Data[ens, , ,], c(1, 2), mean, na.rm = TRUE)
+                    apply(y$Data[ens, , , ], c(1, 2), mean, na.rm = TRUE)
                 else
-                  apply(y$Data[ens, , ,], c(2, 3), mean, na.rm = TRUE) # climatology per member adjusting by array dimension
+                  apply(y$Data[ens, , , ], c(2, 3), mean, na.rm = TRUE) # climatology per member adjusting by array dimension
                 y$Data <- array_mean
                 rs <- make_raster(y, c(1, 2), country_shp)
                 names(rs) <-
-                  paste0("Member ", ens, "_", x, "_", names(rs))
+                  paste0("Member ", ens, "_", x, "_", names(rs), "_", season_name)
                 return(rs)
               })
 
@@ -307,8 +320,13 @@ projections <-
     if (class(data) != "CAVAanalytics_list")
       cli::cli_abort(c("x" = "The input data is not the output of CAVAanalytics load_data"))
     # check input requirements
-    check_inputs(data, bias.correction, uppert, lowert, consecutive, duration)
-
+    check_inputs(data,
+                 bias.correction,
+                 uppert,
+                 lowert,
+                 consecutive,
+                 duration,
+                 season)
     # retrieve information
     mod.numb <- dim(data[[1]]$models_mbrs[[1]]$Data) [1]
     datasets <- data[[1]]
@@ -318,40 +336,59 @@ projections <-
     dates <- as.Date(dates)
     # calculate the differences between consecutive dates to understand temporal resolution and adjust the window argument in bias correction
     diffs <- diff(dates)
-
-    # create message
-    mes <-
-      create_message(var, bias.correction, uppert, lowert, consecutive, duration)
-
     # set parallel processing
     future::plan(future::multisession, workers = n.sessions)
-
-    # filter data by season
-    datasets <- filter_data_by_season(datasets, season)
-    cli::cli_text(paste0("{cli::symbol$arrow_right}",
-      " projections, season ",
-      glue::glue_collapse(season, "-"),
-      ". ",
-      mes
-    ))
-
-    cli::cli_progress_step("Performing calculations")
-
-    # perform calculations
-    data_list <-
-      perform_calculations(
-        datasets,
-        mod.numb,
-        var,
-        bias.correction,
-        uppert,
-        lowert,
-        consecutive,
-        duration,
-        country_shp
+    # create plots by season
+    data_list <- purrr::map(season, function(sns) {
+      mes <-
+        create_message(var, bias.correction, uppert, lowert, consecutive, duration)
+      # filter data by season
+      datasets <- filter_data_by_season(datasets, season = sns)
+      cli::cli_text(
+        paste0(
+          "{cli::symbol$arrow_right}",
+          " projections, season ",
+          glue::glue_collapse(sns, "-"),
+          ". ",
+          mes
+        )
       )
 
-    cli::cli_progress_done()
-    # return results
-    return(data_list)
+      cli::cli_progress_step("Performing calculations")
+
+      # perform calculations
+      data_list <-
+        perform_calculations(
+          datasets,
+          mod.numb,
+          var,
+          bias.correction,
+          uppert,
+          lowert,
+          consecutive,
+          duration,
+          country_shp,
+          season = sns
+        )
+
+      cli::cli_progress_done()
+      # return results
+      return(data_list)
+
+    })
+
+    invisible(structure(
+      list(
+        terra::rast(lapply(data_list, `[[`, 1)),
+        terra::rast(lapply(data_list, `[[`, 2)),
+        terra::rast(lapply(data_list, `[[`, 3))
+      ),
+      class = "CAVAanalytics_projections",
+      components = list(
+        "SpatRaster for ensemble mean",
+        "SpatRaster for ensemble sd",
+        "SpatRaster for individual members"
+      )
+    ))
+
   }

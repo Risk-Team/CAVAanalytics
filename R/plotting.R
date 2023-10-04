@@ -39,7 +39,7 @@ plotting.CAVAanalytics_projections <-
            palette = NULL,
            legend_range = NULL,
            plot_titles,
-           ensemble,
+           ensemble = TRUE,
            bins = FALSE,
            n.bins = NULL,
            alpha = NA,
@@ -100,22 +100,23 @@ plotting.CAVAanalytics_projections <-
                           values_to = "value",
                           names_to = "long_name") %>%  {
                             if (ensemble) {
-                              # Extract scenario and time frame from column names
-                              dplyr::mutate(
+                              # Extract scenario, time frame and season from column names
+                              tidyr::separate_wider_delim(
                                 .,
-                                scenario = stringr::str_extract(long_name, ".*_") %>%   stringr::str_remove(., "_"),
-                                time_frame =  stringr::str_extract(long_name, "_.*") %>%   stringr::str_remove(., "_")
+                                long_name,
+                                delim = "_",
+                                names = c("scenario", "time_frame", "season")
                               ) %>%
                                 # Replace "." with "-" in time frame
                                 dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
 
                             } else {
-                              # Extract Member, scenario and time frame from column names
-                              dplyr::mutate(
+                              # Extract Member, scenario, time frame and season from column names
+                              tidyr::separate_wider_delim(
                                 .,
-                                member =   stringr::str_extract(long_name, "Member \\d+"),
-                                scenario =  stringr::str_extract(long_name, "_.*_") %>%   stringr::str_remove_all(., "_"),
-                                time_frame =  stringr::str_extract(long_name, "_\\d+.*") %>%   stringr::str_remove(., "_")
+                                long_name,
+                                delim = "_",
+                                names = c("member", "scenario", "time_frame", "season")
                               ) %>%
                                 # Replace "." with "-" in time frame
                                 dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
@@ -128,7 +129,7 @@ plotting.CAVAanalytics_projections <-
         fill = 'antiquewhite1',
         color = "black",
         data = countries,
-        alpha=0.5
+        alpha = 0.5
       ) +
       ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
                            data = rs_df,
@@ -175,9 +176,9 @@ plotting.CAVAanalytics_projections <-
       ) +
       {
         if (ensemble) {
-          ggplot2::facet_grid(time_frame ~ scenario)
+          ggh4x::facet_nested(scenario ~  time_frame + season)
         } else {
-          ggh4x::facet_nested(scenario ~ time_frame   + member)
+          ggh4x::facet_nested(scenario ~ time_frame + season + member)
         }
       } +
       ggplot2::labs(fill = plot_titles, x = "", y = "") +
@@ -192,12 +193,27 @@ plotting.CAVAanalytics_projections <-
         axis.text.y = ggplot2::element_blank(),
         axis.ticks = ggplot2::element_blank(),
         axis.title = ggplot2::element_blank(),
-        legend.position = "bottom",
-        legend.direction = "horizontal",
-        legend.key.height = ggplot2::unit(0.3, 'cm'),
-        legend.key.width = ggplot2::unit(1.8, 'cm'),
+        legend.position = if (ensemble)
+          "right"
+        else
+          "bottom",
+        legend.direction = if (ensemble)
+          "vertical"
+        else
+          "horizontal",
+        legend.key.height = if (ensemble)
+          ggplot2::unit(1.2, 'cm')
+        else
+          ggplot2::unit(0.3, 'cm'),
+        legend.key.width = if (ensemble)
+          ggplot2::unit(0.3, 'cm')
+        else
+          ggplot2::unit(2, 'cm'),
         legend.box.spacing = ggplot2::unit(0, "pt"),
-        legend.text =  ggplot2::element_text(angle = 45, hjust = 1)
+        legend.text =  if (ensemble)
+          NULL
+        else
+          ggplot2::element_text(angle = 45, hjust = 1)
       )
 
     cli::cli_progress_done()
@@ -218,7 +234,7 @@ plotting.CAVAanalytics_ccs <-
            palette = NULL,
            legend_range = NULL,
            plot_titles,
-           ensemble,
+           ensemble = TRUE,
            bins = FALSE,
            n.bins = NULL,
            alpha = NA,
@@ -281,21 +297,22 @@ plotting.CAVAanalytics_ccs <-
                           names_to = "long_name") %>%  {
                             if (ensemble) {
                               # Extract scenario and time frame from column names
-                              dplyr::mutate(
+                              tidyr::separate_wider_delim(
                                 .,
-                                scenario = stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 2),
-                                time_frame =  stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 3)
+                                long_name,
+                                delim = "_",
+                                names = c("scenario", "time_frame", "season")
                               ) %>%
                                 # Replace "." with "-" in time frame
                                 dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
 
                             } else {
                               # Extract Member, scenario and time frame from column names
-                              dplyr::mutate(
+                              tidyr::separate_wider_delim(
                                 .,
-                                member =   stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 1),
-                                scenario =  stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 2),
-                                time_frame =  stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 3)
+                                long_name,
+                                delim = "_",
+                                names = c("member", "scenario", "time_frame", "season")
                               ) %>%
                                 # Replace "." with "-" in time frame
                                 dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
@@ -308,7 +325,7 @@ plotting.CAVAanalytics_ccs <-
         fill = 'antiquewhite1',
         color = "black",
         data = countries,
-        alpha=0.5
+        alpha = 0.5
       ) +
       ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
                            data = rs_df,
@@ -353,9 +370,9 @@ plotting.CAVAanalytics_ccs <-
       ) +
       {
         if (ensemble) {
-          ggplot2::facet_grid(time_frame ~ scenario)
+          ggh4x::facet_nested(scenario ~ time_frame + season)
         } else {
-          ggh4x::facet_nested(scenario ~ time_frame   + member)
+          ggh4x::facet_nested(scenario ~ time_frame   + season + member)
         }
       } +
       ggplot2::labs(fill = plot_titles, x = "", y = "") +
@@ -370,12 +387,27 @@ plotting.CAVAanalytics_ccs <-
         axis.text.y = ggplot2::element_blank(),
         axis.ticks = ggplot2::element_blank(),
         axis.title = ggplot2::element_blank(),
-        legend.position = "bottom",
-        legend.direction = "horizontal",
-        legend.key.height = ggplot2::unit(0.3, 'cm'),
-        legend.key.width = ggplot2::unit(1.8, 'cm'),
+        legend.position = if (ensemble)
+          "right"
+        else
+          "bottom",
+        legend.direction = if (ensemble)
+          "vertical"
+        else
+          "horizontal",
+        legend.key.height = if (ensemble)
+          ggplot2::unit(1.2, 'cm')
+        else
+          ggplot2::unit(0.3, 'cm'),
+        legend.key.width = if (ensemble)
+          ggplot2::unit(0.3, 'cm')
+        else
+          ggplot2::unit(2, 'cm'),
         legend.box.spacing = ggplot2::unit(0, "pt"),
-        legend.text =  ggplot2::element_text(angle = 45, hjust = 1)
+        legend.text =  if (ensemble)
+          NULL
+        else
+          ggplot2::element_text(angle = 45, hjust = 1)
       )
 
     cli::cli_progress_done()
@@ -397,7 +429,7 @@ plotting.CAVAanalytics_trends <-
            palette = NULL,
            legend_range = NULL,
            plot_titles,
-           ensemble,
+           ensemble = TRUE,
            bins = FALSE,
            n.bins = NULL,
            alpha = NA,
@@ -508,10 +540,11 @@ plotting.CAVAanalytics_trends <-
               if (!historical) {
                 if (ensemble) {
                   # Extract scenario and time frame from column names
-                  dplyr::mutate(
+                  tidyr::separate_wider_delim(
                     .,
-                    scenario = stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 1),
-                    time_frame =  stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 3)
+                    long_name,
+                    delim = "_",
+                    names = c("scenario", "type", "time_frame", "season")
                   ) %>%
                     # Replace "." with "-" in time frame
                     dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-")) %>%
@@ -519,23 +552,23 @@ plotting.CAVAanalytics_trends <-
 
                 } else {
                   # Extract Member, scenario and time frame from column names
-                  dplyr::mutate(
+                  tidyr::separate_wider_delim(
                     .,
-                    member =   stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 1),
-                    scenario =  stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 2),
-                    time_frame =  stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 4)
-                  ) %>%
+                    long_name,
+                    delim = "_",
+                    names = c("member", "scenario", "type", "time_frame", "season")
+                  )  %>%
                     # Replace "." with "-" in time frame
                     dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
 
                 }
               } else {
                 # when historical
-
-                dplyr::mutate(
+                tidyr::separate_wider_delim(
                   .,
-                  scenario = stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 1),
-                  time_frame =  stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 3)
+                  long_name,
+                  delim = "_",
+                  names = c("scenario", "type", "time_frame", "season")
                 ) %>%
                   # Replace "." with "-" in time frame
                   dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
@@ -549,7 +582,7 @@ plotting.CAVAanalytics_trends <-
           fill = 'antiquewhite1',
           color = "black",
           data = countries,
-          alpha=0.5
+          alpha = 0.5
         ) +
         ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
                              data = rs_df[[1]],
@@ -601,9 +634,9 @@ plotting.CAVAanalytics_trends <-
         ) +
         {
           if (ensemble | historical) {
-            ggplot2::facet_grid(time_frame ~ scenario)
+            ggh4x::facet_nested(scenario  ~ time_frame + season)
           } else {
-            ggh4x::facet_nested(scenario ~ time_frame   + member)
+            ggh4x::facet_nested(scenario ~ time_frame   + season + member)
           }
         } +
         ggplot2::labs(fill = plot_titles, x = "", y = "") +
@@ -618,24 +651,24 @@ plotting.CAVAanalytics_trends <-
           axis.text.y = ggplot2::element_blank(),
           axis.ticks = ggplot2::element_blank(),
           axis.title = ggplot2::element_blank(),
-          legend.position = if (historical)
+          legend.position = if (ensemble)
             "right"
           else
             "bottom",
-          legend.direction = if (historical)
+          legend.direction = if (ensemble)
             "vertical"
           else
             "horizontal",
-          legend.key.height = ggplot2::unit(if (historical)
+          legend.key.height = ggplot2::unit(if (ensemble)
             1
             else
               0.3, 'cm'),
-          legend.key.width = ggplot2::unit(if (historical)
+          legend.key.width = ggplot2::unit(if (ensemble)
             0.3
             else
-              1.8, 'cm'),
+              1.5, 'cm'),
           legend.box.spacing = ggplot2::unit(0, "pt"),
-          legend.text =  ggplot2::element_text(angle = if (historical)
+          legend.text =  ggplot2::element_text(angle = if (ensemble)
             360
             else
               45, hjust = 1)
@@ -665,14 +698,15 @@ plotting.CAVAanalytics_trends <-
                   group_col = 'date',
                   z_col = 'value',
                   num_grps = n.groups,
-                  fill = 'experiment'
+                  fill = 'experiment',
+                  facet1 = 'season'
                 ) +
                   ggplot2::theme_bw() +
                   ggplot2::theme(
                     legend.position = "bottom",
                     legend.title = ggplot2::element_blank()
                   ) +
-                  ggplot2::labs(x = plot_titles)+
+                  ggplot2::labs(x = plot_titles) +
                   if (!is.null(palette)) {
                     ggplot2::scale_fill_manual(values = palette)
                   }
@@ -682,7 +716,7 @@ plotting.CAVAanalytics_trends <-
 
           } else {
             # for individual models
-            rst <- rst[[6]]
+            rst <- rst[[5]]
             p <-
               suppressMessages(
                 ridgeline(
@@ -691,14 +725,15 @@ plotting.CAVAanalytics_trends <-
                   z_col = 'value',
                   num_grps = n.groups,
                   fill = 'experiment',
-                  facet = 'Var1'
+                  facet1 = 'Var1',
+                  facet2 = 'season'
                 ) +
                   ggplot2::theme_bw() +
                   ggplot2::theme(
                     legend.position = "bottom",
                     legend.title = ggplot2::element_blank()
                   ) +
-                  ggplot2::labs(x = plot_titles)+
+                  ggplot2::labs(x = plot_titles) +
                   if (!is.null(palette)) {
                     ggplot2::scale_fill_manual(values = palette)
                   }
@@ -722,11 +757,12 @@ plotting.CAVAanalytics_trends <-
                 rst,
                 group_col = 'date',
                 z_col = 'value',
-                num_grps = n.groups
+                num_grps = n.groups,
+                facet1 =  'season'
               ) +
                 ggplot2::theme_bw() +
                 ggplot2::theme(legend.position = "none") +
-                ggplot2::labs(x = plot_titles)+
+                ggplot2::labs(x = plot_titles) +
                 if (!is.null(palette)) {
                   ggplot2::scale_fill_manual(values = palette)
                 }
@@ -744,10 +780,10 @@ plotting.CAVAanalytics_trends <-
           cli::cli_alert_warning(" Arguments bins and legend_range are ignored")
           # trends were run on projections
           if (ensemble) {
-            rst[[6]] %>%
-              dplyr::group_by(date, experiment, Var1) %>%
+            rst[[5]] %>%
+              dplyr::group_by(date, experiment, Var1, season) %>%
               dplyr::summarise(value = median(value)) %>%  # spatial aggregation
-              dplyr::group_by(date, experiment) %>%
+              dplyr::group_by(date, experiment, season) %>%
               dplyr::summarise(sd = sd(value),
                                value = mean(value)) %>%
               ggplot2::ggplot() +
@@ -782,6 +818,7 @@ plotting.CAVAanalytics_trends <-
                 alpha = 0.1,
                 show.legend = F
               ) +
+              ggplot2::facet_wrap( ~ season) +
               ggplot2::scale_x_date(date_breaks = "4 years", date_labels = "%Y") +
               ggplot2::theme_bw() +
               ggplot2::theme(
@@ -799,8 +836,8 @@ plotting.CAVAanalytics_trends <-
 
           } else {
             # for individual models
-            rst[[6]] %>%
-              dplyr::group_by(Var1, date, experiment) %>%
+            rst[[5]] %>%
+              dplyr::group_by(Var1, date, experiment, season) %>%
               dplyr::summarise(value = mean(value)) %>%
               ggplot2::ggplot() +
               ggplot2::geom_line(
@@ -823,7 +860,7 @@ plotting.CAVAanalytics_trends <-
                 method = "gam",
                 formula = y ~ x
               ) +
-              ggplot2::facet_wrap( ~ Var1, ncol = 2) +
+              ggplot2::facet_grid(season ~ Var1) +
               ggplot2::scale_x_date(date_breaks = "4 years", date_labels = "%Y") +
               ggplot2::theme_bw() +
               ggplot2::theme(
@@ -842,7 +879,7 @@ plotting.CAVAanalytics_trends <-
           # when trends is run for the historical period and spatial_aggr is true
           cli::cli_alert_warning(" Arguments bins, ensemble and legend_range are ignored")
           rst[[3]][[1]] %>%
-            dplyr::group_by(date, experiment) %>%
+            dplyr::group_by(date, experiment, season) %>%
             dplyr::summarise(value = mean(value)) %>%
             ggplot2::ggplot() +
             ggplot2::geom_line(
@@ -865,6 +902,7 @@ plotting.CAVAanalytics_trends <-
               method = "gam",
               formula = y ~ x
             ) +
+            ggplot2::facet_wrap( ~ season) +
             ggplot2::scale_x_date(date_breaks = "4 years", date_labels = "%Y") +
             ggplot2::theme_bw() +
             ggplot2::theme(
@@ -898,7 +936,7 @@ plotting.CAVAanalytics_observations <-
            palette = NULL,
            legend_range = NULL,
            plot_titles,
-           ensemble =FALSE,
+           ensemble = FALSE,
            bins = FALSE,
            n.bins = NULL,
            alpha = NA) {
@@ -943,11 +981,11 @@ plotting.CAVAanalytics_observations <-
                           values_to = "value",
                           names_to = "long_name") %>%
       # Extract scenario and time frame from column names
-      dplyr::mutate(
-        .,
-        scenario = "observations",
-        time_frame =  stringr::str_extract(long_name, "_.*") %>%  stringr::str_remove(., "_")
-      ) %>%
+      tidyr::separate_wider_delim(
+        long_name,
+        delim = "_",
+        names = c("scenario", "time_frame", "season")
+      )  %>%
       # Replace "." with "-" in time frame
       dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
 
@@ -957,7 +995,7 @@ plotting.CAVAanalytics_observations <-
         fill = 'antiquewhite1',
         color = "black",
         data = countries,
-        alpha=0.5
+        alpha = 0.5
       ) +
       ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
                            data = rs_df,
@@ -1004,7 +1042,7 @@ plotting.CAVAanalytics_observations <-
         expand = F,
         ndiscr = 500
       ) +
-      ggplot2::facet_grid(time_frame ~ scenario) +
+      ggh4x::facet_nested(scenario  ~ time_frame + season) +
       ggplot2::labs(fill = plot_titles, x = "", y = "") +
       ggplot2::theme_bw(base_size = 12) +
       ggplot2::theme(
@@ -1041,7 +1079,7 @@ plotting.CAVAanalytics_model_biases <-
            palette = NULL,
            legend_range = NULL,
            plot_titles,
-           ensemble,
+           ensemble = TRUE,
            bins = FALSE,
            n.bins = NULL,
            alpha = NA,
@@ -1093,7 +1131,7 @@ plotting.CAVAanalytics_model_biases <-
         if (is.null(legend_range))
           c(-max(abs(range(
             terra::values(rst), na.rm = TRUE
-          ))),+max(abs(range(
+          ))), +max(abs(range(
             terra::values(rst), na.rm = TRUE
           ))))
       else
@@ -1117,21 +1155,22 @@ plotting.CAVAanalytics_model_biases <-
                             names_to = "long_name") %>%  {
                               if (ensemble) {
                                 # Extract scenario and time frame from column names
-                                dplyr::mutate(
+                                tidyr::separate_wider_delim(
                                   .,
-                                  scenario = stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 2),
-                                  time_frame =  stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 3)
+                                  long_name,
+                                  delim = "_",
+                                  names = c("scenario", "time_frame", "season")
                                 ) %>%
                                   # Replace "." with "-" in time frame
                                   dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
 
                               } else {
                                 # Extract Member, scenario and time frame from column names
-                                dplyr::mutate(
+                                tidyr::separate_wider_delim(
                                   .,
-                                  member =   stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 1),
-                                  scenario =  stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 2),
-                                  time_frame =  stringr::str_split(long_name, "_") %>%  purrr::map_chr(., 3)
+                                  long_name,
+                                  delim = "_",
+                                  names = c("member", "scenario", "time_frame", "season")
                                 ) %>%
                                   # Replace "." with "-" in time frame
                                   dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
@@ -1144,7 +1183,7 @@ plotting.CAVAanalytics_model_biases <-
           fill = 'antiquewhite1',
           color = "black",
           data = countries,
-          alpha=0.5
+          alpha = 0.5
         ) +
         ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
                              data = rs_df,
@@ -1189,9 +1228,9 @@ plotting.CAVAanalytics_model_biases <-
         ) +
         {
           if (ensemble) {
-            ggplot2::facet_grid(time_frame ~ scenario)
+            ggh4x::facet_nested(time_frame + season ~ scenario)
           } else {
-            ggh4x::facet_nested(scenario ~ time_frame   + member)
+            ggh4x::facet_nested(scenario ~ time_frame + season + member)
           }
         } +
         ggplot2::labs(fill = plot_titles, x = "", y = "") +
@@ -1206,12 +1245,27 @@ plotting.CAVAanalytics_model_biases <-
           axis.text.y = ggplot2::element_blank(),
           axis.ticks = ggplot2::element_blank(),
           axis.title = ggplot2::element_blank(),
-          legend.position = "bottom",
-          legend.direction = "horizontal",
-          legend.key.height = ggplot2::unit(0.3, 'cm'),
-          legend.key.width = ggplot2::unit(2, 'cm'),
+          legend.position = if (ensemble)
+            "right"
+          else
+            "bottom",
+          legend.direction = if (ensemble)
+            "vertical"
+          else
+            "horizontal",
+          legend.key.height = if (ensemble)
+            ggplot2::unit(1.2, 'cm')
+          else
+            ggplot2::unit(0.3, 'cm'),
+          legend.key.width = if (ensemble)
+            ggplot2::unit(0.3, 'cm')
+          else
+            ggplot2::unit(2, 'cm'),
           legend.box.spacing = ggplot2::unit(0, "pt"),
-          legend.text =  ggplot2::element_text(angle = 45, hjust = 1)
+          legend.text =  if (ensemble)
+            NULL
+          else
+            ggplot2::element_text(angle = 45, hjust = 1)
         )
 
       cli::cli_progress_done()
@@ -1226,7 +1280,7 @@ plotting.CAVAanalytics_model_biases <-
       if (ensemble) {
         p <- rst %>%
           dplyr::mutate(value = value - obs_value) %>%
-          dplyr::group_by(date) %>%
+          dplyr::group_by(date, season) %>%
           dplyr::summarise(sd = sd(value),
                            value = mean(value)) %>%
           ggplot2::ggplot() +
@@ -1253,6 +1307,7 @@ plotting.CAVAanalytics_model_biases <-
             axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
             legend.title = ggplot2::element_blank()
           ) +
+          ggplot2::facet_wrap( ~ season) +
           ggplot2::labs(x = "Year", y = plot_titles) +
           if (!is.null(legend_range)) {
             ggplot2::scale_y_continuous(limits = legend_range)
@@ -1269,7 +1324,7 @@ plotting.CAVAanalytics_model_biases <-
                                           x = date),
                              alpha = 0.5) +
           ggplot2::scale_x_date(date_breaks = "4 years", date_labels = "%Y") +
-          ggplot2::facet_wrap(. ~ Var1) +
+          ggplot2::facet_grid(season ~ Var1) +
           ggplot2::theme_bw() +
           ggplot2::labs(x = "Year", y = plot_titles) +
           ggplot2::theme(

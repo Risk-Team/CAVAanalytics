@@ -5,9 +5,9 @@
 #' @param data output of load_data
 #' @param uppert  numeric of length=1, upper threshold
 #' @param lowert numeric of length=1, lower threshold
-#' @param season Numerical, seasons to select. For example, 1:12
+#' @param season list, containing seasons to select. For example, list(1:6, 7:12)
 #' @param consecutive logical, to use in conjunction with lowert or uppert
-#' @param duration character, either "max" or "total"
+#' @param duration either "max" or specify a number. Used only when consecutive is TRUE. For example, to know the number of consecutive days with tmax above 35, lasting more than 3 days, specify uppert=35, consecutive =T and duration=3
 #' @param bias.correction logical
 #' @param n.sessions numeric, number of sessions to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage
 #' @importFrom magrittr %>%
@@ -32,9 +32,14 @@ climate_change_signal <- function(data,
              lowert,
              consecutive,
              duration,
-             bias.correction) {
+             bias.correction,
+             season) {
       stopifnot(is.logical(consecutive))
-      match.arg(duration, c("max", "total"))
+      if (!is.list(season))
+        cli::cli_abort("season needs to be a list, for example, list(1:3)")
+      if (!(duration == "max" || is.numeric(duration))) {
+        cli::cli_abort("duration must be 'max' or a number")
+      }
       if (!any(stringr::str_detect(colnames(data[[1]]), "obs")) &
           isTRUE(bias.correction)) {
         cli::cli_abort(
@@ -120,10 +125,10 @@ climate_change_signal <- function(data,
       }
       else if ((!is.null(uppert) |
                 !is.null(lowert)) &
-               (consecutive & duration == "total")) {
+               (consecutive & is.numeric(duration))) {
         paste0(
           var,
-          ". Climate change signal for total number of consecutive days with duration longer than 6 days, ",
+          ". Climate change signal for total number of consecutive days with duration longer than ", duration," days, ",
           ifelse(
             !is.null(lowert),
             paste0("below threshold of ", lowert),
@@ -160,13 +165,18 @@ climate_change_signal <- function(data,
              consecutive,
              duration,
              country_shp,
-             bias.correction) {
-      gc()
+             bias.correction,
+             season) {
+      season_name <-
+        paste0(lubridate::month(season[[1]], label = T),
+               "-",
+               lubridate::month(season[[length(season)]], label = T))
       data_list <- datasets  %>%
         {
           if (bias.correction) {
             cli::cli_text(
-              paste("{cli::symbol$arrow_right}",
+              paste(
+                "{cli::symbol$arrow_right}",
                 " Performing bias correction with the empirical quantile mapping",
                 " method, for each model and month separately. This can take a while. Season",
                 glue::glue_collapse(season, "-")
@@ -214,7 +224,9 @@ climate_change_signal <- function(data,
                               mod$Dates$start
                             mod_temp$Dates$end <-  mod$Dates$end
                             if (any(is.na(mod_temp$Data)))
-                              cli::cli_text("{cli::symbol$arrow_right} Bias correction has introduced NA values in certain pixels. Proceed with care")
+                              cli::cli_text(
+                                "{cli::symbol$arrow_right} Bias correction has introduced NA values in certain pixels. Proceed with care"
+                              )
                             return(mod_temp)
                           }))
           } else
@@ -252,16 +264,16 @@ climate_change_signal <- function(data,
           rs_list <- purrr::map(1:dim(y$Data)[[1]], function(ens) {
             array_mean <-
               if (length(y$Dates$start) == 1)
-                apply(y$Data[ens, , ,], c(1, 2), mean, na.rm = TRUE)
+                apply(y$Data[ens, , , ], c(1, 2), mean, na.rm = TRUE)
             else
-              apply(y$Data[ens, , ,], c(2, 3), mean, na.rm = TRUE) # climatology per member adjusting by array dimension
+              apply(y$Data[ens, , , ], c(2, 3), mean, na.rm = TRUE) # climatology per member adjusting by array dimension
 
             y$Data <- array_mean
 
             rs <- make_raster(y, c(1, 2), country_shp)
 
             names(rs) <-
-              paste0("Member ", ens, "_", x, "_", names(rs))
+              paste0("Member ", ens, "_", x, "_", names(rs), "_", season_name)
             return(rs)
           })
 
@@ -272,7 +284,8 @@ climate_change_signal <- function(data,
               dplyr::filter(., stringr::str_detect(experiment, "hist"))$rst_models[[1]]
             ccs <- terra::rast(y) - terra::rast(h)
             ccs_mean <- terra::mean(ccs)
-            names(ccs_mean) <- names(terra::rast(y))[[1]]
+            names(ccs_mean) <-
+              stringr::str_remove(names(terra::rast(y))[[1]], "Member \\d+_")
             return(ccs_mean)
           }),
           rst_ens_sd_ccs = purrr::map(rst_models, function(y) {
@@ -280,7 +293,8 @@ climate_change_signal <- function(data,
               dplyr::filter(., stringr::str_detect(experiment, "hist"))$rst_models[[1]]
             ccs <- terra::rast(y) - terra::rast(h)
             ccs_sd <- terra::stdev(ccs)
-            names(ccs_sd) <- names(terra::rast(y))[[1]]
+            names(ccs_sd) <-
+              stringr::str_remove(names(terra::rast(y))[[1]], "Member \\d+_")
             return(ccs_sd)
           }),
           rst_models_ccs = purrr::map(rst_models, function(y) {
@@ -312,7 +326,13 @@ climate_change_signal <- function(data,
   if (class(data) != "CAVAanalytics_list")
     cli::cli_abort(c("x" = "The input data is not the output of CAVAanalytics load_data"))
   # check input requirements
-  check_inputs(data, uppert, lowert, consecutive, duration, bias.correction)
+  check_inputs(data,
+               uppert,
+               lowert,
+               consecutive,
+               duration,
+               bias.correction,
+               season)
 
   # retrieve information
   mod.numb <- dim(data[[1]]$models_mbrs[[1]]$Data) [1]
@@ -324,37 +344,57 @@ climate_change_signal <- function(data,
   # calculate the differences between consecutive dates to understand temporal resolution
   diffs <- diff(dates)
 
-  # create message
-  mes <-
-    create_message(var, uppert, lowert, consecutive, duration, bias.correction)
-
   # set parallel processing
   future::plan(future::multisession, workers = n.sessions)
+  #create plots by season
+  data_list <- purrr::map(season, function(sns) {
+    mes <-
+      create_message(var, uppert, lowert, consecutive, duration, bias.correction)
 
-  # filter data by season
-  datasets <- filter_data_by_season(datasets, season)
-  cli::cli_text(paste0("{cli::symbol$arrow_right}",
-    " climate change signal, season ",
-    glue::glue_collapse(season, "-"),
-    ". ",
-    mes
+    # filter data by season
+    datasets <- filter_data_by_season(datasets, sns)
+    cli::cli_text(
+      paste0(
+        "{cli::symbol$arrow_right}",
+        " climate change signal, season ",
+        glue::glue_collapse(sns, "-"),
+        ". ",
+        mes
+      )
+    )
+
+    # perform calculations
+    cli::cli_progress_step("Performing calculations")
+    data_list <-
+      perform_calculations(
+        datasets,
+        mod.numb,
+        var,
+        uppert,
+        lowert,
+        consecutive,
+        duration,
+        country_shp,
+        bias.correction,
+        season = sns
+      )
+    cli::cli_progress_done()
+    # return results
+    return(data_list)
+  })
+
+  invisible(structure(
+    list(
+      terra::rast(lapply(data_list, `[[`, 1)),
+      terra::rast(lapply(data_list, `[[`, 2)),
+      terra::rast(lapply(data_list, `[[`, 3))
+    ),
+    class = "CAVAanalytics_ccs",
+    components = list(
+      "SpatRaster for ccs mean",
+      "SparRaster stack for ccs sd",
+      "SpatRaster stack for individual members"
+    )
   ))
 
-  # perform calculations
-  cli::cli_progress_step("Performing calculations")
-  data_list <-
-    perform_calculations(
-      datasets,
-      mod.numb,
-      var,
-      uppert,
-      lowert,
-      consecutive,
-      duration,
-      country_shp,
-      bias.correction
-    )
-  cli::cli_progress_done()
-  # return results
-  return(data_list)
 }

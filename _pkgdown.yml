@@ -12,7 +12,7 @@ navbar:
     menu:
     - text: start here
       href: articles/Introduction.html
-    - text: more advanced examples
+    - text: climate indexes
       href: articles/more_advanced.html
   - icon: fa fa-file-code-o
     text: functions

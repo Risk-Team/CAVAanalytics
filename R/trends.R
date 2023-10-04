@@ -6,9 +6,9 @@
 #' @param bias.correction logical, whether to perform bias.correction or not
 #' @param uppert  numeric of length=1, upper threshold
 #' @param lowert numeric of length=1, lower threshold
-#' @param season numeric, seasons to select. For example, 1:12
+#' @param season list, containing seasons to select. For example, list(1:6, 7:12)
 #' @param consecutive logical, to use in conjunction with lowert or uppert
-#' @param duration character, either "max" or "total"
+#' @param duration either "max" or specify a number. Used only when consecutive is TRUE. For example, to know the number of consecutive days with tmax above 35, lasting more than 3 days, specify uppert=35, consecutive =T and duration=3
 #' @param observation logical, whether to visualize trends for the observational dataset or projections
 #' @param intraannual_var logical, whether linear regression is applied to annual variability, measured as standard deviation
 #' @param n.sessions numeric, number of sessions to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage
@@ -40,7 +40,10 @@ trends = function(data,
              uppert,
              lowert,
              duration,
-             intraannual_var) {
+             intraannual_var,
+             season) {
+      if (!is.list(season))
+        cli::cli_abort("season needs to be a list, for example, list(1:3)")
       stopifnot(
         is.logical(consecutive),
         is.logical(bias.correction),
@@ -90,7 +93,9 @@ trends = function(data,
           (is.null(uppert)) &
           is.null(lowert))
         cli::cli_abort(c("x" = "Specify a threshold for which you want to calculate consecutive days"))
-      stopifnot(duration == "max" | duration == "total")
+      if (!(duration == "max" || is.numeric(duration))) {
+        cli::cli_abort("duration must be 'max' or a number")
+      }
       if (observation) {
         if (!any(stringr::str_detect(colnames(data[[1]]), "obs"))) {
           cli::cli_abort(c("x" = "An observational dataset is needed for this option, check your data"))
@@ -158,7 +163,7 @@ trends = function(data,
           (consecutive & duration == "total")) {
         mes = paste0(
           var,
-          ". Calculation of yearly increase in total total number of consecutive days with duration longer than 6 days, ",
+          ". Calculation of yearly increase in total total number of consecutive days with duration longer than ", duration ," days, ",
           ifelse(
             !is.null(lowert),
             paste0("below threshold of ", lowert),
@@ -218,8 +223,12 @@ trends = function(data,
              country_shp,
              bias.correction,
              observation,
-             intraannual_var) {
-      gc()
+             intraannual_var,
+             season) {
+      season_name <-
+        paste0(lubridate::month(season[[1]], label = T),
+               "-",
+               lubridate::month(season[[length(season)]], label = T))
 
       data_list <- datasets %>%
         dplyr::filter(experiment != "historical") %>%
@@ -313,11 +322,11 @@ trends = function(data,
                 coef <-  make_raster(c4R, c(1, 2), country_shp)
 
                 names(coef) <-
-                  paste0(y, "_coef", "_", names(coef))
+                  paste0(y, "_coef", "_", names(coef), "_", season_name)
 
                 p.value <- make_raster(x, c(1, 2), country_shp)
                 names(p.value) <-
-                  paste0(y, "_p", "_", names(p.value))
+                  paste0(y, "_p", "_", names(p.value), "_", season_name)
 
                 return(list(coef, p.value))
 
@@ -333,7 +342,7 @@ trends = function(data,
                     c4R$Data <- c4R$Data[i_mod, ,]
                     rst <- make_raster(c4R, c(1, 2), country_shp)
                     names(rst) <-
-                      paste0("Member ", i_mod, "_", y, "_coef_" , names(rst))
+                      paste0("Member ", i_mod, "_", y, "_coef_" , names(rst),"_", season_name)
                     return(rst)
                   }) %>%  c()
 
@@ -342,26 +351,11 @@ trends = function(data,
                     x$Data <- x$Data[i_mod, ,]
                     rst <- make_raster(x, c(1, 2), country_shp)
                     names(rst) <-
-                      paste0("Member ", i_mod, "_", y, "_p_" , names(rst))
+                      paste0("Member ", i_mod, "_", y, "_p_" , names(rst), "_", season_name)
                     return(rst)
                   }) %>% c()
 
                 return(list(rst_stack_coef , rst_stack_p))
-
-              }),
-              ens_temp = purrr::map2(models_agg_y, experiment, function(x, y) {
-                ens <-
-                  suppressMessages(transformeR::aggregateGrid(x, aggr.mem = list(FUN = "mean")))
-                dimnames(ens$Data)[[1]] <-
-                  ens$Dates$start
-                dimnames(ens$Data)[[2]] <-
-                  ens$xyCoords$y
-                dimnames(ens$Data)[[3]] <-
-                  ens$xyCoords$x
-                df <- reshape2::melt(ens$Data) %>%
-                  dplyr::mutate(date = as.Date(Var1)) %>%
-                  dplyr::mutate(experiment = y)
-                return(df)
 
               }),
               models_temp = purrr::map2(models_agg_y, experiment, function(x, y) {
@@ -372,7 +366,8 @@ trends = function(data,
 
                 df <- reshape2::melt(x$Data) %>%
                   dplyr::mutate(date = as.Date(Var2)) %>%
-                  dplyr::mutate(experiment = y)
+                  dplyr::mutate(experiment = y) %>%
+                  dplyr::mutate(season=season_name)
                 return(df)
 
               })
@@ -392,11 +387,11 @@ trends = function(data,
 
                   coef <- make_raster(c4R, c(1, 2), country_shp)
                   names(coef) <-
-                    paste0("obs", "_coef_", names(coef))
+                    paste0("obs", "_coef_", names(coef), "_", season_name)
                   p.value <- make_raster(x, c(1, 2), country_shp)
 
                   names(p.value) <-
-                    paste0("obs", "_p_", names(p.value))
+                    paste0("obs", "_p_", names(p.value),"_", season_name)
                   return(list(coef, p.value))
 
                 }),
@@ -406,7 +401,8 @@ trends = function(data,
                   dimnames(x$Data)[[3]] <- x$xyCoords$x
                   df <- reshape2::melt(x$Data) %>%
                     dplyr::mutate(date = as.Date(Var1)) %>%
-                    dplyr::mutate(experiment = "obs")
+                    dplyr::mutate(experiment = "obs") %>%
+                    dplyr::mutate(season=season_name)
                   return(df)
 
 
@@ -438,9 +434,6 @@ trends = function(data,
               ~ terra::rast(data_list$models_spat[[.]][[2]])
             )),
             do.call(rbind, purrr::map(
-              1:nrow(data_list), ~ data_list$ens_temp[[.]]
-            )),
-            do.call(rbind, purrr::map(
               1:nrow(data_list), ~ data_list$models_temp[[.]]
             ))
           ),
@@ -450,7 +443,6 @@ trends = function(data,
             "SpatRaster for trends p.values (ensemble)",
             "SpatRaster for trends coefficients (models)",
             "SpatRaster for trends p.values (models)",
-            "dataframe for trends (ensemble)",
             "dataframe for trends (models)"
           )
         ))
@@ -467,15 +459,12 @@ trends = function(data,
           components = list(
             "SpatRaster for trends coefficients (obs)",
             "SpatRaster for trends p.values (obs)",
-            "dataframe"
+            "dataframe for trends"
           )
         ))
 
 
       }
-
-
-
     } # end of function
 
   # beginning of code -------------------------------------------------------
@@ -500,58 +489,100 @@ trends = function(data,
     uppert,
     lowert,
     duration,
-    intraannual_var
+    intraannual_var,
+    season
   )
-
-
-
-  # create message
-  mes <-
-    create_message(
-      var,
-      bias.correction,
-      uppert,
-      lowert,
-      consecutive,
-      duration,
-      observation,
-      intraannual_var
-    )
   # set parallel processing
   future::plan(future::multisession, workers = n.sessions)
 
-  # filter data by season
-  datasets <- filter_data_by_season(datasets, season)
 
-  cli::cli_text(
-    paste0(
-      "{cli::symbol$arrow_right}",
-      " trends,",
-      ifelse(observation, " observations,", " projections,"),
-      " season ",
-      glue::glue_collapse(season, "-"),
-      ". ",
-      mes
+  data_list <- purrr::map(season, function(sns) {
+
+    # create message
+    mes <-
+      create_message(
+        var,
+        bias.correction,
+        uppert,
+        lowert,
+        consecutive,
+        duration,
+        observation,
+        intraannual_var
+      )
+
+    # filter data by season
+    datasets <- filter_data_by_season(datasets, season=sns)
+
+    cli::cli_text(
+      paste0(
+        "{cli::symbol$arrow_right}",
+        " trends,",
+        ifelse(observation, " observations,", " projections,"),
+        " season ",
+        glue::glue_collapse(sns, "-"),
+        ". ",
+        mes
+      )
     )
-  )
 
-  # perform operations
+    # perform operations
 
-  data_list <-
-    perform_calculations(
-      datasets,
-      var,
-      uppert,
-      lowert,
-      consecutive,
-      duration,
-      country_shp,
-      bias.correction,
-      observation,
-      intraannual_var
-    )
+    data_list <-
+      perform_calculations(
+        datasets,
+        var,
+        uppert,
+        lowert,
+        consecutive,
+        duration,
+        country_shp,
+        bias.correction,
+        observation,
+        intraannual_var,
+        season=sns
+      )
 
-  # return results
-  return(data_list)
+    # return results
+    return(data_list)
+
+  })
+
+  if (!observation) {
+    invisible(structure(
+      list(
+        terra::rast(lapply(data_list, `[[`, 1)),
+        terra::rast(lapply(data_list, `[[`, 2)),
+        terra::rast(lapply(data_list, `[[`, 3)),
+        terra::rast(lapply(data_list, `[[`, 4)),
+        do.call(rbind, lapply(data_list, `[[`, 5))
+      ),
+      class = "CAVAanalytics_trends",
+      components = list(
+        "SpatRaster for trends coefficients (ensemble)",
+        "SpatRaster for trends p.values (ensemble)",
+        "SpatRaster for trends coefficients (models)",
+        "SpatRaster for trends p.values (models)",
+        "dataframe for trends (models)"
+      )
+    ))
+
+  } else {
+    # for observation
+    invisible(structure(
+      list(
+        terra::rast(lapply(data_list, `[[`, 1)),
+        terra::rast(lapply(data_list, `[[`, 2)),
+        do.call(rbind, lapply(data_list, `[[`, 3))
+      ),
+      class = "CAVAanalytics_trends",
+      components = list(
+        "SpatRaster for trends coefficients (obs)",
+        "SpatRaster for trends p.values (obs)",
+        "dataframe for trends"
+      )
+    ))
+
+  }
 
 }

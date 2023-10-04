@@ -43,7 +43,7 @@
   </a>
   <div class="dropdown-menu" aria-labelledby="dropdown--guides">
     <a class="dropdown-item" href="articles/Introduction.html">start here</a>
-    <a class="dropdown-item" href="articles/more_advanced.html">more advanced examples</a>
+    <a class="dropdown-item" href="articles/more_advanced.html">climate indexes</a>
   </div>
 </li>
 <li class="nav-item">
@@ -91,7 +91,7 @@ CAVAanalytics: Operational R package for climate services
 <h4 id="updates">**Updates<a class="anchor" aria-label="anchor" href="#updates"></a>
 </h4>
 <p><strong>Please note that only the CORDEX-CORE AFR-22 domain is available as of September 2023. Tentatively, we will be releasing one domain per month afterward</strong>.</p>
-<p><strong>In the latest CAVAanalytics release the load_data function can use xarray to download data, considerably improving speed</strong></p>
+<p><strong>In the latest CAVAanalytics release the load_data function can use xarray to download data, considerably improving speed in certain cases</strong></p>
 </div>
 <div class="section level2">
 <h2 id="quick-intro-on-climate-models">Quick intro on climate models<a class="anchor" aria-label="anchor" href="#quick-intro-on-climate-models"></a>
@@ -196,20 +196,20 @@ sudo docker run --rm \
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://risk-team.github.io/CAVAanalytics/">CAVAanalytics</a></span><span class="op">)</span></span>
 <span><span class="co"># 1st step</span></span>
 <span> <span class="va">remote.data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/load_data.html">load_data</a></span><span class="op">(</span>country <span class="op">=</span> <span class="st">"Sudan"</span>, variable<span class="op">=</span><span class="st">"tasmax"</span>,</span>
-<span> years.hist<span class="op">=</span><span class="fl">1990</span><span class="op">:</span><span class="fl">1999</span>, years.proj<span class="op">=</span><span class="fl">2050</span><span class="op">:</span><span class="fl">2059</span>,</span>
+<span> years.hist<span class="op">=</span><span class="fl">1990</span><span class="op">:</span><span class="fl">2000</span>, years.proj<span class="op">=</span><span class="fl">2050</span><span class="op">:</span><span class="fl">2060</span>,</span>
 <span> path.to.data <span class="op">=</span> <span class="st">"CORDEX-CORE"</span>, aggr.m<span class="op">=</span><span class="st">"mean"</span>, domain<span class="op">=</span><span class="st">"AFR-22"</span><span class="op">)</span></span>
 <span><span class="co"># 2nd step</span></span>
-<span> <span class="fu"><a href="reference/climate_change_signal.html">climate_change_signal</a></span><span class="op">(</span><span class="va">remote.data</span>, season<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span>, bias.correction <span class="op">=</span> <span class="cn">F</span><span class="op">)</span> <span class="op">%&gt;%</span> </span>
+<span> <span class="fu"><a href="reference/climate_change_signal.html">climate_change_signal</a></span><span class="op">(</span><span class="va">remote.data</span>, season<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span>, bias.correction <span class="op">=</span> <span class="cn">F</span><span class="op">)</span> <span class="op">%&gt;%</span> </span>
 <span><span class="co"># 3rd step</span></span>
-<span> <span class="fu"><a href="reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">.</span>, ensemble<span class="op">=</span><span class="cn">FALSE</span>, plot_titles <span class="op">=</span> <span class="st">"temperature change"</span>,</span>
+<span> <span class="fu"><a href="reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">.</span>, ensemble<span class="op">=</span><span class="cn">TRUE</span>, plot_titles <span class="op">=</span> <span class="st">"Temperature change (°C)"</span>,</span>
 <span> palette<span class="op">=</span><span class="fu"><a href="reference/IPCC_palette.html">IPCC_palette</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"tmp"</span>, divergent <span class="op">=</span> <span class="cn">F</span><span class="op">)</span>, bins<span class="op">=</span><span class="cn">T</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup><col width="100%"></colgroup>
 <thead><tr class="header">
-<th align="center"><img src="https://github.com/Risk-Team/CAVAanalytics/assets/40058235/7240d4fc-a768-4a39-9848-ee0c28645424" alt="Rplot"></th>
+<th align="center"><img src="https://github.com/Risk-Team/CAVAanalytics/assets/40058235/3dce772c-51e9-4cd1-9ad4-5ddfcdf75698" alt="Rplot01"></th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="center"><em>Average annual projected change in maximum temperature compared to the 1990-1999 baseline period in Sudan</em></td>
+<td align="center"><em>Average annual projected change in maximum temperature compared to the 1990-2000 baseline period in Sudan</em></td>
 </tr></tbody>
 </table>
 </div>
@@ -242,7 +242,12 @@ filtered_data = data[data['activity'].str.contains("FAO")]
 <div class="section level2">
 <h2 id="applications">Applications<a class="anchor" aria-label="anchor" href="#applications"></a>
 </h2>
-<p>CAVAanalytics can be used by anyone interested in simple and more advanced climate change analyses or retrieving CORDEX-CORE data to be used in impact models.</p>
+<p>CAVAanalytics can be used by anyone interested in simple and more advanced climate change analyses. You are also free to make use of the data as input for impact models.</p>
+</div>
+<div class="section level2">
+<h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
+</h2>
+<p>You are welcome to fork this repository and suggest new features. For any problem, you can open <a href="https://github.com/Risk-Team/CAVAanalytics/issues" class="external-link">issues</a> by click on <strong>New issue</strong></p>
 </div>
 
   </main><aside class="col-md-3"><div class="license">

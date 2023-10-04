@@ -5,9 +5,9 @@
 #' @param data output of load_data
 #' @param uppert  numeric of length=1, upper threshold
 #' @param lowert numeric of length=1, lower threshold
-#' @param season numeric, seasons to select. For example, 1:12
+#' @param season list, containing seasons to select. For example, list(1:6, 7:12)
 #' @param consecutive logical, to use in conjunction with lowert or uppert
-#' @param duration character, either "max" or "total". Used only when consecutive is TRUE
+#' @param duration either "max" or specify a number. Used only when consecutive is TRUE. For example, to know the number of consecutive days with tmax above 35, lasting more than 3 days, specify uppert=35, consecutive =T and duration=3
 #' @importFrom magrittr %>%
 #' @return list with SpatRaster. To explore the output run attributes(output)
 #'
@@ -30,13 +30,18 @@ observations <-
                uppert,
                lowert,
                consecutive,
-               duration) {
+               duration,
+               season) {
+        if (!is.list(season))
+          cli::cli_abort("season needs to be a list, for example, list(1:3)")
         if (!any(stringr::str_detect(colnames(data[[1]]), "obs")))
           cli::cli_abort(
             c("x" = "Observational dataset not detected. To use this function you need to specify path.to.obs in load_data")
           )
         stopifnot(is.logical(consecutive))
-        match.arg(duration, c("max", "total"))
+        if (!(duration == "max" || is.numeric(duration))) {
+          cli::cli_abort("duration must be 'max' or a number")
+        }
         if (!is.null(lowert) &
             !is.null(uppert))
           cli::cli_abort(c("x" = "select only one threshold"))
@@ -97,10 +102,10 @@ observations <-
         }
         else if ((!is.null(uppert) |
                   !is.null(lowert)) &
-                 (consecutive & duration == "total")) {
+                 (consecutive & is.numeric(duration))) {
           paste0(
             var,
-            ". Calculation of total total number of consecutive days with duration longer than 6 days, ",
+            ". Calculation of total total number of consecutive days with duration longer than ", duration, " days, ",
             ifelse(
               !is.null(lowert),
               paste0("below threshold of ", lowert),
@@ -134,9 +139,12 @@ observations <-
                lowert,
                consecutive,
                duration,
-               country_shp) {
-        gc()
-
+               country_shp,
+               season) {
+        season_name <-
+          paste0(lubridate::month(season[[1]], label = T),
+                 "-",
+                 lubridate::month(season[[length(season)]], label = T))
         data_list <- datasets %>%
           dplyr::slice(1) %>%    # computing annual aggregation. if threshold is specified, first apply threshold
           dplyr::mutate(obs_agg_y = purrr::map(obs, function(x)
@@ -168,10 +176,13 @@ observations <-
           dplyr::select(obs_agg_y) %>%
           # Obs mean
           dplyr::mutate(rst_mean = purrr::map(obs_agg_y, function(obs_agg) {
-
-            rs <- make_raster(obs_agg, if (length(obs_agg$Dates$start) == 1) c(1,2) else c(2,3), country_shp ) # adjust by array dimension
+            rs <-
+              make_raster(obs_agg, if (length(obs_agg$Dates$start) == 1)
+                c(1, 2)
+                else
+                  c(2, 3), country_shp) # adjust by array dimension
             names(rs) <-
-              paste0("obs", "_", names(rs))
+              paste0("obs", "_", names(rs), "_", season_name)
             return(rs)
           }))
 
@@ -189,7 +200,7 @@ observations <-
     if (class(data) != "CAVAanalytics_list")
       cli::cli_abort(c("x" = "The input data is not the output of CAVAanalytics load_data"))
     # check input requirements
-    check_inputs(data, uppert, lowert, consecutive, duration)
+    check_inputs(data, uppert, lowert, consecutive, duration, season)
 
     # retrieve information
     datasets <- data[[1]]
@@ -201,31 +212,43 @@ observations <-
     diffs <- diff(dates)
 
     # create message
-    mes <-
-      create_message(var, uppert, lowert, consecutive, duration)
+    data_list <- purrr::map(season, function(sns) {
+      mes <-
+        create_message(var, uppert, lowert, consecutive, duration)
 
-    # filter data by season
-    datasets <- filter_data_by_season(datasets, season)
-    cli::cli_text(paste0("{cli::symbol$arrow_right}",
-      " projections, season ",
-      glue::glue_collapse(season, "-"),
-      ". ",
-      mes
+      # filter data by season
+      datasets <- filter_data_by_season(datasets, season = sns)
+      cli::cli_text(
+        paste0(
+          "{cli::symbol$arrow_right}",
+          " observations, season ",
+          glue::glue_collapse(sns, "-"),
+          ". ",
+          mes
+        )
+      )
+
+      cli::cli_progress_step("Performing calculations")
+
+      # perform calculations
+      data_list <-
+        perform_calculations(datasets,
+                             var,
+                             uppert,
+                             lowert,
+                             consecutive,
+                             duration,
+                             country_shp,
+                             season = sns)
+
+      cli::cli_progress_done()
+      # return results
+      return(data_list)
+    })
+
+    invisible(structure(
+      list(terra::rast(lapply(data_list, `[[`, 1))),
+      class = "CAVAanalytics_observations",
+      components = list("SpatRaster for observation mean")
     ))
-
-    cli::cli_progress_step("Performing calculations")
-
-    # perform calculations
-    data_list <-
-      perform_calculations(datasets,
-                           var,
-                           uppert,
-                           lowert,
-                           consecutive,
-                           duration,
-                           country_shp)
-
-    cli::cli_progress_done()
-    # return results
-    return(data_list)
   }

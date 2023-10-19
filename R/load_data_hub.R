@@ -71,7 +71,7 @@ load_data_hub <-
 
         if (!is.null(years.obs) &
             any(!(years.obs %in% 1980:2019)))
-          cli::cli_abort(c("x" = "Available years for observations are 1980:2016"))
+          cli::cli_abort(c("x" = "Available years for observations are 1980:2019"))
 
         if (any(!(years.proj %in% 2006:2099)))
           cli::cli_abort(c("x" = "Available years for projections are 2006:2099"))
@@ -254,7 +254,7 @@ load_data_hub <-
     if (!is.null(path.to.obs)) {
       path <-
         if (path.to.obs == "W5E5")
-          paste0(path.to.data, "/observations/W5E5/v1.0/w5e5_v1.0.ncml")
+          paste0(path.to.data, "/observations/W5E5/v2.0/w5e5_v2.0.ncml")
       else
         paste0(path.to.data,"/observations/ERA5/0.25/ERA5_025.ncml")
 
@@ -281,12 +281,12 @@ load_data_hub <-
           season =1:12
         )    %>%
           {
-            if (path.to.obs == "ERA5") {
+            if (path.to.obs == "ERA5" | path.to.obs == "W5E5") {
               if (stringr::str_detect(variable, "tas")) {
                 transformeR::gridArithmetics(., 273.15, operator = "-")
               } else if (stringr::str_detect(variable, "pr")) {
                 transformeR::gridArithmetics(.,
-                                              1000,
+                                             ifelse(path.to.obs == "ERA5", 1000, 86400),
                                              operator = "*")
               }
             } else {

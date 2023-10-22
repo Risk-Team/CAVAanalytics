@@ -238,7 +238,7 @@ load_data_hub <-
       Sys.time(),
       " Binding ",
       length(files) / 3,
-      " members and loading W5E5 dataset"
+      " members and loading ", path.to.obs, " dataset"
     ))
 
     options(warn = -1)

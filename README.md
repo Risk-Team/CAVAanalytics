@@ -87,7 +87,7 @@ install_github("Risk-Team/CAVAanalytics")
 ```
 It is possible that the installation of loadR.java fails. The problem is probably related to the installation of rJava. Have a look at the [wiki
 page](https://github.com/SantanderMetGroup/loadeR/wiki/Installation) to
-solve the issue. If you are on Windows, [follow this instructions](https://cimentadaj.github.io/blog/2018-05-25-installing-rjava-on-windows-10/installing-rjava-on-windows-10/).
+solve the issue. If you are on Windows, [follow these instructions](https://cimentadaj.github.io/blog/2018-05-25-installing-rjava-on-windows-10/installing-rjava-on-windows-10/).
 
 ### 2) JupyterHub
 
@@ -110,10 +110,23 @@ sudo docker pull docker.io/rso9192/cava:version2.0.0
 sudo docker run --rm \
            -p 8888:8787 \
            -e PASSWORD=password \
+           -v /path/to/local/directory:/home \
            rso9192/cava:version2.0.0
 
+
 ```
-Now open your favourite browser and type **http://localhost:8888/**. You should see a login page: enter the **username "rstudio"** and **password "password"** to login and that's it! You can now use CAVAanalytics through Rstudio server. 
+Replace **/path/to/local/directory** with the local directory on your host machine where you want to save your plots or data. For example, you can create a folder on your Desktop called CAVA_results. Then, you would run the above command as:
+
+```
+sudo docker run --rm \
+           -p 8888:8787 \
+           -e PASSWORD=password \
+           -v /home/Desktop/CAVA_results:/home \
+           rso9192/cava:version2.0.0
+```
+
+
+Now open your favorite browser and type **http://localhost:8888/**. You should see a login page: enter the **username "rstudio"** and **password "password"** to login and that's it! You can now use CAVAanalytics through Rstudio server. 
 
 #### Windows
 If you are using Windows, you can install [Docker Desktop](https://docs.docker.com/desktop/install/windows-install/) first. Note that Docker Desktop would require the installation of WSL (Windows Subsystem for Linux). 

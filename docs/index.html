@@ -161,19 +161,19 @@ CAVAanalytics: Operational R package for climate services
 <div class="section level4">
 <h4 id="linux">Linux<a class="anchor" aria-label="anchor" href="#linux"></a>
 </h4>
-<pre><code>sudo docker pull docker.io/rso9192/cava:version1.1.3
+<pre><code>sudo docker pull docker.io/rso9192/cava:version2.0.0
 
 sudo docker run --rm \
            -p 8888:8787 \
            -e PASSWORD=password \
-           rso9192/cava:version1.1.3
+           rso9192/cava:version2.0.0
 </code></pre>
 <p>Now open your favourite browser and type <strong><a href="http://localhost:8888/" class="external-link uri">http://localhost:8888/</a></strong>. You should see a login page: enter the <strong>username “rstudio”</strong> and <strong>password “password”</strong> to login and that’s it! You can now use CAVAanalytics through Rstudio server.</p>
 </div>
 <div class="section level4">
 <h4 id="windows">Windows<a class="anchor" aria-label="anchor" href="#windows"></a>
 </h4>
-<p>If you are using Windows, you can install the Windows subsystem for Linux <a href="https://ubuntu.com/wsl" class="external-link">WSL</a>. Then you can run the above commands. Otherwise, you can install Docker Desktop.</p>
+<p>If you are using Windows, you can install <a href="https://docs.docker.com/desktop/install/windows-install/" class="external-link">Docker Desktop</a> first. Note that Docker Desktop would require the installation of WSL (Windows Subsystem for Linux).</p>
 </div>
 </div>
 </div>

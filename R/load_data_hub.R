@@ -56,6 +56,7 @@ load_data_hub <-
           match.arg(domain,
                     choices = c(
                       "AFR-22",
+                      "CAS-22",
                       "WAS-22",
                       "SEA-22",
                       "AUS-22",

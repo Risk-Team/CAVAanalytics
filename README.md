@@ -26,6 +26,7 @@ framework and approach to climate services developed jointly by **The Food and A
 Conceptually, CAVA is organised into two modules. 
 
 **Climate module**: Provision of climate information from regional climate model outputs (CORDEX-CORE and reanalyses datasets)
+
 **Agriculture module**: Provision of impact information from the Inter-Sectoral Impact Model Intercomparison Project (ISIMIP3) 
 
 Climate modeling is a complex subject but a very good and gentle introduction to this topic is given by Andy Pitman and colleagues and can be downloaded [here](https://climateextremes.org.au/wp-content/uploads/Climate-modelling-an-overview-The-ARC-Centre-of-Excellence-for-Climate-Extremes.pdf). You are strongly encouraged to read it if you are new to this topic.  

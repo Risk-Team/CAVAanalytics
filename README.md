@@ -16,7 +16,7 @@
 
 #### **Updates
 
-**The EAS-22 domain will be release shortly**.
+**The EAS-22 domain will be released shortly**.
 
 
 ## Overview

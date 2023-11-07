@@ -74,7 +74,7 @@ loading and processing climate model outputs is the [climate4R
 framework](https://github.com/SantanderMetGroup/climate4R), applied with
 a tidyverse approach.
 
-**CAVAanalytics will also provide access and visualization of ISIMIP impact models**
+**CAVAanalytics logic will also be applied to ISIMIP impact models**
 
 ## Installation
 

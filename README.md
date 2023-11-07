@@ -23,7 +23,7 @@
 ## Overview
 CAVA (Climate and Agriculture Risk Visualization and Assessment) is a
 framework and approach to climate services developed jointly by **The Food and Agriculture Organization of the United Nations (FAO), the University of Cantabria, Predictia and the University of Cape Town**. CAVA makes use of climate and impact model outputs to inform users about future climate and impacts on agriculture. 
-Conceptually, CAVA is organised into two modules. 
+Conceptually, CAVA is organised into **two modules**. 
 
 **Climate module**: Provision of climate information from regional climate model outputs (CORDEX-CORE and reanalyses datasets)
 

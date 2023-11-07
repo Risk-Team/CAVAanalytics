@@ -16,7 +16,9 @@
 
 #### **Updates
 
-**The EAS-22 domain will be released shortly**.
+**The EAS-22 domain will be released shortly**
+
+**Current available CORDEX domains are: AFR-22**
 
 
 ## Overview

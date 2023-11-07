@@ -22,21 +22,30 @@
 
 ## Quick intro on climate models
 CAVA (Climate and Agriculture Risk Visualization and Assessment) is a
-framework and approach to climate services developed jointly by **The Food and Agriculture Organization of the United Nations (FAO), the University of Cantabria, and the University of Cape Town**. CAVA makes use of climate model outputs to inform users about future climate conditions (climate projections in jargon). Climate modeling is a complex subject but a very good and gentle introduction to this topic is given by Andy Pitman and colleagues and can be downloaded [here](https://climateextremes.org.au/wp-content/uploads/Climate-modelling-an-overview-The-ARC-Centre-of-Excellence-for-Climate-Extremes.pdf). You are strongly encouraged to read it if you are new to this topic.  
+framework and approach to climate services developed jointly by **The Food and Agriculture Organization of the United Nations (FAO), the University of Cantabria, Predictia and the University of Cape Town**. CAVA makes use of climate and impact model outputs to inform users about future climate and impacts on agriculture. 
+Conceptually, CAVA is organised into two modules. 
 
+**Climate module**: Provision of climate information from regional climate model outputs (CORDEX-CORE and reanalyses datasets)
+**Agriculture module**: Provision of impact information from the Inter-Sectoral Impact Model Intercomparison Project (ISIMIP3) 
+
+Climate modeling is a complex subject but a very good and gentle introduction to this topic is given by Andy Pitman and colleagues and can be downloaded [here](https://climateextremes.org.au/wp-content/uploads/Climate-modelling-an-overview-The-ARC-Centre-of-Excellence-for-Climate-Extremes.pdf). You are strongly encouraged to read it if you are new to this topic.  
+
+### Climate module
 CAVA makes use of outputs from Regional Climate Models. These models are used to downscale Global Climate Models at higher spatial resolution. The project in charge of providing Regional Climate Models is called CORDEX (Coordinated Regional Climate Downscaling Experiment). The outputs of these models are available for specific geographical areas around the world, called domains. More information about the data behind CAVA can be found [here](https://risk-team.github.io/CAVAanalytics/articles/Introduction.html).
 
 | ![CORDEX domains](https://github.com/Risk-Team/CAVAanalytics/assets/40058235/a8e85a4b-86e5-4fdf-ad18-755df4264aeb) |
 |:-------------------------------------------------------------------------------------------------------------------:|
 |    *Boundaries of the fourteen official CORDEX domains. [Source](https://cordex.org/data-access/regional-climate-change-simulations-for-cordex-domains/)*  |
 
+### Agriculture module
+CAVA is plannng to provide visualziation and streamline access to the impact model outputs of [ISIMIP](https://www.isimip.org/about/). This module is currently under development
 
 ## More about CAVA
 
 Traditionally, the approach to climate science consisted of providing means for visualizing climate model outputs and information (e.g IPCC Interactive Atlas) or access points to the raw data (ESGF, Copernicus). These two approaches mainly serve basic users (the former) or advanced users (the latter). 
 
 CAVA (Climate and Agriculture Risk Visualization and Assessment) is a
-framework and approach to climate services developed jointly by **The Food and Agriculture Organization of the United Nations (FAO), the University of Cantabria, and the University of Cape Town** that aim at serving both standard users (users who need a GUI) and intermediate users (users with some programming skills who needs easy access to climate data and downstream analyses).
+framework and approach to climate services developed jointly by **The Food and Agriculture Organization of the United Nations (FAO), the University of Cantabria, Predictia and the University of Cape Town** that aim at serving both standard users (users who need a GUI) and intermediate users (users with some programming skills who needs easy access to climate data and downstream analyses).
 
 Therefore, [CAVA is made of a Platform
 (GUI)](https://fao-cava.predictia.es/), which is freely accessible
@@ -63,6 +72,8 @@ be seen as a wrapper of several packages, but the main engine for
 loading and processing climate model outputs is the [climate4R
 framework](https://github.com/SantanderMetGroup/climate4R), applied with
 a tidyverse approach.
+
+**CAVAanalytics will also provide access and visualization of ISIMIP impact models**
 
 ## Installation
 

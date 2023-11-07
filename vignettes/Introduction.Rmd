@@ -19,10 +19,11 @@ library(CAVAanalytics)
 ```
 
 
-The main purpose of CAVAanalytics is making the processing and visualization of multiple climate models simple. Additionally, CAVAanalytics offers an access point to download CORDEX-CORE climate models, the high resolution (25 Km) dinamically-downscaled climate models used in the IPCC report AR5. CAVAanalytics also offers access to state-of-the-art reanalyses datasets, such as W5E5 and ERA5. 
+The main purpose of CAVAanalytics is making the processing and visualization of multiple climate and impact models simple. CAVAanalytics offers an access point to download CORDEX-CORE climate models, the high resolution (25 Km) dinamically-downscaled climate models used in the IPCC report AR5. CAVAanalytics also offers access to state-of-the-art reanalyses datasets, such as W5E5 and ERA5. 
 
 CAVAanalytics is built on top of climate4R and several tidyverse packages. The current available data that can be downloaded using the package are:
 
+### Climate module
 * CORDEX-CORE simulations (3 GCMs donwscaled with 2 RCMs for two RCPs)
 * W5E5 and ERA5 reanalyses datasets
 
@@ -36,6 +37,8 @@ Available variables are:
 * Daily wind speed (sfcWind)
 * Daily solar radiation (rsds)
 
+### Agriculture module
+ISIMIP3 impact models will become available in the close future
 
 ## Loading CORDEX-CORE data
 Below we are automatically downloading all CORDEX-CORE simulations alongside the observational dataset ERA5 for Kenya. As you can see, it is extremely simple. We will see how to work with locally available models in another vignette.  

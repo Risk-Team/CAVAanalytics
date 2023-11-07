@@ -18,7 +18,6 @@
 
 **The EAS-22 domain will be release shortly**.
 
-**In the latest CAVAanalytics release (v2) the load_data function can use xarray to download data, considerably improving speed in certain cases. Additionally, it is now possible to select multiple seasons at the same time.**
 
 ## Overview
 CAVA (Climate and Agriculture Risk Visualization and Assessment) is a

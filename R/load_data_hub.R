@@ -288,7 +288,7 @@ load_data_hub <-
                 transformeR::gridArithmetics(., 273.15, operator = "-")
               } else if (stringr::str_detect(variable, "pr")) {
                 transformeR::gridArithmetics(.,
-                                             ifelse(path.to.obs == "ERA5", 1000, 86400),
+                                             ifelse(path.to.obs == "ERA5", 10000, 86400),
                                              operator = "*")
               }
             } else {

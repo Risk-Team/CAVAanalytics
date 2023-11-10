@@ -19,6 +19,7 @@
 **The EAS-22 domain will be released shortly**
 
 **Current available CORDEX domains are: AFR-22**
+
 **Current available observational datasets: W5E5, ERA5**
 
 

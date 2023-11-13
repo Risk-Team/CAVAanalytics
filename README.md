@@ -161,6 +161,7 @@ To do that, open a Command Prompt (as administrator) and run
 ```
 wsl --install
 ```
+You can then run the above commands specified for the Linux OS. 
 
 ## Quick example
 

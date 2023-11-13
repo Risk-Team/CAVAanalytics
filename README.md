@@ -88,9 +88,11 @@ Based on how you want to use CAVAanalytics, there are three options.
 **If you are new to climate4R**, You need to first install **rJava**. This installation can be problematic. Follow the instructions below
 
 **Windows**
+
 [Installing rJava in Windows](https://cimentadaj.github.io/blog/2018-05-25-installing-rjava-on-windows-10/installing-rjava-on-windows-10/)
 
 **Linux**
+
 [Installing rJava in Linux](https://github.com/SantanderMetGroup/loadeR/wiki/Installation)
 
 If the installation of rJava is successful, you should be able to load the library from Rstudio.

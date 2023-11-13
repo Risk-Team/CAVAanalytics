@@ -145,6 +145,11 @@ Now open your favorite browser and type **http://localhost:8888/**. You should s
 
 #### Windows
 If you are using Windows, you can install [Docker Desktop](https://docs.docker.com/desktop/install/windows-install/) first. Note that Docker Desktop would require the installation of WSL (Windows Subsystem for Linux). 
+To do that, open a Command Prompt (as administrator) and run
+
+```
+wsl --install
+```
 
 ## Quick example
 

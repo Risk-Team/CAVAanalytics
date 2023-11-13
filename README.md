@@ -85,24 +85,33 @@ Based on how you want to use CAVAanalytics, there are three options.
 
 ### 1) Locally
 
-**If you are new to climate4R**, install its main packages first.
-You can do so by
+**If you are new to climate4R**, You need to first install **rJava**. This installation can be problematic. Follow the instructions below
+
+**Windows**
+[Installing rJava in Windows](https://cimentadaj.github.io/blog/2018-05-25-installing-rjava-on-windows-10/installing-rjava-on-windows-10/)
+
+**Linux**
+[Installing rJava in Linux](https://github.com/SantanderMetGroup/loadeR/wiki/Installation)
+
+If the installation of rJava is successful, you should be able to load the library from Rstudio.
+
 ```
-install.packages(c("rJava", "devtools"))
+# This should not give any error
+library(rJava)
+```
+You can now install CAVAanalytics and its main packages
+
+```
+install.packages("devtools")
 
 remotes::install_github(c("SantanderMetGroup/loadeR.java",
                  "SantanderMetGroup/climate4R.UDG",
                  "SantanderMetGroup/loadeR",
                  "SantanderMetGroup/transformeR",
                  "SantanderMetGroup/downscaleR"))
-```
-**Then**
-```
+
 install_github("Risk-Team/CAVAanalytics")
 ```
-It is possible that the installation of loadR.java fails. The problem is probably related to the installation of rJava. Have a look at the [wiki
-page](https://github.com/SantanderMetGroup/loadeR/wiki/Installation) to
-solve the issue. If you are on Windows, [follow these instructions](https://cimentadaj.github.io/blog/2018-05-25-installing-rjava-on-windows-10/installing-rjava-on-windows-10/).
 
 ### 2) JupyterHub
 

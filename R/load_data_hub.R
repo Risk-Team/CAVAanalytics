@@ -14,6 +14,7 @@
 #' @param years.obs NULL or numeric, specify year range for observation. Specifying years.obs will overwrite years.hist for observations
 #' @param domain charachter, specify the CORDEX-CORE domain (e.g AFR-22, EAS-22).
 #' @param buffer numeric, default is zero.
+#' @param res_folder character, either interp05 or interp025. Default is interp05
 #' @param aggr.m character, monthly aggregation. One of none, mean or sum
 #' @param n.sessions numeric, number of sessions to use in parallel processing. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary
 #' @return list of length 2. List[[1]] contains a tibble with list columns and List[[2]] the bbox
@@ -36,6 +37,7 @@ load_data_hub <-
            aggr.m = "none",
            path.to.obs = NULL,
            years.obs = NULL,
+           res_folder= "interp05",
            n.sessions=6) {
     # intermediate functions --------------------------------------------------
 
@@ -48,8 +50,10 @@ load_data_hub <-
                variable,
                aggr.m,
                path.to.obs,
+               res_folder,
                years.obs) {
         match.arg(aggr.m, choices = c("none", "sum", "mean"))
+        match.arg(res_folder, choices = c("interp05", "interp025"))
         if (!is.null(path.to.obs))
           match.arg(path.to.obs, choices = c("W5E5", "ERA5"))
         if (!is.null(domain)) {
@@ -134,6 +138,7 @@ load_data_hub <-
                variable,
                aggr.m,
                path.to.obs,
+               res_folder,
                years.obs)
 
     # geolocalization
@@ -143,7 +148,7 @@ load_data_hub <-
 
     # making the dataset
     start <-
-      paste0(path.to.data, "/ncml/ESGF/interp05/CORDEX/output/",
+      paste0(path.to.data, "/ncml/ESGF/", res_folder,"/CORDEX/output/",
              domain,
              "//")
     run <-

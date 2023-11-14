@@ -91,9 +91,9 @@ Based on how you want to use CAVAanalytics, there are three options.
 
 [Installing rJava in Windows](https://cimentadaj.github.io/blog/2018-05-25-installing-rjava-on-windows-10/installing-rjava-on-windows-10/)
 
-**Linux**
+**Linux and macOS**
 
-[Installing rJava in Linux](https://github.com/SantanderMetGroup/loadeR/wiki/Installation)
+[Installing rJava in Linux and macOS](https://github.com/SantanderMetGroup/loadeR/wiki/Installation)
 
 If the installation of rJava is successful, you should be able to load the library from Rstudio.
 

@@ -188,6 +188,8 @@ sudo docker run --rm \
            rso9192/cava:version2.0.0
 ```
 
+Now open your favorite browser and type **http://localhost:8888/**. You should see a login page: enter the **username "rstudio"** and **password "password"** to login and that's it! You can now use CAVAanalytics through Rstudio server. 
+
 ## Quick example
 
 The idea behind CAVAanalytics is to divide the process of working with multiple models into 3 steps. **Firstly**  download or upload data (multiple

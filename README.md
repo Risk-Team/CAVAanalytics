@@ -130,7 +130,14 @@ The Docker image is available at Docker.io, rso9192/cava. This docker image is b
 
 #### Linux
 
+Open the terminal 
+
 ```
+# if not already installed
+sudo apt-get install snapd
+# if not already installed
+sudo snap install docker
+
 sudo docker pull docker.io/rso9192/cava:version2.0.0
 
 sudo docker run --rm \

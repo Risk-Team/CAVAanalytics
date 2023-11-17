@@ -168,7 +168,25 @@ To do that, open a Command Prompt (as administrator) and run
 ```
 wsl --install
 ```
-You can then run the above commands specified for the Linux OS. 
+Then open an ubuntu terminal and run
+
+```
+sudo docker pull docker.io/rso9192/cava:version2.0.0
+sudo docker run --rm \
+           -p 8888:8787 \
+           -e PASSWORD=password \
+           -v /path/to/local/directory:/home \
+           rso9192/cava:version2.0.0
+```
+Remember to replace **/path/to/local/directory** with the local directory on your host machine where you want to save your plots or data. For example, you can create a folder on your Desktop called CAVA_results. Then, you could run the above command as:
+
+```
+sudo docker run --rm \
+           -p 8888:8787 \
+           -e PASSWORD=password \
+           -v /home/Desktop/CAVA_results:/home \
+           rso9192/cava:version2.0.0
+```
 
 ## Quick example
 

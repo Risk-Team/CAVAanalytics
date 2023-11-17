@@ -168,7 +168,7 @@ To do that, open a Command Prompt (as administrator) and run
 ```
 wsl --install
 ```
-Then open an ubuntu terminal and run
+Then **start the Docker app** and open an ubuntu terminal and run
 
 ```
 sudo docker pull docker.io/rso9192/cava:version2.0.0

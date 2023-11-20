@@ -184,7 +184,7 @@ Remember to replace **/path/to/local/directory** with the local directory on you
 sudo docker run --rm \
            -p 8888:8787 \
            -e PASSWORD=password \
-           -v /home/Desktop/CAVA_results:/home \
+           -v /mnt/c/Users/my_username/Desktop/CAVA_results:/home \
            rso9192/cava:version2.0.0
 ```
 

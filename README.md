@@ -16,9 +16,7 @@
 
 #### **Updates
 
-**The EAS-22 domain will be released shortly**
-
-**Current available CORDEX domains are: AFR-22, SEA-22, EAS-22**
+**Current available CORDEX domains are: AFR-22, SEA-22, EAS-22. Install version 2.0.1 to be able to work with the new domains!**
 
 **Current available observational datasets: W5E5, ERA5**
 

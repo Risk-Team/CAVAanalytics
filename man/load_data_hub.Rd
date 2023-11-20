@@ -17,6 +17,7 @@ load_data_hub(
   aggr.m = "none",
   path.to.obs = NULL,
   years.obs = NULL,
+  res_folder = "interp05",
   n.sessions = 6
 )
 }
@@ -45,6 +46,8 @@ set country to NULL and define arguments xlim and ylim}
 \item{path.to.obs}{character, default to NULL. To automatically load W5E5 or ERA5, specify W5E5 or ERA5.}
 
 \item{years.obs}{NULL or numeric, specify year range for observation. Specifying years.obs will overwrite years.hist for observations}
+
+\item{res_folder}{character, either interp05 or interp025. Default is interp05}
 
 \item{n.sessions}{numeric, number of sessions to use in parallel processing. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary}
 }

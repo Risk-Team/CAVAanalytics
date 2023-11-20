@@ -222,8 +222,7 @@ model_biases <-
                               mod_temp$Dates$start <-
                                 mod$Dates$start
                               mod_temp$Dates$end <-  mod$Dates$end
-                              if (any(is.na(mod_temp$Data)))
-                                cli::cli_alert_warning("Bias correction has introduced NA values in certain pixels. Proceed with care")
+
                               return(mod_temp)
                             }, .progress = T))
             } else
@@ -238,12 +237,12 @@ model_biases <-
                                                            !consecutive &
                                                            (is.null(uppert) &
                                                             is.null(lowert))) {
-                                                         list(FUN = "sum")
+                                                         list(FUN = "sum", na.rm = TRUE)
                                                        } else if (var != "pr" &
                                                                   !consecutive &
                                                                   (is.null(lowert) &
                                                                    is.null(uppert))) {
-                                                         list(FUN = "mean")
+                                                         list(FUN = "mean", na.rm = TRUE)
                                                        } else if (consecutive) {
                                                          list(
                                                            FUN = thrs_consec,

@@ -243,7 +243,7 @@ trends = function(data,
               )
             )
             dplyr::mutate(.,
-                          models_mbrs = furrr::future_map(models_mbrs, function(x) {
+                          models_mbrs = purrr::map(models_mbrs, function(x) {
                             bc <-
                               suppressMessages(
                                 downscaleR::biasCorrection(
@@ -264,12 +264,9 @@ trends = function(data,
                               transformeR::intersectGrid.time(x, bc, which.return = 2)
                             mod_temp$Dates$start <- x$Dates$start
                             mod_temp$Dates$end <-  x$Dates$end
-                            if (any(is.na(mod_temp$Data)))
-                              cli::cli_text(
-                                "{cli::symbol$arrow_right} Bias correction has introduced NA values in certain pixels. Proceed with care"
-                              )
+
                             return(mod_temp)
-                          }))
+                          }, .progress = T))
           } else
             .
         }  %>%   # computing annual aggregation. if threshold is specified, first apply threshold
@@ -285,14 +282,14 @@ trends = function(data,
                           !consecutive &
                           (is.null(uppert) & is.null(lowert))) {
                         if (intraannual_var)
-                          list(FUN = "sd")
+                          list(FUN = "sd", na.rm = TRUE)
                         else
-                          list(FUN = "sum")
+                          list(FUN = "sum", na.rm = TRUE)
                       } else if (var != "pr" &
                                  !consecutive &
                                  (is.null(lowert) &
                                   is.null(uppert))) {
-                        list(FUN = "mean")
+                        list(FUN = "mean", na.rm = TRUE)
                       } else if (consecutive) {
                         list(
                           FUN = thrs_consec,

@@ -65,10 +65,11 @@ load_data <-
                       "AUS-22",
                       "EAS-22",
                       "CAM-22",
-                      "SAM-22"
+                      "SAM-22",
+                      "WAS-22"
                     ))
-          if (domain != "AFR-22")
-            cli::cli_abort(c("x" = "Only AFR-22 is available as of September 2023"))
+          if (!(domain %in% c("AFR-22", "SEA-22", "EAS-22")))
+            cli::cli_abort(c("x" = "Only AFR-22, SEA-22 and EAS-22 are available as of November 2023"))
         }
         if (is.null(years.proj) &
             is.null(years.hist) & is.null(years.obs))
@@ -142,13 +143,13 @@ load_data <-
 
     # create the file names used later for the loadGridData function for remote upload
 
-    load_cordex_data <- function(domain, xarray) {
+    load_cordex_data <- function(domains, xarray) {
       if (xarray)
         cli::cli_alert_warning("Option xarray=TRUE requires reticulate and xarray. Use xarray=F if uploading local data")
       cli::cli_progress_step("Accessing inventory")
       csv_url <- "https://data.meteo.unican.es/inventory.csv"
       data <- read.csv(url(csv_url)) %>%
-        dplyr::filter(stringr::str_detect(activity, "FAO"), domain ==  domain) %>%
+        dplyr::filter(stringr::str_detect(activity, "FAO"), domain ==  domains) %>%
         dplyr::group_by(experiment) %>%
         dplyr::summarise(path = list(as.character(location))) %>%
         {
@@ -248,7 +249,7 @@ load_data <-
     if (is.null(path.to.data)) {
 
     } else if (path.to.data == "CORDEX-CORE") {
-      files <- load_cordex_data(domain, xarray)
+      files <- load_cordex_data(domains=domain, xarray)
       experiment <-
         if (!is.null(years.hist) & !is.null(years.proj))
           c("historical", "rcp26", "rcp85")
@@ -381,7 +382,7 @@ load_data <-
       cli::cli_progress_step("Binding members and checking temporal consistency")
 
       models_df <- models_df %>%
-        dplyr::mutate(models_mbrs = purrr::map(models_mbrs, common_dates))
+        dplyr::mutate(models_mbrs = purrr::map(models_mbrs, ~ common_dates(.x)))
 
       cli::cli_progress_done()
 

@@ -154,12 +154,12 @@ observations <-
                   if (var == "pr" &
                       !consecutive &
                       (is.null(uppert) & is.null(lowert))) {
-                    list(FUN = "sum")
+                    list(FUN = "sum", na.rm = TRUE)
                   } else if (var != "pr" &
                              !consecutive &
                              (is.null(lowert) &
                               is.null(uppert))) {
-                    list(FUN = "mean")
+                    list(FUN = "mean", na.rm = TRUE)
                   } else if (consecutive) {
                     list(
                       FUN = thrs_consec,

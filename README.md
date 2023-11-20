@@ -112,7 +112,7 @@ remotes::install_github(c("SantanderMetGroup/loadeR.java",
                  "SantanderMetGroup/transformeR",
                  "SantanderMetGroup/downscaleR"))
 
-install_github("Risk-Team/CAVAanalytics")
+remotes::install_github("Risk-Team/CAVAanalytics")
 ```
 
 ### 2) JupyterHub

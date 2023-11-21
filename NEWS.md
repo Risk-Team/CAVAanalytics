@@ -8,6 +8,8 @@ output:
       smooth_scroll: false
     toc_depth: 2
 ---
+## CAVAanalytics 2.0.1
+- Allowed selection of multiple domains
 
 ## CAVAanalytics 2.0.0
 - Season argument now takes a list for automatically plotting multiple season

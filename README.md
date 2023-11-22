@@ -20,7 +20,7 @@
 
 **Current available observational datasets: W5E5, ERA5**
 
-**If you find a problem using CAVAanalytics, you can open an issue [issues](https://github.com/Risk-Team/CAVAanalytics/issues/2). We will try to help but first read carefully the current website**
+**You can report [issues](https://github.com/Risk-Team/CAVAanalytics/issues/2). We will try to help but first read carefully the current website**
 
 
 ## Overview

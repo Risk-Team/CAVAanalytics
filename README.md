@@ -20,6 +20,8 @@
 
 **Current available observational datasets: W5E5, ERA5**
 
+**If you find a problem using CAVAanalytics, you can open an issue [issues](https://github.com/Risk-Team/CAVAanalytics/issues/2). We will try to help but first read carefully the current website**
+
 
 ## Overview
 CAVA (Climate and Agriculture Risk Visualization and Assessment) is a
@@ -280,8 +282,4 @@ A dedicated function to automatically perform these steps will be made available
 
 ## Applications
 
-CAVAanalytics can be used by anyone interested in simple and more advanced climate change analyses. You are also free to make use of the data as input for impact models. 
-
-## Contributing
-
-You are welcome to fork this repository and suggest new features. For any problem, you can open [issues](https://github.com/Risk-Team/CAVAanalytics/issues) by click on **New issue** 
+CAVAanalytics can be used by anyone interested in simple and more advanced climate change analyses. You are also free to make use of the data as input for impact models.  

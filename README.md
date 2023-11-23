@@ -174,13 +174,9 @@ Then **start the Docker app** and open an ubuntu terminal and run
 
 ```
 sudo docker pull docker.io/rso9192/cava:version2.0.1
-sudo docker run --rm \
-           -p 8888:8787 \
-           -e PASSWORD=password \
-           -v /path/to/local/directory:/home \
-           rso9192/cava:version2.0.1
+# ignore the messages about login
 ```
-Remember to replace **/path/to/local/directory** with the local directory on your host machine where you want to save your plots or data. For example, you can create a folder on your Desktop called CAVA_results. Then, you could run the above command as:
+Now run your image as below. Remember to replace **/path/to/local/directory** with the local directory on your host machine where you want to save your plots or data. For example, you can create a folder on your Desktop called CAVA_results. Then, you could run the above command as:
 
 ```
 sudo docker run --rm \

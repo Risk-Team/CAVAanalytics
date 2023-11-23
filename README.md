@@ -166,9 +166,11 @@ If you are using Windows, you can install [Docker Desktop](https://docs.docker.c
 To do that, open a Command Prompt (as administrator) and run
 
 ```
-wsl --install -d Ubuntu
+wsl --install
+
 ```
-This will instal the Windows Subsystem for Linux with ubuntu in your computer.  Then **start the Docker app** and open an ubuntu terminal and run
+This will instal the Windows Subsystem for Linux in your computer. 
+Then **start the Docker app** and open an ubuntu terminal and run
 
 ```
 sudo docker pull docker.io/rso9192/cava:version2.0.1

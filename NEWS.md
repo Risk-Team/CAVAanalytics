@@ -8,6 +8,11 @@ output:
       smooth_scroll: false
     toc_depth: 2
 ---
+
+## CAVAanalytics 2.0.2
+- Better handling of ERA5 variable names
+
+
 ## CAVAanalytics 2.0.1
 - Allowed selection of multiple domains
 

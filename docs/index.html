@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="index.html">CAVAanalytics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -210,14 +210,10 @@ sudo docker run --rm \
 </h4>
 <p>If you are using Windows, you can install <a href="https://docs.docker.com/desktop/install/windows-install/" class="external-link">Docker Desktop</a> first. Note that Docker Desktop would require the installation of WSL (Windows Subsystem for Linux). To do that, open a Command Prompt (as administrator) and run</p>
 <pre><code><span><span class="va">wsl</span> <span class="op">-</span><span class="op">-</span><span class="va">install</span></span></code></pre>
-<p>Then <strong>start the Docker app</strong> and open an ubuntu terminal and run</p>
+<p>This will instal the Windows Subsystem for Linux in your computer. Then <strong>start the Docker app</strong> and open an ubuntu terminal and run</p>
 <pre><code>sudo docker pull docker.io/rso9192/cava:version2.0.1
-sudo docker run --rm \
-           -p 8888:8787 \
-           -e PASSWORD=password \
-           -v /path/to/local/directory:/home \
-           rso9192/cava:version2.0.1</code></pre>
-<p>Remember to replace <strong>/path/to/local/directory</strong> with the local directory on your host machine where you want to save your plots or data. For example, you can create a folder on your Desktop called CAVA_results. Then, you could run the above command as:</p>
+# ignore the messages about login</code></pre>
+<p>Now run your image as below. Remember to replace <strong>/path/to/local/directory</strong> with the local directory on your host machine where you want to save your plots or data. For example, you can create a folder on your Desktop called CAVA_results. Then, you could run the above command as:</p>
 <pre><code>sudo docker run --rm \
            -p 8888:8787 \
            -e PASSWORD=password \

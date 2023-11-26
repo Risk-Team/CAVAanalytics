@@ -306,8 +306,8 @@ load_data_hub <-
                 obs_tr
               } else if (stringr::str_detect(variable, "pr")) {
                 obs_tr <- transformeR::gridArithmetics(.,
-                                             ifelse(path.to.obs == "ERA5", 1000, 86400),
-                                             operator = "*")
+                                                       ifelse(path.to.obs == "ERA5", 1000, 86400),
+                                                       operator = "*")
                 obs_tr$Variable$varName = variable
                 obs_tr
               } else {
@@ -315,8 +315,6 @@ load_data_hub <-
                 obs_tr$Variable$varName = variable
                 obs_tr
               }
-            } else {
-
             }
           }
       ))

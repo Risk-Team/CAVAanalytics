@@ -443,8 +443,8 @@ load_data <-
                 obs_tr
               } else if (stringr::str_detect(variable, "pr")) {
                 obs_tr <- transformeR::gridArithmetics(.,
-                                             ifelse(path.to.obs == "ERA5", 1000, 86400),
-                                             operator = "*")
+                                                       ifelse(path.to.obs == "ERA5", 1000, 86400),
+                                                       operator = "*")
                 obs_tr$Variable$varName = variable
                 obs_tr
               } else {
@@ -452,9 +452,6 @@ load_data <-
                 obs_tr$Variable$varName = variable
                 obs_tr
               }
-            } else {
-              transformeR::gridArithmetics(., 1, operator = "*")
-
             }
           }
       ))
@@ -466,7 +463,7 @@ load_data <-
     # Add obs to models_df if loaded
 
     if (!is.null(path.to.obs)) {
-     models_df$obs <- out_obs
+      models_df$obs <- out_obs
 
     } else {
       models_df$obs <- NULL

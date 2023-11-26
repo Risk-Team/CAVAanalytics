@@ -58,16 +58,18 @@ load_data <-
         stopifnot(is.numeric(n.sessions))
         match.arg(aggr.m, choices = c("none", "sum", "mean"))
         if (!is.null(domain)) {
-          match.arg(domain,
-                    choices = c(
-                      "AFR-22",
-                      "SEA-22",
-                      "AUS-22",
-                      "EAS-22",
-                      "CAM-22",
-                      "SAM-22",
-                      "WAS-22"
-                    ))
+          match.arg(
+            domain,
+            choices = c(
+              "AFR-22",
+              "SEA-22",
+              "AUS-22",
+              "EAS-22",
+              "CAM-22",
+              "SAM-22",
+              "WAS-22"
+            )
+          )
           if (!(domain %in% c("AFR-22", "SEA-22", "EAS-22")))
             cli::cli_abort(c("x" = "Only AFR-22, SEA-22 and EAS-22 are available as of November 2023"))
         }
@@ -95,7 +97,7 @@ load_data <-
 
           if (!is.null(years.obs) &
               any(!(years.obs %in% 1980:2019)))
-            cli::cli_abort(c("x" = "Available years for observations are 1980:2016"))
+            cli::cli_abort(c("x" = "Available years for observations are 1980:2019"))
 
           if (any(!(years.proj %in% 2006:2099)))
             cli::cli_abort(c("x" = "Available years for projections are 2006:2099"))
@@ -145,7 +147,9 @@ load_data <-
 
     load_cordex_data <- function(domains, xarray) {
       if (xarray)
-        cli::cli_alert_warning("Option xarray=TRUE requires reticulate and xarray. Use xarray=F if uploading local data")
+        cli::cli_alert_warning(
+          "Option xarray=TRUE requires reticulate and xarray. Use xarray=F if uploading local data"
+        )
       cli::cli_progress_step("Accessing inventory")
       csv_url <- "https://data.meteo.unican.es/inventory.csv"
       data <- read.csv(url(csv_url)) %>%
@@ -249,7 +253,7 @@ load_data <-
     if (is.null(path.to.data)) {
 
     } else if (path.to.data == "CORDEX-CORE") {
-      files <- load_cordex_data(domains=domain, xarray)
+      files <- load_cordex_data(domains = domain, xarray)
       experiment <-
         if (!is.null(years.hist) & !is.null(years.proj))
           c("historical", "rcp26", "rcp85")
@@ -272,7 +276,10 @@ load_data <-
     ylim <- result$ylim
 
     # making the dataset
-    n.sessions= if (n.sessions==6 & xarray) 5 else n.sessions
+    n.sessions = if (n.sessions == 6 & xarray)
+      5
+    else
+      n.sessions
     future::plan(future::multisession, workers = n.sessions)
     if (is.null(path.to.data)) {
 
@@ -431,14 +438,23 @@ load_data <-
           {
             if (path.to.obs == "ERA5" | path.to.obs == "W5E5") {
               if (stringr::str_detect(variable, "tas")) {
-                transformeR::gridArithmetics(., 273.15, operator = "-")
+                obs_tr <- transformeR::gridArithmetics(., 273.15, operator = "-")
+                obs_tr$Variable$varName = variable
+                obs_tr
               } else if (stringr::str_detect(variable, "pr")) {
-                transformeR::gridArithmetics(.,
+                obs_tr <- transformeR::gridArithmetics(.,
                                              ifelse(path.to.obs == "ERA5", 1000, 86400),
                                              operator = "*")
+                obs_tr$Variable$varName = variable
+                obs_tr
+              } else {
+                obs_tr <- transformeR::gridArithmetics(., 1, operator = "*")
+                obs_tr$Variable$varName = variable
+                obs_tr
               }
             } else {
-              .
+              transformeR::gridArithmetics(., 1, operator = "*")
+
             }
           }
       ))
@@ -449,10 +465,13 @@ load_data <-
 
     # Add obs to models_df if loaded
 
-    models_df$obs <-  if (!is.null(path.to.obs))
-      out_obs
-    else
-      NULL
+    if (!is.null(path.to.obs)) {
+     models_df$obs <- out_obs
+
+    } else {
+      models_df$obs <- NULL
+    }
+
 
     # Conversion of units messages
     if (!is.null(path.to.data)) {

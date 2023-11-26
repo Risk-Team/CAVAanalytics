@@ -25,7 +25,7 @@
 
 
 load_data_hub <-
-  function(path.to.data="/home/jovyan/shared/data",
+  function(path.to.data = "/home/jovyan/shared/data",
            country,
            variable,
            xlim = NULL,
@@ -37,8 +37,8 @@ load_data_hub <-
            aggr.m = "none",
            path.to.obs = NULL,
            years.obs = NULL,
-           res_folder= "interp05",
-           n.sessions=6) {
+           res_folder = "interp05",
+           n.sessions = 6) {
     # intermediate functions --------------------------------------------------
 
     # check that the arguments have been correctly specified and return an error when not
@@ -57,17 +57,19 @@ load_data_hub <-
         if (!is.null(path.to.obs))
           match.arg(path.to.obs, choices = c("W5E5", "ERA5"))
         if (!is.null(domain)) {
-          match.arg(domain,
-                    choices = c(
-                      "AFR-22",
-                      "CAS-22",
-                      "WAS-22",
-                      "SEA-22",
-                      "AUS-22",
-                      "EAS-22",
-                      "CAM-22",
-                      "SAM-22"
-                    ))
+          match.arg(
+            domain,
+            choices = c(
+              "AFR-22",
+              "CAS-22",
+              "WAS-22",
+              "SEA-22",
+              "AUS-22",
+              "EAS-22",
+              "CAM-22",
+              "SAM-22"
+            )
+          )
         }
         if (missing(variable))
           cli::cli_abort(c("x" = "argument variable as no default"))
@@ -132,14 +134,16 @@ load_data_hub <-
     # start -------------------------------------------------------------------
 
     # check for valid path
-    check_args(years.hist,
-               domain,
-               years.proj,
-               variable,
-               aggr.m,
-               path.to.obs,
-               res_folder,
-               years.obs)
+    check_args(
+      years.hist,
+      domain,
+      years.proj,
+      variable,
+      aggr.m,
+      path.to.obs,
+      res_folder,
+      years.obs
+    )
 
     # geolocalization
     result <- geo_localize(country, xlim, ylim, buffer)
@@ -148,7 +152,10 @@ load_data_hub <-
 
     # making the dataset
     start <-
-      paste0(path.to.data, "/ncml/ESGF/", res_folder,"/CORDEX/output/",
+      paste0(path.to.data,
+             "/ncml/ESGF/",
+             res_folder,
+             "/CORDEX/output/",
              domain,
              "//")
     run <-
@@ -241,12 +248,16 @@ load_data_hub <-
 
     cli::cli_text(paste(Sys.time(), "Done"))
 
-    cli::cli_text(paste0(
-      Sys.time(),
-      " Binding ",
-      length(files) / 3,
-      " members and loading ", path.to.obs, " dataset"
-    ))
+    cli::cli_text(
+      paste0(
+        Sys.time(),
+        " Binding ",
+        length(files) / 3,
+        " members and loading ",
+        path.to.obs,
+        " dataset"
+      )
+    )
 
     options(warn = -1)
 
@@ -263,7 +274,7 @@ load_data_hub <-
         if (path.to.obs == "W5E5")
           paste0(path.to.data, "/observations/W5E5/v2.0/w5e5_v2.0.ncml")
       else
-        paste0(path.to.data,"/observations/ERA5/0.25/ERA5_025.ncml")
+        paste0(path.to.data, "/observations/ERA5/0.25/ERA5_025.ncml")
 
       obs = list(suppressMessages(
         loadGridData(
@@ -285,7 +296,7 @@ load_data_hub <-
             years.obs,
           lonLim = xlim,
           latLim = ylim,
-          season =1:12
+          season = 1:12
         )    %>%
           {
             if (path.to.obs == "ERA5" | path.to.obs == "W5E5") {
@@ -293,15 +304,18 @@ load_data_hub <-
                 transformeR::gridArithmetics(., 273.15, operator = "-")
               } else if (stringr::str_detect(variable, "pr")) {
                 transformeR::gridArithmetics(.,
-                                             ifelse(path.to.obs == "ERA5", 10000, 86400),
+                                             ifelse(path.to.obs == "ERA5", 1000, 86400),
                                              operator = "*")
+              } else {
+                transformeR::gridArithmetics(., 1, operator = "*")
               }
             } else {
-              .
+              transformeR::gridArithmetics(., 1, operator = "*")
             }
           }
       ))
 
+      obs$Variable$varName <- variable
       models_df$obs <- obs
 
     }

@@ -301,21 +301,26 @@ load_data_hub <-
           {
             if (path.to.obs == "ERA5" | path.to.obs == "W5E5") {
               if (stringr::str_detect(variable, "tas")) {
-                transformeR::gridArithmetics(., 273.15, operator = "-")
+                obs_tr <- transformeR::gridArithmetics(., 273.15, operator = "-")
+                obs_tr$Variable$varName = variable
+                obs_tr
               } else if (stringr::str_detect(variable, "pr")) {
-                transformeR::gridArithmetics(.,
+                obs_tr <- transformeR::gridArithmetics(.,
                                              ifelse(path.to.obs == "ERA5", 1000, 86400),
                                              operator = "*")
+                obs_tr$Variable$varName = variable
+                obs_tr
               } else {
-                transformeR::gridArithmetics(., 1, operator = "*")
+                obs_tr <- transformeR::gridArithmetics(., 1, operator = "*")
+                obs_tr$Variable$varName = variable
+                obs_tr
               }
             } else {
-              transformeR::gridArithmetics(., 1, operator = "*")
+
             }
           }
       ))
 
-      obs$Variable$varName <- variable
       models_df$obs <- obs
 
     }

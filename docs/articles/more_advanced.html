@@ -120,25 +120,28 @@ Simply specify season=list(1:3, 4:6), for example.</p>
 <div class="section level2">
 <h2 id="climate-indicators">Climate indicators<a class="anchor" aria-label="anchor" href="#climate-indicators"></a>
 </h2>
-<p>What if we want to understand the projected duration of heat waves
-<strong>with at least 3 consecutive days</strong> with temperature above
-35 degrees. This can be done as follow. This can be done by specifying
-the threshold (uppert), with consecutive = TRUE and duration=4. Remember
-to type ?projections if you have any doubts about what each argument
+<p>What if we want to understand the projected total duration of heat
+waves <strong>with at least 3 consecutive days</strong> with maximum
+temperature above 35 degrees. This can be done by specifying the
+threshold (uppert), with consecutive = TRUE and duration=3. Remember to
+type ?projections if you have any doubts about what each argument
 does.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="fu"><a href="../reference/projections.html">projections</a></span><span class="op">(</span><span class="va">kenya_exmp</span>, season <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,<span class="fl">4</span><span class="op">:</span><span class="fl">6</span>,<span class="fl">7</span><span class="op">:</span><span class="fl">9</span>, <span class="fl">10</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span>, consecutive<span class="op">=</span><span class="cn">T</span>, duration<span class="op">=</span><span class="fl">3</span>, uppert<span class="op">=</span><span class="fl">35</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">.</span>, plot_titles <span class="op">=</span> <span class="st">"N.days"</span>, ensemble <span class="op">=</span> <span class="cn">T</span>, palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"white"</span>, <span class="st">"orange"</span>, <span class="st">"red"</span>, <span class="st">"darkred"</span>, <span class="st">"brown"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="more_advanced_files/figure-html/unnamed-chunk-4-1.png" width="576"></p>
-<p>As always you can also look at the individual models</p>
+<p>What if we want to also understand the projected maximum length of a
+heat wave, defined as consecutive number of days with maximum
+temperature above 35 degrees. This can be done by specifying the
+threshold (uppert), with consecutive = TRUE and duration=“max”.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="fu"><a href="../reference/projections.html">projections</a></span><span class="op">(</span><span class="va">kenya_exmp</span>, season <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,<span class="fl">4</span><span class="op">:</span><span class="fl">6</span>,<span class="fl">7</span><span class="op">:</span><span class="fl">9</span>, <span class="fl">10</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span>, consecutive<span class="op">=</span><span class="cn">T</span>, duration<span class="op">=</span><span class="fl">3</span>, uppert<span class="op">=</span><span class="fl">35</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">.</span>, plot_titles <span class="op">=</span> <span class="st">"N.days"</span>, ensemble <span class="op">=</span> <span class="cn">F</span>, palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"white"</span>, <span class="st">"orange"</span>, <span class="st">"red"</span>, <span class="st">"darkred"</span>, <span class="st">"brown"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="more_advanced_files/figure-html/unnamed-chunk-5-1.png" width="1440"></p>
+<span><span class="fu"><a href="../reference/projections.html">projections</a></span><span class="op">(</span><span class="va">kenya_exmp</span>, season <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,<span class="fl">4</span><span class="op">:</span><span class="fl">6</span>,<span class="fl">7</span><span class="op">:</span><span class="fl">9</span>, <span class="fl">10</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span>, consecutive<span class="op">=</span><span class="cn">T</span>, duration<span class="op">=</span><span class="st">"max"</span>, uppert<span class="op">=</span><span class="fl">35</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">.</span>, plot_titles <span class="op">=</span> <span class="st">"N.days"</span>, ensemble <span class="op">=</span> <span class="cn">T</span>, palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"white"</span>, <span class="st">"orange"</span>, <span class="st">"red"</span>, <span class="st">"darkred"</span>, <span class="st">"brown"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="more_advanced_files/figure-html/unnamed-chunk-5-1.png" width="576"></p>
 <p>The same concept applies to all other functions available in
-CAVAanalytics step 2.</p>
+CAVAanalytics step 2 and variables.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

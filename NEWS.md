@@ -11,6 +11,7 @@ output:
 
 ## CAVAanalytics 2.0.2
 - Better handling of ERA5 variable names
+- Included k-fold cross validation in function model_biases to avoid overfitting
 
 
 ## CAVAanalytics 2.0.1

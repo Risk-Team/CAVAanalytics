@@ -46,7 +46,7 @@ projections(kenya_exmp, season = list(1:3, 4:6, 7:9,10:12)) %>%
 
 ## Climate indicators
 
-What if we want to understand the projected duration of heat waves **with at least 3 consecutive days** with temperature above 35 degrees. This can be done as follow. This can be done by specifying the threshold (uppert), with consecutive = TRUE and duration=4.
+What if we want to understand the projected total duration of heat waves **with at least 3 consecutive days** with maximum temperature above 35 degrees. This can be done by specifying the threshold (uppert), with consecutive = TRUE and duration=3.
 Remember to type ?projections if you have any doubts about what each argument does.
 
 ```{r,  warning=F, message=FALSE, fig.height=5, fig.width=6}
@@ -56,14 +56,15 @@ projections(kenya_exmp, season = list(1:3,4:6,7:9, 10:12), consecutive=T, durati
 
 ```
 
-As always you can also look at the individual models
 
-```{r,  warning=F, message=FALSE, fig.height=7, fig.width=15}
+What if we want to also understand the projected maximum length of a heat wave, defined as consecutive number of days with maximum temperature above 35 degrees. This can be done by specifying the threshold (uppert), with consecutive = TRUE and duration="max".
 
-projections(kenya_exmp, season = list(1:3,4:6,7:9, 10:12), consecutive=T, duration=3, uppert=35) %>%
-  plotting(., plot_titles = "N.days", ensemble = F, palette = c("white", "orange", "red", "darkred", "brown"))
+```{r,  warning=F, message=FALSE, fig.height=5, fig.width=6}
+
+projections(kenya_exmp, season = list(1:3,4:6,7:9, 10:12), consecutive=T, duration="max", uppert=35) %>%
+  plotting(., plot_titles = "N.days", ensemble = T, palette = c("white", "orange", "red", "darkred", "brown"))
 
 ```
 
 
-The same concept applies to all other functions available in CAVAanalytics step 2. 
+The same concept applies to all other functions available in CAVAanalytics step 2 and variables.

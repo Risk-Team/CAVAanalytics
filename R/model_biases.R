@@ -213,6 +213,8 @@ model_biases <-
                                       c(30, 30)
                                     else
                                       c(1, 1),
+                                    cross.val = "kfold",
+                                    folds = 2,
                                     extrapolation = "constant"
                                   )
                                 )

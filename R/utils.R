@@ -541,7 +541,7 @@ IPCC_palette <- function(type, divergent) {
       rgb(161, 218, 180, maxColorValue = 255),
       rgb(65, 182, 196, maxColorValue = 255),
       rgb(44, 127, 184, maxColorValue = 255),
-      rgb(37, 52, 148, maxColorValue = 255),
+      rgb(37, 52, 148, maxColorValue = 255)
 
     )
   } else {

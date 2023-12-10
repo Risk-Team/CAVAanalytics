@@ -66,48 +66,19 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.0.2" id="cavaanalytics-202">CAVAanalytics 2.0.2<a class="anchor" aria-label="anchor" href="#cavaanalytics-202"></a></h2>
-<ul><li>Better handling of ERA5 variable names</li>
-<li>Included k-fold cross validation in function model_biases to avoid overfitting</li>
-</ul></div>
-    <div class="section level2">
-<h2 class="pkg-version" data-toc-text="2.0.1" id="cavaanalytics-201">CAVAanalytics 2.0.1<a class="anchor" aria-label="anchor" href="#cavaanalytics-201"></a></h2>
-<ul><li>Allowed selection of multiple domains</li>
-</ul></div>
-    <div class="section level2">
-<h2 class="pkg-version" data-toc-text="2.0.0" id="cavaanalytics-200">CAVAanalytics 2.0.0<a class="anchor" aria-label="anchor" href="#cavaanalytics-200"></a></h2>
-<ul><li>Season argument now takes a list for automatically plotting multiple season</li>
-<li>duration when consecutive is TRUE can now take any number</li>
-<li>Added xarray option in load_data to increase speed</li>
-<li>Added extract_raster to automatically save rasters from step2 of CAVAanalytics</li>
-</ul></div>
-    <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.1.3" id="cavaanalytics-113">CAVAanalytics 1.1.3<a class="anchor" aria-label="anchor" href="#cavaanalytics-113"></a></h2>
-<ul><li>Added function model_biases to look at the delta between observation and model simulations</li>
-<li>Customized cli messages and improved clarity</li>
-<li>Improved visualization of spatial-temporal plots using ggridges</li>
-<li>Added option to use colors suggested by the IPCC by using the IPCC_palette function</li>
-</ul></div>
-    <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.1.2" id="cavaanalytics-112">CAVAanalytics 1.1.2<a class="anchor" aria-label="anchor" href="#cavaanalytics-112"></a></h2>
-<ul><li>Changed appearance of temporal trends when spatial.aggr=T</li>
-<li>Made resulting ggplot object of plotting more easily customizable</li>
-</ul></div>
-    <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.1.1" id="cavaanalytics-111">CAVAanalytics 1.1.1<a class="anchor" aria-label="anchor" href="#cavaanalytics-111"></a></h2>
-<ul><li>Improved clarity in the trends function by replacing the historical argument with observation</li>
-<li>added warning message when cross year season are selected (e.g c(11,12,1))</li>
-</ul></div>
-    <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.1.0" id="cavaanalytics-110">CAVAanalytics 1.1.0<a class="anchor" aria-label="anchor" href="#cavaanalytics-110"></a></h2>
-<ul><li>Improved speed in load_data and improved flexibility (e.g observation can be uploaded without projections)</li>
-<li>Fixed x scale in plotting when frequencies = T</li>
-<li>Added function observations to visualize the observational dataset</li>
+<p>In version 2 of CAVAanalytics several improvements have been made. In particular:</p>
+<ul><li>New function to calculate model biases</li>
+<li>ERA5 variables are named differently in CORDEX-CORE and W5E5. These differences are handled automatically and in a better way than in previous releases</li>
+<li>Added IPCC colour palettes</li>
+<li>Added new domains (SEA and EAS)</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.0.0" id="cavaanalytics-100">CAVAanalytics 1.0.0<a class="anchor" aria-label="anchor" href="#cavaanalytics-100"></a></h2>
-<ul><li>Moved from sp and raster to sf and terra</li>
-<li>Moved from normal messages to cli messages</li>
-<li>Improved documentation</li>
+<p>In the first release of CAVAanalytics, data for the first CORDEX-CORE domain is available, alongside W5E5 dataset and ERA5. CAVAanalytics main functions are:</p>
+<ul><li>load_data</li>
+<li>Projections</li>
+<li>climate_change_signal</li>
+<li>trends</li>
 </ul></div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>

@@ -10,41 +10,21 @@ output:
 ---
 
 ## CAVAanalytics 2.0.2
-- Better handling of ERA5 variable names
-- Included k-fold cross validation in function model_biases to avoid overfitting
+In version 2 of CAVAanalytics several improvements have been made. In particular:
 
+- New function to calculate model biases
+- ERA5 variables are named differently in CORDEX-CORE and W5E5. These differences are handled automatically and in a better way than in
+previous releases
+- Added IPCC colour palettes
+- Added new domains (SEA and EAS)
 
-## CAVAanalytics 2.0.1
-- Allowed selection of multiple domains
-
-## CAVAanalytics 2.0.0
-- Season argument now takes a list for automatically plotting multiple season
-- duration when consecutive is TRUE can now take any number
-- Added xarray option in load_data to increase speed
-- Added extract_raster to automatically save rasters from step2 of CAVAanalytics
-
-## CAVAanalytics 1.1.3
-- Added function model_biases to look at the delta between observation and model simulations
-- Customized cli messages and improved clarity
-- Improved visualization of spatial-temporal plots using ggridges
-- Added option to use colors suggested by the IPCC by using the IPCC_palette function
-
-## CAVAanalytics 1.1.2
-- Changed appearance of temporal trends when spatial.aggr=T
-- Made resulting ggplot object of plotting more easily customizable 
-
-## CAVAanalytics 1.1.1
-- Improved clarity in the trends function by replacing the historical argument with observation
-- added warning message when cross year season are selected (e.g c(11,12,1))
-
-## CAVAanalytics 1.1.0
-
-- Improved speed in load_data and improved flexibility (e.g observation can be uploaded without projections)
-- Fixed  x scale in plotting when frequencies = T
-- Added function observations to visualize the observational dataset
 
 ## CAVAanalytics 1.0.0
 
-- Moved from sp and raster to sf and terra
-- Moved from normal messages to cli messages
-- Improved documentation
+In the first release of CAVAanalytics, data for the first CORDEX-CORE domain is available, alongside W5E5 dataset and ERA5.
+CAVAanalytics main functions are:
+
+- load_data
+- Projections
+- climate_change_signal
+- trends

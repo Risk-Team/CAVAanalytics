@@ -15,12 +15,11 @@
 
 #### **Updates
 
-**Current available CORDEX domains are: AFR-22, SEA-22, EAS-22. Install version 2.0.2 to be able to work with the new domains!**
+**THREDDS Servers have been updated massively increasing the speed of the load_data function**
+
+**Current available CORDEX domains are: AFR-22, SEA-22, EAS-22.**
 
 **Current available observational datasets: W5E5, ERA5**
-
-**You can report [issues](https://github.com/Risk-Team/CAVAanalytics/issues/2). We will try to help but first read carefully the current website**
-
 
 ## Overview
 CAVA (Climate and Agriculture Risk Visualization and Assessment) is a
@@ -277,6 +276,6 @@ filtered_data = data[data['activity'].str.contains("FAO")]
 ```
 A dedicated function to automatically perform these steps will be made available soon. 
 
-## Applications
+## Issues
 
-CAVAanalytics can be used by anyone interested in simple and more advanced climate change analyses. You are also free to make use of the data as input for impact models.  
+Youc can report issues [here](https://github.com/Risk-Team/CAVAanalytics/issues)

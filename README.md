@@ -15,7 +15,7 @@
 
 #### **Updates
 
-**THREDDS Servers have been updated massively increasing the speed of the load_data function**
+**THREDDS Servers have been updated, massively increasing the speed of the load_data function**
 
 **Current available CORDEX domains are: AFR-22, SEA-22, EAS-22.**
 

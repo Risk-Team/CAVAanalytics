@@ -32,7 +32,7 @@ It offers a consistent framework to load, analyze, calculate indicators, and vis
 
 CAVAanalytics can be seen as a wrapper of several packages, but the main engine for loading and processing climate model outputs is the [climate4Rframework](https://github.com/SantanderMetGroup/climate4R), applied with a tidyverse approach.
 
-CAVAanalytics is part of a bigger framework, called Climate and Agriculture Risk Visualization and Assessment (CAVA). 
+CAVAanalytics is part of a bigger framework, called [Climate and Agriculture Risk Visualization and Assessment (CAVA)](https://risk-team.github.io/CAVAanalytics/articles/CAVA.html). 
 
 ### Installation
 

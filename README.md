@@ -34,6 +34,44 @@ CAVAanalytics can be seen as a wrapper of several packages, but the main engine 
 
 CAVAanalytics is part of a bigger framework, called [Climate and Agriculture Risk Visualization and Assessment (CAVA)](https://risk-team.github.io/CAVAanalytics/articles/CAVA.html). 
 
+
+### Quick example
+
+The idea behind CAVAanalytics is to divide the process of working with multiple models into 3 steps. **Firstly**  download or upload data (multiple
+models), **secondly** perform the intended analysis, **thirdly** visualize the results.
+One nice thing about step 1, is that CAVAanalytics will automatically bind multiple members to create the multimodel ensemble and check temporal consistency. It will also automatically convert units (e.g. Kelvin into Celsius). 
+
+
+| ![Framework](https://user-images.githubusercontent.com/40058235/199256415-ed32c42b-e2f8-48e0-b4fe-558de6612038.png) |
+|:-------------------------------------------------------------------------------------------------------------------:|
+|                                                *CAVAanalytics steps*                                                |
+
+Below we give an example of how you can use CAVAanalytics to easily retrieve climate information (both past and future). More examples are available from the [tutorial webpage](https://risk-team.github.io/CAVAanalytics/articles/Introduction.html).
+
+**To load CORDEX-CORE data stored remotely**, set path.to.data to
+“CORDEX-CORE” and specify the domain. This will load CORDEX-CORE
+simulations. Similarly, when path.to.obs is set to W5E5, you are
+accessing the dataset stored remotely.
+
+
+``` r
+library(CAVAanalytics)
+# 1st step
+ remote.data <- load_data(country = "Sudan", variable="tasmax",
+ years.hist=1990:2000, years.proj=2050:2060,
+ path.to.data = "CORDEX-CORE", aggr.m="mean", domain="AFR-22")
+# 2nd step
+ climate_change_signal(remote.data, season=list(1:12), bias.correction = F) %>% 
+# 3rd step
+ plotting(., ensemble=TRUE, plot_titles = "Temperature change (°C)",
+ palette=IPCC_palette(type = "tmp", divergent = F), bins=T)
+```
+
+| ![Rplot01](https://github.com/Risk-Team/CAVAanalytics/assets/40058235/3dce772c-51e9-4cd1-9ad4-5ddfcdf75698) |
+|:-------------------------------------------------------------------------------------------------------------------:|
+| *Average annual projected change in maximum temperature compared to the 1990-2000 baseline period in Sudan* |
+
+
 ### Installation
 
 Based on how you want to use CAVAanalytics, there are three options.
@@ -165,41 +203,6 @@ sudo docker run --rm \
 Remember to replace **/path/to/local/directory** with the local directory on your host machine where you want to save your plots or data. Now open your favorite browser and type **http://localhost:8888/**. You should see a login page: enter the **username "rstudio"** and **password "password"** to login and that's it! You can now use CAVAanalytics through Rstudio server. 
 
 
-### Quick example
-
-The idea behind CAVAanalytics is to divide the process of working with multiple models into 3 steps. **Firstly**  download or upload data (multiple
-models), **secondly** perform the intended analysis, **thirdly** visualize the results.
-One nice thing about step 1, is that CAVAanalytics will automatically bind multiple members to create the multimodel ensemble and check temporal consistency. It will also automatically convert units (e.g. Kelvin into Celsius). 
-
-
-| ![Framework](https://user-images.githubusercontent.com/40058235/199256415-ed32c42b-e2f8-48e0-b4fe-558de6612038.png) |
-|:-------------------------------------------------------------------------------------------------------------------:|
-|                                                *CAVAanalytics steps*                                                |
-
-Below we give an example of how you can use CAVAanalytics to easily retrieve climate information (both past and future). More examples are available from the [CAVAanalytics website](https://risk-team.github.io/CAVAanalytics/articles/Introduction.html).
-
-**To load CORDEX-CORE data stored remotely**, set path.to.data to
-“CORDEX-CORE” and specify the domain. This will load CORDEX-CORE
-simulations. Similarly, when path.to.obs is set to W5E5, you are
-accessing the dataset stored remotely.
-
-
-``` r
-library(CAVAanalytics)
-# 1st step
- remote.data <- load_data(country = "Sudan", variable="tasmax",
- years.hist=1990:2000, years.proj=2050:2060,
- path.to.data = "CORDEX-CORE", aggr.m="mean", domain="AFR-22")
-# 2nd step
- climate_change_signal(remote.data, season=list(1:12), bias.correction = F) %>% 
-# 3rd step
- plotting(., ensemble=TRUE, plot_titles = "Temperature change (°C)",
- palette=IPCC_palette(type = "tmp", divergent = F), bins=T)
-```
-
-| ![Rplot01](https://github.com/Risk-Team/CAVAanalytics/assets/40058235/3dce772c-51e9-4cd1-9ad4-5ddfcdf75698) |
-|:-------------------------------------------------------------------------------------------------------------------:|
-| *Average annual projected change in maximum temperature compared to the 1990-2000 baseline period in Sudan* |
 
 ### Python
 **Firstly, why Python?** 

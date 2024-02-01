@@ -112,6 +112,42 @@ CAVAanalytics: Operational R package for climate services
 <p>CAVAanalytics is part of a bigger framework, called <a href="https://risk-team.github.io/CAVAanalytics/articles/CAVA.html">Climate and Agriculture Risk Visualization and Assessment (CAVA)</a>.</p>
 </div>
 <div class="section level3">
+<h3 id="quick-example">Quick example<a class="anchor" aria-label="anchor" href="#quick-example"></a>
+</h3>
+<p>The idea behind CAVAanalytics is to divide the process of working with multiple models into 3 steps. <strong>Firstly</strong> download or upload data (multiple models), <strong>secondly</strong> perform the intended analysis, <strong>thirdly</strong> visualize the results. One nice thing about step 1, is that CAVAanalytics will automatically bind multiple members to create the multimodel ensemble and check temporal consistency. It will also automatically convert units (e.g. Kelvin into Celsius).</p>
+<table class="table">
+<colgroup><col width="100%"></colgroup>
+<thead><tr class="header">
+<th align="center"><img src="https://user-images.githubusercontent.com/40058235/199256415-ed32c42b-e2f8-48e0-b4fe-558de6612038.png" alt="Framework"></th>
+</tr></thead>
+<tbody><tr class="odd">
+<td align="center"><em>CAVAanalytics steps</em></td>
+</tr></tbody>
+</table>
+<p>Below we give an example of how you can use CAVAanalytics to easily retrieve climate information (both past and future). More examples are available from the <a href="https://risk-team.github.io/CAVAanalytics/articles/Introduction.html">tutorial webpage</a>.</p>
+<p><strong>To load CORDEX-CORE data stored remotely</strong>, set path.to.data to “CORDEX-CORE” and specify the domain. This will load CORDEX-CORE simulations. Similarly, when path.to.obs is set to W5E5, you are accessing the dataset stored remotely.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://risk-team.github.io/CAVAanalytics/">CAVAanalytics</a></span><span class="op">)</span></span>
+<span><span class="co"># 1st step</span></span>
+<span> <span class="va">remote.data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/load_data.html">load_data</a></span><span class="op">(</span>country <span class="op">=</span> <span class="st">"Sudan"</span>, variable<span class="op">=</span><span class="st">"tasmax"</span>,</span>
+<span> years.hist<span class="op">=</span><span class="fl">1990</span><span class="op">:</span><span class="fl">2000</span>, years.proj<span class="op">=</span><span class="fl">2050</span><span class="op">:</span><span class="fl">2060</span>,</span>
+<span> path.to.data <span class="op">=</span> <span class="st">"CORDEX-CORE"</span>, aggr.m<span class="op">=</span><span class="st">"mean"</span>, domain<span class="op">=</span><span class="st">"AFR-22"</span><span class="op">)</span></span>
+<span><span class="co"># 2nd step</span></span>
+<span> <span class="fu"><a href="reference/climate_change_signal.html">climate_change_signal</a></span><span class="op">(</span><span class="va">remote.data</span>, season<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span>, bias.correction <span class="op">=</span> <span class="cn">F</span><span class="op">)</span> <span class="op">%&gt;%</span> </span>
+<span><span class="co"># 3rd step</span></span>
+<span> <span class="fu"><a href="reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">.</span>, ensemble<span class="op">=</span><span class="cn">TRUE</span>, plot_titles <span class="op">=</span> <span class="st">"Temperature change (°C)"</span>,</span>
+<span> palette<span class="op">=</span><span class="fu"><a href="reference/IPCC_palette.html">IPCC_palette</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"tmp"</span>, divergent <span class="op">=</span> <span class="cn">F</span><span class="op">)</span>, bins<span class="op">=</span><span class="cn">T</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup><col width="100%"></colgroup>
+<thead><tr class="header">
+<th align="center"><img src="https://github.com/Risk-Team/CAVAanalytics/assets/40058235/3dce772c-51e9-4cd1-9ad4-5ddfcdf75698" alt="Rplot01"></th>
+</tr></thead>
+<tbody><tr class="odd">
+<td align="center"><em>Average annual projected change in maximum temperature compared to the 1990-2000 baseline period in Sudan</em></td>
+</tr></tbody>
+</table>
+</div>
+<div class="section level3">
 <h3 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h3>
 <p>Based on how you want to use CAVAanalytics, there are three options.</p>
@@ -203,42 +239,6 @@ sudo docker run --rm \
 <p>Remember to replace <strong>/path/to/local/directory</strong> with the local directory on your host machine where you want to save your plots or data. Now open your favorite browser and type <strong><a href="http://localhost:8888/" class="external-link uri">http://localhost:8888/</a></strong>. You should see a login page: enter the <strong>username “rstudio”</strong> and <strong>password “password”</strong> to login and that’s it! You can now use CAVAanalytics through Rstudio server.</p>
 </div>
 </div>
-</div>
-<div class="section level3">
-<h3 id="quick-example">Quick example<a class="anchor" aria-label="anchor" href="#quick-example"></a>
-</h3>
-<p>The idea behind CAVAanalytics is to divide the process of working with multiple models into 3 steps. <strong>Firstly</strong> download or upload data (multiple models), <strong>secondly</strong> perform the intended analysis, <strong>thirdly</strong> visualize the results. One nice thing about step 1, is that CAVAanalytics will automatically bind multiple members to create the multimodel ensemble and check temporal consistency. It will also automatically convert units (e.g. Kelvin into Celsius).</p>
-<table class="table">
-<colgroup><col width="100%"></colgroup>
-<thead><tr class="header">
-<th align="center"><img src="https://user-images.githubusercontent.com/40058235/199256415-ed32c42b-e2f8-48e0-b4fe-558de6612038.png" alt="Framework"></th>
-</tr></thead>
-<tbody><tr class="odd">
-<td align="center"><em>CAVAanalytics steps</em></td>
-</tr></tbody>
-</table>
-<p>Below we give an example of how you can use CAVAanalytics to easily retrieve climate information (both past and future). More examples are available from the <a href="https://risk-team.github.io/CAVAanalytics/articles/Introduction.html">CAVAanalytics website</a>.</p>
-<p><strong>To load CORDEX-CORE data stored remotely</strong>, set path.to.data to “CORDEX-CORE” and specify the domain. This will load CORDEX-CORE simulations. Similarly, when path.to.obs is set to W5E5, you are accessing the dataset stored remotely.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://risk-team.github.io/CAVAanalytics/">CAVAanalytics</a></span><span class="op">)</span></span>
-<span><span class="co"># 1st step</span></span>
-<span> <span class="va">remote.data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/load_data.html">load_data</a></span><span class="op">(</span>country <span class="op">=</span> <span class="st">"Sudan"</span>, variable<span class="op">=</span><span class="st">"tasmax"</span>,</span>
-<span> years.hist<span class="op">=</span><span class="fl">1990</span><span class="op">:</span><span class="fl">2000</span>, years.proj<span class="op">=</span><span class="fl">2050</span><span class="op">:</span><span class="fl">2060</span>,</span>
-<span> path.to.data <span class="op">=</span> <span class="st">"CORDEX-CORE"</span>, aggr.m<span class="op">=</span><span class="st">"mean"</span>, domain<span class="op">=</span><span class="st">"AFR-22"</span><span class="op">)</span></span>
-<span><span class="co"># 2nd step</span></span>
-<span> <span class="fu"><a href="reference/climate_change_signal.html">climate_change_signal</a></span><span class="op">(</span><span class="va">remote.data</span>, season<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span>, bias.correction <span class="op">=</span> <span class="cn">F</span><span class="op">)</span> <span class="op">%&gt;%</span> </span>
-<span><span class="co"># 3rd step</span></span>
-<span> <span class="fu"><a href="reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">.</span>, ensemble<span class="op">=</span><span class="cn">TRUE</span>, plot_titles <span class="op">=</span> <span class="st">"Temperature change (°C)"</span>,</span>
-<span> palette<span class="op">=</span><span class="fu"><a href="reference/IPCC_palette.html">IPCC_palette</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"tmp"</span>, divergent <span class="op">=</span> <span class="cn">F</span><span class="op">)</span>, bins<span class="op">=</span><span class="cn">T</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
-<colgroup><col width="100%"></colgroup>
-<thead><tr class="header">
-<th align="center"><img src="https://github.com/Risk-Team/CAVAanalytics/assets/40058235/3dce772c-51e9-4cd1-9ad4-5ddfcdf75698" alt="Rplot01"></th>
-</tr></thead>
-<tbody><tr class="odd">
-<td align="center"><em>Average annual projected change in maximum temperature compared to the 1990-2000 baseline period in Sudan</em></td>
-</tr></tbody>
-</table>
 </div>
 <div class="section level3">
 <h3 id="python">Python<a class="anchor" aria-label="anchor" href="#python"></a>

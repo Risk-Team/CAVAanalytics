@@ -107,7 +107,7 @@ observations <-
                  (consecutive & is.numeric(duration))) {
           paste0(
             var,
-            ". Calculation of total total number of consecutive days with duration longer than ", duration, " days, ",
+            ". Calculation of ", ifelse(frequency, "frequency", "total number"),  " of days with duration longer than ", duration, " consecutive days, ",
             ifelse(
               !is.null(lowert),
               paste0("below threshold of ", lowert),

@@ -162,10 +162,10 @@ trends = function(data,
       }
       if ((!is.null(uppert) |
            !is.null(lowert)) &
-          (consecutive & duration == "total")) {
+          (consecutive & is.numeric(duration))) {
         mes = paste0(
           var,
-          ". Calculation of yearly increase in total total number of consecutive days with duration longer than ", duration ," days, ",
+          ". Calculation of yearly increase in ", ifelse(frequency, "frequency ", "total number "), " of days with duration longer than ", duration ," consecutive days, ",
           ifelse(
             !is.null(lowert),
             paste0("below threshold of ", lowert),

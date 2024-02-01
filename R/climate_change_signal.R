@@ -130,7 +130,7 @@ climate_change_signal <- function(data,
                (consecutive & is.numeric(duration))) {
         paste0(
           var,
-          ". Climate change signal for total number of consecutive days with duration longer than ", duration," days, ",
+          ". Climate change signal for", ifelse(frequency, " frequency " ," total number "), "of consecutive days with duration longer than ", duration," days, ",
           ifelse(
             !is.null(lowert),
             paste0("below threshold of ", lowert),

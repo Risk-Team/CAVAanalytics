@@ -4,16 +4,18 @@
 \alias{thrs_consec}
 \title{Consecutive days}
 \usage{
-thrs_consec(col, duration, lowert, uppert)
+thrs_consec(col, duration, lowert, uppert, frequency)
 }
 \arguments{
 \item{col}{numeric vector}
 
 \item{duration}{either "max" or "total".}
 
-\item{lowert}{numeric. lower threshold}
+\item{lowert}{numeric. Lower threshold}
 
-\item{uppert}{numeric. upper threshold}
+\item{uppert}{numeric. Upper threshold}
+
+\item{frequency}{logical. Whether frequency or abosulte numbers should be returned. Only works with duration != max}
 }
 \value{
 numeric of length 1

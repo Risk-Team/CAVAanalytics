@@ -11,8 +11,6 @@
 </h1>
 
 
-
-
 #### **Updates
 
 **THREDDS Servers have been updated, massively increasing the speed of the load_data function**
@@ -21,67 +19,26 @@
 
 **Current available observational datasets: W5E5, ERA5**
 
-## Overview
-CAVA (Climate and Agriculture Risk Visualization and Assessment) is a
-framework and approach to climate services developed jointly by **The Food and Agriculture Organization of the United Nations (FAO), the University of Cantabria, Predictia and the University of Cape Town**. CAVA makes use of climate and impact model outputs to inform users about future climate and impacts on agriculture. 
-Conceptually, CAVA is organised into **two modules**. 
+--------------------------------------------------------------------------------------------------
 
-**Climate module**: Provision of climate information from regional climate model outputs (CORDEX-CORE and reanalyses datasets)
+[**CAVAanalytics**](https://risk-team.github.io/CAVAanalytics/) is an operational package for climate services. 
+It offers a consistent framework to load, analyze, calculate indicators, and visualize results for multi-model ensembles.
 
-**Agriculture module**: Provision of impact information from the Inter-Sectoral Impact Model Intercomparison Project (ISIMIP3) 
+[**CAVAanalytics**](https://risk-team.github.io/CAVAanalytics/) provides:
 
-Climate modeling is a complex subject but a very good and gentle introduction to this topic is given by Andy Pitman and colleagues and can be downloaded [here](https://climateextremes.org.au/wp-content/uploads/Climate-modelling-an-overview-The-ARC-Centre-of-Excellence-for-Climate-Extremes.pdf). You are strongly encouraged to read it if you are new to this topic.  
+- Direct remote access to CORDEX-CORE simulations at 25 Km resolution already interpolated (EPSG:4326) 
+- Direct remote access to W5E5 and ERA5 datasets
+- Processing and visualization capabilities
 
-### Climate module
-CAVA makes use of outputs from Regional Climate Models. These models are used to downscale Global Climate Models at higher spatial resolution. The project in charge of providing Regional Climate Models is called CORDEX (Coordinated Regional Climate Downscaling Experiment). The outputs of these models are available for specific geographical areas around the world, called domains. More information about the data behind CAVA can be found [here](https://risk-team.github.io/CAVAanalytics/articles/Introduction.html).
+CAVAanalytics can be seen as a wrapper of several packages, but the main engine for loading and processing climate model outputs is the [climate4Rframework](https://github.com/SantanderMetGroup/climate4R), applied with a tidyverse approach.
 
-| ![CORDEX domains](https://github.com/Risk-Team/CAVAanalytics/assets/40058235/a8e85a4b-86e5-4fdf-ad18-755df4264aeb) |
-|:-------------------------------------------------------------------------------------------------------------------:|
-|    *Boundaries of the fourteen official CORDEX domains. [Source](https://cordex.org/data-access/regional-climate-change-simulations-for-cordex-domains/)*  |
+CAVAanalytics is part of a bigger framework, called Climate and Agriculture Risk Visualization and Assessment (CAVA). 
 
-### Agriculture module
-CAVA is plannng to provide visualziation and streamline access to the impact model outputs of [ISIMIP](https://www.isimip.org/about/). This module is currently under development
-
-## More about CAVA
-
-Traditionally, the approach to climate science consisted of providing means for visualizing climate model outputs and information (e.g IPCC Interactive Atlas) or access points to the raw data (ESGF, Copernicus). These two approaches mainly serve basic users (the former) or advanced users (the latter). 
-
-CAVA (Climate and Agriculture Risk Visualization and Assessment) is a
-framework and approach to climate services developed jointly by **The Food and Agriculture Organization of the United Nations (FAO), the University of Cantabria, Predictia and the University of Cape Town** that aim at serving both standard users (users who need a GUI) and intermediate users (users with some programming skills who needs easy access to climate data and downstream analyses).
-
-Therefore, [CAVA is made of a Platform
-(GUI)](https://fao-cava.predictia.es/), which is freely accessible
-and satisfy the needs of most standard users interested in climate (and climate change impacts in agriculture) and an R package
-([**CAVAanalytics**](https://risk-team.github.io/CAVAanalytics/)), which empowers users with direct access to high-resolution climate model outputs and means for easily working and calculating climatic indicators on multi-model ensembles. 
-
-CAVAanalytics can be used locally (installation through GitHub),
-remotely (registered users can access the University of Cantabria
-JupyterHub) and through a Docker image.
-
-| ![framework](https://github.com/Risk-Team/CAVAanalytics/assets/40058235/26a03018-8911-4fbb-b729-1966147e6633) |
-|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
-| *CAVA framework. CAVA can be used through a graphic user interface (CAVA Platform) or through the CAVAanalytics R package. The package can be used locally (GitHub installation), remotely (University of Cantabria JupyterHub), or locally but through a Docker image to solve dependencies issues. CAVA Platform offers three types of automatic reports, namely climate, custom climate indexes, and agriculture. The climate and agroclimatic reports are produced with CAVAanalytics.* |
-
-
-
-## CAVAanalytics
-
-[**CAVAanalytics**](https://risk-team.github.io/CAVAanalytics/) is an operational package for climate services. It offers a consistent framework to
-load, analyze, calculate indicators, and visualize results for multi-model ensembles (this usually happens when working with climate models, but impact model results can also be analysed with CAVAanalytics). [**CAVAanalytics**](https://risk-team.github.io/CAVAanalytics/)
-provides an access point for CORDEX-CORE simulations at 25 Km resolution
-already interpolated (EPSG:4326) plus the W5E5 and ERA5 datasets. CAVAanalytics can
-be seen as a wrapper of several packages, but the main engine for
-loading and processing climate model outputs is the [climate4R
-framework](https://github.com/SantanderMetGroup/climate4R), applied with
-a tidyverse approach.
-
-**CAVAanalytics logic will also be applied to ISIMIP impact models**
-
-## Installation
+### Installation
 
 Based on how you want to use CAVAanalytics, there are three options.
 
-### 1) Locally
+#### 1) Locally
 
 **If you are new to climate4R**, You need to first install **rJava**. This installation can be problematic. Follow the instructions below
 
@@ -113,7 +70,7 @@ remotes::install_github(c("SantanderMetGroup/loadeR.java",
 remotes::install_github("Risk-Team/CAVAanalytics")
 ```
 
-### 2) JupyterHub
+#### 2) JupyterHub
 
 You can request access to the University of Cantabria JupyterHub, where
 CAVAanalytics is already installed. This will give you access to
@@ -122,11 +79,11 @@ analysis using a Jupyter Notebook environment. When using JupyterHub you will be
 access these resources, you are welcome to contact
 <riccardo.soldan@fao.org> or <Hideki.Kanamaru@fao.org> stating your intended usage type.
 
-### 3) Docker
+#### 3) Docker
 
 The Docker image is available at Docker.io, rso9192/cava. This docker image is built on top of [rocker/rstudio](https://davetang.org/muse/2021/04/24/running-rstudio-server-with-docker/)
 
-#### Linux
+##### Linux
 
 Open the terminal 
 
@@ -136,13 +93,13 @@ sudo apt-get install snapd
 # if not already installed
 sudo snap install docker
 
-sudo docker pull docker.io/rso9192/cava:version2.0.2
+sudo docker pull docker.io/rso9192/cava:version2.0.3
 
 sudo docker run --rm \
            -p 8888:8787 \
            -e PASSWORD=password \
            -v /path/to/local/directory:/home \
-           rso9192/cava:version2.0.2
+           rso9192/cava:version2.0.3
 
 
 ```
@@ -153,13 +110,13 @@ sudo docker run --rm \
            -p 8888:8787 \
            -e PASSWORD=password \
            -v /home/Desktop/CAVA_results:/home \
-           rso9192/cava:version2.0.2
+           rso9192/cava:version2.0.3
 ```
 
 
 Now open your favorite browser and type **http://localhost:8888/**. You should see a login page: enter the **username "rstudio"** and **password "password"** to login and that's it! You can now use CAVAanalytics through Rstudio server. 
 
-#### Windows
+##### Windows
 If you are using Windows, you can install [Docker Desktop](https://docs.docker.com/desktop/install/windows-install/) first. Note that Docker Desktop would require the installation of WSL (Windows Subsystem for Linux). 
 To do that, open a Command Prompt (as administrator) and run
 
@@ -181,19 +138,19 @@ sudo docker run --rm \
            -p 8888:8787 \
            -e PASSWORD=password \
            -v /mnt/c/Users/my_username/Desktop/CAVA_results:/home \
-           rso9192/cava:version2.0.2
+           rso9192/cava:version2.0.3
 ```
 
 Now open your favorite browser and type **http://localhost:8888/**. You should see a login page: enter the **username "rstudio"** and **password "password"** to login and that's it! You can now use CAVAanalytics through Rstudio server. 
 
-#### Mac
+##### Mac
 
 If you are using a Mac, you first need to install [Docker desktop for Mac](https://docs.docker.com/desktop/install/mac-install/). 
 
 Then open a terminal and while Docker Desktop is open, run:
 
 ```
-sudo docker pull docker.io/rso9192/cava:version2.0.2
+sudo docker pull docker.io/rso9192/cava:version2.0.3
 ```
 
 At this point, you can run the Docker image with the below comand. 
@@ -203,12 +160,12 @@ sudo docker run --rm \
            -p 8888:8787 \
            -e PASSWORD=password \
            -v /path/to/local/directory:/home \
-           rso9192/cava:version2.0.2
+           rso9192/cava:version2.0.3
 ```
 Remember to replace **/path/to/local/directory** with the local directory on your host machine where you want to save your plots or data. Now open your favorite browser and type **http://localhost:8888/**. You should see a login page: enter the **username "rstudio"** and **password "password"** to login and that's it! You can now use CAVAanalytics through Rstudio server. 
 
 
-## Quick example
+### Quick example
 
 The idea behind CAVAanalytics is to divide the process of working with multiple models into 3 steps. **Firstly**  download or upload data (multiple
 models), **secondly** perform the intended analysis, **thirdly** visualize the results.
@@ -244,10 +201,10 @@ library(CAVAanalytics)
 |:-------------------------------------------------------------------------------------------------------------------:|
 | *Average annual projected change in maximum temperature compared to the 1990-2000 baseline period in Sudan* |
 
-## Python
+### Python
 **Firstly, why Python?** 
 
-While CAVAanalytics was built on top of R packages, such as `climate4R` and `tidyverse` to allow users to focus on results rather than the code, R does not leverage the same level of "computational efficiency" as Python. This is mainly because Python offers out-of-memory computation for arrays thanks to the integration between `xarray` and `dask`. R does not have this feature for arrays, which is typically the way in which climate data is used. This means that CAVAanalytics largely works on memory (RAM), effectively limiting the geographical area in which analyses can be performed ([check out the memory-efficient functions available from CAVAanalytics though](https://risk-team.github.io/CAVAanalytics/reference/index.html)). CAVAanalytics would not allow users to perform analyses for entire CORDEX domains very efficiently because it would need a lot of RAM. However, CAVAanalytics was mainly developed for country-level assessment and never conceived to be used for large-scale climate data analyses. This is where Python comes in. The regridded CORDEX-CORE models and all observational datasets used by CAVAanalytics can also be accessed using Python. **The benefit of using our data is that we provide one URL per model for all supported variables and that we have already regridded CORDEX-CORE models, making retrieving the data extremely easy**. See below an example:
+While CAVAanalytics was built on top of R packages, such as `climate4R` and `tidyverse` to allow users to focus on visualizing results, R does not leverage the same level of "computational efficiency" as Python. This is mainly because Python offers out-of-memory computation for arrays thanks to the integration between `xarray` and `dask`. R does not have this feature for arrays, which is typically the way in which climate data is used. This means that CAVAanalytics largely works on memory (RAM), effectively limiting the geographical area in which analyses can be performed ([check out the memory-efficient functions available from CAVAanalytics though](https://risk-team.github.io/CAVAanalytics/reference/index.html)). CAVAanalytics would not allow users to perform analyses for entire CORDEX domains very efficiently because it would need a lot of RAM. However, CAVAanalytics was mainly developed for country-level assessment and never conceived to be used for large-scale climate data analyses. This is where Python comes in. The regridded CORDEX-CORE models and all observational datasets used by CAVAanalytics can also be accessed using Python. **The benefit of using our data is that we provide one URL per model for all supported variables and that we have already regridded CORDEX-CORE models, making retrieving the data extremely easy**. See below an example:
 
 ```
 import xarray as xr
@@ -276,6 +233,6 @@ filtered_data = data[data['activity'].str.contains("FAO")]
 ```
 A dedicated function to automatically perform these steps will be made available soon. 
 
-## Issues
+### Issues
 
 Youc can report issues [here](https://github.com/Risk-Team/CAVAanalytics/issues)

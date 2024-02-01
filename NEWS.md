@@ -9,6 +9,14 @@ output:
     toc_depth: 2
 ---
 
+
+## CAVAanalytics 2.0.3
+Version 2.0.3 of CAVAanalytics includes several updates:
+
+- Enhanced functionality for calculating the frequency of user-specified climate indicators, now fully documented in the CAVAanalytics webpage tutorial.
+- Resolved issues with parallelization, particularly in the climate change signal function.
+- Fixed a minor bug previously reported in the observation plotting feature.
+
 ## CAVAanalytics 2.0.2
 In version 2 of CAVAanalytics several improvements have been made. In particular:
 

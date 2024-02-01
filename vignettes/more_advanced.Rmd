@@ -27,8 +27,7 @@ In the [getting started article](https://risk-team.github.io/CAVAanalytics/artic
 
 ```{r, message=F, warning=F}
 # to download a specific area, set country=NULL and specify xlim and ylim arguments. 
-kenya_exmp <- load_data(path.to.data = "CORDEX-CORE", country = "Kenya", variable = "tasmax", 
-                        years.proj = 2030:2060, years.hist = NULL, domain = "AFR-22")
+kenya_exmp <- load_data(path.to.data = "CORDEX-CORE", country = "Kenya", variable = "tasmax", years.proj = 2030:2060, years.hist = NULL, domain = "AFR-22")
 
 
 
@@ -46,8 +45,33 @@ projections(kenya_exmp, season = list(1:3, 4:6, 7:9,10:12)) %>%
 
 ## Climate indicators
 
-What if we want to understand the projected total duration of heat waves **with at least 3 consecutive days** with maximum temperature above 35 degrees. This can be done by specifying the threshold (uppert), with consecutive = TRUE and duration=3.
-Remember to type ?projections if you have any doubts about what each argument does.
+## How CAVAanalytics works
+
+CAVAanalytics offers users great flexibility in calculating climate indicators. To fully understand this functionality, let's consider a simple vector of Tmax (maximum temperature) values over a given period.
+
+As observed, there are two periods during which the Tmax exceeded 35 degrees for at least two consecutive days. CAVAanalytics allows users to explore several pieces of information in such scenarios. Below is a list highlighting the types of operations that can be performed using CAVAanalytics.
+
+
+```{r}
+tmax <- c(20, 36, 24, 25, 32, 36, 37, 38, 12, 13, 37, 38, 40, 42)
+
+# How many days have Tmax values higher than 35 degrees?
+CAVAanalytics::thrs(tmax, uppert=35, lowert=NULL)
+# What is the maximum duration of a heatwave, defined as consecutive days with Tmax above 35 degrees?
+CAVAanalytics::thrs_consec(tmax, uppert=35, lowert=NULL, duration="max", frequency=FALSE)
+
+# What is the total number of days with at least two consecutive days having Tmax higher than 35 degrees?
+CAVAanalytics::thrs_consec(tmax, uppert=35, lowert=NULL, duration=2, frequency=FALSE)
+
+# How many heatwaves are there, defined as periods with Tmax exceeding 35 degrees for at least two consecutive days?
+CAVAanalytics::thrs_consec(tmax, uppert=35, lowert=NULL, duration=2, frequency=TRUE)
+
+
+```
+
+## Real examples
+
+What if we aim to calculate the projected total duration of heat waves that last for at least 3 consecutive days with a maximum temperature above 35 degrees? This can be achieved by setting the threshold (uppert) and specifying consecutive = TRUE and duration = 3. If you have any questions about the functionality of each argument, remember to consult the help documentation by typing ?projections.
 
 ```{r,  warning=F, message=FALSE, fig.height=5, fig.width=6}
 
@@ -57,14 +81,21 @@ projections(kenya_exmp, season = list(1:3,4:6,7:9, 10:12), consecutive=T, durati
 ```
 
 
-What if we want to also understand the projected maximum length of a heat wave, defined as consecutive number of days with maximum temperature above 35 degrees. This can be done by specifying the threshold (uppert), with consecutive = TRUE and duration="max".
+What if we also wish to determine the projected maximum length of a heat wave, defined by a consecutive number of days with a maximum temperature above 35 degrees? This can be achieved by setting the threshold (uppert) and specifying consecutive = TRUE and duration = "max"
 
 ```{r,  warning=F, message=FALSE, fig.height=5, fig.width=6}
 
 projections(kenya_exmp, season = list(1:3,4:6,7:9, 10:12), consecutive=T, duration="max", uppert=35) %>%
-  plotting(., plot_titles = "N.days", ensemble = T, palette = c("white", "orange", "red", "darkred", "brown"))
+  plotting(., plot_titles = "N° days", ensemble = T, palette = c("white", "orange", "red", "darkred", "brown"))
 
 ```
 
 
-The same concept applies to all other functions available in CAVAanalytics step 2 and variables.
+We could also investigate the projected frequency of heat waves, each defined as a period with Tmax exceeding 35 degrees for at least three consecutive days.
+
+```{r,  warning=F, message=FALSE, fig.height=5, fig.width=6}
+
+projections(kenya_exmp, season = list(1:3,4:6,7:9,10:12), consecutive=T, duration=3, uppert=35, frequency=T) %>%
+  plotting(., plot_titles = "N° of heat waves", ensemble = T, palette = c("white", "orange", "red", "darkred", "brown"))
+
+```

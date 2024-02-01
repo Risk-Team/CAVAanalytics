@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">CAVAanalytics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,14 +19,14 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown--guides">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown--tutorials">
     <span class="fas fa fas fa-book"></span>
      
-    guides
+    tutorials
   </a>
-  <div class="dropdown-menu" aria-labelledby="dropdown--guides">
-    <a class="dropdown-item" href="../articles/Introduction.html">start here</a>
-    <a class="dropdown-item" href="../articles/more_advanced.html">climate indexes</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown--tutorials">
+    <a class="dropdown-item" href="../articles/Introduction.html">CAVAanalytics- start here</a>
+    <a class="dropdown-item" href="../articles/more_advanced.html">CAVAanalytics- climate indexes</a>
   </div>
 </li>
 <li class="active nav-item">
@@ -45,9 +45,16 @@
 </li>
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">
-    <span class="fa fa fa fa-newspaper-o"></span>
+    <span class="fas fa fas fa-history"></span>
      
-    news
+    changelog
+  </a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="../articles/CAVA.html">
+    <span class="fas fa fas fa-cloud-sun-rain"></span>
+     
+    About CAVA
   </a>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -78,6 +85,7 @@
 <span>  <span class="va">season</span>,</span>
 <span>  consecutive <span class="op">=</span> <span class="cn">F</span>,</span>
 <span>  duration <span class="op">=</span> <span class="st">"max"</span>,</span>
+<span>  frequency <span class="op">=</span> <span class="cn">F</span>,</span>
 <span>  bias.correction <span class="op">=</span> <span class="cn">F</span>,</span>
 <span>  n.sessions <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -106,7 +114,11 @@
 
 
 <dt>duration</dt>
-<dd><p>either "max" or specify a number. Used only when consecutive is TRUE. For example, to know the number of consecutive days with tmax above 35, lasting more than 3 days, specify uppert=35, consecutive =T and duration=3</p></dd>
+<dd><p>A parameter that can be set to either "max" or a specific number. It is relevant only when 'consecutive' is set to TRUE. For instance, to calculate the count of consecutive days with Tmax (maximum temperature) above 35°C, lasting for more than 3 days, you can set 'uppert' to 35, 'consecutive' to TRUE, and 'duration' to 3.</p></dd>
+
+
+<dt>frequency</dt>
+<dd><p>logical value. This parameter is relevant only when 'consecutive' is set to TRUE and 'duration' is not set to "max". For instance, if you want to determine the count of heatwaves, defined as the number of days with Tmax (maximum temperature) exceeding 35°C for a minimum of 3 consecutive days, set 'uppert' to 35, 'consecutive' to TRUE, 'duration' to 3, and 'frequency' to TRUE.</p></dd>
 
 
 <dt>bias.correction</dt>

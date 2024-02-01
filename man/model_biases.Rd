@@ -11,6 +11,7 @@ model_biases(
   lowert = NULL,
   season,
   consecutive = F,
+  frequency = F,
   n.sessions = 1,
   duration = "max"
 )
@@ -27,6 +28,8 @@ model_biases(
 \item{season}{list, containing seasons to select. For example, list(1:6, 7:12)}
 
 \item{consecutive}{logical, to use in conjunction with lowert or uppert}
+
+\item{frequency}{logical. Used only when consecutive is TRUE and duration is not "max". For example, to know the number of heatwaves defined as the number of days with Tmax higher than 35 for at least 3 consecutive days, specify uppert=35, consecutive =T and duration=3, frequency=T}
 
 \item{n.sessions}{numeric, number of sessions to use, default is one. Parallelization can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelizing will increase RAM usage}
 

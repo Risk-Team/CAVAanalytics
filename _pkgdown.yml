@@ -7,12 +7,12 @@ template:
 title: CAVAanalytics
 navbar:
   left:
-  - text: guides
+  - text: tutorials
     icon: fas fa-book
     menu:
-    - text: start here
+    - text: CAVAanalytics- start here
       href: articles/Introduction.html
-    - text: climate indexes
+    - text: CAVAanalytics- climate indexes
       href: articles/more_advanced.html
   - icon: fa fa-file-code-o
     text: functions
@@ -20,9 +20,12 @@ navbar:
   - icon: fa fa-github fa-lg
     text: github
     href: https://github.com/Risk-team/CAVAanalytics/
-  - icon: fa fa-newspaper-o
-    text: news
+  - icon: fas fa-history
+    text: changelog
     href: news/index.html
+  - icon: fas fa-cloud-sun-rain
+    text: About CAVA
+    href: articles/CAVA.html
 reference:
 - title: Main functions
   desc: |

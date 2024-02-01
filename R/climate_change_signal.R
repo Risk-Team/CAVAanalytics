@@ -7,7 +7,8 @@
 #' @param lowert numeric of length=1, lower threshold
 #' @param season list, containing seasons to select. For example, list(1:6, 7:12)
 #' @param consecutive logical, to use in conjunction with lowert or uppert
-#' @param duration either "max" or specify a number. Used only when consecutive is TRUE. For example, to know the number of consecutive days with tmax above 35, lasting more than 3 days, specify uppert=35, consecutive =T and duration=3
+#' @param duration A parameter that can be set to either "max" or a specific number. It is relevant only when 'consecutive' is set to TRUE. For instance, to calculate the count of consecutive days with Tmax (maximum temperature) above 35°C, lasting for more than 3 days, you can set 'uppert' to 35, 'consecutive' to TRUE, and 'duration' to 3.
+#' @param frequency logical value. This parameter is relevant only when 'consecutive' is set to TRUE and 'duration' is not set to "max". For instance, if you want to determine the count of heatwaves, defined as the number of days with Tmax (maximum temperature) exceeding 35°C for a minimum of 3 consecutive days, set 'uppert' to 35, 'consecutive' to TRUE, 'duration' to 3, and 'frequency' to TRUE.
 #' @param bias.correction logical
 #' @param n.sessions numeric, number of sessions to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage
 #' @importFrom magrittr %>%
@@ -21,6 +22,7 @@ climate_change_signal <- function(data,
                                   season,
                                   consecutive = F,
                                   duration = "max",
+                                  frequency=F,
                                   bias.correction = F,
                                   n.sessions = 1) {
   # Intermediate functions --------------------------------------------------
@@ -148,10 +150,17 @@ climate_change_signal <- function(data,
         "Some data will be lost on year-crossing season subset (see the 'Time slicing' section of subsetGrid documentation for more details)"
       )
     }
-    datasets %>% dplyr::mutate_at(c("models_mbrs"),
-                                  ~ purrr::map(., ~ suppressMessages(
-                                    transformeR::subsetGrid(., season = season)
-                                  )))
+    if (any(stringr::str_detect(colnames(datasets), "obs"))) {
+      datasets %>%  dplyr::mutate_at(c("models_mbrs", "obs"),
+                                     ~ purrr::map(., ~ suppressMessages(
+                                       transformeR::subsetGrid(., season = season)
+                                     )))
+    } else {
+      datasets %>%  dplyr::mutate_at(c("models_mbrs"),
+                                     ~ purrr::map(., ~ suppressMessages(
+                                       transformeR::subsetGrid(., season = season)
+                                     )))
+    }
   }
 
   # function used to perform the calculations
@@ -183,7 +192,7 @@ climate_change_signal <- function(data,
               )
             )
             dplyr::mutate(.,
-                          models_mbrs = furrr::future_map2(models_mbrs, experiment, function(mod, forc) {
+                          models_mbrs = purrr::map2(models_mbrs, experiment, function(mod, forc) {
                             if (forc == "historical") {
                               bc <-
                                 suppressMessages(
@@ -225,7 +234,7 @@ climate_change_signal <- function(data,
                             mod_temp$Dates$end <-  mod$Dates$end
 
                             return(mod_temp)
-                          }))
+                          }, .progress = T))
           } else
             .
         }  %>%
@@ -247,7 +256,8 @@ climate_change_signal <- function(data,
                     FUN = thrs_consec,
                     duration = duration,
                     lowert = lowert,
-                    uppert = uppert
+                    uppert = uppert,
+                    frequency=frequency
                   )
                 } else if (!consecutive) {
                   list(FUN = thrs,

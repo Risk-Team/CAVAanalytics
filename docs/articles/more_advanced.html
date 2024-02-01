@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">CAVAanalytics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,14 +36,14 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="active nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown--guides">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown--tutorials">
     <span class="fas fa fas fa-book"></span>
      
-    guides
+    tutorials
   </a>
-  <div class="dropdown-menu" aria-labelledby="dropdown--guides">
-    <a class="dropdown-item" href="../articles/Introduction.html">start here</a>
-    <a class="dropdown-item" href="../articles/more_advanced.html">climate indexes</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown--tutorials">
+    <a class="dropdown-item" href="../articles/Introduction.html">CAVAanalytics- start here</a>
+    <a class="dropdown-item" href="../articles/more_advanced.html">CAVAanalytics- climate indexes</a>
   </div>
 </li>
 <li class="nav-item">
@@ -62,9 +62,16 @@
 </li>
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">
-    <span class="fa fa fa fa-newspaper-o"></span>
+    <span class="fas fa fas fa-history"></span>
      
-    news
+    changelog
+  </a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="../articles/CAVA.html">
+    <span class="fas fa fas fa-cloud-sun-rain"></span>
+     
+    About CAVA
   </a>
 </li>
       </ul>
@@ -104,8 +111,7 @@ features of CAVAanalytics. Now, let’s take our understanding to the next
 level as we delve into the full potential of CAVAanalytics.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># to download a specific area, set country=NULL and specify xlim and ylim arguments. </span></span>
-<span><span class="va">kenya_exmp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/load_data.html">load_data</a></span><span class="op">(</span>path.to.data <span class="op">=</span> <span class="st">"CORDEX-CORE"</span>, country <span class="op">=</span> <span class="st">"Kenya"</span>, variable <span class="op">=</span> <span class="st">"tasmax"</span>, </span>
-<span>                        years.proj <span class="op">=</span> <span class="fl">2030</span><span class="op">:</span><span class="fl">2060</span>, years.hist <span class="op">=</span> <span class="cn">NULL</span>, domain <span class="op">=</span> <span class="st">"AFR-22"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">kenya_exmp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/load_data.html">load_data</a></span><span class="op">(</span>path.to.data <span class="op">=</span> <span class="st">"CORDEX-CORE"</span>, country <span class="op">=</span> <span class="st">"Kenya"</span>, variable <span class="op">=</span> <span class="st">"tasmax"</span>, years.proj <span class="op">=</span> <span class="fl">2030</span><span class="op">:</span><span class="fl">2060</span>, years.hist <span class="op">=</span> <span class="cn">NULL</span>, domain <span class="op">=</span> <span class="st">"AFR-22"</span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="composite-seasonal-plot">Composite seasonal plot<a class="anchor" aria-label="anchor" href="#composite-seasonal-plot"></a>
 </h2>
@@ -120,28 +126,69 @@ Simply specify season=list(1:3, 4:6), for example.</p>
 <div class="section level2">
 <h2 id="climate-indicators">Climate indicators<a class="anchor" aria-label="anchor" href="#climate-indicators"></a>
 </h2>
-<p>What if we want to understand the projected total duration of heat
-waves <strong>with at least 3 consecutive days</strong> with maximum
-temperature above 35 degrees. This can be done by specifying the
-threshold (uppert), with consecutive = TRUE and duration=3. Remember to
-type ?projections if you have any doubts about what each argument
-does.</p>
+</div>
+<div class="section level2">
+<h2 id="how-cavaanalytics-works">How CAVAanalytics works<a class="anchor" aria-label="anchor" href="#how-cavaanalytics-works"></a>
+</h2>
+<p>CAVAanalytics offers users great flexibility in calculating climate
+indicators. To fully understand this functionality, let’s consider a
+simple vector of Tmax (maximum temperature) values over a given
+period.</p>
+<p>As observed, there are two periods during which the Tmax exceeded 35
+degrees for at least two consecutive days. CAVAanalytics allows users to
+explore several pieces of information in such scenarios. Below is a list
+highlighting the types of operations that can be performed using
+CAVAanalytics.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">tmax</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">36</span>, <span class="fl">24</span>, <span class="fl">25</span>, <span class="fl">32</span>, <span class="fl">36</span>, <span class="fl">37</span>, <span class="fl">38</span>, <span class="fl">12</span>, <span class="fl">13</span>, <span class="fl">37</span>, <span class="fl">38</span>, <span class="fl">40</span>, <span class="fl">42</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># How many days have Tmax values higher than 35 degrees?</span></span>
+<span><span class="fu">CAVAanalytics</span><span class="fu">::</span><span class="fu"><a href="../reference/thrs.html">thrs</a></span><span class="op">(</span><span class="va">tmax</span>, uppert<span class="op">=</span><span class="fl">35</span>, lowert<span class="op">=</span><span class="cn">NULL</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 8</span></span>
+<span><span class="co"># What is the maximum duration of a heatwave, defined as consecutive days with Tmax above 35 degrees?</span></span>
+<span><span class="fu">CAVAanalytics</span><span class="fu">::</span><span class="fu"><a href="../reference/thrs_consec.html">thrs_consec</a></span><span class="op">(</span><span class="va">tmax</span>, uppert<span class="op">=</span><span class="fl">35</span>, lowert<span class="op">=</span><span class="cn">NULL</span>, duration<span class="op">=</span><span class="st">"max"</span>, frequency<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 4</span></span>
+<span></span>
+<span><span class="co"># What is the total number of days with at least two consecutive days having Tmax higher than 35 degrees?</span></span>
+<span><span class="fu">CAVAanalytics</span><span class="fu">::</span><span class="fu"><a href="../reference/thrs_consec.html">thrs_consec</a></span><span class="op">(</span><span class="va">tmax</span>, uppert<span class="op">=</span><span class="fl">35</span>, lowert<span class="op">=</span><span class="cn">NULL</span>, duration<span class="op">=</span><span class="fl">2</span>, frequency<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 7</span></span>
+<span></span>
+<span><span class="co"># How many heatwaves are there, defined as periods with Tmax exceeding 35 degrees for at least two consecutive days?</span></span>
+<span><span class="fu">CAVAanalytics</span><span class="fu">::</span><span class="fu"><a href="../reference/thrs_consec.html">thrs_consec</a></span><span class="op">(</span><span class="va">tmax</span>, uppert<span class="op">=</span><span class="fl">35</span>, lowert<span class="op">=</span><span class="cn">NULL</span>, duration<span class="op">=</span><span class="fl">2</span>, frequency<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 2</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="real-examples">Real examples<a class="anchor" aria-label="anchor" href="#real-examples"></a>
+</h2>
+<p>What if we aim to calculate the projected total duration of heat
+waves that last for at least 3 consecutive days with a maximum
+temperature above 35 degrees? This can be achieved by setting the
+threshold (uppert) and specifying consecutive = TRUE and duration = 3.
+If you have any questions about the functionality of each argument,
+remember to consult the help documentation by typing ?projections.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="fu"><a href="../reference/projections.html">projections</a></span><span class="op">(</span><span class="va">kenya_exmp</span>, season <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,<span class="fl">4</span><span class="op">:</span><span class="fl">6</span>,<span class="fl">7</span><span class="op">:</span><span class="fl">9</span>, <span class="fl">10</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span>, consecutive<span class="op">=</span><span class="cn">T</span>, duration<span class="op">=</span><span class="fl">3</span>, uppert<span class="op">=</span><span class="fl">35</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">.</span>, plot_titles <span class="op">=</span> <span class="st">"N.days"</span>, ensemble <span class="op">=</span> <span class="cn">T</span>, palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"white"</span>, <span class="st">"orange"</span>, <span class="st">"red"</span>, <span class="st">"darkred"</span>, <span class="st">"brown"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="more_advanced_files/figure-html/unnamed-chunk-4-1.png" width="576"></p>
-<p>What if we want to also understand the projected maximum length of a
-heat wave, defined as consecutive number of days with maximum
-temperature above 35 degrees. This can be done by specifying the
-threshold (uppert), with consecutive = TRUE and duration=“max”.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<p><img src="more_advanced_files/figure-html/unnamed-chunk-5-1.png" width="576"></p>
+<p>What if we also wish to determine the projected maximum length of a
+heat wave, defined by a consecutive number of days with a maximum
+temperature above 35 degrees? This can be achieved by setting the
+threshold (uppert) and specifying consecutive = TRUE and duration =
+“max”</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="fu"><a href="../reference/projections.html">projections</a></span><span class="op">(</span><span class="va">kenya_exmp</span>, season <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,<span class="fl">4</span><span class="op">:</span><span class="fl">6</span>,<span class="fl">7</span><span class="op">:</span><span class="fl">9</span>, <span class="fl">10</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span>, consecutive<span class="op">=</span><span class="cn">T</span>, duration<span class="op">=</span><span class="st">"max"</span>, uppert<span class="op">=</span><span class="fl">35</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">.</span>, plot_titles <span class="op">=</span> <span class="st">"N.days"</span>, ensemble <span class="op">=</span> <span class="cn">T</span>, palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"white"</span>, <span class="st">"orange"</span>, <span class="st">"red"</span>, <span class="st">"darkred"</span>, <span class="st">"brown"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="more_advanced_files/figure-html/unnamed-chunk-5-1.png" width="576"></p>
-<p>The same concept applies to all other functions available in
-CAVAanalytics step 2 and variables.</p>
+<span>  <span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">.</span>, plot_titles <span class="op">=</span> <span class="st">"N° days"</span>, ensemble <span class="op">=</span> <span class="cn">T</span>, palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"white"</span>, <span class="st">"orange"</span>, <span class="st">"red"</span>, <span class="st">"darkred"</span>, <span class="st">"brown"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="more_advanced_files/figure-html/unnamed-chunk-6-1.png" width="576"></p>
+<p>We could also investigate the projected frequency of heat waves, each
+defined as a period with Tmax exceeding 35 degrees for at least three
+consecutive days.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="fu"><a href="../reference/projections.html">projections</a></span><span class="op">(</span><span class="va">kenya_exmp</span>, season <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,<span class="fl">4</span><span class="op">:</span><span class="fl">6</span>,<span class="fl">7</span><span class="op">:</span><span class="fl">9</span>,<span class="fl">10</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span>, consecutive<span class="op">=</span><span class="cn">T</span>, duration<span class="op">=</span><span class="fl">3</span>, uppert<span class="op">=</span><span class="fl">35</span>, frequency<span class="op">=</span><span class="cn">T</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">.</span>, plot_titles <span class="op">=</span> <span class="st">"N° of heat waves"</span>, ensemble <span class="op">=</span> <span class="cn">T</span>, palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"white"</span>, <span class="st">"orange"</span>, <span class="st">"red"</span>, <span class="st">"darkred"</span>, <span class="st">"brown"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="more_advanced_files/figure-html/unnamed-chunk-7-1.png" width="576"></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

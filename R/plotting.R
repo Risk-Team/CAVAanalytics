@@ -750,7 +750,7 @@ plotting.CAVAanalytics_trends <-
           cli::cli_alert_warning(
             " Arguments bins, legend_range, ensemble and palette are ignored. Change number of group intervals with n.groups"
           )
-          rst <- rst[[3]][[1]]
+          rst <- do.call(rbind,rst[[3]])
           p <-
             suppressMessages(
               ridgeline(

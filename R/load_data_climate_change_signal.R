@@ -17,7 +17,8 @@
 #' @param season numeric, seasons to select. For example, 1:12
 #' @param consecutive logical, to use in conjunction with lowert or uppert
 #' @param n.sessions numeric, number of sessions to use in parallel processing. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary
-#' @param duration character, either "max" or "total"
+#' @param duration A parameter that can be set to either "max" or a specific number. It is relevant only when 'consecutive' is set to TRUE. For instance, to calculate the count of consecutive days with Tmax (maximum temperature) above 35°C, lasting for more than 3 days, you can set 'uppert' to 35, 'consecutive' to TRUE, and 'duration' to 3.
+#' @param frequency logical value. This parameter is relevant only when 'consecutive' is set to TRUE and 'duration' is not set to "max". For instance, if you want to determine the count of heatwaves, defined as the number of days with Tmax (maximum temperature) exceeding 35°C for a minimum of 3 consecutive days, set 'uppert' to 35, 'consecutive' to TRUE, 'duration' to 3, and 'frequency' to TRUE.
 #' @param chunk.size numeric, indicating the number of chunks to. The smaller the better when working with limited RAM.
 #' @param overlap numeric, amount of overlap needed to create the composite. Default 0.5
 #' @importFrom magrittr %>%
@@ -44,6 +45,7 @@ load_data_and_climate_change_signal <-
            consecutive = F,
            scaling.type = "additive",
            duration = "max",
+           frequency=F,
            bias.correction = F,
            n.sessions = 1) {
     # calculate number of chunks based on xlim and ylim
@@ -99,6 +101,7 @@ load_data_and_climate_change_signal <-
                 lowert = lowert,
                 consecutive = consecutive,
                 duration =  duration,
+                frequency=frequency,
                 n.sessions = n.sessions
               )
           )

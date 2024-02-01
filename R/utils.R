@@ -186,14 +186,15 @@ make_raster <- function(cl4.object, dimensions, shape.file) {
 #'
 #' @param col numeric vector
 #' @param duration either "max" or "total".
-#' @param lowert numeric. lower threshold
-#' @param uppert numeric. upper threshold
+#' @param lowert numeric. Lower threshold
+#' @param uppert numeric. Upper threshold
+#' @param frequency logical. Whether frequency or abosulte numbers should be returned. Only works with duration != max
 #' @return numeric of length 1
 #' @export
 # functions for consecutive days
-thrs_consec = function(col, duration, lowert, uppert) {
-  if (!is.numeric(col))
 
+thrs_consec = function(col, duration, lowert, uppert, frequency) {
+  if (!is.numeric(col))
     stop("input has to be a numeric vector")
 
   if (!(duration == "max" || is.numeric(duration))) {
@@ -209,6 +210,8 @@ thrs_consec = function(col, duration, lowert, uppert) {
 
   }
 
+  if (duration=="max" & frequency) stop("Not meaningful. By definition, the maximum duration of an event, let's say a dry spell, has frequency of 1")
+
   #get only connsecutive days matching the threshold
 
   consec_days = consec$lengths[consec$values == TRUE]
@@ -220,7 +223,7 @@ thrs_consec = function(col, duration, lowert, uppert) {
     return(if(val=="-Inf") 0 else val)
 
   } else{
-    return(sum(consec_days[consec_days > duration], na.rm = T))
+    if (!frequency) return(sum(consec_days[consec_days > duration], na.rm = T)) else return(length(na.omit(consec_days[consec_days > duration])))
 
   }
 

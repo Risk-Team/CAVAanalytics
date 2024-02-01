@@ -2,9 +2,10 @@ pandoc: 2.19.2
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
+  CAVA: CAVA.html
   Introduction: Introduction.html
   more_advanced: more_advanced.html
-last_built: 2023-12-01T16:26Z
+last_built: 2024-02-01T14:18Z
 urls:
   reference: https://risk-team.github.io/CAVAanalytics/reference
   article: https://risk-team.github.io/CAVAanalytics/articles

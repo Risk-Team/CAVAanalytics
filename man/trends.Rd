@@ -12,6 +12,7 @@ trends(
   season,
   consecutive = FALSE,
   duration = "max",
+  frequency = F,
   intraannual_var = FALSE,
   observation = FALSE,
   n.sessions = 1
@@ -30,7 +31,9 @@ trends(
 
 \item{consecutive}{logical, to use in conjunction with lowert or uppert}
 
-\item{duration}{either "max" or specify a number. Used only when consecutive is TRUE. For example, to know the number of consecutive days with tmax above 35, lasting more than 3 days, specify uppert=35, consecutive =T and duration=3}
+\item{duration}{A parameter that can be set to either "max" or a specific number. It is relevant only when 'consecutive' is set to TRUE. For instance, to calculate the count of consecutive days with Tmax (maximum temperature) above 35°C, lasting for more than 3 days, you can set 'uppert' to 35, 'consecutive' to TRUE, and 'duration' to 3.}
+
+\item{frequency}{logical value. This parameter is relevant only when 'consecutive' is set to TRUE and 'duration' is not set to "max". For instance, if you want to determine the count of heatwaves, defined as the number of days with Tmax (maximum temperature) exceeding 35°C for a minimum of 3 consecutive days, set 'uppert' to 35, 'consecutive' to TRUE, 'duration' to 3, and 'frequency' to TRUE.}
 
 \item{intraannual_var}{logical, whether linear regression is applied to annual variability, measured as standard deviation}
 

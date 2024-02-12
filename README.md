@@ -1,5 +1,5 @@
 <h1 align="center">
-<img src="man/figures/sticker.png" width = "300" height = "300" align="center" />
+<img src="man/figures/sticker2.png" width = "300" height = "300" align="center" />
   <br>
   <h4 align="center">CAVAanalytics: Operational R package for climate services</h4>
   <br>

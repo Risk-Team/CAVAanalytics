@@ -240,7 +240,7 @@ load_data_hub <-
           } else if (stringr::str_detect(variable, "tas")) {
             transformeR::gridArithmetics(x, 273.15, operator = "-")
           } else {
-            x
+            transformeR::gridArithmetics(x, 1, operator = "*")
           }
 
         }, mc.cores = 3)

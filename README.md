@@ -1,7 +1,7 @@
 <h1 align="center">
 <img src="man/figures/sticker2.png" width = "300" height = "300" align="center" />
   <br>
-  <h4 align="center">R package providing  a framework for easy access, processing, and advanced visualization of climate data</h4>
+  <h5 align="center">R package providing  a framework for easy access, processing, and advanced visualization of climate data</h5>
   <br>
 <div align="center">
    <img src="https://img.shields.io/github/v/release/Risk-team/CAVAanalytics?include_prereleases" alt="GitHub R package version" style="display: inline-block;">

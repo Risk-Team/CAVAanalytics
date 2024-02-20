@@ -332,6 +332,9 @@ load_data <-
                   } else if (stringr::str_detect(variable, "pr")) {
                     suppressMessages(transformeR::gridArithmetics(., 86400, operator = "*"))
 
+                  } else {
+                    .
+
                   }
 
                 } else {
@@ -360,6 +363,9 @@ load_data <-
                     suppressMessages(transformeR::gridArithmetics(., 273.15, operator = "-"))
                   } else if (stringr::str_detect(variable, "pr")) {
                     suppressMessages(transformeR::gridArithmetics(., 86400, operator = "*"))
+
+                  } else {
+                    .
 
                   }
 
@@ -422,7 +428,8 @@ load_data <-
               "tasmin" = "t2mn",
               "hurs" = "hurs",
               "sfcWind" = "sfcwind",
-              "tas" = "t2m"
+              "tas" = "t2m",
+              "rsds" = "ssrd"
             )[variable]
           else
             variable,
@@ -445,6 +452,12 @@ load_data <-
                 obs_tr <- transformeR::gridArithmetics(.,
                                                        ifelse(path.to.obs == "ERA5", 1000, 86400),
                                                        operator = "*")
+                obs_tr$Variable$varName = variable
+                obs_tr
+              } else if (stringr::str_detect(variable, "rsds")) {
+                obs_tr <- transformeR::gridArithmetics(.,
+                                                       ifelse(path.to.obs == "ERA5", 86400, 1),
+                                                       operator = "/")
                 obs_tr$Variable$varName = variable
                 obs_tr
               } else {

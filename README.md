@@ -238,7 +238,7 @@ A dedicated function to automatically perform these steps will be made available
 
 ### Contributions
 
-If you would like to contribute to this project, you are welcome to fork this repository and submit your contribution. If you liked CAVAanalytics, please remember to add a star! 
+If you would like to contribute to this project, you are welcome to fork this repository and submit your contribution. If you liked CAVAanalytics, please remember to [add a star](https://github.com/Risk-Team/CAVAanalytics/stargazers)! 
 
 ### Issues
 

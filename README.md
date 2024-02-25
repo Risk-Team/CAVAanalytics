@@ -21,7 +21,7 @@
 
 --------------------------------------------------------------------------------------------------
 
-[**CAVAanalytics**](https://risk-team.github.io/CAVAanalytics/) is an operational package for climate services. 
+[**CAVAanalytics**](https://risk-team.github.io/CAVAanalytics/) is an R package for climate services. 
 It offers a consistent framework to load, analyze, calculate indicators, and visualize results for multi-model ensembles.
 
 [**CAVAanalytics**](https://risk-team.github.io/CAVAanalytics/) provides:

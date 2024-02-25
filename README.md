@@ -236,6 +236,10 @@ filtered_data = data[data['activity'].str.contains("FAO")]
 ```
 A dedicated function to automatically perform these steps will be made available soon. 
 
+### Contributions
+
+If you would like to contribute to this project, you are welcome to fork this repository and submit your contribution. If you liked CAVAanalytics, please remember to add a star! 
+
 ### Issues
 
-Youc can report issues [here](https://github.com/Risk-Team/CAVAanalytics/issues)
+You can report issues [here](https://github.com/Risk-Team/CAVAanalytics/issues)

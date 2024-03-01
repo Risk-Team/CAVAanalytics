@@ -7,61 +7,60 @@ template:
 title: CAVAanalytics
 navbar:
   left:
-  - text: tutorials
-    icon: fas fa-book
-    menu:
-    - text: CAVAanalytics- start here
-      href: articles/Introduction.html
-    - text: CAVAanalytics- climate indexes
-      href: articles/more_advanced.html
-  - icon: fa fa-file-code-o
-    text: functions
-    href: reference/index.html
-  - icon: fa fa-github fa-lg
-    text: github
-    href: https://github.com/Risk-team/CAVAanalytics/
-  - icon: fas fa-history
-    text: changelog
-    href: news/index.html
-  - icon: fas fa-cloud-sun-rain
-    text: About CAVA
-    href: articles/CAVA.html
+    - icon: fas fa-cloud-sun-rain
+      text: CAVA and IPCC Atlas
+      href: articles/CAVA.html
+    - text: Tutorials
+      icon: fas fa-book
+      menu:
+        - text: CAVAanalytics- start here
+          href: articles/Introduction.html
+        - text: CAVAanalytics- climate indexes
+          href: articles/more_advanced.html
+    - icon: fa fa-file-code-o
+      text: Functions
+      href: reference/index.html
+    - icon: fa fa-github fa-lg
+      text: GitHub
+      href: https://github.com/Risk-team/CAVAanalytics/
+    - icon: fas fa-history
+      text: Changelog
+      href: news/index.html
 reference:
-- title: Main functions
-  desc: |
-    Load, process and visualize
-  contents:
-  - load_data
-  - load_data_hub
-  - model_biases
-  - projections
-  - climate_change_signal
-  - trends
-  - observations
-  - plotting
-  - extract_raster
-- title: Memory efficient
-  desc: |
-    Load and process in spatial chunks
-  contents:
-  - load_data_and_projections
-  - load_data_and_climate_change_signal
-  - load_data_and_trends
-- title: Utils
-  desc: |
-    Accessory functions
-  contents:
-  - C4R_to_CAVA
-  - IPCC_palette
-  - common_dates
-  - loadGridData_xarray
-  - ens_trends
-  - make_raster
-  - models_trends
-  - thrs
-  - thrs_consec
-- title: Package
-  desc: |
-    Description of CAVAanalytics
-  contents: CAVAanalytics
-
+  - title: Main functions
+    desc: |
+      Load, process and visualize
+    contents:
+      - load_data
+      - load_data_hub
+      - model_biases
+      - projections
+      - climate_change_signal
+      - trends
+      - observations
+      - plotting
+      - extract_raster
+  - title: Memory efficient
+    desc: |
+      Load and process in spatial chunks
+    contents:
+      - load_data_and_projections
+      - load_data_and_climate_change_signal
+      - load_data_and_trends
+  - title: Utils
+    desc: |
+      Accessory functions
+    contents:
+      - C4R_to_CAVA
+      - IPCC_palette
+      - common_dates
+      - loadGridData_xarray
+      - ens_trends
+      - make_raster
+      - models_trends
+      - thrs
+      - thrs_consec
+  - title: Package
+    desc: |
+      Description of CAVAanalytics
+    contents: CAVAanalytics

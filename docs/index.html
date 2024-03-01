@@ -35,11 +35,18 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
+<li class="nav-item">
+  <a class="nav-link" href="articles/CAVA.html">
+    <span class="fas fa fas fa-cloud-sun-rain"></span>
+     
+    CAVA and IPCC Atlas
+  </a>
+</li>
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown--tutorials">
     <span class="fas fa fas fa-book"></span>
      
-    tutorials
+    Tutorials
   </a>
   <div class="dropdown-menu" aria-labelledby="dropdown--tutorials">
     <a class="dropdown-item" href="articles/Introduction.html">CAVAanalytics- start here</a>
@@ -50,28 +57,21 @@
   <a class="nav-link" href="reference/index.html">
     <span class="fa fa fa fa-file-code-o"></span>
      
-    functions
+    Functions
   </a>
 </li>
 <li class="nav-item">
   <a class="external-link nav-link" href="https://github.com/Risk-team/CAVAanalytics/">
     <span class="fa fa fa fa-github fa-lg"></span>
      
-    github
+    GitHub
   </a>
 </li>
 <li class="nav-item">
   <a class="nav-link" href="news/index.html">
     <span class="fas fa fas fa-history"></span>
      
-    changelog
-  </a>
-</li>
-<li class="nav-item">
-  <a class="nav-link" href="articles/CAVA.html">
-    <span class="fas fa fas fa-cloud-sun-rain"></span>
-     
-    About CAVA
+    Changelog
   </a>
 </li>
       </ul>
@@ -135,7 +135,7 @@ R package providing a framework for easy access, processing, and advanced visual
 <span><span class="co"># 2nd step</span></span>
 <span> <span class="fu"><a href="reference/climate_change_signal.html">climate_change_signal</a></span><span class="op">(</span><span class="va">remote.data</span>, season<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span>, bias.correction <span class="op">=</span> <span class="cn">F</span><span class="op">)</span> <span class="op">%&gt;%</span> </span>
 <span><span class="co"># 3rd step</span></span>
-<span> <span class="fu"><a href="reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">.</span>, ensemble<span class="op">=</span><span class="cn">TRUE</span>, plot_titles <span class="op">=</span> <span class="st">"Temperature change (°C)"</span>,</span>
+<span> <span class="fu"><a href="reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">.</span>, ensemble<span class="op">=</span><span class="cn">FALSE</span>, plot_titles <span class="op">=</span> <span class="st">"Temperature change (°C)"</span>,</span>
 <span> palette<span class="op">=</span><span class="fu"><a href="reference/IPCC_palette.html">IPCC_palette</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"tmp"</span>, divergent <span class="op">=</span> <span class="cn">F</span><span class="op">)</span>, bins<span class="op">=</span><span class="cn">T</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup><col width="100%"></colgroup>

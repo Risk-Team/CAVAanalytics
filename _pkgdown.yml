@@ -27,6 +27,9 @@ navbar:
       text: Changelog
       href: news/index.html
 reference:
+  - title: Package
+    desc: |
+      CAVAanalytics is a comprehensive framework for climate data analysis, offering streamlined access to data, advanced processing and visualization capabilities. It is designed to support a wide range of climate research and user needs
   - title: Main functions
     desc: |
       Load, process and visualize
@@ -60,7 +63,4 @@ reference:
       - models_trends
       - thrs
       - thrs_consec
-  - title: Package
-    desc: |
-      Description of CAVAanalytics
-    contents: CAVAanalytics
+

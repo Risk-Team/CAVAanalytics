@@ -9,6 +9,8 @@ output:
     toc_depth: 2
 ---
 
+## CAVAanalytics 2.0.4
+Version 2.0.4 of CAVAanalytics allows users to work with the WAS-22 domain and the upcoming releases
 
 ## CAVAanalytics 2.0.3
 Version 2.0.3 of CAVAanalytics includes several updates:

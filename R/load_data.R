@@ -70,8 +70,7 @@ load_data <-
               "WAS-22"
             )
           )
-          if (!(domain %in% c("AFR-22", "SEA-22", "EAS-22")))
-            cli::cli_abort(c("x" = "Only AFR-22, SEA-22 and EAS-22 are available as of November 2023"))
+
         }
         if (is.null(years.proj) &
             is.null(years.hist) & is.null(years.obs))

@@ -10,7 +10,7 @@
 </div>
 </h1>
 
-
+--------------------------------------------------------------------------------------------------
 **CAVAanalytics is under constant improvement. You are encouraged to always work with the latest release**
 
 #### **Updates

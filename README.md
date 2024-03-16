@@ -61,7 +61,7 @@ accessing the dataset stored remotely.
 ``` r
 library(CAVAanalytics)
 # 1st step
- remote.data <- load_data(country = "Sudan", variable="tasmax",
+ remote.data <- load_data(country = "Sudan", variable="pr",
  years.hist=1990:2000, years.proj=2020:2030,
  path.to.data = "CORDEX-CORE", aggr.m="sum", domain="AFR-22")
 # 2nd step

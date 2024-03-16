@@ -46,7 +46,7 @@ models), **secondly** perform the intended analysis, **thirdly** visualize the r
 One nice thing about step 1, is that CAVAanalytics will automatically bind multiple members to create the multimodel ensemble and check temporal consistency. It will also automatically convert units (e.g. Kelvin into Celsius). 
 
 
-| ![Framework](https://user-images.githubusercontent.com/40058235/199256415-ed32c42b-e2f8-48e0-b4fe-558de6612038.png) |
+| ![Framework](https://github.com/Risk-Team/CAVAanalytics/assets/40058235/5f76fc23-0039-4c90-a03d-8890a7950c4a) |
 |:-------------------------------------------------------------------------------------------------------------------:|
 |                                                *CAVAanalytics steps*                                                |
 

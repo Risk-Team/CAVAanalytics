@@ -55,7 +55,7 @@ Below we give an example of how you can use CAVAanalytics to easily retrieve cli
 **To load CORDEX-CORE data stored remotely**, set path.to.data to
 “CORDEX-CORE” and specify the domain. This will download in real-time CORDEX-CORE
 simulations from the University of Cantabria (UC) THREDDS servers. Similarly, when path.to.obs is set to W5E5 or ERA5, you access datasets stored in UC THREDDS servers.
-
+One of the great things about CAVAanalytics is that data is stored in memory so there is no need to process netCDF files. Additionally, data retrieval is speedy thanks to the state-of-the-art THREDDS server of the University of Cantabria.
 
 ``` r
 library(CAVAanalytics)

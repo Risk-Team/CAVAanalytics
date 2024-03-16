@@ -71,7 +71,7 @@ library(CAVAanalytics)
  palette=IPCC_palette(type = "pr", divergent = T))
 ```
 
-| ![Rplot01](https://github.com/Risk-Team/CAVAanalytics/assets/40058235/3dce772c-51e9-4cd1-9ad4-5ddfcdf75698) |
+| ![Rplot01](https://github.com/Risk-Team/CAVAanalytics/assets/40058235/5f76fc23-0039-4c90-a03d-8890a7950c4a) |
 |:-------------------------------------------------------------------------------------------------------------------:|
 | *Projected change in total annual precipitation compared to the 1990-2000 baseline period in Sudan* |
 

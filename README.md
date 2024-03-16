@@ -68,7 +68,7 @@ library(CAVAanalytics)
  climate_change_signal(remote.data, season=list(1:12), bias.correction = F) %>% 
 # 3rd step
  plotting(., ensemble=FALSE, plot_titles = "Precipitation change (mm)",
- palette=IPCC_palette(type = "pr", divergent = T), bins=T)
+ palette=IPCC_palette(type = "pr", divergent = T))
 ```
 
 | ![Rplot01](https://github.com/Risk-Team/CAVAanalytics/assets/40058235/3dce772c-51e9-4cd1-9ad4-5ddfcdf75698) |

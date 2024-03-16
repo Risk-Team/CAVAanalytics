@@ -64,7 +64,7 @@ library(CAVAanalytics)
  years.hist=1990:2000, years.proj=2020:2030,
  path.to.data = "CORDEX-CORE", aggr.m="sum", domain="AFR-22")
 # 2nd step
-sudan_ccs <- climate_change_signal(remote.data, season=list(1:12), bias.correction = F) %>% 
+sudan_ccs <- climate_change_signal(remote.data, season=list(1:12), bias.correction = F)
 # 3rd step
  plotting(sudan_ccs, ensemble=FALSE, plot_titles = "Precipitation change (mm)",
  palette=IPCC_palette(type = "pr", divergent = T))

@@ -155,7 +155,7 @@ palette=c("white", "orange", "red", "darkred"), legend_range = c(0, 320))
 
 ## Climate change signal
 
-While analyzing future periods can be beneficial, there are instances where we prioritize understanding delta changes, which represent the relative increase or decrease in mean maximum temperatures compared to a baseline. CAVAanalytics facilitates this analysis as well.
+While analyzing future periods can be useful, more often we prioritize understanding delta changes, which represent the relative increase or decrease in mean maximum temperatures compared to a baseline. CAVAanalytics facilitates this analysis as well.
 
 ```{r, fig.height=4, fig.width=10,  message=F, warning=F}
 ccs_kenya <- climate_change_signal(kenya_exmp, season=list(1:12))

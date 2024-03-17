@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">CAVAanalytics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,6 +51,7 @@
   <div class="dropdown-menu" aria-labelledby="dropdown--tutorials">
     <a class="dropdown-item" href="../articles/Introduction.html">CAVAanalytics- start here</a>
     <a class="dropdown-item" href="../articles/more_advanced.html">CAVAanalytics- climate indexes</a>
+    <a class="dropdown-item" href="../articles/large_areas.html">CAVAanalytics- computation over large regions</a>
   </div>
 </li>
 <li class="nav-item">
@@ -263,9 +264,9 @@ correct for discrepancies between observed data and model outputs.</p>
 <div class="section level2">
 <h2 id="climate-change-signal">Climate change signal<a class="anchor" aria-label="anchor" href="#climate-change-signal"></a>
 </h2>
-<p>While analyzing future periods can be beneficial, there are instances
-where we prioritize understanding delta changes, which represent the
-relative increase or decrease in mean maximum temperatures compared to a
+<p>While analyzing future periods can be useful, more often we
+prioritize understanding delta changes, which represent the relative
+increase or decrease in mean maximum temperatures compared to a
 baseline. CAVAanalytics facilitates this analysis as well.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ccs_kenya</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/climate_change_signal.html">climate_change_signal</a></span><span class="op">(</span><span class="va">kenya_exmp</span>, season<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span><span class="op">)</span></span>

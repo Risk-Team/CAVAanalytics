@@ -71,7 +71,7 @@ CAVAanalytics::thrs_consec(tmax, uppert=35, lowert=NULL, duration=2, frequency=T
 
 ### Real examples
 
-What if we aim to calculate the projected total duration of heat waves that last for at least 3 consecutive days with a maximum temperature above 35 degrees? This can be achieved by setting the threshold (uppert) and specifying consecutive = TRUE and duration = 3. If you have any questions about the functionality of each argument, remember to consult the help documentation by typing ?projections.
+What if we want to calculate the projected total duration of heat waves that last for at least 3 consecutive days with a maximum temperature above 35 degrees? This can be achieved by setting the threshold (uppert) and specifying consecutive = TRUE and duration = 3. If you have any questions about the functionality of each argument, remember to consult the help documentation by typing ?projections.
 
 ```{r,  warning=F, message=FALSE, fig.height=5, fig.width=6}
 

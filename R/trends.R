@@ -25,7 +25,7 @@ trends = function(data,
                   season,
                   consecutive = FALSE,
                   duration = "max",
-                  frequency=F,
+                  frequency = F,
                   intraannual_var = FALSE,
                   observation = FALSE,
                   n.sessions = 1) {
@@ -117,7 +117,8 @@ trends = function(data,
       }
 
       if (bias.correction) {
-        if (length(data[[1]]$obs[[1]]$xy$x) != length(data[[1]]$models_mbrs[[1]]$xy$x)) {
+        if ((length(data[[1]]$obs[[1]]$xy$x) != length(data[[1]]$models_mbrs[[1]]$xy$x)) |
+            (length(data[[1]]$obs[[1]]$xy$y) != length(data[[1]]$models_mbrs[[1]]$xy$y)))  {
           cli::cli_alert_warning(
             "Observation and historical experiment do not have the same spatial resolution. Models will be interpolated to match the observational dataset"
           )
@@ -165,7 +166,11 @@ trends = function(data,
           (consecutive & is.numeric(duration))) {
         mes = paste0(
           var,
-          ". Calculation of yearly increase in ", ifelse(frequency, "frequency ", "total number "), " of days with duration longer than ", duration ," consecutive days, ",
+          ". Calculation of yearly increase in ",
+          ifelse(frequency, "frequency ", "total number "),
+          " of days with duration longer than ",
+          duration ,
+          " consecutive days, ",
           ifelse(
             !is.null(lowert),
             paste0("below threshold of ", lowert),
@@ -228,9 +233,7 @@ trends = function(data,
              intraannual_var,
              season) {
       season_name <-
-        paste0(lubridate::month(season[[1]], label = T),
-               "-",
-               lubridate::month(season[[length(season)]], label = T))
+        convert_vector_to_month_initials(season)
 
       data_list <- datasets %>%
         dplyr::filter(experiment != "historical") %>%
@@ -298,7 +301,7 @@ trends = function(data,
                           duration = duration,
                           lowert = lowert,
                           uppert = uppert,
-                          frequency=frequency
+                          frequency = frequency
                         )
                       } else if (!consecutive) {
                         list(FUN = thrs,
@@ -316,8 +319,8 @@ trends = function(data,
                 cli::cli_text(paste0("{cli::symbol$arrow_right}", " Processing ", y))
                 c4R <- x
                 results <- ens_trends(x)
-                c4R$Data <- results[1, ,] # coef
-                x$Data <- results[2, ,] # p.value
+                c4R$Data <- results[1, , ] # coef
+                x$Data <- results[2, , ] # p.value
 
                 coef <-  make_raster(c4R, c(1, 2), country_shp)
 
@@ -335,23 +338,37 @@ trends = function(data,
                 cli::cli_text(paste0("{cli::symbol$arrow_right}", " Processing ", y))
                 c4R <- x
                 results <- models_trends(x)
-                c4R$Data <- results[1, , ,]# coef
-                x$Data <- results[2, , ,] # p.value
+                c4R$Data <- results[1, , , ]# coef
+                x$Data <- results[2, , , ] # p.value
                 rst_stack_coef <-
                   lapply(1:dim(c4R$Data)[1], function(i_mod) {
-                    c4R$Data <- c4R$Data[i_mod, ,]
+                    c4R$Data <- c4R$Data[i_mod, , ]
                     rst <- make_raster(c4R, c(1, 2), country_shp)
                     names(rst) <-
-                      paste0("Member ", i_mod, "_", y, "_coef_" , names(rst),"_", season_name)
+                      paste0("Member ",
+                             i_mod,
+                             "_",
+                             y,
+                             "_coef_" ,
+                             names(rst),
+                             "_",
+                             season_name)
                     return(rst)
                   }) %>%  c()
 
                 rst_stack_p <-
                   lapply(1:dim(x$Data)[1], function(i_mod) {
-                    x$Data <- x$Data[i_mod, ,]
+                    x$Data <- x$Data[i_mod, , ]
                     rst <- make_raster(x, c(1, 2), country_shp)
                     names(rst) <-
-                      paste0("Member ", i_mod, "_", y, "_p_" , names(rst), "_", season_name)
+                      paste0("Member ",
+                             i_mod,
+                             "_",
+                             y,
+                             "_p_" ,
+                             names(rst),
+                             "_",
+                             season_name)
                     return(rst)
                   }) %>% c()
 
@@ -367,7 +384,7 @@ trends = function(data,
                 df <- reshape2::melt(x$Data) %>%
                   dplyr::mutate(date = as.Date(Var2)) %>%
                   dplyr::mutate(experiment = y) %>%
-                  dplyr::mutate(season=season_name)
+                  dplyr::mutate(season = season_name)
                 return(df)
 
               })
@@ -382,8 +399,8 @@ trends = function(data,
                   cli::cli_text("{cli::symbol$arrow_right} Processing observation")
                   c4R <- x
                   results <- models_trends(x, observation = T)
-                  c4R$Data <- results[1, ,]# coef
-                  x$Data <- results[2, ,] # p.value
+                  c4R$Data <- results[1, , ]# coef
+                  x$Data <- results[2, , ] # p.value
 
                   coef <- make_raster(c4R, c(1, 2), country_shp)
                   names(coef) <-
@@ -391,7 +408,7 @@ trends = function(data,
                   p.value <- make_raster(x, c(1, 2), country_shp)
 
                   names(p.value) <-
-                    paste0("obs", "_p_", names(p.value),"_", season_name)
+                    paste0("obs", "_p_", names(p.value), "_", season_name)
                   return(list(coef, p.value))
 
                 }),
@@ -402,7 +419,7 @@ trends = function(data,
                   df <- reshape2::melt(x$Data) %>%
                     dplyr::mutate(date = as.Date(Var1)) %>%
                     dplyr::mutate(experiment = "obs") %>%
-                    dplyr::mutate(season=season_name)
+                    dplyr::mutate(season = season_name)
                   return(df)
 
 
@@ -497,7 +514,6 @@ trends = function(data,
 
 
   data_list <- purrr::map(season, function(sns) {
-
     # create message
     mes <-
       create_message(
@@ -512,7 +528,7 @@ trends = function(data,
       )
 
     # filter data by season
-    datasets <- filter_data_by_season(datasets, season=sns)
+    datasets <- filter_data_by_season(datasets, season = sns)
 
     cli::cli_text(
       paste0(
@@ -540,7 +556,7 @@ trends = function(data,
         bias.correction,
         observation,
         intraannual_var,
-        season=sns
+        season = sns
       )
 
     # return results

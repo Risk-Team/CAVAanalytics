@@ -38,7 +38,7 @@ plotting.CAVAanalytics_projections <-
   function(rst,
            palette = NULL,
            legend_range = NULL,
-           plot_titles,
+           plot_titles = "default",
            ensemble = TRUE,
            bins = FALSE,
            n.bins = NULL,
@@ -91,7 +91,7 @@ plotting.CAVAanalytics_projections <-
 
     # Get countries data
     countries <-
-      rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
+      rnaturalearth::ne_countries(scale = "large", returnclass = "sf")
 
     cli::cli_progress_step("Plotting")
     # Convert SpatRaster to dataframe
@@ -126,7 +126,7 @@ plotting.CAVAanalytics_projections <-
 
     p <- ggplot2::ggplot() +
       ggplot2::geom_sf(
-        fill = 'antiquewhite1',
+        fill = 'white',
         color = "black",
         data = countries,
         alpha = 0.5
@@ -169,23 +169,23 @@ plotting.CAVAanalytics_projections <-
 
       } +
       ggplot2::coord_sf(
-        xlim = c(range(rs_df$x)[[1]] - 1, range(rs_df$x)[[2]] + 1),
-        ylim = c(range(rs_df$y)[[1]] - 1, range(rs_df$y)[[2]] + 1),
+        xlim = c(range(rs_df$x)[[1]] - 0.5, range(rs_df$x)[[2]] + 0.5),
+        ylim = c(range(rs_df$y)[[1]] - 0.5, range(rs_df$y)[[2]] + 0.5),
         expand = F,
         ndiscr = 500
       ) +
       {
         if (ensemble) {
-          ggh4x::facet_nested(scenario ~  time_frame + season)
+          ggh4x::facet_nested(scenario ~  season)
         } else {
-          ggh4x::facet_nested(scenario ~ time_frame + season + member)
+          ggh4x::facet_nested(scenario ~  season + member)
         }
       } +
       ggplot2::labs(fill = plot_titles, x = "", y = "") +
-      ggplot2::theme_bw(base_size = 12) +
+      ggplot2::theme_bw() +
       ggplot2::theme(
         plot.background = ggplot2::element_blank(),
-        panel.background = ggplot2::element_rect(fill = 'aliceblue'),
+        panel.background = ggplot2::element_blank(),
         panel.border = ggplot2::element_blank(),
         panel.grid.major = ggplot2::element_blank(),
         panel.grid.minor = ggplot2::element_blank(),
@@ -233,7 +233,7 @@ plotting.CAVAanalytics_ccs <-
   function(rst,
            palette = NULL,
            legend_range = NULL,
-           plot_titles,
+           plot_titles = "default",
            ensemble = TRUE,
            bins = FALSE,
            n.bins = NULL,
@@ -285,7 +285,7 @@ plotting.CAVAanalytics_ccs <-
 
     # Get countries data
     countries <-
-      rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
+      rnaturalearth::ne_countries(scale = "large", returnclass = "sf")
 
     # Convert SpatRaster to dataframe
 
@@ -322,7 +322,7 @@ plotting.CAVAanalytics_ccs <-
 
     p <- ggplot2::ggplot() +
       ggplot2::geom_sf(
-        fill = 'antiquewhite1',
+        fill = 'white',
         color = "black",
         data = countries,
         alpha = 0.5
@@ -363,23 +363,23 @@ plotting.CAVAanalytics_ccs <-
         }
       } +
       ggplot2::coord_sf(
-        xlim = c(range(rs_df$x)[[1]] - 1, range(rs_df$x)[[2]] + 1),
-        ylim = c(range(rs_df$y)[[1]] - 1, range(rs_df$y)[[2]] + 1),
+        xlim = c(range(rs_df$x)[[1]] - 0.5, range(rs_df$x)[[2]] + 0.5),
+        ylim = c(range(rs_df$y)[[1]] - 0.5, range(rs_df$y)[[2]] + 0.5),
         expand = F,
         ndiscr = 500
       ) +
       {
         if (ensemble) {
-          ggh4x::facet_nested(scenario ~ time_frame + season)
+          ggh4x::facet_nested(scenario ~ season)
         } else {
-          ggh4x::facet_nested(scenario ~ time_frame   + season + member)
+          ggh4x::facet_nested(scenario ~ season + member)
         }
       } +
       ggplot2::labs(fill = plot_titles, x = "", y = "") +
-      ggplot2::theme_bw(base_size = 12) +
+      ggplot2::theme_bw() +
       ggplot2::theme(
         plot.background = ggplot2::element_blank(),
-        panel.background = ggplot2::element_rect(fill = 'aliceblue'),
+        panel.background = ggplot2::element_blank(),
         panel.border = ggplot2::element_blank(),
         panel.grid.major = ggplot2::element_blank(),
         panel.grid.minor = ggplot2::element_blank(),
@@ -428,7 +428,7 @@ plotting.CAVAanalytics_trends <-
   function(rst,
            palette = NULL,
            legend_range = NULL,
-           plot_titles,
+           plot_titles = "default",
            ensemble = TRUE,
            bins = FALSE,
            n.bins = NULL,
@@ -521,7 +521,7 @@ plotting.CAVAanalytics_trends <-
 
       # Get countries data
       countries <-
-        rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
+        rnaturalearth::ne_countries(scale = "large", returnclass = "sf")
 
       # Convert spatraster to dataframe for both coefficients and p.values
 
@@ -579,7 +579,7 @@ plotting.CAVAanalytics_trends <-
 
       p <- ggplot2::ggplot() +
         ggplot2::geom_sf(
-          fill = 'antiquewhite1',
+          fill = 'white',
           color = "black",
           data = countries,
           alpha = 0.5
@@ -627,23 +627,23 @@ plotting.CAVAanalytics_trends <-
           ggplot2::aes(x, y)
         ) +
         ggplot2::coord_sf(
-          xlim = c(range(rs_df[[2]]$x)[[1]] - 1, range(rs_df[[2]]$x)[[2]] + 1),
-          ylim = c(range(rs_df[[2]]$y)[[1]] - 1, range(rs_df[[2]]$y)[[2]] + 1),
+          xlim = c(range(rs_df[[2]]$x)[[1]] - 0.5, range(rs_df[[2]]$x)[[2]] + 0.5),
+          ylim = c(range(rs_df[[2]]$y)[[1]] - 0.5, range(rs_df[[2]]$y)[[2]] + 0.5),
           expand = F,
           ndiscr = 500
         ) +
         {
           if (ensemble | historical) {
-            ggh4x::facet_nested(scenario  ~ time_frame + season)
+            ggh4x::facet_nested(scenario  ~ season)
           } else {
-            ggh4x::facet_nested(scenario ~ time_frame   + season + member)
+            ggh4x::facet_nested(scenario ~ season + member)
           }
         } +
         ggplot2::labs(fill = plot_titles, x = "", y = "") +
-        ggplot2::theme_bw(base_size = 12) +
+        ggplot2::theme_bw() +
         ggplot2::theme(
           plot.background = ggplot2::element_blank(),
-          panel.background = ggplot2::element_rect(fill = 'aliceblue'),
+          panel.background = ggplot2::element_blank(),
           panel.border = ggplot2::element_blank(),
           panel.grid.major = ggplot2::element_blank(),
           panel.grid.minor = ggplot2::element_blank(),
@@ -679,6 +679,8 @@ plotting.CAVAanalytics_trends <-
       return(p)
     } else {
       # when frequencies or spatial_aggr is set as T
+      if (is.null(rst[[5]]))
+        cli::cli_abort(c("x" = "Not allowed with load_data_and_trends"))
 
       if (frequencies) {
         # when frequencies is TRUE
@@ -750,7 +752,7 @@ plotting.CAVAanalytics_trends <-
           cli::cli_alert_warning(
             " Arguments bins, legend_range, ensemble and palette are ignored. Change number of group intervals with n.groups"
           )
-          rst <- do.call(rbind,rst[[3]])
+          rst <- do.call(rbind, rst[[3]])
           p <-
             suppressMessages(
               ridgeline(
@@ -935,7 +937,7 @@ plotting.CAVAanalytics_observations <-
   function(rst,
            palette = NULL,
            legend_range = NULL,
-           plot_titles,
+           plot_titles = "default",
            ensemble = FALSE,
            bins = FALSE,
            n.bins = NULL,
@@ -972,7 +974,7 @@ plotting.CAVAanalytics_observations <-
 
     # Get countries data
     countries <-
-      rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
+      rnaturalearth::ne_countries(scale = "large", returnclass = "sf")
 
     cli::cli_progress_step("Plotting")
     # Convert SpatRaster to dataframe
@@ -992,7 +994,7 @@ plotting.CAVAanalytics_observations <-
 
     p <- ggplot2::ggplot() +
       ggplot2::geom_sf(
-        fill = 'antiquewhite1',
+        fill = 'white',
         color = "black",
         data = countries,
         alpha = 0.5
@@ -1037,17 +1039,17 @@ plotting.CAVAanalytics_observations <-
 
       } +
       ggplot2::coord_sf(
-        xlim = c(range(rs_df$x)[[1]] - 1, range(rs_df$x)[[2]] + 1),
-        ylim = c(range(rs_df$y)[[1]] - 1, range(rs_df$y)[[2]] + 1),
+        xlim = c(range(rs_df$x)[[1]] - 0.5, range(rs_df$x)[[2]] + 0.5),
+        ylim = c(range(rs_df$y)[[1]] - 0.5, range(rs_df$y)[[2]] + 0.5),
         expand = F,
         ndiscr = 500
       ) +
-      ggh4x::facet_nested(scenario  ~ time_frame + season) +
+      ggh4x::facet_nested(scenario  ~ season) +
       ggplot2::labs(fill = plot_titles, x = "", y = "") +
-      ggplot2::theme_bw(base_size = 12) +
+      ggplot2::theme_bw() +
       ggplot2::theme(
         plot.background = ggplot2::element_blank(),
-        panel.background = ggplot2::element_rect(fill = 'aliceblue'),
+        panel.background =ggplot2::element_blank(),
         panel.border = ggplot2::element_blank(),
         panel.grid.major = ggplot2::element_blank(),
         panel.grid.minor = ggplot2::element_blank(),
@@ -1078,7 +1080,7 @@ plotting.CAVAanalytics_model_biases <-
   function(rst,
            palette = NULL,
            legend_range = NULL,
-           plot_titles,
+           plot_titles = "default",
            ensemble = TRUE,
            bins = FALSE,
            n.bins = NULL,
@@ -1142,7 +1144,7 @@ plotting.CAVAanalytics_model_biases <-
 
       # Get countries data
       countries <-
-        rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
+        rnaturalearth::ne_countries(scale = "large", returnclass = "sf")
 
       # Convert SpatRaster to dataframe
 
@@ -1180,7 +1182,7 @@ plotting.CAVAanalytics_model_biases <-
 
       p <- ggplot2::ggplot() +
         ggplot2::geom_sf(
-          fill = 'antiquewhite1',
+          fill = 'white',
           color = "black",
           data = countries,
           alpha = 0.5
@@ -1221,23 +1223,23 @@ plotting.CAVAanalytics_model_biases <-
           }
         } +
         ggplot2::coord_sf(
-          xlim = c(range(rs_df$x)[[1]] - 1, range(rs_df$x)[[2]] + 1),
-          ylim = c(range(rs_df$y)[[1]] - 1, range(rs_df$y)[[2]] + 1),
+          xlim = c(range(rs_df$x)[[1]] - 0.5, range(rs_df$x)[[2]] + 0.5),
+          ylim = c(range(rs_df$y)[[1]] - 0.5, range(rs_df$y)[[2]] + 0.5),
           expand = F,
           ndiscr = 500
         ) +
         {
           if (ensemble) {
-            ggh4x::facet_nested(time_frame + season ~ scenario)
+            ggh4x::facet_nested(season ~ scenario)
           } else {
-            ggh4x::facet_nested(scenario ~ time_frame + season + member)
+            ggh4x::facet_nested(scenario ~ season + member)
           }
         } +
         ggplot2::labs(fill = plot_titles, x = "", y = "") +
-        ggplot2::theme_bw(base_size = 12) +
+        ggplot2::theme_bw() +
         ggplot2::theme(
           plot.background = ggplot2::element_blank(),
-          panel.background = ggplot2::element_rect(fill = 'aliceblue'),
+          panel.background = ggplot2::element_blank(),
           panel.border = ggplot2::element_blank(),
           panel.grid.major = ggplot2::element_blank(),
           panel.grid.minor = ggplot2::element_blank(),
@@ -1274,6 +1276,9 @@ plotting.CAVAanalytics_model_biases <-
 
     } else {
       # to look at temporal trends
+
+      if (is.null(rst))
+        cli::cli_abort(c("x" = "Not allowed with load_data_and_model_biases"))
 
       cli::cli_alert_warning(" Arguments bins, n.bins, palette and alpha are ignored")
       cli::cli_progress_step("Plotting")

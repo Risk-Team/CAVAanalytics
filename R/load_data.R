@@ -1,11 +1,11 @@
 #' Models download/upload
 #'
-#' Automatically load models (netCDF/NcML) in a tidy format with acess to state-of-the-art climate models and reanalysis datasets
+#' Automatically load models (netCDF/NcML) in a tidy format with access to state-of-the-art climate models and reanalyses datasets
 
 
-#' @param path.to.data character or NULL, CORDEX-CORE or path to local data. If the latter, path to the directory containing the RCP/SSPs folders and historical simulations (optional). For example,
+#' @param path.to.data character (CORDEX-CORE or path to local data) or NULL. If path to local data, specify path to the directory containing the RCP/SSPs folders and historical simulations (optional). For example,
 #' home/user/data/. data would contain subfolders with the climate/impact models. Historical simulations have to be contained in a folder called historical. If path.to.data is set as CORDEX-CORE, CORDEX-CORE simulations will be downloaded
-#' @param country character, in English, indicating the country of interest. To select a bounding box,
+#' @param country character, in English, indicating the country of interest or an object of class sf. To select a bounding box,
 #' set country to NULL and define arguments xlim and ylim
 #' @param variable  character indicating the variable name
 #' @param xlim numeric of length = 2, with minimum and maximum longitude coordinates, in decimal degrees, of the bounding box of interest
@@ -18,7 +18,6 @@
 #' @param buffer numeric, default is zero.
 #' @param aggr.m character, monthly aggregation. One of none, mean or sum
 #' @param n.sessions numeric, number of sessions to use in parallel processing. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary
-#' @param xarray logical, whether to use xarray for uploading the data. This option results in 2x speed increase but it requires reticulate (R package) and xarray (python package) to be installed.
 #' @return list of length 3. List[[1]] contains a tibble with list columns. List[[2]] the bbox and list[[3]] the temporal structure of the models
 #' @importFrom magrittr %>%
 #'
@@ -38,8 +37,7 @@ load_data <-
            domain = NULL,
            aggr.m = "none",
            n.sessions = 6,
-           years.obs = NULL,
-           xarray = F) {
+           years.obs = NULL) {
     # intermediate functions --------------------------------------------------
 
     # check that the arguments have been correctly specified and return an error when not
@@ -53,8 +51,7 @@ load_data <-
                aggr.m,
                n.sessions,
                path.to.obs,
-               years.obs,
-               xarray) {
+               years.obs) {
         stopifnot(is.numeric(n.sessions))
         match.arg(aggr.m, choices = c("none", "sum", "mean"))
         if (!is.null(domain)) {
@@ -67,7 +64,12 @@ load_data <-
               "EAS-22",
               "CAM-22",
               "SAM-22",
-              "WAS-22"
+              "WAS-22",
+              "CAM-22",
+              "SAM-22",
+              "NAM-22",
+              "EUR-22",
+              "CAS-22"
             )
           )
 
@@ -78,6 +80,20 @@ load_data <-
 
         if (missing(variable))
           cli::cli_abort(c("x" = "argument variable as no default"))
+
+        if (!is.null(path.to.obs)) {
+          if (!is.null(years.obs) & path.to.obs == "ERA5" &
+              any(!(years.obs %in% 1976:2021)))
+            cli::cli_abort(c("x" = "Available years for ERA5 observations are 1976:2021"))
+
+          if (!is.null(years.obs) & path.to.obs == "W5E5" &
+              any(!(years.obs %in% 1980:2021)))
+            cli::cli_abort(c("x" = "Available years for W5E5 observations are 1980:2019"))
+
+          if (is.null(years.obs) & is.null(years.hist))
+            cli::cli_abort(c("x" = "Specify years.hist or years.obs since path.obs is not NULL"))
+
+        }
 
         if (!is.null(path.to.data) &&
             path.to.data == "CORDEX-CORE") {
@@ -90,13 +106,15 @@ load_data <-
           if (!is.null(years.hist) & !is.null(years.obs))
             cli::cli_alert_warning(c("!" = "years.obs overwrite years.hist for the observational dataset"))
 
-          if (any(!(years.hist %in% 1976:2005)) &
-              is.null(years.obs))
-            cli::cli_abort(c("x" = "Available years for the historical period are 1976:2005"))
+          if (is.null(years.hist) &
+              !is.null(years.obs) & !is.null(years.proj))
+            cli::cli_abort(
+              c("x" = "If you are loading observations and projections, also specify an historical period")
+            )
 
-          if (!is.null(years.obs) &
-              any(!(years.obs %in% 1980:2019)))
-            cli::cli_abort(c("x" = "Available years for observations are 1980:2019"))
+          if (any(!(years.hist %in% 1976:2005)))
+            cli::cli_abort(c("x" = "Available years for the CORDEX historical simulation are 1976:2005"))
+
 
           if (any(!(years.proj %in% 2006:2099)))
             cli::cli_abort(c("x" = "Available years for projections are 2006:2099"))
@@ -133,22 +151,12 @@ load_data <-
           }
         }
 
-        if (!is.null(path.to.obs)) {
-          if (path.to.obs %in% c("W5E5", "ERA5")) {
-            if (any(!(years.obs %in% 1980:2019)))
-              cli::cli_abort(c("x" = "Available years for the historical period are 1980:2019"))
-          }
-        }
 
       }
 
     # create the file names used later for the loadGridData function for remote upload
 
-    load_cordex_data <- function(domains, xarray) {
-      if (xarray)
-        cli::cli_alert_warning(
-          "Option xarray=TRUE requires reticulate and xarray. Use xarray=F if uploading local data"
-        )
+    load_cordex_data <- function(domains) {
       cli::cli_progress_step("Accessing inventory")
       csv_url <- "https://data.meteo.unican.es/inventory.csv"
       data <- read.csv(url(csv_url)) %>%
@@ -197,7 +205,7 @@ load_data <-
       if (!is.null(country) & !is.null(xlim)) {
         cli::cli_abort(c("x" = "Either select a country or a region of interest, not both"))
       } else {
-        country_shp = if (!is.null(country)) {
+        country_shp = if (!is.null(country) & !inherits(country, "sf")) {
           suppressMessages(
             rnaturalearth::ne_countries(
               country = country,
@@ -206,6 +214,10 @@ load_data <-
             ) %>%
               sf::st_set_crs(., NA)
           )
+        } else if (!is.null(country) & inherits(country, "sf")) {
+          country %>%
+            sf::st_transform("EPSG:4326")
+
         } else {
           sf::st_bbox(c(
             xmin = min(xlim),
@@ -252,7 +264,7 @@ load_data <-
     if (is.null(path.to.data)) {
 
     } else if (path.to.data == "CORDEX-CORE") {
-      files <- load_cordex_data(domains = domain, xarray)
+      files <- load_cordex_data(domains = domain)
       experiment <-
         if (!is.null(years.hist) & !is.null(years.proj))
           c("historical", "rcp26", "rcp85")
@@ -275,10 +287,6 @@ load_data <-
     ylim <- result$ylim
 
     # making the dataset
-    n.sessions = if (n.sessions == 6 & xarray)
-      5
-    else
-      n.sessions
     future::plan(future::multisession, workers = n.sessions)
     if (is.null(path.to.data)) {
 
@@ -288,8 +296,7 @@ load_data <-
           "Downloading CORDEX-CORE data (" ,
           ifelse(is.null(years.hist), 12, ifelse(is.null(years.proj), 6, 18)),
           " simulations)",
-          ifelse(xarray, " using xarray", ""),
-          ". Using ",
+          " using ",
           n.sessions,
           " sessions",
           ifelse(n.sessions == 6, " by default", "")
@@ -298,12 +305,6 @@ load_data <-
     }  else {
       cli::cli_progress_step("Uploading local data...")
     }
-
-    load_data_sel <-
-      if (xarray)
-        match.fun("loadGridData_xarray")
-    else
-      get("loadGridData", envir = asNamespace("loadeR"))
 
     if (!is.null(path.to.data)) {
       # when observations only are to be loaded or downloaded
@@ -315,7 +316,7 @@ load_data <-
           if (stringr::str_detect(x, "historical")) {
             data <-
               suppressMessages(
-                load_data_sel(
+                loadeR::loadGridData(
                   dataset = x,
                   var = variable,
                   years = years.hist,
@@ -347,7 +348,7 @@ load_data <-
           } else {
             data <-
               suppressMessages(
-                load_data_sel(
+                loadeR::loadGridData(
                   dataset = x,
                   var = variable,
                   years = years.proj,
@@ -391,7 +392,7 @@ load_data <-
           "{cli::symbol$arrow_right} Uploaded {prettyunits::pretty_bytes(size)}"
       )
 
-      cli::cli_progress_step("Binding members and checking temporal consistency")
+      cli::cli_progress_step("Making multi-model ensemble and checking temporal consistency")
 
       models_df <- models_df %>%
         dplyr::mutate(models_mbrs = purrr::map(models_mbrs, ~ common_dates(.x)))
@@ -418,7 +419,7 @@ load_data <-
       ))
 
       out_obs <- suppressMessages(list(
-        load_data_sel(
+        loadeR::loadGridData(
           obs.file,
           var = if (path.to.obs == "ERA5")
             c(

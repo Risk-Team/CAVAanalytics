@@ -4,8 +4,9 @@ pkgdown_sha: ~
 articles:
   CAVA: CAVA.html
   Introduction: Introduction.html
+  large_areas: large_areas.html
   more_advanced: more_advanced.html
-last_built: 2024-03-02T17:24Z
+last_built: 2024-03-17T10:29Z
 urls:
   reference: https://risk-team.github.io/CAVAanalytics/reference
   article: https://risk-team.github.io/CAVAanalytics/articles

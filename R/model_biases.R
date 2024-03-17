@@ -24,7 +24,7 @@ model_biases <-
            lowert = NULL,
            season,
            consecutive = F,
-           frequency=F,
+           frequency = F,
            n.sessions = 1,
            duration = "max") {
     # Intermediate functions --------------------------------------------------
@@ -72,7 +72,8 @@ model_biases <-
           )
 
         }
-        if (length(data[[1]]$obs[[1]]$xy$x) != length(data[[1]]$models_mbrs[[1]]$xy$x)) {
+        if ((length(data[[1]]$obs[[1]]$xy$x) != length(data[[1]]$models_mbrs[[1]]$xy$x)) |
+            (length(data[[1]]$obs[[1]]$xy$y) != length(data[[1]]$models_mbrs[[1]]$xy$y))) {
           cli::cli_alert_warning(
             "Observation and historical experiment do not have the same spatial resolution. Models will be interpolated to match the observational dataset"
           )
@@ -126,7 +127,11 @@ model_biases <-
                  (consecutive & is.numeric(duration))) {
           paste0(
             var,
-            ". Calculation of model biases for ", ifelse(frequency, "frequency " , "total number "), "of days with duration longer than ", duration, " consecutive days, ",
+            ". Calculation of model biases for ",
+            ifelse(frequency, "frequency " , "total number "),
+            "of days with duration longer than ",
+            duration,
+            " consecutive days, ",
             ifelse(
               !is.null(lowert),
               paste0("below threshold of ", lowert),
@@ -149,15 +154,18 @@ model_biases <-
 
       lon <- datasets$models_mbrs[[1]]$xyCoords$x
       lon_obs <- datasets$obs[[1]]$xyCoords$x
+      lat <- datasets$models_mbrs[[1]]$xyCoords$y
+      lat_obs <- datasets$obs[[1]]$xyCoords$y
 
-      if (length(lon) != length(lon_obs)) {
+      if ((length(lon) != length(lon_obs)) |
+          (length(lat) != length(lat_obs))) {
         datasets <- datasets %>%
           dplyr::filter(experiment == "historical") %>%
-          dplyr::mutate(models_mbrs = map(
+          dplyr::mutate(models_mbrs = purrr::map(
             models_mbrs,
-            ~ suppressMessages(
+            ~ suppressMessages(suppressWarnings(
               transformeR::interpGrid(.x, new.coordinates = transformeR::getGrid(obs[[1]]))
-            )
+            ))
           ))
       } else {
         cli::cli_alert_warning(
@@ -188,9 +196,7 @@ model_biases <-
                country_shp,
                season) {
         season_name <-
-          paste0(lubridate::month(season[[1]], label = T),
-                 "-",
-                 lubridate::month(season[[length(season)]], label = T))
+          convert_vector_to_month_initials(season)
         data_list <- datasets %>%
           {
             if (bias.correction) {
@@ -215,8 +221,6 @@ model_biases <-
                                       c(30, 30)
                                     else
                                       c(1, 1),
-                                    cross.val = "kfold",
-                                    folds = 2,
                                     extrapolation = "constant"
                                   )
                                 )
@@ -253,7 +257,7 @@ model_biases <-
                                                            duration = duration,
                                                            lowert = lowert,
                                                            uppert = uppert,
-                                                           frequency=frequency
+                                                           frequency = frequency
                                                          )
                                                        } else if (!consecutive) {
                                                          list(FUN = thrs,
@@ -273,9 +277,9 @@ model_biases <-
             rs_list <- purrr::map(1:dim(y$Data)[[1]], function(ens) {
               array_mean <-
                 if (length(y$Dates$start) == 1)
-                  apply(y$Data[ens, , ,], c(1, 2), mean, na.rm = TRUE)
+                  apply(y$Data[ens, , , ], c(1, 2), mean, na.rm = TRUE)
               else
-                apply(y$Data[ens, , ,], c(2, 3), mean, na.rm = TRUE) # climatology per member adjusting by array dimension
+                apply(y$Data[ens, , , ], c(2, 3), mean, na.rm = TRUE) # climatology per member adjusting by array dimension
 
               y$Data <- array_mean
 

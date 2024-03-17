@@ -25,7 +25,7 @@ projections <-
            lowert = NULL,
            season,
            consecutive = F,
-           frequency=F,
+           frequency = F,
            n.sessions = 1,
            duration = "max") {
     # Intermediate functions --------------------------------------------------
@@ -77,7 +77,8 @@ projections <-
 
         }
         if (bias.correction) {
-          if (length(data[[1]]$obs[[1]]$xy$x) != length(data[[1]]$models_mbrs[[1]]$xy$x)) {
+          if ((length(data[[1]]$obs[[1]]$xy$x) != length(data[[1]]$models_mbrs[[1]]$xy$x)) |
+              (length(data[[1]]$obs[[1]]$xy$y) != length(data[[1]]$models_mbrs[[1]]$xy$y))) {
             cli::cli_alert_warning(
               "Observation and historical experiment do not have the same spatial resolution. Models will be interpolated to match the observational dataset"
             )
@@ -134,7 +135,11 @@ projections <-
                  (consecutive & is.numeric(duration))) {
           paste0(
             var,
-            ". Calculation of ", ifelse(frequency, "frequency ", "total number "), " of days with duration longer than ", duration, " consecutive days, ",
+            ". Calculation of ",
+            ifelse(frequency, "frequency ", "total number "),
+            " of days with duration longer than ",
+            duration,
+            " consecutive days, ",
             ifelse(
               !is.null(lowert),
               paste0("below threshold of ", lowert),
@@ -181,9 +186,7 @@ projections <-
                country_shp,
                season) {
         season_name <-
-          paste0(lubridate::month(season[[1]], label = T),
-                 "-",
-                 lubridate::month(season[[length(season)]], label = T))
+          convert_vector_to_month_initials(season)
         data_list <- datasets %>%
           dplyr::filter(experiment != "historical") %>%
           {
@@ -244,7 +247,7 @@ projections <-
                       duration = duration,
                       lowert = lowert,
                       uppert = uppert,
-                      frequency=frequency
+                      frequency = frequency
                     )
                   } else if (!consecutive) {
                     list(FUN = thrs,
@@ -285,9 +288,9 @@ projections <-
               rs_list <- purrr::map(1:dim(y$Data)[[1]], function(ens) {
                 array_mean <-
                   if (length(y$Dates$start) == 1)
-                    apply(y$Data[ens, , , ], c(1, 2), mean, na.rm = TRUE)
+                    apply(y$Data[ens, , ,], c(1, 2), mean, na.rm = TRUE)
                 else
-                  apply(y$Data[ens, , , ], c(2, 3), mean, na.rm = TRUE) # climatology per member adjusting by array dimension
+                  apply(y$Data[ens, , ,], c(2, 3), mean, na.rm = TRUE) # climatology per member adjusting by array dimension
                 y$Data <- array_mean
                 rs <- make_raster(y, c(1, 2), country_shp)
                 names(rs) <-

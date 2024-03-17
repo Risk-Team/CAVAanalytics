@@ -6,12 +6,12 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="description" content="CAVAanalytics is an operational R library for climate services, providing direct and easy access to CORDEX-CORE models and reanalysis datasets">
-<title>R package offering a framework for climate data analyses and visualization • CAVAanalytics</title>
+<title>R package providing a framework for easy access, processing, and advanced visualization of gridded climate products • CAVAanalytics</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.2.2/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="R package offering a framework for climate data analyses and visualization">
+<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="R package providing a framework for easy access, processing, and advanced visualization of gridded climate products">
 <meta property="og:description" content="CAVAanalytics is an operational R library for climate services, providing direct and easy access to CORDEX-CORE models and reanalysis datasets">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="index.html">CAVAanalytics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,6 +51,7 @@
   <div class="dropdown-menu" aria-labelledby="dropdown--tutorials">
     <a class="dropdown-item" href="articles/Introduction.html">CAVAanalytics- start here</a>
     <a class="dropdown-item" href="articles/more_advanced.html">CAVAanalytics- climate indexes</a>
+    <a class="dropdown-item" href="articles/large_areas.html">CAVAanalytics- computation over large regions</a>
   </div>
 </li>
 <li class="nav-item">
@@ -88,17 +89,23 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header"><h1 align="center">
 <img src="reference/figures/sticker2.png" width="300" height="300" align="center"><br><h5 align="center">
-R package providing a framework for easy access, processing, and advanced visualization of climate data
+R package providing a framework for easy access, processing, and advanced visualization of gridded climate products
 </h5>
 <br><div align="center">
 <p><img src="https://img.shields.io/github/v/release/Risk-team/CAVAanalytics?include_prereleases" alt="GitHub R package version" style="display: inline-block;"><img src="https://img.shields.io/github/release-date-pre/Risk-team/CAVAanalytics" alt="release date" style="display: inline-block;"><a href="http://hits.dwyl.com/Risk-team/CAVAanalytics" class="external-link"><img src="http://hits.dwyl.com/Risk-team/CAVAanalytics.svg"></a></p>
 </div>
 </h1></div>
+<table class="table">
+<colgroup><col width="100%"></colgroup>
+<tbody><tr class="odd">
+<td><strong>CAVAanalytics is under constant improvement. You are encouraged to always work with the latest release</strong></td>
+</tr></tbody>
+</table>
 <div class="section level4">
 <h4 id="updates">**Updates<a class="anchor" aria-label="anchor" href="#updates"></a>
 </h4>
-<p><strong>We have released the data for the WAS-22 domain</strong></p>
-<p><strong>Current available CORDEX domains are: AFR-22, SEA-22, EAS-22, WAS-22</strong></p>
+<p><strong>We have released the data for the AUS-22 domain</strong></p>
+<p><strong>Current available CORDEX domains are: AFR-22, SEA-22, EAS-22, WAS-22, AUS-22</strong></p>
 <p><strong>Current available observational datasets: W5E5, ERA5</strong></p>
 <hr>
 <p><a href="https://risk-team.github.io/CAVAanalytics/"><strong>CAVAanalytics</strong></a> is an R package for climate services. It offers a consistent framework to load, analyze, calculate indicators, and visualize results for multi-model ensembles.</p>
@@ -124,26 +131,26 @@ R package providing a framework for easy access, processing, and advanced visual
 <td align="center"><em>CAVAanalytics steps</em></td>
 </tr></tbody>
 </table>
-<p>Below we give an example of how you can use CAVAanalytics to easily retrieve climate information (both past and future). More examples are available from the <a href="https://risk-team.github.io/CAVAanalytics/articles/Introduction.html">tutorial webpage</a>.</p>
-<p><strong>To load CORDEX-CORE data stored remotely</strong>, set path.to.data to “CORDEX-CORE” and specify the domain. This will load CORDEX-CORE simulations. Similarly, when path.to.obs is set to W5E5, you are accessing the dataset stored remotely.</p>
+<p>Below we give an example of how you can use CAVAanalytics to easily retrieve climate information (both past and future). Detailed examples are available from the <a href="https://risk-team.github.io/CAVAanalytics/articles/Introduction.html">tutorial webpage</a>.</p>
+<p><strong>To load CORDEX-CORE data stored remotely</strong>, set path.to.data to “CORDEX-CORE” and specify the domain. This will download in real-time CORDEX-CORE simulations from the University of Cantabria (UC) THREDDS servers. Similarly, when path.to.obs is set to W5E5 or ERA5, you access datasets stored in UC THREDDS servers. One of the great things about CAVAanalytics is that data is stored in memory so there is no need to process netCDF files. Additionally, data retrieval is speedy thanks to the state-of-the-art THREDDS server of the University of Cantabria.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://risk-team.github.io/CAVAanalytics/">CAVAanalytics</a></span><span class="op">)</span></span>
 <span><span class="co"># 1st step</span></span>
-<span> <span class="va">remote.data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/load_data.html">load_data</a></span><span class="op">(</span>country <span class="op">=</span> <span class="st">"Sudan"</span>, variable<span class="op">=</span><span class="st">"tasmax"</span>,</span>
-<span> years.hist<span class="op">=</span><span class="fl">1990</span><span class="op">:</span><span class="fl">2000</span>, years.proj<span class="op">=</span><span class="fl">2050</span><span class="op">:</span><span class="fl">2060</span>,</span>
-<span> path.to.data <span class="op">=</span> <span class="st">"CORDEX-CORE"</span>, aggr.m<span class="op">=</span><span class="st">"mean"</span>, domain<span class="op">=</span><span class="st">"AFR-22"</span><span class="op">)</span></span>
+<span> <span class="va">remote.data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/load_data.html">load_data</a></span><span class="op">(</span>country <span class="op">=</span> <span class="st">"Sudan"</span>, variable<span class="op">=</span><span class="st">"pr"</span>,</span>
+<span> years.hist<span class="op">=</span><span class="fl">1990</span><span class="op">:</span><span class="fl">2000</span>, years.proj<span class="op">=</span><span class="fl">2020</span><span class="op">:</span><span class="fl">2030</span>,</span>
+<span> path.to.data <span class="op">=</span> <span class="st">"CORDEX-CORE"</span>, aggr.m<span class="op">=</span><span class="st">"sum"</span>, domain<span class="op">=</span><span class="st">"AFR-22"</span><span class="op">)</span></span>
 <span><span class="co"># 2nd step</span></span>
-<span> <span class="fu"><a href="reference/climate_change_signal.html">climate_change_signal</a></span><span class="op">(</span><span class="va">remote.data</span>, season<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span>, bias.correction <span class="op">=</span> <span class="cn">F</span><span class="op">)</span> <span class="op">%&gt;%</span> </span>
+<span><span class="va">sudan_ccs</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/climate_change_signal.html">climate_change_signal</a></span><span class="op">(</span><span class="va">remote.data</span>, season<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span>, bias.correction <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
 <span><span class="co"># 3rd step</span></span>
-<span> <span class="fu"><a href="reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">.</span>, ensemble<span class="op">=</span><span class="cn">FALSE</span>, plot_titles <span class="op">=</span> <span class="st">"Temperature change (°C)"</span>,</span>
-<span> palette<span class="op">=</span><span class="fu"><a href="reference/IPCC_palette.html">IPCC_palette</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"tmp"</span>, divergent <span class="op">=</span> <span class="cn">F</span><span class="op">)</span>, bins<span class="op">=</span><span class="cn">T</span><span class="op">)</span></span></code></pre></div>
+<span> <span class="fu"><a href="reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">sudan_ccs</span>, ensemble<span class="op">=</span><span class="cn">FALSE</span>, plot_titles <span class="op">=</span> <span class="st">"Precipitation change (mm)"</span>,</span>
+<span> palette<span class="op">=</span><span class="fu"><a href="reference/IPCC_palette.html">IPCC_palette</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"pr"</span>, divergent <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>, legend_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">550</span>,<span class="fl">550</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup><col width="100%"></colgroup>
 <thead><tr class="header">
-<th align="center"><img src="https://github.com/Risk-Team/CAVAanalytics/assets/40058235/3dce772c-51e9-4cd1-9ad4-5ddfcdf75698" alt="Rplot01"></th>
+<th align="center"><img src="https://github.com/Risk-Team/CAVAanalytics/assets/40058235/80a4a686-3192-4226-9535-6cff58192c96" alt="Rplot01"></th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="center"><em>Average annual projected change in maximum temperature compared to the 1990-2000 baseline period in Sudan</em></td>
+<td align="center"><em>Projected change in total annual precipitation compared to the 1990-2000 baseline period in Sudan</em></td>
 </tr></tbody>
 </table>
 </div>

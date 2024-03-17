@@ -9,8 +9,17 @@ output:
     toc_depth: 2
 ---
 
+## CAVAanalytics 2.1.0
+Version 2.1.0 of CAVAanalytics bring several updates:
+- the country argument in load_data can now take an sf object
+- the memory efficient functions (load_data_and_projections and so forth) can now take a country name or sf object in the country argument
+- load_data_and_model_biases function has been added
+- Better handling of messages and errors in the plotting function
+- xarray option was removed from the load_data function. This is because CORDEX data is now stored in new THREDDS servers which allow fast ad multi-thread data download
+- Improved facets layout in plotting results
+
 ## CAVAanalytics 2.0.4
-Version 2.0.4 of CAVAanalytics allows users to work with the WAS-22 domain and the upcoming releases
+Version 2.0.4 of CAVAanalytics allows users to work with the WAS-22 domain and the upcoming domain releases
 
 ## CAVAanalytics 2.0.3
 Version 2.0.3 of CAVAanalytics includes several updates:

@@ -17,6 +17,8 @@ navbar:
           href: articles/Introduction.html
         - text: CAVAanalytics- climate indexes
           href: articles/more_advanced.html
+        - text: CAVAanalytics- computation over large regions
+          href: articles/large_areas.html
     - icon: fa fa-file-code-o
       text: Functions
       href: reference/index.html
@@ -50,6 +52,7 @@ reference:
       - load_data_and_projections
       - load_data_and_climate_change_signal
       - load_data_and_trends
+      - load_data_and_model_biases
   - title: Utils
     desc: |
       Accessory functions
@@ -57,10 +60,10 @@ reference:
       - C4R_to_CAVA
       - IPCC_palette
       - common_dates
-      - loadGridData_xarray
       - ens_trends
       - make_raster
       - models_trends
       - thrs
       - thrs_consec
+      - convert_vector_to_month_initials
 

@@ -22,7 +22,7 @@ climate_change_signal <- function(data,
                                   season,
                                   consecutive = F,
                                   duration = "max",
-                                  frequency=F,
+                                  frequency = F,
                                   bias.correction = F,
                                   n.sessions = 1) {
   # Intermediate functions --------------------------------------------------
@@ -73,11 +73,12 @@ climate_change_signal <- function(data,
           is.null(uppert) &
           is.null(lowert))
         cli::cli_abort(c("x" = "Specify a threshold for which you want to calculate consecutive days"))
-      if (any(stringr::str_detect(data$experiment, "hist")))
+      if (!any(stringr::str_detect(data[[1]]$experiment, "hist")))
         cli::cli_abort(c("x" = "Please load historical data to use the climate_change_signal function"))
 
       if (bias.correction) {
-        if (length(data[[1]]$obs[[1]]$xy$x) != length(data[[1]]$models_mbrs[[1]]$xy$x)) {
+        if ((length(data[[1]]$obs[[1]]$xy$x) != length(data[[1]]$models_mbrs[[1]]$xy$x)) |
+            (length(data[[1]]$obs[[1]]$xy$y) != length(data[[1]]$models_mbrs[[1]]$xy$y)))  {
           cli::cli_alert_warning(
             "Observation and historical experiment do not have the same spatial resolution. Models will be interpolated to match the observational dataset"
           )
@@ -130,7 +131,11 @@ climate_change_signal <- function(data,
                (consecutive & is.numeric(duration))) {
         paste0(
           var,
-          ". Climate change signal for", ifelse(frequency, " frequency " ," total number "), "of days with duration longer than ", duration," consecutive days, ",
+          ". Climate change signal for",
+          ifelse(frequency, " frequency " , " total number "),
+          "of days with duration longer than ",
+          duration,
+          " consecutive days, ",
           ifelse(
             !is.null(lowert),
             paste0("below threshold of ", lowert),
@@ -177,9 +182,7 @@ climate_change_signal <- function(data,
              bias.correction,
              season) {
       season_name <-
-        paste0(lubridate::month(season[[1]], label = T),
-               "-",
-               lubridate::month(season[[length(season)]], label = T))
+        convert_vector_to_month_initials(season)
       data_list <- datasets  %>%
         {
           if (bias.correction) {
@@ -257,7 +260,7 @@ climate_change_signal <- function(data,
                     duration = duration,
                     lowert = lowert,
                     uppert = uppert,
-                    frequency=frequency
+                    frequency = frequency
                   )
                 } else if (!consecutive) {
                   list(FUN = thrs,
@@ -271,9 +274,9 @@ climate_change_signal <- function(data,
           rs_list <- purrr::map(1:dim(y$Data)[[1]], function(ens) {
             array_mean <-
               if (length(y$Dates$start) == 1)
-                apply(y$Data[ens, , , ], c(1, 2), mean, na.rm = TRUE)
+                apply(y$Data[ens, , ,], c(1, 2), mean, na.rm = TRUE)
             else
-              apply(y$Data[ens, , , ], c(2, 3), mean, na.rm = TRUE) # climatology per member adjusting by array dimension
+              apply(y$Data[ens, , ,], c(2, 3), mean, na.rm = TRUE) # climatology per member adjusting by array dimension
 
             y$Data <- array_mean
 

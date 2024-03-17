@@ -144,9 +144,7 @@ observations <-
                country_shp,
                season) {
         season_name <-
-          paste0(lubridate::month(season[[1]], label = T),
-                 "-",
-                 lubridate::month(season[[length(season)]], label = T))
+          convert_vector_to_month_initials(season)
         data_list <- datasets %>%
           dplyr::slice(1) %>%    # computing annual aggregation. if threshold is specified, first apply threshold
           dplyr::mutate(obs_agg_y = purrr::map(obs, function(x)

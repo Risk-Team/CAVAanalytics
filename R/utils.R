@@ -17,113 +17,6 @@ common_dates <- function(data) {
   return(transformeR::bindGrid(data.filt, dimension = "member"))
 }
 
-#' Load data using xarray
-#'
-#' automatically using xarray and converting into C4R list for remote data access. Only works for data stored at UC server
-#' @export
-
-loadGridData_xarray <-
-  function(dataset,
-           var,
-           lonLim,
-           latLim,
-           years,
-           aggr.m = "none") {
-    cli::cli_inform("This function requires reticulate and xarray!")
-    cli::cli_progress_step("Downloading data")
-    library(reticulate)
-    xarray <- import("xarray")
-
-    # opne the dataset. W5E5 has a different structure
-    ds <- if (stringr::str_detect(dataset, "W5E5")) {
-      xarray$open_dataset(dataset)$sel(
-        lat = seq(
-          from = latLim[2],
-          to = latLim[1],
-          by = -0.5
-        ),
-        lon = seq(lonLim[2], lonLim[1], by = -0.5),
-        method = "nearest"
-      )[[var]]
-
-
-    } else {
-      xarray$open_dataset(dataset)$sel(
-        latitude = seq(
-          from = latLim[2],
-          to = latLim[1],
-          by = -0.25
-        ),
-        longitude = seq(lonLim[2], lonLim[1], by = -0.25),
-        method = "nearest"
-      )[[var]]
-
-    }
-
-    # select years
-
-    time_mask = (ds['time']$dt$year$values >= years[1]) &
-      (ds['time']$dt$year$values <= years[length(years)])
-
-    ds_time <- ds$sel(time = time_mask)
-
-    # retrieve dates. Some RCMs have dates in cftime so it needs converstion
-    dates <-
-      if (any(stringr::str_detect(class(ds_time$time$values[[1]]), "cftime"))) {
-        date <-
-          xarray$cftime_range(start = ds_time$time$values[[1]],
-                              periods = length(ds_time$time))
-
-        date$strftime(date_format = "%Y-%m-%d")$values
-
-      } else {
-        ds_time$time$values
-
-      }
-
-    # building C4R object
-
-    C4R <- if (stringr::str_detect(dataset, "W5E5")) {
-      list(
-        Variable = list(varName = var),
-        Data = ds_time$values,
-        xyCoords = list(x = as.numeric(rev(
-          ds_time$lon$values
-        )), y = as.numeric(rev(
-          ds_time$lat$values
-        ))),
-        Dates = list(start = as.character(dates), end = as.character(dates))
-      )
-
-    } else {
-      list(
-        Variable = list(varName = var),
-        Data = ds_time$values,
-        xyCoords = list(x = as.numeric(rev(
-          ds_time$longitude$values
-        )), y = as.numeric(rev(
-          ds_time$latitude$values
-        ))),
-        Dates = list(start = as.character(dates), end = as.character(dates))
-      )
-
-
-    }
-
-    attributes(C4R$Data) <-
-      list(dimensions = c("time", "lat", "lon"),
-           dim = dim(C4R$Data))
-
-    cli::cli_progress_done()
-
-    if (aggr.m == "none") {
-      invisible(C4R)
-    } else {
-      invisible(transformeR::aggregateGrid(C4R, aggr.m = list(FUN = aggr.m)))
-
-    }
-
-  }
 
 #' make a raster
 #'
@@ -559,3 +452,31 @@ IPCC_palette <- function(type, divergent) {
 
   }
 }
+
+#' Convert month to initials
+#'
+#' Convert numeric vector of months into month initials
+#' @param month_vector numeric vector, 1 to 12.
+#' @export
+
+convert_vector_to_month_initials <- function(month_vector) {
+  # Ensure the vector is treated as a sequence, including wrapping cases
+  seq_length <- length(month_vector)
+  if (seq_length > 1) {
+    # For sequences like 12:3, generate a wrapping sequence
+    expanded_vector <- if (month_vector[1] > month_vector[seq_length]) {
+      c(month_vector[1]:12, 1:month_vector[seq_length])
+    } else {
+      month_vector[1]:month_vector[seq_length]
+    }
+  } else {
+    expanded_vector <- month_vector
+  }
+
+  # Extract the first letter of each month
+  month_initials <- substr(month.abb[expanded_vector], 1, 1)
+
+  # Collapse into a single string
+  paste(month_initials, collapse = "")
+}
+

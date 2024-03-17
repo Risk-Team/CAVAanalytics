@@ -17,15 +17,14 @@ load_data(
   domain = NULL,
   aggr.m = "none",
   n.sessions = 6,
-  years.obs = NULL,
-  xarray = F
+  years.obs = NULL
 )
 }
 \arguments{
-\item{path.to.data}{character or NULL, CORDEX-CORE or path to local data. If the latter, path to the directory containing the RCP/SSPs folders and historical simulations (optional). For example,
+\item{path.to.data}{character (CORDEX-CORE or path to local data) or NULL. If path to local data, specify path to the directory containing the RCP/SSPs folders and historical simulations (optional). For example,
 home/user/data/. data would contain subfolders with the climate/impact models. Historical simulations have to be contained in a folder called historical. If path.to.data is set as CORDEX-CORE, CORDEX-CORE simulations will be downloaded}
 
-\item{country}{character, in English, indicating the country of interest. To select a bounding box,
+\item{country}{character, in English, indicating the country of interest or an object of class sf. To select a bounding box,
 set country to NULL and define arguments xlim and ylim}
 
 \item{variable}{character indicating the variable name}
@@ -49,12 +48,10 @@ set country to NULL and define arguments xlim and ylim}
 \item{n.sessions}{numeric, number of sessions to use in parallel processing. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary}
 
 \item{years.obs}{NULL or numeric, specify year range for observation. Specifying years.obs will overwrite years.hist for observations}
-
-\item{xarray}{logical, whether to use xarray for uploading the data. This option results in 2x speed increase but it requires reticulate (R package) and xarray (python package) to be installed.}
 }
 \value{
 list of length 3. List[[1]] contains a tibble with list columns. List[[2]] the bbox and list[[3]] the temporal structure of the models
 }
 \description{
-Automatically load models (netCDF/NcML) in a tidy format with acess to state-of-the-art climate models and reanalysis datasets
+Automatically load models (netCDF/NcML) in a tidy format with access to state-of-the-art climate models and reanalyses datasets
 }

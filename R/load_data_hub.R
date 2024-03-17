@@ -251,7 +251,7 @@ load_data_hub <-
     cli::cli_text(
       paste0(
         Sys.time(),
-        " Binding ",
+        " Making multi-model ensemble with ",
         length(files) / 3,
         " members and loading ",
         path.to.obs,

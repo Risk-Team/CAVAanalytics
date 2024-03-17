@@ -2,10 +2,11 @@
 % Please edit documentation in R/load_data_and_projections.R
 \name{load_data_and_projections}
 \alias{load_data_and_projections}
-\title{Load data and apply projections in spatial chunks}
+\title{Load data and apply function projections in spatial chunks}
 \usage{
 load_data_and_projections(
   variable,
+  country = NULL,
   years.hist = NULL,
   years.proj,
   path.to.data,
@@ -23,18 +24,20 @@ load_data_and_projections(
   frequency = F,
   bias.correction = F,
   domain = NULL,
-  n.sessions = 1
+  n.sessions = 6
 )
 }
 \arguments{
 \item{variable}{character, indicating variable name}
 
+\item{country}{character, in English, indicating the country of interest or an object of class sf. Country will be used to crop and mask the data but you still need to specify the xlim and ylim arguments}
+
 \item{years.hist}{Numerical range, years to select for historical simulations and observations}
 
 \item{years.proj}{Numerical range, years to select for projections}
 
-\item{path.to.data}{path to the directory containing the RCP/SSPs folders and historical simulations (optional). For example,
-home/user/data/. data would contain subfolders with the climate/impact models. Historical simulations have to be contained in a folder called historical. If path.to.data is set as CORDEX-CORE, CORDEX-CORE simulations from RCM RegCM4 will be loaded}
+\item{path.to.data}{character (CORDEX-CORE or path to local data) or NULL. If path to local data, specify path to the directory containing the RCP/SSPs folders and historical simulations (optional). For example,
+home/user/data/. data would contain subfolders with the climate/impact models. Historical simulations have to be contained in a folder called historical. If path.to.data is set as CORDEX-CORE, CORDEX-CORE simulations will be downloaded}
 
 \item{path.to.obs}{Default to NULL, if not, indicate the absolute path to the directory containing a reanalysis dataset, for example ERA5. To automatically load W5E5. specify W5E5}
 
@@ -48,7 +51,7 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 
 \item{overlap}{numeric, amount of overlap needed to create the composite. Default 0.5}
 
-\item{season}{numeric, seasons to select. For example, 1:12}
+\item{season}{list, containing seasons to select. For example, list(1:6, 7:12)}
 
 \item{lowert}{numeric of length=1, lower threshold}
 
@@ -64,11 +67,11 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 
 \item{domain}{specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE. Default is NULL}
 
-\item{n.sessions}{numeric, number of sessions to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage}
+\item{n.sessions}{numeric, number of sessions to use in parallel processing for loading the data. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary}
 }
 \value{
 list with SpatRaster. To explore the output run attributes(output)
 }
 \description{
-Automatically load and process climate model projections in a memory efficient way. Useful for analysing large areas
+Automatically load and process climate models in a memory efficient way. Useful for analysing large areas
 }

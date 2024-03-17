@@ -11,6 +11,7 @@ output:
 
 ## CAVAanalytics 2.1.0
 Version 2.1.0 of CAVAanalytics bring several updates:
+
 - the country argument in load_data can now take an sf object
 - the memory efficient functions (load_data_and_projections and so forth) can now take a country name or sf object in the country argument
 - load_data_and_model_biases function has been added

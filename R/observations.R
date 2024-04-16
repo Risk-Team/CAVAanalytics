@@ -143,7 +143,8 @@ observations <-
                consecutive,
                duration,
                country_shp,
-               season) {
+               season,
+               frequency) {
         season_name <-
           convert_vector_to_month_initials(season)
         data_list <- datasets %>%
@@ -216,7 +217,7 @@ observations <-
     # create message
     data_list <- purrr::map(season, function(sns) {
       mes <-
-        create_message(var, uppert, lowert, consecutive, duration)
+        create_message(var, uppert, lowert, consecutive, duration,frequency)
 
       # filter data by season
       datasets <- filter_data_by_season(datasets, season = sns)
@@ -241,7 +242,8 @@ observations <-
                              consecutive,
                              duration,
                              country_shp,
-                             season = sns)
+                             season = sns,
+                             frequency)
 
       cli::cli_progress_done()
       # return results

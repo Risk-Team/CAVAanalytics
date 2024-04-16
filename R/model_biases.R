@@ -195,7 +195,8 @@ model_biases <-
                consecutive,
                duration,
                country_shp,
-               season) {
+               season,
+               frequency) {
         season_name <-
           convert_vector_to_month_initials(season)
         data_list <- datasets %>%
@@ -374,7 +375,7 @@ model_biases <-
     #create plots by season
     data_list <- purrr::map(season, function(sns) {
       mes <-
-        create_message(var, bias.correction, uppert, lowert, consecutive, duration)
+        create_message(var, bias.correction, uppert, lowert, consecutive, duration,frequency)
 
       # set parallel processing
       future::plan(future::multisession, workers = n.sessions)
@@ -405,7 +406,8 @@ model_biases <-
           consecutive,
           duration,
           country_shp,
-          season = sns
+          season = sns,
+          frequency
         )
 
       cli::cli_progress_done()

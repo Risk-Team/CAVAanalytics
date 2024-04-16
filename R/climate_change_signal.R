@@ -181,7 +181,8 @@ climate_change_signal <- function(data,
              duration,
              country_shp,
              bias.correction,
-             season) {
+             season,
+             frequency) {
       season_name <-
         convert_vector_to_month_initials(season)
       data_list <- datasets  %>%
@@ -360,7 +361,7 @@ climate_change_signal <- function(data,
   #create plots by season
   data_list <- purrr::map(season, function(sns) {
     mes <-
-      create_message(var, uppert, lowert, consecutive, duration, bias.correction)
+      create_message(var, uppert, lowert, consecutive, duration, bias.correction,frequency)
 
     # filter data by season
     datasets <- filter_data_by_season(datasets, sns)
@@ -387,7 +388,8 @@ climate_change_signal <- function(data,
         duration,
         country_shp,
         bias.correction,
-        season = sns
+        season = sns,
+        frequency
       )
     cli::cli_progress_done()
     # return results

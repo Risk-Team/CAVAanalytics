@@ -232,7 +232,8 @@ trends = function(data,
              bias.correction,
              observation,
              intraannual_var,
-             season) {
+             season,
+             frequency) {
       season_name <-
         convert_vector_to_month_initials(season)
 
@@ -525,7 +526,8 @@ trends = function(data,
         consecutive,
         duration,
         observation,
-        intraannual_var
+        intraannual_var,
+        frequency
       )
 
     # filter data by season
@@ -557,7 +559,8 @@ trends = function(data,
         bias.correction,
         observation,
         intraannual_var,
-        season = sns
+        season = sns,
+        frequency
       )
 
     # return results

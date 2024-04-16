@@ -185,7 +185,8 @@ projections <-
                consecutive,
                duration,
                country_shp,
-               season) {
+               season,
+               frequency) {
         season_name <-
           convert_vector_to_month_initials(season)
         data_list <- datasets %>%
@@ -372,7 +373,8 @@ projections <-
           consecutive,
           duration,
           country_shp,
-          season = sns
+          season = sns,
+          frequency
         )
 
       cli::cli_progress_done()

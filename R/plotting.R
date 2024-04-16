@@ -1048,6 +1048,7 @@ plotting.CAVAanalytics_observations <-
       ggplot2::labs(fill = plot_titles, x = "", y = "") +
       ggplot2::theme_bw() +
       ggplot2::theme(
+        strip.text.y=ggplot2::element_blank(),
         plot.background = ggplot2::element_blank(),
         panel.background =ggplot2::element_blank(),
         panel.border = ggplot2::element_blank(),
@@ -1230,9 +1231,9 @@ plotting.CAVAanalytics_model_biases <-
         ) +
         {
           if (ensemble) {
-            ggh4x::facet_nested(season ~ scenario)
+            ggh4x::facet_nested(season ~ .)
           } else {
-            ggh4x::facet_nested(scenario ~ season + member)
+            ggh4x::facet_nested(. ~ season + member)
           }
         } +
         ggplot2::labs(fill = plot_titles, x = "", y = "") +

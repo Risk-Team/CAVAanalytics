@@ -94,7 +94,8 @@ climate_change_signal <- function(data,
              lowert,
              consecutive,
              duration,
-             bias.correction) {
+             bias.correction,
+             frequency) {
       if (is.null(uppert) & is.null(lowert)) {
         paste0("Climate change signal for ",
                ifelse(var == "pr", "total ", "mean "),

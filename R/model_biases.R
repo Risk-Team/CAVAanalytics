@@ -87,7 +87,8 @@ model_biases <-
                uppert,
                lowert,
                consecutive,
-               duration) {
+               duration,
+               frequency) {
         if (is.null(uppert) & is.null(lowert)) {
           paste0(
             "Calculation of model biases for ",

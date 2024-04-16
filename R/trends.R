@@ -137,7 +137,8 @@ trends = function(data,
              consecutive,
              duration,
              observation,
-             intraannual_var) {
+             intraannual_var,
+             frequency) {
       if (is.null(uppert) & is.null(lowert)) {
         mes = paste0(
           "Calculation of yearly increase in ",

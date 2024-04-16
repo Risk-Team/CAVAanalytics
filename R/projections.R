@@ -95,7 +95,8 @@ projections <-
                uppert,
                lowert,
                consecutive,
-               duration) {
+               duration,
+               frequency) {
         if (is.null(uppert) & is.null(lowert)) {
           paste0(
             "Calculation of ",
@@ -344,7 +345,7 @@ projections <-
     # create plots by season
     data_list <- purrr::map(season, function(sns) {
       mes <-
-        create_message(var, bias.correction, uppert, lowert, consecutive, duration)
+        create_message(var, bias.correction, uppert, lowert, consecutive, duration, frequency)
       # filter data by season
       datasets <- filter_data_by_season(datasets, season = sns)
       cli::cli_text(

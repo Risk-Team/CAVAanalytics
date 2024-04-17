@@ -17,7 +17,9 @@
 
 #### **Updates
 
-**We have released the data for the CAM-22 domain and CAVAanalytics version 3**
+**CAVAanalytics release v3.0.0**
+
+**We have released the data for the CAM-22 domain**
 
 **Current available CORDEX domains are: AFR-22, SEA-22, EAS-22, WAS-22, AUS-22,CAM-22**
 

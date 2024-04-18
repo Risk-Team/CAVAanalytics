@@ -60,4 +60,4 @@ knitr::include_graphics("../man/figures/large_fig2.png")
 
 For an actual paper describing the biases of the CORDEX‑Australasia ensemble, refer to [Evans et al., (2020)](https://jasonevans.id.au/publications/evansetal2020.pdf).
 
-You can also check the load_data_and_trends and the load_data_and_projections functions for more options
+You can also check the load_data_and_climate_change_signal and the load_data_and_projections functions for more options

@@ -13,6 +13,8 @@ plotting(
   bins,
   n.bins,
   alpha,
+  spatiotemporal,
+  temporal,
   ...
 )
 }
@@ -32,6 +34,10 @@ plotting(
 \item{n.bins}{numeric. Controlling the number of bins when bins equal TRUE}
 
 \item{alpha}{numeric. Transparency of colors}
+
+\item{spatiotemporal}{logical. Whether computed yearly data should be visualized without spatial and temporal aggregation}
+
+\item{temporal}{logical. Whether computed yearly data should be visualized temporally after spatial aggregation}
 }
 \value{
 ggplot object

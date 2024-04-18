@@ -24,6 +24,7 @@ load_data_and_climate_change_signal(
   frequency = F,
   bias.correction = F,
   domain = NULL,
+  threshold = 0.6,
   n.sessions = 6
 )
 }
@@ -66,6 +67,8 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 \item{bias.correction}{logical}
 
 \item{domain}{specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE. Default is NULL}
+
+\item{threshold}{numerical value with range 0-1. It indicates the threshold for assigning model agreement. For example, 0.6 indicates that model agreement is assigned when 60 percent of the models agree in the sign of the change}
 
 \item{n.sessions}{numeric, number of sessions to use in parallel processing for loading the data. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary}
 }

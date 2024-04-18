@@ -1,7 +1,4 @@
-#' Date selection
-#'
-#' automatically select common dates among C4R objects
-#' @param data list containing C4R objects, which are the outputs of the loadGridata function
+
 #' @export
 
 common_dates <- function(data) {
@@ -25,10 +22,11 @@ common_dates <- function(data) {
 #' @param cl4.object A C4R list with the Data slot in two dimension
 #' @param dimensions vector specifying which dimensions corresponds to lat and lon. The rest will be averaged
 #' @param shape.file sf object for which to crop and mask the spatRaster
+#' @param stat statistic to apply. Default is mean
 #' @return spatRaster
 #' @export
 
-make_raster <- function(cl4.object, dimensions, shape.file) {
+make_raster <- function(cl4.object, dimensions, shape.file, stat="mean") {
   xmin <-
     if (is.null(cl4.object$xyCoords$lon))
       min(cl4.object$xyCoords$x)
@@ -51,7 +49,7 @@ make_raster <- function(cl4.object, dimensions, shape.file) {
     max(cl4.object$xyCoords$lat[, 1])
 
   array_mean <-
-    apply(cl4.object$Data, dimensions, mean, na.rm = TRUE)
+    apply(cl4.object$Data, dimensions, stat, na.rm = TRUE)
 
   cl4.object$Data <- array_mean
 
@@ -151,13 +149,32 @@ thrs = function(col, lowert, uppert) {
 }
 
 
+#' @export
 
-#' Apply multivariate linear regression to a multimember grid
-#'
-#' This function can be used after performing annual aggregation and with a multigrid object. it applies multivariate linear regression per pixel if
-#' spatial averages are not performed or for spatially aggregated data
-#' @return array, without spatial averages, or dataframe, if spatial averages are performed
-#'
+agreement = function(array3d, threshold) {
+  # Define the inner function find.agreement within the agreement function
+  find.agreement = function(x, threshold) {
+    # Calculate proportion of models predicting each sign of change (negative(-1), no change(0), positive(+1))
+    sign.proportion = c(length(x[x < 0]) / length(x),
+                        length(x[x == 0]) / length(x),
+                        length(x[x > 0]) / length(x))
+    names(sign.proportion) = c("-1", "0", "1")
+    # Compare the set threshold to the maximum proportion of models agreeing on any one sign of change
+    # If the max proportion is higher than threshold, return 1 (meaning there is agreement in signs among model)
+    # Otherwise return 0 (no agreement meeting the set threshold)
+    if (max(sign.proportion) > threshold) {
+      return(1)
+    } else {
+      return(0)
+    }
+  }
+
+  # Apply find.agreement to each element of the array3d over the second and third dimensions
+  array1_agreement = apply(array3d, c(2, 3), find.agreement, threshold)
+  return(array1_agreement)
+}
+
+
 #' @export
 
 # multivariate
@@ -241,12 +258,7 @@ ens_trends <- function(c4R) {
 
 }
 
-#' Apply linear regression to each member of multimember grid
-#'
-#' This function can be used after performing annual aggregation and with a multigrid object. it applies linear regression per pixel if
-#' spatial averages are not performed or for spatially aggregated data.
-#' @return array, without spatial averages, or dataframe, if spatial averages are performed
-#'
+
 #' @export
 
 
@@ -255,9 +267,7 @@ models_trends <- function(c4R, observation = F) {
     # in cases in which there is a spatial dimension
     cli::cli_progress_step(
       paste0(
-        " Applying linear regression to ",
-        ifelse(observation, "observation. ", "each ensemble member."),
-        " P-value calculated using 999 iterations via residual (without replacement) resampling."
+        " Applying linear regression. P-value calculated using 999 iterations via residual (without replacement) resampling."
       )
     )
     # single model
@@ -453,10 +463,7 @@ IPCC_palette <- function(type, divergent) {
   }
 }
 
-#' Convert month to initials
-#'
-#' Convert numeric vector of months into month initials
-#' @param month_vector numeric vector, 1 to 12.
+
 #' @export
 
 convert_vector_to_month_initials <- function(month_vector) {

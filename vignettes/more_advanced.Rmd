@@ -95,7 +95,27 @@ We could also investigate the projected frequency of heat waves, each defined as
 
 ```{r,  warning=F, message=FALSE, fig.height=5, fig.width=6}
 
-projections(kenya_exmp, season = list(1:3,4:6,7:9,10:12), consecutive=T, duration=3, uppert=35, frequency=T) %>%
-  plotting(., plot_titles = "N° of heat waves", ensemble = T, palette = c("white", "orange", "red", "darkred", "brown"))
+hwvs=projections(kenya_exmp, season = list(1:3,4:6,7:9,10:12), consecutive=T, duration=3, uppert=35, frequency=T) 
+
+plotting(hwvs, plot_titles = "N° of heat waves", ensemble = T, palette = c("white", "orange", "red", "darkred", "brown"))
 
 ```
+
+and their temporal 
+
+```{r,  warning=F, message=FALSE, fig.height=3, fig.width=6}
+
+plotting(hwvs, plot_titles = "N° of heat waves", ensemble = T, temporal=T)
+
+```
+
+and spatiotemporal evolution. The option spatiotemporal allows users to focus on spatial and temporal changes by temporal breaks controlled by the n.groups argument.
+
+```{r,  warning=F, message=FALSE, fig.height=6, fig.width=4}
+
+plotting(hwvs, plot_titles = "N° of heat waves", ensemble = T, spatiotemporal=T, n.groups=2)
+
+```
+
+
+

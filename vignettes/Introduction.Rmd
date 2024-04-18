@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 
 ```{r setup, message=F, warning=FALSE}
 library(CAVAanalytics)
+library(magrittr)
 ```
 
 
@@ -41,7 +42,7 @@ Available variables are:
 ISIMIP3 impact models will become available in the close future
 
 ## Loading CORDEX-CORE data
-Below we are automatically downloading all CORDEX-CORE simulations alongside the observational dataset ERA5 for Kenya. As you can see, it is extremely simple. We will see how to work with locally available models in another vignette.  
+Below we are automatically downloading all CORDEX-CORE simulations alongside the observational dataset ERA5 for Kenya. As you can see, it is very simple. We will see how to work with locally available models in another vignette.  
 **Note that this process can take a while, depending on the size of the country and the number of years specified**
 
 ```{r, message=FALSE, warning=F}
@@ -90,9 +91,24 @@ plotting(kenya_obs.35, plot_titles = "N.days > 35")
 You can also specify more than one season at a time
 
 ```{r, fig.height=4, fig.width=4, fig.align="center",  message=F, warning=F}
-kenya_obs.35 <- observations(kenya_exmp, season=list(1:6, 7:12), uppert=35)
-plotting(kenya_obs.35, plot_titles = "N.days > 35")
+observations(kenya_exmp, season=list(1:6, 7:12), uppert=35) %>% 
+plotting(., plot_titles = "N.days > 35")
 ```
+
+You can also visualize the results as a temporal trend
+
+```{r, fig.height=4, fig.width=4, fig.align="center",  message=F, warning=F}
+observations(kenya_exmp, season=list(1:6, 7:12), uppert=35) %>% 
+plotting(., plot_titles = "N.days > 35", temporal=T)
+```
+
+And we can apply linear regression to each pixel to assess the statistical significance of the yearly increase in the number of days with Tmax higher than 35 degrees Celsius.
+
+```{r, fig.height=4, fig.width=4, fig.align="center",  message=F, warning=F}
+observations(kenya_exmp, season=list(1:12), uppert=35,trends=T) %>% 
+plotting(., plot_titles = "N.days > 35/year")
+```
+
 
 ## Model biases
 
@@ -102,11 +118,11 @@ Before diving into the analyses of climate model projections, it is essential to
 # you can specify the season. In this case we are looking at the whole year
 biases_kenya <- model_biases(kenya_exmp, season=list(1:12))
 plotting(biases_kenya, ensemble=F, 
-trends=F, plot_titles = "mean tasmax biases", palette = IPCC_palette(type="tmp", divergent = T))
+temporal=F, plot_titles = "mean tasmax biases", palette = IPCC_palette(type="tmp", divergent = T))
 ```
 
 ```{r, fig.height=3, fig.width=10,  message=F, warning=F}
-plotting(biases_kenya, ensemble=F, trends=T, 
+plotting(biases_kenya, ensemble=F, temporal=T, 
 plot_titles = "mean tasmax biases")+ggplot2::ggtitle("Before bias correction")
 ```
 As we can see, the biases are mainly positive, hence CORDEX-CORE models are warmer than the "observed" data. However, what happens if we bias correct the data?
@@ -114,7 +130,7 @@ The results look much better now and mean biases are reduced thanks to bias corr
 
 ```{r, fig.height=3, fig.width=10,  message=F, warning=F}
 biases_kenya.bs <- model_biases(kenya_exmp, season=list(1:12), bias.correction = T)
-plotting(biases_kenya.bs, ensemble=F, trends=T, plot_titles = "mean tasmax biases")+ggplot2::ggtitle("After bias correction")
+plotting(biases_kenya.bs, ensemble=F, temporal=T, plot_titles = "mean tasmax biases")+ggplot2::ggtitle("After bias correction")
 ```
 
 ## Projections
@@ -153,55 +169,27 @@ palette=c("white", "orange", "red", "darkred"), legend_range = c(0, 320))
 ```
 
 
+The results can also be visualized temporally.
+
+```{r, fig.height=3, fig.width=5, fig.align="center", message=F, warning=F}
+plotting(proj_kenya_35bc, ensemble=T,  
+plot_titles = "N > 35 bc", temporal=T)
+```
+
+
 ## Climate change signal
 
 While analyzing future periods can be useful, more often we prioritize understanding delta changes, which represent the relative increase or decrease in mean maximum temperatures compared to a baseline. CAVAanalytics facilitates this analysis as well.
 
+To notice that the function climate_change_signal also calculates the agreement in the sign of the change. Basically, with a threshold of 0.8, it means that if 80% of the models agree that the climate change signal is positive or negative, the pixel gets a score of 1. These results are visualized through a black dot. 
+
 ```{r, fig.height=4, fig.width=10,  message=F, warning=F}
-ccs_kenya <- climate_change_signal(kenya_exmp, season=list(1:12))
-plotting(ccs_kenya, ensemble=F, plot_titles = "Mean tasmax change", 
+ccs_kenya <- climate_change_signal(kenya_exmp, season=list(1:6,7:12), threshold = 0.8)
+plotting(ccs_kenya, plot_titles = "Mean tasmax change", 
 legend_range = c(-3, 3), 
-palette = c("blue", "cyan", "green", "white", "yellow" ,"orange", "red"))
+palette = IPCC_palette(type = "tmp", divergent = T))
+
 ```
 
-## Trends
-While examining delta changes and absolute values for projections provides valuable information, it may not offer insights into temporal trends. However, using the 'trends' function in CAVAanalytics allows us to address this limitation. For instance, we can determine if Kenya has experienced or is projected to experience a noteworthy rise in yearly maximum temperatures.
-
-```{r,  fig.height=3, fig.width=4, fig.align="center",  message=F, warning=F}
-# the observation argument allows us to study trends for the future or for the past. Note that for observation = T, we need to have specified path.to.obs because this option does not work with the historical experiment of climate models but with observation
-trd_kenya.obs <- trends(kenya_exmp, season=list(1:12),observation = T)
-plotting(trd_kenya.obs, plot_titles = "°C/year", frequencies = F, spatial_aggr = F)
-```
-
-We can look at trend for the future period as well by changing the observation argument to FALSE
-
-```{r,  fig.height=4, fig.width=10,  message=F, warning=F}
-trd_kenya.prj <- trends(kenya_exmp, season=list(1:12),observation = F)
-plotting(trd_kenya.prj, ensemble=F, 
-plot_titles = "°C/year", frequencies = F, spatial_aggr = F)
-```
-
-Another feature of the trends function is that you can look at the global significance of the ensemble. The plot below shows you the number of models that agrees in a certain change (increase or decrease) while the global p.value is calculated based on the [manylm function of mvabund](https://besjournals.onlinelibrary.wiley.com/doi/10.1111/j.2041-210X.2012.00190.x). 
-
-```{r,  fig.height=4, fig.width=5, fig.align="center",  message=F, warning=F}
-plotting(trd_kenya.prj, ensemble=T, 
-plot_titles = "N. memb",
-frequencies = F, spatial_aggr = F, palette = c("blue", "green", "white", "yellow", "red"))
-```
-
-
-While we can visualize the results spatially, we can also look at temporal trends. In this case, a general additive model using a cubic regression spline is applied to better capture non-linear patterns. 
-
-```{r, fig.width=6,fig.height=2.5,  message=F, warning=F}
-plotting(trd_kenya.prj, ensemble=T, 
-plot_titles = "°C", spatial_aggr = T, frequencies = F)
-```
-
-In addition to performing spatial averages and visualizing trends, we can gain valuable insights by examining the distribution of annual mean tasmax (maximum temperature) across Kenya using the specified frequencies, denoted as 'TRUE.' This approach is particularly valuable because many analyses tend to aggregate data either spatially or temporally, potentially obscuring certain patterns. By utilizing the 'frequencies=T' option, we ensure a comprehensive understanding of both spatial and temporal attributes, allowing us to uncover hidden patterns in the data."
-
-```{r, fig.width=6,  message=F, warning=F}
-plotting(trd_kenya.prj, ensemble=T, spatial_aggr = F, plot_titles = "°C", 
-frequencies = T, n.groups = 2,palette=c("blue","red"))
-```
 
 

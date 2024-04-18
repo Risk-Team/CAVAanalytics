@@ -190,13 +190,15 @@ load_data_and_projections <- function(variable,
     list(
       rasters_mean %>% terra::crop(., country_shp) %>% terra::mask(., country_shp),
       rasters_sd %>% terra::crop(., country_shp) %>% terra::mask(., country_shp),
-      rasters_mbrs %>% terra::crop(., country_shp) %>% terra::mask(., country_shp)
+      rasters_mbrs %>% terra::crop(., country_shp) %>% terra::mask(., country_shp),
+      NULL
     ),
     class = "CAVAanalytics_projections",
     components = list(
       "SpatRaster for ensemble mean",
       "SpatRaster for ensemble sd",
-      "SpatRaster for individual members"
+      "SpatRaster for individual members",
+      "dataframe for spatially aggregated data"
     )
   ))
 

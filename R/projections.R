@@ -300,6 +300,19 @@ projections <-
                 return(rs)
               })
 
+            }),
+            models_temp = purrr::map2(models_agg_y, experiment, function(x, y) {
+              dimnames(x$Data)[[1]] <- x$Members
+              dimnames(x$Data)[[2]] <- x$Dates$start
+              dimnames(x$Data)[[3]] <- x$xyCoords$y
+              dimnames(x$Data)[[4]] <- x$xyCoords$x
+
+              df <- reshape2::melt(x$Data) %>%
+                dplyr::mutate(date = as.Date(Var2)) %>%
+                dplyr::mutate(experiment = y) %>%
+                dplyr::mutate(season = season_name)
+              return(df)
+
             })
           )
 
@@ -309,13 +322,17 @@ projections <-
             terra::rast(data_list$rst_ens_sd),
             terra::rast(purrr::map(
               data_list$rst_models, ~ terra::rast(.x)
+            )),
+            do.call(rbind, purrr::map(
+              1:nrow(data_list), ~ data_list$models_temp[[.]]
             ))
           ),
           class = "CAVAanalytics_projections",
           components = list(
             "SpatRaster for ensemble mean",
             "SpatRaster for ensemble sd",
-            "SpatRaster for individual members"
+            "SpatRaster for individual members",
+            "dataframe for spatially aggregated data"
           )
         ))
 
@@ -387,13 +404,15 @@ projections <-
       list(
         terra::rast(lapply(data_list, `[[`, 1)),
         terra::rast(lapply(data_list, `[[`, 2)),
-        terra::rast(lapply(data_list, `[[`, 3))
+        terra::rast(lapply(data_list, `[[`, 3)),
+        do.call(rbind, lapply(data_list, `[[`, 4))
       ),
       class = "CAVAanalytics_projections",
       components = list(
         "SpatRaster for ensemble mean",
         "SpatRaster for ensemble sd",
-        "SpatRaster for individual members"
+        "SpatRaster for individual members",
+        "dataframe for spatially aggregated data"
       )
     ))
 

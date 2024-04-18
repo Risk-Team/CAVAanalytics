@@ -49,9 +49,9 @@
     Tutorials
   </a>
   <div class="dropdown-menu" aria-labelledby="dropdown--tutorials">
-    <a class="dropdown-item" href="../articles/Introduction.html">CAVAanalytics- start here</a>
-    <a class="dropdown-item" href="../articles/more_advanced.html">CAVAanalytics- climate indexes</a>
-    <a class="dropdown-item" href="../articles/large_areas.html">CAVAanalytics- computation over large regions</a>
+    <a class="dropdown-item" href="../articles/Introduction.html">Start here</a>
+    <a class="dropdown-item" href="../articles/more_advanced.html">Climate indexes</a>
+    <a class="dropdown-item" href="../articles/large_areas.html">Computation over large regions</a>
   </div>
 </li>
 <li class="nav-item">
@@ -259,7 +259,7 @@ For instance, we may want to determine the number of days with maximum
 temperatures above 35 °C.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">proj_kenya_35</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/projections.html">projections</a></span><span class="op">(</span><span class="va">kenya_exmp</span>, season<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span>, <span class="fl">7</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span>, uppert<span class="op">=</span><span class="fl">35</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">proj_kenya_35</span>, ensemble<span class="op">=</span><span class="cn">T</span>, </span>
+<span><span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">proj_kenya_35</span>, ensemble<span class="op">=</span><span class="cn">T</span>,  legend_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">180</span><span class="op">)</span>,</span>
 <span>plot_titles <span class="op">=</span> <span class="st">"N &gt; 35"</span>, palette<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"white"</span>, <span class="st">"orange"</span>, <span class="st">"red"</span>, <span class="st">"darkred"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Introduction_files/figure-html/unnamed-chunk-15-1.png" width="480" style="display: block; margin: auto;"></p>
 <p>When dealing with model biases, CAVAanalytics offers a
@@ -271,7 +271,7 @@ correct for discrepancies between observed data and model outputs.</p>
 <span><span class="va">proj_kenya_35bc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/projections.html">projections</a></span><span class="op">(</span><span class="va">kenya_exmp</span>, season<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span>, <span class="fl">7</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span>, bias.correction <span class="op">=</span> <span class="cn">T</span>, uppert<span class="op">=</span><span class="fl">35</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">proj_kenya_35bc</span>, ensemble<span class="op">=</span><span class="cn">T</span>,  </span>
 <span>plot_titles <span class="op">=</span> <span class="st">"N &gt; 35 bc"</span>, </span>
-<span>palette<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"white"</span>, <span class="st">"orange"</span>, <span class="st">"red"</span>, <span class="st">"darkred"</span><span class="op">)</span>, legend_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">320</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span>palette<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"white"</span>, <span class="st">"orange"</span>, <span class="st">"red"</span>, <span class="st">"darkred"</span><span class="op">)</span>, legend_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">180</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Introduction_files/figure-html/unnamed-chunk-16-1.png" width="480" style="display: block; margin: auto;"></p>
 <p>The results can also be visualized temporally.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">

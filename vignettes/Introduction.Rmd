@@ -154,7 +154,7 @@ In certain cases, focusing solely on mean temperatures might not provide the ins
 
 ```{r, fig.height=4, fig.width=5, fig.align="center",  message=F, warning=F}
 proj_kenya_35 <- projections(kenya_exmp, season=list(1:6, 7:12), uppert=35)
-plotting(proj_kenya_35, ensemble=T, 
+plotting(proj_kenya_35, ensemble=T,  legend_range = c(0, 180),
 plot_titles = "N > 35", palette=c("white", "orange", "red", "darkred"))
 ```
 
@@ -165,7 +165,7 @@ When dealing with model biases, CAVAanalytics offers a straightforward solution 
 proj_kenya_35bc <- projections(kenya_exmp, season=list(1:6, 7:12), bias.correction = T, uppert=35)
 plotting(proj_kenya_35bc, ensemble=T,  
 plot_titles = "N > 35 bc", 
-palette=c("white", "orange", "red", "darkred"), legend_range = c(0, 320))
+palette=c("white", "orange", "red", "darkred"), legend_range = c(0, 180))
 ```
 
 

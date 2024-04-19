@@ -264,10 +264,7 @@ projections <-
               ens <-
                 suppressMessages(transformeR::aggregateGrid(y, aggr.mem = list(FUN = "mean", na.rm = TRUE)))
               rs <-
-                make_raster(ens, if (length(ens$Dates$start) == 1)
-                  c(1, 2)
-                  else
-                    c(2, 3), country_shp) # adjust by array dimension
+                make_raster(ens, c(2, 3), country_shp) # adjust by array dimension
               names(rs) <-
                 paste0(x, "_", names(rs), "_", season_name)
               return(rs)
@@ -277,10 +274,7 @@ projections <-
               ens <-
                 suppressMessages(transformeR::aggregateGrid(y, aggr.mem = list(FUN = "sd", na.rm = TRUE)))
               rs <-
-                make_raster(ens, if (length(ens$Dates$start) == 1)
-                  c(1, 2)
-                  else
-                    c(2, 3), country_shp)
+                make_raster(ens, c(2, 3), country_shp)
               names(rs) <-
                 paste0(x, "_", names(rs), "_", season_name)
               return(rs)

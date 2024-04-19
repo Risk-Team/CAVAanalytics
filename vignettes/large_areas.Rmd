@@ -37,7 +37,7 @@ Now let's visualize the CORDEX-CORE ensemble model biases. As we can see, the CO
 
 ```{r, eval=FALSE}
 plotting(austr_dry, plot_titles = "N° days", ensemble = T, legend_range = c(-25,25),
-palette = c(rgb(0, 60, 48, maxColorValue = 255),  rgb(1, 102, 94, maxColorValue = 255), "white", "orange", "brown"))
+         palette = rev(IPCC_palette(type="pr", divergent = T)))
 
 ```
 
@@ -49,7 +49,7 @@ And each individual model bias.
 
 ```{r, eval=FALSE}
 
-plotting(austr_dry, plot_titles = "N° days", ensemble = F, palette = c(rgb(0, 60, 48, maxColorValue = 255),  rgb(1, 102, 94, maxColorValue = 255), "white", "orange", "brown")) 
+plotting(austr_dry, plot_titles = "N° days", ensemble = F, palette =rev(IPCC_palette(type="pr", divergent = T))) 
 
 ```
 

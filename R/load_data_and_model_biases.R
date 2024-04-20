@@ -21,7 +21,7 @@
 #' @param frequency logical value. This parameter is relevant only when 'consecutive' is set to TRUE and 'duration' is not set to "max". For instance, if you want to determine the count of heatwaves, defined as the number of days with Tmax (maximum temperature) exceeding 35°C for a minimum of 3 consecutive days, set 'uppert' to 35, 'consecutive' to TRUE, 'duration' to 3, and 'frequency' to TRUE.
 #' @param n.sessions numeric, number of sessions to use in parallel processing for loading the data. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary
 #' @param chunk.size numeric, indicating the number of chunks. The smaller the better when working with limited RAM
-#' @param overlap numeric, amount of overlap needed to create the composite. Default 0.5
+#' @param overlap numeric, amount of overlap needed to create the composite. Default 0.25
 #' @importFrom magrittr %>%
 #' @return list with SpatRaster. To explore the output run attributes(output)
 #' @export

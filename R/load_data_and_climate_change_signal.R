@@ -22,7 +22,7 @@
 #' @param n.sessions numeric, number of sessions to use in parallel processing for loading the data. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary
 #' @param chunk.size numeric, indicating the number of chunks. The smaller the better when working with limited RAM
 #' @param threshold numerical value with range 0-1. It indicates the threshold for assigning model agreement. For example, 0.6 indicates that model agreement is assigned when 60 percent of the models agree in the sign of the change
-#' @param overlap numeric, amount of overlap needed to create the composite. Default 0.5
+#' @param overlap numeric, amount of overlap needed to create the composite. Default 0.25
 #' @importFrom magrittr %>%
 #' @return list with SpatRaster. To explore the output run attributes(output)
 #' @export

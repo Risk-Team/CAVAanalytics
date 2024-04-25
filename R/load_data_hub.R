@@ -207,44 +207,58 @@ load_data_hub <-
         experiment = ifelse(is.na(experiment), "historical", experiment),
         simulation = ifelse(is.na(simulation), "ICTP", simulation)
       ) %>%
-      dplyr::mutate(
-        climate_data = furrr::future_map(path,   function(x)  {
-          if (stringr::str_detect(x, "historical"))
-            suppressMessages(
-              loadeR::loadGridData(
-                dataset = x,
-                var = variable,
-                years = years.hist,
-                lonLim = xlim,
-                latLim = ylim,
-                season = 1:12
-              )
-            )
+      dplyr::mutate(climate_data = furrr::future_map(path,   function(x)  {
+        if (stringr::str_detect(x, "historical"))
+          suppressMessages(
+            loadeR::loadGridData(
+              dataset = x,
+              var = variable,
+              years = years.hist,
+              lonLim = xlim,
+              latLim = ylim,
+              season = 1:12
+            )    %>%
+              {
+                if (stringr::str_detect(variable, "tas")) {
+                  suppressMessages(transformeR::gridArithmetics(., 273.15, operator = "-"))
+                } else if (stringr::str_detect(variable, "pr")) {
+                  suppressMessages(transformeR::gridArithmetics(., 86400, operator = "*"))
 
-          else
-            suppressMessages(
-              loadeR::loadGridData(
-                dataset = x,
-                var = variable,
-                years = years.proj,
-                lonLim = xlim,
-                latLim = ylim,
-                season = 1:12
-              )
-            )
+                } else {
+                  .
 
-        }),
-        climate_data = parallel::mclapply(climate_data, function(x) {
-          if (stringr::str_detect(variable, "pr")) {
-            transformeR::gridArithmetics(x, 86400, operator = "*")
-          } else if (stringr::str_detect(variable, "tas")) {
-            transformeR::gridArithmetics(x, 273.15, operator = "-")
-          } else {
-            transformeR::gridArithmetics(x, 1, operator = "*")
-          }
+                }
 
-        }, mc.cores = 3)
-      )
+
+              }
+          )
+
+        else
+          suppressMessages(
+            loadeR::loadGridData(
+              dataset = x,
+              var = variable,
+              years = years.proj,
+              lonLim = xlim,
+              latLim = ylim,
+              season = 1:12
+            )  %>%
+              {
+                if (stringr::str_detect(variable, "tas")) {
+                  suppressMessages(transformeR::gridArithmetics(., 273.15, operator = "-"))
+                } else if (stringr::str_detect(variable, "pr")) {
+                  suppressMessages(transformeR::gridArithmetics(., 86400, operator = "*"))
+
+                } else {
+                  .
+
+                }
+
+
+              }
+          )
+
+      }))
 
     cli::cli_text(paste(Sys.time(), "Done"))
 
@@ -264,9 +278,9 @@ load_data_hub <-
     models_df <- models_df %>%
       dplyr::group_by(experiment) %>%
       dplyr::summarise(models = list(climate_data)) %>%
-      dplyr::mutate(models_mbrs = parallel::mclapply(models, function(x)  {
+      dplyr::mutate(models_mbrs = lapply(models, function(x)  {
         CAVAanalytics::common_dates(x)
-      }, mc.cores = 3)) %>%
+      })) %>%
       dplyr::select(-models)
 
     if (!is.null(path.to.obs)) {
@@ -310,11 +324,20 @@ load_data_hub <-
                                                        operator = "*")
                 obs_tr$Variable$varName = variable
                 obs_tr
+              } else if (stringr::str_detect(variable, "rsds")) {
+                obs_tr <- transformeR::gridArithmetics(.,
+                                                       ifelse(path.to.obs == "ERA5", 86400, 1),
+                                                       operator = "/")
+                obs_tr$Variable$varName = variable
+                obs_tr
               } else {
                 obs_tr <- transformeR::gridArithmetics(., 1, operator = "*")
                 obs_tr$Variable$varName = variable
                 obs_tr
               }
+            } else {
+              .
+
             }
           }
       ))

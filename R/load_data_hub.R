@@ -211,7 +211,7 @@ load_data_hub <-
         climate_data = furrr::future_map(path,   function(x)  {
           if (stringr::str_detect(x, "historical"))
             suppressMessages(
-              loadGridData(
+              loadeR::loadGridData(
                 dataset = x,
                 var = variable,
                 years = years.hist,
@@ -223,7 +223,7 @@ load_data_hub <-
 
           else
             suppressMessages(
-              loadGridData(
+              loadeR::loadGridData(
                 dataset = x,
                 var = variable,
                 years = years.proj,

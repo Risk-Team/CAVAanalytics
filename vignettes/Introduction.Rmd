@@ -99,7 +99,7 @@ You can also visualize the results as a temporal trend
 
 ```{r, fig.height=4, fig.width=4, fig.align="center",  message=F, warning=F}
 observations(kenya_exmp, season=list(1:6, 7:12), uppert=35) %>% 
-plotting(., plot_titles = "N.days > 35", temporal=T)
+plotting(., plot_titles = "N.days > 35", temporal=T, palette="black")
 ```
 
 And we can apply linear regression to each pixel to assess the statistical significance of the yearly increase in the number of days with Tmax higher than 35 degrees Celsius.

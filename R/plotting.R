@@ -377,7 +377,9 @@ plotting.CAVAanalytics_projections <-
             ggplot2::theme(
               legend.position = "bottom",
               axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
-              legend.title = ggplot2::element_blank()
+              legend.title = ggplot2::element_blank(),
+              panel.grid.major = ggplot2::element_blank(),
+              panel.grid.minor = ggplot2::element_blank()
             ) +
             ggplot2::labs(x = "Year", y = plot_titles) +
             if (!is.null(palette)) {
@@ -423,7 +425,9 @@ plotting.CAVAanalytics_projections <-
             ggplot2::theme(
               legend.position = "bottom",
               axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
-              legend.title = ggplot2::element_blank()
+              legend.title = ggplot2::element_blank(),
+              panel.grid.major = ggplot2::element_blank(),
+              panel.grid.minor = ggplot2::element_blank()
             ) +
             ggplot2::labs(x = "Year", y = plot_titles) +
             if (!is.null(palette)) {
@@ -749,12 +753,14 @@ plotting.CAVAanalytics_observations <-
           method = "gam",
           formula = y ~ x
         ) +
-        ggplot2::facet_wrap( ~ season) +
+        ggplot2::facet_wrap(~ season) +
         ggplot2::scale_x_date(date_breaks = "4 years", date_labels = "%Y") +
         ggplot2::theme_bw() +
         ggplot2::theme(
           legend.position = "none",
-          axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)
+          axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
+          panel.grid.major = ggplot2::element_blank(),
+          panel.grid.minor = ggplot2::element_blank()
         ) +
         ggplot2::labs(x = "Year", y = plot_titles) +
         if (!is.null(palette)) {
@@ -1160,7 +1166,7 @@ plotting.CAVAanalytics_model_biases <-
         if (is.null(legend_range))
           c(-max(abs(range(
             terra::values(rst), na.rm = TRUE
-          ))), +max(abs(range(
+          ))),+max(abs(range(
             terra::values(rst), na.rm = TRUE
           ))))
       else
@@ -1342,9 +1348,11 @@ plotting.CAVAanalytics_model_biases <-
           ggplot2::theme(
             legend.position = "bottom",
             axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
-            legend.title = ggplot2::element_blank()
+            legend.title = ggplot2::element_blank(),
+            panel.grid.major = ggplot2::element_blank(),
+            panel.grid.minor = ggplot2::element_blank()
           ) +
-          ggplot2::facet_wrap( ~ season) +
+          ggplot2::facet_wrap(~ season) +
           ggplot2::labs(x = "Year", y = plot_titles) +
           if (!is.null(legend_range)) {
             ggplot2::scale_y_continuous(limits = legend_range)
@@ -1367,7 +1375,9 @@ plotting.CAVAanalytics_model_biases <-
           ggplot2::theme(
             legend.position = "bottom",
             axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
-            legend.title = ggplot2::element_blank()
+            legend.title = ggplot2::element_blank(),
+            panel.grid.major = ggplot2::element_blank(),
+            panel.grid.minor = ggplot2::element_blank()
           ) +
           if (!is.null(legend_range)) {
             ggplot2::scale_y_continuous(limits = legend_range)

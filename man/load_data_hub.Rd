@@ -24,7 +24,7 @@ load_data_hub(
 \arguments{
 \item{path.to.data}{character, indicating the shared path to the data. Leave as default unless necessary}
 
-\item{country}{character, in English, indicating the country of interest. To select a bounding box,
+\item{country}{character, in English, indicating the country of interest or an object of class sf. To select a bounding box,
 set country to NULL and define arguments xlim and ylim}
 
 \item{variable}{character indicating the variable name}

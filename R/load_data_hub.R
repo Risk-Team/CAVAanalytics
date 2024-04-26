@@ -3,7 +3,7 @@
 #' Automatically upload CORDEX-CORE models available at UC servers
 
 #' @param path.to.data character, indicating the shared path to the data. Leave as default unless necessary
-#' @param country character, in English, indicating the country of interest. To select a bounding box,
+#' @param country character, in English, indicating the country of interest or an object of class sf. To select a bounding box,
 #' set country to NULL and define arguments xlim and ylim
 #' @param variable  character indicating the variable name
 #' @param xlim numeric of length = 2, with minimum and maximum longitude coordinates, in decimal degrees, of the bounding box of interest
@@ -91,11 +91,11 @@ load_data_hub <-
 
     # return the xlim and ylim of a country of interest or BBox
 
-    geo_localize <- function(country, xlim, ylim, buffer) {
+      geo_localize <- function(country, xlim, ylim, buffer) {
       if (!is.null(country) & !is.null(xlim)) {
         cli::cli_abort(c("x" = "Either select a country or a region of interest, not both"))
       } else {
-        country_shp = if (!is.null(country)) {
+        country_shp = if (!is.null(country) & !inherits(country, "sf")) {
           suppressMessages(
             rnaturalearth::ne_countries(
               country = country,
@@ -104,6 +104,10 @@ load_data_hub <-
             ) %>%
               sf::st_set_crs(., NA)
           )
+        } else if (!is.null(country) & inherits(country, "sf")) {
+          country %>%
+            sf::st_transform("EPSG:4326")
+
         } else {
           sf::st_bbox(c(
             xmin = min(xlim),
@@ -130,7 +134,6 @@ load_data_hub <-
         ))
       }
     }
-
     # start -------------------------------------------------------------------
 
     # check for valid path

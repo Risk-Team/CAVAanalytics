@@ -72,7 +72,7 @@ load_data_hub <-
           )
         }
          if (is.null(years.proj) |
-            is.null(years.hist) ))
+            is.null(years.hist))
           cli::cli_abort(c("x" = "years.hist and years.proj needs to be specified"))
 
         if (missing(variable))

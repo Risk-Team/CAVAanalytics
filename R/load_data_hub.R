@@ -71,18 +71,24 @@ load_data_hub <-
             )
           )
         }
+         if (is.null(years.proj) |
+            is.null(years.hist) ))
+          cli::cli_abort(c("x" = "years.hist and years.proj needs to be specified"))
+
         if (missing(variable))
           cli::cli_abort(c("x" = "argument variable as no default"))
-        if (any(!(years.hist %in% 1976:2005)) &
-            is.null(years.obs))
-          cli::cli_abort(c("x" = "Available years for the historical period are 1976:2005"))
 
-        if (!is.null(years.obs) &
-            any(!(years.obs %in% 1980:2019)))
-          cli::cli_abort(c("x" = "Available years for observations are 1980:2019"))
+        if (!is.null(path.to.obs)) {
+          if (!is.null(years.obs) & path.to.obs == "ERA5" &
+              any(!(years.obs %in% 1976:2021)))
+            cli::cli_abort(c("x" = "Available years for ERA5 observations are 1976:2021"))
 
-        if (any(!(years.proj %in% 2006:2099)))
-          cli::cli_abort(c("x" = "Available years for projections are 2006:2099"))
+          if (!is.null(years.obs) & path.to.obs == "W5E5" &
+              any(!(years.obs %in% 1980:2021)))
+            cli::cli_abort(c("x" = "Available years for W5E5 observations are 1980:2019"))
+
+   
+        }
 
         variable <-
           match.arg(variable,

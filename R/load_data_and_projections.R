@@ -196,7 +196,12 @@ load_data_and_projections <- function(variable,
     components = list(
       "SpatRaster for ensemble mean",
       "SpatRaster for ensemble sd",
+<<<<<<< Updated upstream
       "SpatRaster for individual members"
+=======
+      "SpatRaster for individual members",
+      "dataframe for annually aggregated data"
+>>>>>>> Stashed changes
     )
   ))
 

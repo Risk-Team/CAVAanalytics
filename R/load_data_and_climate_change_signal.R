@@ -193,13 +193,25 @@ load_data_and_climate_change_signal <-
       list(
         rasters_mean %>% terra::crop(., country_shp) %>% terra::mask(., country_shp),
         rasters_sd %>% terra::crop(., country_shp) %>% terra::mask(., country_shp),
+<<<<<<< Updated upstream
         rasters_mbrs %>% terra::crop(., country_shp) %>% terra::mask(., country_shp)
+=======
+        rasters_mbrs %>% terra::crop(., country_shp) %>% terra::mask(., country_shp),
+        rasters_agree %>% terra::crop(., country_shp) %>% terra::mask(., country_shp),
+        NULL
+>>>>>>> Stashed changes
       ),
       class = "CAVAanalytics_ccs",
       components = list(
         "SpatRaster for ensemble mean",
         "SpatRaster for ensemble sd",
+<<<<<<< Updated upstream
         "SpatRaster for individual members"
+=======
+        "SpatRaster for individual members",
+        "SpatRaster stack for ccs agreement",
+        "dataframe for spatially aggregated data"
+>>>>>>> Stashed changes
       )
     ))
 

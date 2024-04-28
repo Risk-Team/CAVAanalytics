@@ -94,6 +94,24 @@ kenya_obs.35 <- observations(kenya_exmp, season=list(1:6, 7:12), uppert=35)
 plotting(kenya_obs.35, plot_titles = "N.days > 35")
 ```
 
+<<<<<<< Updated upstream
+=======
+You can also visualize the results as a temporal trend
+
+```{r, fig.height=3, fig.width=4, fig.align="center",  message=F, warning=F}
+observations(kenya_exmp, season=list(1:6, 7:12), uppert=35) %>% 
+plotting(., plot_titles = "N.days > 35", temporal=T, palette="black")
+```
+
+And we can apply linear regression to each pixel to assess the statistical significance of the yearly increase in the number of days with Tmax higher than 35 degrees Celsius.
+
+```{r, fig.height=4, fig.width=4, fig.align="center",  message=F, warning=F}
+observations(kenya_exmp, season=list(1:12), uppert=35,trends=T) %>% 
+plotting(., plot_titles = "N.days > 35/year",legend_range = c(-3,3), palette=IPCC_palette(type="tmp", divergent=T))
+```
+
+
+>>>>>>> Stashed changes
 ## Model biases
 
 Before diving into the analyses of climate model projections, it is essential to examine model biases. Defining biases can be somewhat arbitrary as it depends on the specific and intended usage of climate models. However, CAVAanalytics offers a flexible and straightforward approach to conducting this analysis. Let's begin by exploring the differences in mean climatology between the CORDEX-CORE historical experiments and ERA5.
@@ -149,8 +167,28 @@ When dealing with model biases, CAVAanalytics offers a straightforward solution 
 proj_kenya_35bc <- projections(kenya_exmp, season=list(1:6, 7:12), bias.correction = T, uppert=35)
 plotting(proj_kenya_35bc, ensemble=T,  
 plot_titles = "N > 35 bc", 
+<<<<<<< Updated upstream
 palette=c("white", "orange", "red", "darkred"), legend_range = c(0, 320))
+=======
+palette=c("white", "orange", "red", "darkred"), legend_range = c(0, 180))
 ```
+
+
+The results can also be visualized for the annual time series (data is spatially aggregated).
+
+```{r, fig.height=3, fig.width=5, fig.align="center", message=F, warning=F}
+plotting(proj_kenya_35bc, ensemble=T,  
+plot_titles = "N > 35 bc", temporal=T, palette=c("blue", "red"))
+>>>>>>> Stashed changes
+```
+
+and without spatial or temporal aggregation. In this case we are looking at the frequency distribution of the yearly data across all pixels (no spatial aggregation)
+
+```{r, fig.height=3, fig.width=5, fig.align="center", message=F, warning=F}
+plotting(proj_kenya_35bc, ensemble=T,  
+plot_titles = "N > 35 bc", spatiotemporal=T, palette=c("blue", "red"))
+```
+
 
 
 ## Climate change signal
@@ -189,7 +227,9 @@ plot_titles = "N. memb",
 frequencies = F, spatial_aggr = F, palette = c("blue", "green", "white", "yellow", "red"))
 ```
 
+It is also possible to look at how anomalies have progressed
 
+<<<<<<< Updated upstream
 While we can visualize the results spatially, we can also look at temporal trends. In this case, a general additive model using a cubic regression spline is applied to better capture non-linear patterns. 
 
 ```{r, fig.width=6,fig.height=2.5,  message=F, warning=F}
@@ -204,4 +244,10 @@ plotting(trd_kenya.prj, ensemble=T, spatial_aggr = F, plot_titles = "°C",
 frequencies = T, n.groups = 2,palette=c("blue","red"))
 ```
 
+=======
+```{r, fig.height=3, fig.width=5,  message=F, warning=F}
+>>>>>>> Stashed changes
 
+plotting(ccs_kenya, plot_titles = "Mean tasmax change", temporal=T,palette=c("blue", "red"))
+
+```

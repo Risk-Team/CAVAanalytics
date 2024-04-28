@@ -315,7 +315,12 @@ projections <-
           components = list(
             "SpatRaster for ensemble mean",
             "SpatRaster for ensemble sd",
+<<<<<<< Updated upstream
             "SpatRaster for individual members"
+=======
+            "SpatRaster for individual members",
+            "dataframe for annualy aggregated data"
+>>>>>>> Stashed changes
           )
         ))
 
@@ -393,7 +398,12 @@ projections <-
       components = list(
         "SpatRaster for ensemble mean",
         "SpatRaster for ensemble sd",
+<<<<<<< Updated upstream
         "SpatRaster for individual members"
+=======
+        "SpatRaster for individual members",
+        "dataframe for annually aggregated data"
+>>>>>>> Stashed changes
       )
     ))
 

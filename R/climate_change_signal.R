@@ -320,7 +320,8 @@ climate_change_signal <- function(data,
               names(rs) <-
                 paste0("Member ", ens, "_", x, "_", names(rs), "_", season_name)
               return(rs)
-            }),
+            })
+          }),
           models_temp_ccs = purrr::map2(experiment, models_agg_y, function(x, y) {
             h <-
               dplyr::filter(., stringr::str_detect(experiment, "hist"))$models_agg_tot[[1]]

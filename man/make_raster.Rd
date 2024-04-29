@@ -4,7 +4,7 @@
 \alias{make_raster}
 \title{make a raster}
 \usage{
-make_raster(cl4.object, dimensions, shape.file)
+make_raster(cl4.object, dimensions, shape.file, stat = "mean")
 }
 \arguments{
 \item{cl4.object}{A C4R list with the Data slot in two dimension}
@@ -12,6 +12,8 @@ make_raster(cl4.object, dimensions, shape.file)
 \item{dimensions}{vector specifying which dimensions corresponds to lat and lon. The rest will be averaged}
 
 \item{shape.file}{sf object for which to crop and mask the spatRaster}
+
+\item{stat}{statistic to apply. Default is mean}
 }
 \value{
 spatRaster

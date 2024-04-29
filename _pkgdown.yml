@@ -13,11 +13,11 @@ navbar:
     - text: Tutorials
       icon: fas fa-book
       menu:
-        - text: CAVAanalytics- start here
+        - text: Start here
           href: articles/Introduction.html
-        - text: CAVAanalytics- climate indexes
+        - text: Climate indexes
           href: articles/more_advanced.html
-        - text: CAVAanalytics- computation over large regions
+        - text: Computation over large regions
           href: articles/large_areas.html
     - icon: fa fa-file-code-o
       text: Functions
@@ -41,7 +41,6 @@ reference:
       - model_biases
       - projections
       - climate_change_signal
-      - trends
       - observations
       - plotting
       - extract_raster
@@ -51,7 +50,6 @@ reference:
     contents:
       - load_data_and_projections
       - load_data_and_climate_change_signal
-      - load_data_and_trends
       - load_data_and_model_biases
   - title: Utils
     desc: |
@@ -59,11 +57,8 @@ reference:
     contents:
       - C4R_to_CAVA
       - IPCC_palette
-      - common_dates
-      - ens_trends
       - make_raster
-      - models_trends
       - thrs
       - thrs_consec
-      - convert_vector_to_month_initials
+
 

@@ -1,15 +1,16 @@
 #' Calculation of climate change signal
 #'
-#' Automatically computes climate change signal
+#' Automatically computes climate change signal and agreement in the sign of change
 
 #' @param data output of load_data
 #' @param uppert  numeric of length=1, upper threshold
 #' @param lowert numeric of length=1, lower threshold
 #' @param season list, containing seasons to select. For example, list(1:6, 7:12)
 #' @param consecutive logical, to use in conjunction with lowert or uppert
-#' @param duration A parameter that can be set to either "max" or a specific number. It is relevant only when 'consecutive' is set to TRUE. For instance, to calculate the count of consecutive days with Tmax (maximum temperature) above 35°C, lasting for more than 3 days, you can set 'uppert' to 35, 'consecutive' to TRUE, and 'duration' to 3.
+#' @param duration parameter that can be set to either "max" or a specific number. It is relevant only when 'consecutive' is set to TRUE. For instance, to calculate the count of consecutive days with Tmax (maximum temperature) above 35°C, lasting for more than 3 days, you can set 'uppert' to 35, 'consecutive' to TRUE, and 'duration' to 3.
 #' @param frequency logical value. This parameter is relevant only when 'consecutive' is set to TRUE and 'duration' is not set to "max". For instance, if you want to determine the count of heatwaves, defined as the number of days with Tmax (maximum temperature) exceeding 35°C for a minimum of 3 consecutive days, set 'uppert' to 35, 'consecutive' to TRUE, 'duration' to 3, and 'frequency' to TRUE.
 #' @param bias.correction logical
+#' @param threshold numerical value with range 0-1. It indicates the threshold for assigning model agreement. For example, 0.6 indicates that model agreement is assigned when 60 percent of the models agree in the sign of the change
 #' @param n.sessions numeric, number of sessions to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage
 #' @importFrom magrittr %>%
 #' @return list with SpatRaster. To explore the output run attributes(output)
@@ -24,6 +25,7 @@ climate_change_signal <- function(data,
                                   duration = "max",
                                   frequency = F,
                                   bias.correction = F,
+                                  threshold = 0.6,
                                   n.sessions = 1) {
   # Intermediate functions --------------------------------------------------
 
@@ -35,8 +37,10 @@ climate_change_signal <- function(data,
              consecutive,
              duration,
              bias.correction,
-             season) {
+             season,
+             agreement) {
       stopifnot(is.logical(consecutive))
+      stopifnot(is.numeric(threshold), threshold >= 0, threshold <= 1)
       if (!is.list(season))
         cli::cli_abort("season needs to be a list, for example, list(1:3)")
       if (!(duration == "max" || is.numeric(duration))) {
@@ -182,7 +186,8 @@ climate_change_signal <- function(data,
              country_shp,
              bias.correction,
              season,
-             frequency) {
+             frequency,
+             threshold) {
       season_name <-
         convert_vector_to_month_initials(season)
       data_list <- datasets  %>%
@@ -270,52 +275,39 @@ climate_change_signal <- function(data,
                        lowert = lowert)
                 })
           )))  %>%
-        dplyr::select(-models_mbrs)  %>%
-        # individual models
-        dplyr::mutate(rst_models = purrr::map2(experiment, models_agg_y, function(x, y) {
-          rs_list <- purrr::map(1:dim(y$Data)[[1]], function(ens) {
-            array_mean <-
-              if (length(y$Dates$start) == 1)
-                apply(y$Data[ens, , ,], c(1, 2), mean, na.rm = TRUE)
-            else
-              apply(y$Data[ens, , ,], c(2, 3), mean, na.rm = TRUE) # climatology per member adjusting by array dimension
-
-            y$Data <- array_mean
-
-            rs <- make_raster(y, c(1, 2), country_shp)
-
-            names(rs) <-
-              paste0("Member ", ens, "_", x, "_", names(rs), "_", season_name)
-            return(rs)
-          })
-
-        }))  %>%
+        dplyr::mutate(models_agg_tot = purrr::map(models_agg_y, function(x)  {
+          suppressMessages(x %>%
+                             transformeR::climatology(.))
+        })) %>%
+        dplyr::select(-models_mbrs) %>% # calculate climate change signal by subtracting historical data
         dplyr::mutate(
-          rst_ens_mean_ccs = purrr::map(rst_models, function(y) {
+          ccs_mbrs = purrr::map(models_agg_tot, function(y) {
             h <-
-              dplyr::filter(., stringr::str_detect(experiment, "hist"))$rst_models[[1]]
-            ccs <- terra::rast(y) - terra::rast(h)
-            ccs_mean <- terra::mean(ccs)
+              dplyr::filter(., stringr::str_detect(experiment, "hist"))$models_agg_tot[[1]]
+            transformeR::gridArithmetics(y, h, operator = "-")
+          }),
+          rst_ccs_sign = purrr::map2(experiment, ccs_mbrs, function(x, y) {
+            y$Data <- apply(y$Data, c(1, 3, 4), mean)
+            arry_sign <-
+              agreement(y$Data,  threshold)
+            y$Data <- arry_sign
+            rast_sign <- make_raster(y, c(1, 2), country_shp)
+            names(rast_sign) <-
+              paste0(x, "_", names(rast_sign), "_", season_name)
+            return(rast_sign)
+          }),
+          rst_ens_mean_ccs = purrr::map2(experiment, ccs_mbrs, function(x, y) {
+            ccs_mean <- make_raster(y, c(3, 4), country_shp)
             names(ccs_mean) <-
-              stringr::str_remove(names(terra::rast(y))[[1]], "Member \\d+_")
+              paste0(x, "_", names(ccs_mean), "_", season_name)
             return(ccs_mean)
           }),
-          rst_ens_sd_ccs = purrr::map(rst_models, function(y) {
-            h <-
-              dplyr::filter(., stringr::str_detect(experiment, "hist"))$rst_models[[1]]
-            ccs <- terra::rast(y) - terra::rast(h)
-            ccs_sd <- terra::stdev(ccs)
+          rst_ens_sd_ccs = purrr::map2(experiment, ccs_mbrs, function(x, y) {
+            ccs_sd <- make_raster(y, c(3, 4), country_shp, stat = "sd")
             names(ccs_sd) <-
-              stringr::str_remove(names(terra::rast(y))[[1]], "Member \\d+_")
+              paste0(x, "_", names(ccs_sd), "_", season_name)
             return(ccs_sd)
           }),
-<<<<<<< Updated upstream
-          rst_models_ccs = purrr::map(rst_models, function(y) {
-            h <-
-              dplyr::filter(., stringr::str_detect(experiment, "hist"))$rst_models[[1]]
-            ccs <- terra::rast(y) - terra::rast(h)
-            return(ccs)
-=======
           rst_models_ccs = purrr::map2(experiment, ccs_mbrs, function(x, y) {
             rs_list <- purrr::map(1:dim(y$Data)[[1]], function(ens) {
               array_mean <-
@@ -328,8 +320,7 @@ climate_change_signal <- function(data,
               names(rs) <-
                 paste0("Member ", ens, "_", x, "_", names(rs), "_", season_name)
               return(rs)
-            })
-          }),
+            }),
           models_temp_ccs = purrr::map2(experiment, models_agg_y, function(x, y) {
             h <-
               dplyr::filter(., stringr::str_detect(experiment, "hist"))$models_agg_tot[[1]]
@@ -360,36 +351,29 @@ climate_change_signal <- function(data,
                 dplyr::summarise(value = median(value, na.rm = T)) # spatial aggregation because ccs do not support spatiotemporal
 
             }
->>>>>>> Stashed changes
           })
-        )  %>%
+        ) %>%
         dplyr::filter(!stringr::str_detect(experiment, "hist"))
+
       gc()
       invisible(structure(
         list(
           terra::rast(data_list$rst_ens_mean_ccs),
           terra::rast(data_list$rst_ens_sd_ccs),
-<<<<<<< Updated upstream
-          terra::rast(data_list$rst_models_ccs)
-=======
           terra::rast(unlist(data_list$rst_models_ccs)),
           terra::rast(data_list$rst_ccs_sign),
           do.call(rbind, purrr::map(
             1:nrow(data_list), ~ data_list$models_temp_ccs[[.]]
           ))
->>>>>>> Stashed changes
         ),
         class = "CAVAanalytics_ccs",
         components = list(
           "SpatRaster for ccs mean",
           "SparRaster stack for ccs sd",
-<<<<<<< Updated upstream
-          "SpatRaster stack for individual members"
-=======
           "SpatRaster stack for individual members",
           "SpatRaster stack for ccs agreement",
           "dataframe for spatially aggregated data"
->>>>>>> Stashed changes
+
         )
       ))
     }
@@ -405,7 +389,8 @@ climate_change_signal <- function(data,
                consecutive,
                duration,
                bias.correction,
-               season)
+               season,
+               threshold)
 
   # retrieve information
   mod.numb <- dim(data[[1]]$models_mbrs[[1]]$Data) [1]
@@ -422,7 +407,13 @@ climate_change_signal <- function(data,
   #create plots by season
   data_list <- purrr::map(season, function(sns) {
     mes <-
-      create_message(var, uppert, lowert, consecutive, duration, bias.correction,frequency)
+      create_message(var,
+                     uppert,
+                     lowert,
+                     consecutive,
+                     duration,
+                     bias.correction,
+                     frequency)
 
     # filter data by season
     datasets <- filter_data_by_season(datasets, sns)
@@ -431,7 +422,9 @@ climate_change_signal <- function(data,
         "{cli::symbol$arrow_right}",
         " climate change signal, season ",
         glue::glue_collapse(sns, "-"),
-        ". ",
+        ". Model agreement calculated based on ",
+        threshold * 100,
+        "% threshold. ",
         mes
       )
     )
@@ -450,7 +443,8 @@ climate_change_signal <- function(data,
         country_shp,
         bias.correction,
         season = sns,
-        frequency
+        frequency,
+        threshold
       )
     cli::cli_progress_done()
     # return results
@@ -461,25 +455,17 @@ climate_change_signal <- function(data,
     list(
       terra::rast(lapply(data_list, `[[`, 1)),
       terra::rast(lapply(data_list, `[[`, 2)),
-<<<<<<< Updated upstream
-      terra::rast(lapply(data_list, `[[`, 3))
-=======
       terra::rast(lapply(data_list, `[[`, 3)),
       terra::rast(lapply(data_list, `[[`, 4)),
       do.call(rbind, lapply(data_list, `[[`, 5))
->>>>>>> Stashed changes
     ),
     class = "CAVAanalytics_ccs",
     components = list(
       "SpatRaster for ccs mean",
       "SparRaster stack for ccs sd",
-<<<<<<< Updated upstream
-      "SpatRaster stack for individual members"
-=======
       "SpatRaster stack for individual members",
       "SpatRaster stack for ccs agreement",
       "dataframe for spatially aggregated data"
->>>>>>> Stashed changes
     )
   ))
 

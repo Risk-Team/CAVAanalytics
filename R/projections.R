@@ -264,10 +264,7 @@ projections <-
               ens <-
                 suppressMessages(transformeR::aggregateGrid(y, aggr.mem = list(FUN = "mean", na.rm = TRUE)))
               rs <-
-                make_raster(ens, if (length(ens$Dates$start) == 1)
-                  c(1, 2)
-                  else
-                    c(2, 3), country_shp) # adjust by array dimension
+                make_raster(ens, c(2, 3), country_shp) # adjust by array dimension
               names(rs) <-
                 paste0(x, "_", names(rs), "_", season_name)
               return(rs)
@@ -277,10 +274,7 @@ projections <-
               ens <-
                 suppressMessages(transformeR::aggregateGrid(y, aggr.mem = list(FUN = "sd", na.rm = TRUE)))
               rs <-
-                make_raster(ens, if (length(ens$Dates$start) == 1)
-                  c(1, 2)
-                  else
-                    c(2, 3), country_shp)
+                make_raster(ens, c(2, 3), country_shp)
               names(rs) <-
                 paste0(x, "_", names(rs), "_", season_name)
               return(rs)
@@ -300,6 +294,19 @@ projections <-
                 return(rs)
               })
 
+            }),
+            models_temp = purrr::map2(models_agg_y, experiment, function(x, y) {
+              dimnames(x$Data)[[1]] <- x$Members
+              dimnames(x$Data)[[2]] <- x$Dates$start
+              dimnames(x$Data)[[3]] <- x$xyCoords$y
+              dimnames(x$Data)[[4]] <- x$xyCoords$x
+
+              df <- reshape2::melt(x$Data) %>%
+                dplyr::mutate(date = as.Date(Var2)) %>%
+                dplyr::mutate(experiment = y) %>%
+                dplyr::mutate(season = season_name)
+              return(df)
+
             })
           )
 
@@ -309,18 +316,17 @@ projections <-
             terra::rast(data_list$rst_ens_sd),
             terra::rast(purrr::map(
               data_list$rst_models, ~ terra::rast(.x)
+            )),
+            do.call(rbind, purrr::map(
+              1:nrow(data_list), ~ data_list$models_temp[[.]]
             ))
           ),
           class = "CAVAanalytics_projections",
           components = list(
             "SpatRaster for ensemble mean",
             "SpatRaster for ensemble sd",
-<<<<<<< Updated upstream
-            "SpatRaster for individual members"
-=======
             "SpatRaster for individual members",
             "dataframe for annualy aggregated data"
->>>>>>> Stashed changes
           )
         ))
 
@@ -392,18 +398,15 @@ projections <-
       list(
         terra::rast(lapply(data_list, `[[`, 1)),
         terra::rast(lapply(data_list, `[[`, 2)),
-        terra::rast(lapply(data_list, `[[`, 3))
+        terra::rast(lapply(data_list, `[[`, 3)),
+        do.call(rbind, lapply(data_list, `[[`, 4))
       ),
       class = "CAVAanalytics_projections",
       components = list(
         "SpatRaster for ensemble mean",
         "SpatRaster for ensemble sd",
-<<<<<<< Updated upstream
-        "SpatRaster for individual members"
-=======
         "SpatRaster for individual members",
         "dataframe for annually aggregated data"
->>>>>>> Stashed changes
       )
     ))
 

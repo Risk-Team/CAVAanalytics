@@ -3,7 +3,7 @@
 #' Automatically upload CORDEX-CORE models available at UC servers
 
 #' @param path.to.data character, indicating the shared path to the data. Leave as default unless necessary
-#' @param country character, in English, indicating the country of interest. To select a bounding box,
+#' @param country character, in English, indicating the country of interest or an object of class sf. To select a bounding box,
 #' set country to NULL and define arguments xlim and ylim
 #' @param variable  character indicating the variable name
 #' @param xlim numeric of length = 2, with minimum and maximum longitude coordinates, in decimal degrees, of the bounding box of interest
@@ -71,18 +71,24 @@ load_data_hub <-
             )
           )
         }
+         if (is.null(years.proj) |
+            is.null(years.hist))
+          cli::cli_abort(c("x" = "years.hist and years.proj needs to be specified"))
+
         if (missing(variable))
           cli::cli_abort(c("x" = "argument variable as no default"))
-        if (any(!(years.hist %in% 1976:2005)) &
-            is.null(years.obs))
-          cli::cli_abort(c("x" = "Available years for the historical period are 1976:2005"))
 
-        if (!is.null(years.obs) &
-            any(!(years.obs %in% 1980:2019)))
-          cli::cli_abort(c("x" = "Available years for observations are 1980:2019"))
+        if (!is.null(path.to.obs)) {
+          if (!is.null(years.obs) & path.to.obs == "ERA5" &
+              any(!(years.obs %in% 1976:2021)))
+            cli::cli_abort(c("x" = "Available years for ERA5 observations are 1976:2021"))
 
-        if (any(!(years.proj %in% 2006:2099)))
-          cli::cli_abort(c("x" = "Available years for projections are 2006:2099"))
+          if (!is.null(years.obs) & path.to.obs == "W5E5" &
+              any(!(years.obs %in% 1980:2021)))
+            cli::cli_abort(c("x" = "Available years for W5E5 observations are 1980:2019"))
+
+   
+        }
 
         variable <-
           match.arg(variable,
@@ -91,11 +97,11 @@ load_data_hub <-
 
     # return the xlim and ylim of a country of interest or BBox
 
-    geo_localize <- function(country, xlim, ylim, buffer) {
+      geo_localize <- function(country, xlim, ylim, buffer) {
       if (!is.null(country) & !is.null(xlim)) {
         cli::cli_abort(c("x" = "Either select a country or a region of interest, not both"))
       } else {
-        country_shp = if (!is.null(country)) {
+        country_shp = if (!is.null(country) & !inherits(country, "sf")) {
           suppressMessages(
             rnaturalearth::ne_countries(
               country = country,
@@ -104,6 +110,10 @@ load_data_hub <-
             ) %>%
               sf::st_set_crs(., NA)
           )
+        } else if (!is.null(country) & inherits(country, "sf")) {
+          country %>%
+            sf::st_transform("EPSG:4326")
+
         } else {
           sf::st_bbox(c(
             xmin = min(xlim),
@@ -130,7 +140,6 @@ load_data_hub <-
         ))
       }
     }
-
     # start -------------------------------------------------------------------
 
     # check for valid path
@@ -207,44 +216,58 @@ load_data_hub <-
         experiment = ifelse(is.na(experiment), "historical", experiment),
         simulation = ifelse(is.na(simulation), "ICTP", simulation)
       ) %>%
-      dplyr::mutate(
-        climate_data = furrr::future_map(path,   function(x)  {
-          if (stringr::str_detect(x, "historical"))
-            suppressMessages(
-              loadGridData(
-                dataset = x,
-                var = variable,
-                years = years.hist,
-                lonLim = xlim,
-                latLim = ylim,
-                season = 1:12
-              )
-            )
+      dplyr::mutate(climate_data = furrr::future_map(path,   function(x)  {
+        if (stringr::str_detect(x, "historical"))
+          suppressMessages(
+            loadeR::loadGridData(
+              dataset = x,
+              var = variable,
+              years = years.hist,
+              lonLim = xlim,
+              latLim = ylim,
+              season = 1:12
+            )    %>%
+              {
+                if (stringr::str_detect(variable, "tas")) {
+                  suppressMessages(transformeR::gridArithmetics(., 273.15, operator = "-"))
+                } else if (stringr::str_detect(variable, "pr")) {
+                  suppressMessages(transformeR::gridArithmetics(., 86400, operator = "*"))
 
-          else
-            suppressMessages(
-              loadGridData(
-                dataset = x,
-                var = variable,
-                years = years.proj,
-                lonLim = xlim,
-                latLim = ylim,
-                season = 1:12
-              )
-            )
+                } else {
+                  .
 
-        }),
-        climate_data = parallel::mclapply(climate_data, function(x) {
-          if (stringr::str_detect(variable, "pr")) {
-            transformeR::gridArithmetics(x, 86400, operator = "*")
-          } else if (stringr::str_detect(variable, "tas")) {
-            transformeR::gridArithmetics(x, 273.15, operator = "-")
-          } else {
-            transformeR::gridArithmetics(x, 1, operator = "*")
-          }
+                }
 
-        }, mc.cores = 3)
-      )
+
+              }
+          )
+
+        else
+          suppressMessages(
+            loadeR::loadGridData(
+              dataset = x,
+              var = variable,
+              years = years.proj,
+              lonLim = xlim,
+              latLim = ylim,
+              season = 1:12
+            )  %>%
+              {
+                if (stringr::str_detect(variable, "tas")) {
+                  suppressMessages(transformeR::gridArithmetics(., 273.15, operator = "-"))
+                } else if (stringr::str_detect(variable, "pr")) {
+                  suppressMessages(transformeR::gridArithmetics(., 86400, operator = "*"))
+
+                } else {
+                  .
+
+                }
+
+
+              }
+          )
+
+      }))
 
     cli::cli_text(paste(Sys.time(), "Done"))
 
@@ -264,9 +287,9 @@ load_data_hub <-
     models_df <- models_df %>%
       dplyr::group_by(experiment) %>%
       dplyr::summarise(models = list(climate_data)) %>%
-      dplyr::mutate(models_mbrs = parallel::mclapply(models, function(x)  {
+      dplyr::mutate(models_mbrs = lapply(models, function(x)  {
         CAVAanalytics::common_dates(x)
-      }, mc.cores = 3)) %>%
+      })) %>%
       dplyr::select(-models)
 
     if (!is.null(path.to.obs)) {
@@ -310,11 +333,20 @@ load_data_hub <-
                                                        operator = "*")
                 obs_tr$Variable$varName = variable
                 obs_tr
+              } else if (stringr::str_detect(variable, "rsds")) {
+                obs_tr <- transformeR::gridArithmetics(.,
+                                                       ifelse(path.to.obs == "ERA5", 86400, 1),
+                                                       operator = "/")
+                obs_tr$Variable$varName = variable
+                obs_tr
               } else {
                 obs_tr <- transformeR::gridArithmetics(., 1, operator = "*")
                 obs_tr$Variable$varName = variable
                 obs_tr
               }
+            } else {
+              .
+
             }
           }
       ))

@@ -9,6 +9,13 @@ output:
     toc_depth: 2
 ---
 
+## CAVAanalytics 3.0.0
+Version 3.0.0 of CAVAanalytics bring several updates:
+
+- the trends function was removed. Linear regression can now be applied to observation only by specifying trends=T in the observations function
+- model agreement in the sign of climate change signal has been added. This substitute the calculation of trends for future projections
+- temporal and spatiotemporal patterns can now be visualized by directly specifying temporal=T or spatiotemporal=T in plotting where allowed
+
 ## CAVAanalytics 2.1.0
 Version 2.1.0 of CAVAanalytics bring several updates:
 
@@ -20,31 +27,4 @@ Version 2.1.0 of CAVAanalytics bring several updates:
 - Improved facets layout in plotting results
 
 ## CAVAanalytics 2.0.4
-Version 2.0.4 of CAVAanalytics allows users to work with the WAS-22 domain and the upcoming domain releases
-
-## CAVAanalytics 2.0.3
-Version 2.0.3 of CAVAanalytics includes several updates:
-
-- Enhanced functionality for calculating the frequency of user-specified climate indicators, now fully documented in the CAVAanalytics webpage tutorial.
-- Resolved issues with parallelization, particularly in the climate change signal function.
-- Fixed a minor bug previously reported in the observation plotting feature.
-
-## CAVAanalytics 2.0.2
-In version 2 of CAVAanalytics several improvements have been made. In particular:
-
-- New function to calculate model biases
-- ERA5 variables are named differently in CORDEX-CORE and W5E5. These differences are handled automatically and in a better way than in
-previous releases
-- Added IPCC colour palettes
-- Added new domains (SEA and EAS)
-
-
-## CAVAanalytics 1.0.0
-
-In the first release of CAVAanalytics, data for the first CORDEX-CORE domain is available, alongside W5E5 dataset and ERA5.
-CAVAanalytics main functions are:
-
-- load_data
-- Projections
-- climate_change_signal
-- trends
+first stable release

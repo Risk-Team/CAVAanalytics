@@ -49,7 +49,7 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 
 \item{chunk.size}{numeric, indicating the number of chunks. The smaller the better when working with limited RAM}
 
-\item{overlap}{numeric, amount of overlap needed to create the composite. Default 0.5}
+\item{overlap}{numeric, amount of overlap needed to create the composite. Default 0.25}
 
 \item{season}{list, containing seasons to select. For example, list(1:6, 7:12)}
 

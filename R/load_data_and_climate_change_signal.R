@@ -21,7 +21,8 @@
 #' @param frequency logical value. This parameter is relevant only when 'consecutive' is set to TRUE and 'duration' is not set to "max". For instance, if you want to determine the count of heatwaves, defined as the number of days with Tmax (maximum temperature) exceeding 35°C for a minimum of 3 consecutive days, set 'uppert' to 35, 'consecutive' to TRUE, 'duration' to 3, and 'frequency' to TRUE.
 #' @param n.sessions numeric, number of sessions to use in parallel processing for loading the data. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary
 #' @param chunk.size numeric, indicating the number of chunks. The smaller the better when working with limited RAM
-#' @param overlap numeric, amount of overlap needed to create the composite. Default 0.5
+#' @param threshold numerical value with range 0-1. It indicates the threshold for assigning model agreement. For example, 0.6 indicates that model agreement is assigned when 60 percent of the models agree in the sign of the change
+#' @param overlap numeric, amount of overlap needed to create the composite. Default 0.25
 #' @importFrom magrittr %>%
 #' @return list with SpatRaster. To explore the output run attributes(output)
 #' @export
@@ -47,6 +48,7 @@ load_data_and_climate_change_signal <-
            frequency = F,
            bias.correction = F,
            domain = NULL,
+           threshold=0.6,
            n.sessions = 6) {
     # calculate number of chunks based on xlim and ylim
     if (missing(chunk.size) | missing(season)) {
@@ -148,6 +150,7 @@ load_data_and_climate_change_signal <-
                 consecutive = consecutive,
                 duration =  duration,
                 frequency = frequency,
+                threshold =  threshold,
                 n.sessions = 1
               )
           )
@@ -164,6 +167,7 @@ load_data_and_climate_change_signal <-
     rst_mean <- lapply(out_list, `[[`, 1)
     rst_sd <- lapply(out_list, `[[`, 2)
     rst_mbrs <- lapply(out_list, `[[`, 3)
+    rst_agree <- lapply(out_list, `[[`, 4)
     # Merge the extracted rasters using `Reduce` and set their names
     merge_rasters <- function(rst_list) {
       names <- names(rst_list[[1]])
@@ -186,6 +190,7 @@ load_data_and_climate_change_signal <-
     )
     rasters_sd <- merge_rasters(rst_sd)
     rasters_mbrs <- merge_rasters(rst_mbrs)
+    rasters_agree <- merge_rasters(rst_agree)
 
 
 
@@ -193,25 +198,17 @@ load_data_and_climate_change_signal <-
       list(
         rasters_mean %>% terra::crop(., country_shp) %>% terra::mask(., country_shp),
         rasters_sd %>% terra::crop(., country_shp) %>% terra::mask(., country_shp),
-<<<<<<< Updated upstream
-        rasters_mbrs %>% terra::crop(., country_shp) %>% terra::mask(., country_shp)
-=======
         rasters_mbrs %>% terra::crop(., country_shp) %>% terra::mask(., country_shp),
         rasters_agree %>% terra::crop(., country_shp) %>% terra::mask(., country_shp),
         NULL
->>>>>>> Stashed changes
       ),
       class = "CAVAanalytics_ccs",
       components = list(
         "SpatRaster for ensemble mean",
         "SpatRaster for ensemble sd",
-<<<<<<< Updated upstream
-        "SpatRaster for individual members"
-=======
         "SpatRaster for individual members",
         "SpatRaster stack for ccs agreement",
         "dataframe for spatially aggregated data"
->>>>>>> Stashed changes
       )
     ))
 

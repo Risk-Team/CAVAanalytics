@@ -13,6 +13,7 @@ climate_change_signal(
   duration = "max",
   frequency = F,
   bias.correction = F,
+  threshold = 0.6,
   n.sessions = 1
 )
 }
@@ -27,11 +28,13 @@ climate_change_signal(
 
 \item{consecutive}{logical, to use in conjunction with lowert or uppert}
 
-\item{duration}{A parameter that can be set to either "max" or a specific number. It is relevant only when 'consecutive' is set to TRUE. For instance, to calculate the count of consecutive days with Tmax (maximum temperature) above 35°C, lasting for more than 3 days, you can set 'uppert' to 35, 'consecutive' to TRUE, and 'duration' to 3.}
+\item{duration}{parameter that can be set to either "max" or a specific number. It is relevant only when 'consecutive' is set to TRUE. For instance, to calculate the count of consecutive days with Tmax (maximum temperature) above 35°C, lasting for more than 3 days, you can set 'uppert' to 35, 'consecutive' to TRUE, and 'duration' to 3.}
 
 \item{frequency}{logical value. This parameter is relevant only when 'consecutive' is set to TRUE and 'duration' is not set to "max". For instance, if you want to determine the count of heatwaves, defined as the number of days with Tmax (maximum temperature) exceeding 35°C for a minimum of 3 consecutive days, set 'uppert' to 35, 'consecutive' to TRUE, 'duration' to 3, and 'frequency' to TRUE.}
 
 \item{bias.correction}{logical}
+
+\item{threshold}{numerical value with range 0-1. It indicates the threshold for assigning model agreement. For example, 0.6 indicates that model agreement is assigned when 60 percent of the models agree in the sign of the change}
 
 \item{n.sessions}{numeric, number of sessions to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage}
 }
@@ -39,5 +42,5 @@ climate_change_signal(
 list with SpatRaster. To explore the output run attributes(output)
 }
 \description{
-Automatically computes climate change signal
+Automatically computes climate change signal and agreement in the sign of change
 }

@@ -198,7 +198,7 @@ load_data_and_projections <- function(variable,
       "SpatRaster for ensemble mean",
       "SpatRaster for ensemble sd",
       "SpatRaster for individual members",
-      "dataframe for spatially aggregated data"
+      "dataframe for annually aggregated data"
     )
   ))
 

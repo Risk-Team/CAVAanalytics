@@ -29,8 +29,6 @@ In the [getting started article](https://risk-team.github.io/CAVAanalytics/artic
 # to download a specific area, set country=NULL and specify xlim and ylim arguments. 
 kenya_exmp <- load_data(path.to.data = "CORDEX-CORE", country = "Kenya", variable = "tasmax", years.proj = 2030:2060, years.hist = NULL, domain = "AFR-22")
 
-
-
 ```
 
 ### Seasonal plot
@@ -66,7 +64,6 @@ CAVAanalytics::thrs_consec(tmax, uppert=35, lowert=NULL, duration=2, frequency=F
 # How many heatwaves are there, defined as periods with Tmax exceeding 35 degrees for at least two consecutive days?
 CAVAanalytics::thrs_consec(tmax, uppert=35, lowert=NULL, duration=2, frequency=TRUE)
 
-
 ```
 
 ### Real examples
@@ -101,21 +98,12 @@ plotting(hwvs, plot_titles = "N° of heat waves", ensemble = T, palette = c("whi
 
 ```
 
-and their temporal 
+and their temporal evolution
 
-```{r,  warning=F, message=FALSE, fig.height=3, fig.width=6}
+```{r,  warning=F, message=FALSE, fig.height=5, fig.width=6}
 
 plotting(hwvs, plot_titles = "N° of heat waves", ensemble = T, temporal=T)
 
 ```
-
-and spatiotemporal evolution. The option spatiotemporal allows users to focus on spatial and temporal changes by temporal breaks controlled by the n.groups argument.
-
-```{r,  warning=F, message=FALSE, fig.height=6, fig.width=4}
-
-plotting(hwvs, plot_titles = "N° of heat waves", ensemble = T, spatiotemporal=T, n.groups=2)
-
-```
-
 
 

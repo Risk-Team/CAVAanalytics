@@ -320,7 +320,37 @@ climate_change_signal <- function(data,
               names(rs) <-
                 paste0("Member ", ens, "_", x, "_", names(rs), "_", season_name)
               return(rs)
-            })
+            }),
+          models_temp_ccs = purrr::map2(experiment, models_agg_y, function(x, y) {
+            h <-
+              dplyr::filter(., stringr::str_detect(experiment, "hist"))$models_agg_tot[[1]]
+
+            if (stringr::str_detect(x, "hist")) {
+              NULL
+
+            } else {
+              mbrs = dim(y$Data)[1]
+              yrs = dim(y$Data)[2]
+              lt = dim(y$Data)[3]
+              ln = dim(y$Data)[4]
+
+              h.expanded = array(rep(h$Data, each = yrs), dim = c(mbrs, yrs, lt, ln))
+
+              delta <-
+                transformeR::gridArithmetics(y, h.expanded, operator = "-")
+              dimnames(delta$Data)[[1]] <- delta$Members
+              dimnames(delta$Data)[[2]] <- delta$Dates$start
+              dimnames(delta$Data)[[3]] <- delta$xyCoords$y
+              dimnames(delta$Data)[[4]] <- delta$xyCoords$x
+
+              reshape2::melt(delta$Data) %>%
+                dplyr::mutate(date = as.Date(Var2)) %>%
+                dplyr::mutate(experiment = x) %>%
+                dplyr::mutate(season = season_name) %>%
+                dplyr::group_by(date, experiment, Var1, season) %>%
+                dplyr::summarise(value = median(value, na.rm = T)) # spatial aggregation because ccs do not support spatiotemporal
+
+            }
           })
         ) %>%
         dplyr::filter(!stringr::str_detect(experiment, "hist"))
@@ -331,14 +361,19 @@ climate_change_signal <- function(data,
           terra::rast(data_list$rst_ens_mean_ccs),
           terra::rast(data_list$rst_ens_sd_ccs),
           terra::rast(unlist(data_list$rst_models_ccs)),
-          terra::rast(data_list$rst_ccs_sign)
+          terra::rast(data_list$rst_ccs_sign),
+          do.call(rbind, purrr::map(
+            1:nrow(data_list), ~ data_list$models_temp_ccs[[.]]
+          ))
         ),
         class = "CAVAanalytics_ccs",
         components = list(
           "SpatRaster for ccs mean",
           "SparRaster stack for ccs sd",
           "SpatRaster stack for individual members",
-          "SpatRaster stack for ccs agreement"
+          "SpatRaster stack for ccs agreement",
+          "dataframe for spatially aggregated data"
+
         )
       ))
     }
@@ -421,14 +456,16 @@ climate_change_signal <- function(data,
       terra::rast(lapply(data_list, `[[`, 1)),
       terra::rast(lapply(data_list, `[[`, 2)),
       terra::rast(lapply(data_list, `[[`, 3)),
-      terra::rast(lapply(data_list, `[[`, 4))
+      terra::rast(lapply(data_list, `[[`, 4)),
+      do.call(rbind, lapply(data_list, `[[`, 5))
     ),
     class = "CAVAanalytics_ccs",
     components = list(
       "SpatRaster for ccs mean",
       "SparRaster stack for ccs sd",
       "SpatRaster stack for individual members",
-      "SpatRaster stack for ccs agreement"
+      "SpatRaster stack for ccs agreement",
+      "dataframe for spatially aggregated data"
     )
   ))
 

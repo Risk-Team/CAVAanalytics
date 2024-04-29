@@ -168,12 +168,31 @@ plot_titles = "N > 35 bc",
 palette=c("white", "orange", "red", "darkred"), legend_range = c(0, 180))
 ```
 
-
-The results can also be visualized temporally.
+The results can also be visualized for the annual time series (data is spatially aggregated).
 
 ```{r, fig.height=3, fig.width=5, fig.align="center", message=F, warning=F}
 plotting(proj_kenya_35bc, ensemble=T,  
-plot_titles = "N > 35 bc", temporal=T)
+plot_titles = "N > 35 bc", temporal=T, palette=c("blue", "red"))
+```
+
+and without spatial or temporal aggregation. In this case we are looking at the frequency distribution of the yearly data across all pixels (no spatial aggregation)
+
+```{r, fig.height=3, fig.width=5, fig.align="center", message=F, warning=F}
+plotting(proj_kenya_35bc, ensemble=T,  
+plot_titles = "N > 35 bc", spatiotemporal=T, palette=c("blue", "red"))
+```
+
+
+
+## Climate change signal
+
+While analyzing future periods can be useful, more often we prioritize understanding delta changes, which represent the relative increase or decrease in mean maximum temperatures compared to a baseline. CAVAanalytics facilitates this analysis as well.
+
+```{r, fig.height=4, fig.width=10,  message=F, warning=F}
+ccs_kenya <- climate_change_signal(kenya_exmp, season=list(1:12))
+plotting(ccs_kenya, ensemble=F, plot_titles = "Mean tasmax change", 
+legend_range = c(-3, 3), 
+palette = c("blue", "cyan", "green", "white", "yellow" ,"orange", "red"))
 ```
 
 
@@ -185,6 +204,7 @@ To notice that the function climate_change_signal also calculates the agreement 
 
 ```{r, fig.height=4, fig.width=10,  message=F, warning=F}
 ccs_kenya <- climate_change_signal(kenya_exmp, season=list(1:6,7:12), threshold = 0.8)
+
 plotting(ccs_kenya, plot_titles = "Mean tasmax change", 
 legend_range = c(-3, 3), 
 palette = IPCC_palette(type = "tmp", divergent = T))
@@ -192,4 +212,7 @@ palette = IPCC_palette(type = "tmp", divergent = T))
 ```
 
 
+```{r, fig.height=3, fig.width=5,  message=F, warning=F}
+plotting(ccs_kenya, plot_titles = "Mean tasmax change", temporal=T,palette=c("blue", "red"))
 
+```

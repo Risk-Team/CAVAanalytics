@@ -326,7 +326,7 @@ projections <-
             "SpatRaster for ensemble mean",
             "SpatRaster for ensemble sd",
             "SpatRaster for individual members",
-            "dataframe for spatially aggregated data"
+            "dataframe for annualy aggregated data"
           )
         ))
 
@@ -406,7 +406,7 @@ projections <-
         "SpatRaster for ensemble mean",
         "SpatRaster for ensemble sd",
         "SpatRaster for individual members",
-        "dataframe for spatially aggregated data"
+        "dataframe for annually aggregated data"
       )
     ))
 

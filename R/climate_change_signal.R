@@ -373,7 +373,7 @@ climate_change_signal <- function(data,
           "SparRaster stack for ccs sd",
           "SpatRaster stack for individual members",
           "SpatRaster stack for ccs agreement",
-          "dataframe for spatially aggregated data"
+          "dataframe for spatially and annually aggregated data"
 
         )
       ))

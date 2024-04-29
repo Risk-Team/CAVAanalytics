@@ -12,7 +12,7 @@
 #' @param bins logical. Whether to visualize colors as a gradient or in bins
 #' @param n.bins numeric. Controlling the number of bins when bins equal TRUE
 #' @param alpha numeric. Transparency of colors
-#' @param spatiotemporal logical. Whether computed yearly data should be visualized without spatial and temporal aggregation. Frequencies are visualized
+#' @param spatiotemporal logical. Whether computed yearly data should be visualized without spatial and temporal aggregation. Basically, frequencies are visualized
 #' @param temporal logical. Whether computed yearly data should be visualized temporally after spatial aggregation (median of all pixels)
 
 #' @return ggplot object
@@ -52,7 +52,6 @@ plotting.CAVAanalytics_projections <-
            spatiotemporal = F,
            temporal = F,
            n.groups = 3) {
-
     # check -------------------------------------------------------------------
 
     stopifnot(is.logical(ensemble))
@@ -71,7 +70,7 @@ plotting.CAVAanalytics_projections <-
     p <-  if (!temporal & !spatiotemporal)  {
       if (ensemble &
           stat == "mean") {
-        spatial_prep(rst, 1, proj = T, stat, ensemble) %>%
+        spatial_prep(rst, 1, ccs_sign = F, stat, ensemble) %>%
           spatial_plot(.,
                        sign = F,
                        ensemble,
@@ -82,7 +81,7 @@ plotting.CAVAanalytics_projections <-
                        plot_titles,
                        legend_range)
       } else if (ensemble & stat == "sd") {
-        spatial_prep(rst, 2, proj = T, ensemble) %>%
+        spatial_prep(rst, 2, ccs_sign = F, stat, ensemble) %>%
           spatial_plot(.,
                        sign = F,
                        ensemble,
@@ -94,7 +93,7 @@ plotting.CAVAanalytics_projections <-
                        legend_range)
       } else {
         # individual models
-        spatial_prep(rst, 3, proj = T, stat, ensemble) %>%
+        spatial_prep(rst, 3, ccs_sign = F, stat, ensemble) %>%
           spatial_plot(.,
                        sign = F,
                        ensemble,
@@ -107,9 +106,21 @@ plotting.CAVAanalytics_projections <-
       }
     } else if (temporal & !spatiotemporal) {
       # when temporal is TRUE
-      temporal_plot(rst, 4, ensemble,  spatial.aggr = T, plot_titles, palette, legend_range)
+      temporal_plot(rst,
+                    4,
+                    ensemble,
+                    spatial.aggr = T,
+                    plot_titles,
+                    palette,
+                    legend_range)
     } else {
-      spatiotemporal_plot(rst, 4, ensemble,  plot_titles, palette, legend_range, n.groups)
+      spatiotemporal_plot(rst,
+                          4,
+                          ensemble,
+                          plot_titles,
+                          palette,
+                          legend_range,
+                          n.groups)
     }
 
     cli::cli_progress_done()
@@ -143,7 +154,7 @@ plotting.CAVAanalytics_ccs <-
     stopifnot(is.logical(temporal))
 
     if (spatiotemporal)
-      cli::cli_abort("Feature not available for this object type")
+      cli::cli_abort("Feature not meaningful for this object type")
 
     # start code -------------------------------------------------------------------
     cli::cli_progress_step("Plotting")
@@ -151,11 +162,13 @@ plotting.CAVAanalytics_ccs <-
     p <-  if (!temporal)  {
       if (ensemble &
           stat == "mean") {
-        spatial_prep(data = rst,
-                     index = 1,
-                     proj = F,
-                     stat,
-                     ensemble) %>%
+        spatial_prep(
+          data = rst,
+          index = 1,
+          ccs_sign = T,
+          stat,
+          ensemble
+        ) %>%
           spatial_plot(.,
                        sign = T,
                        ensemble,
@@ -166,11 +179,13 @@ plotting.CAVAanalytics_ccs <-
                        plot_titles,
                        legend_range)
       } else if (ensemble & stat == "sd") {
-        spatial_prep(data = rst,
-                     index = 2,
-                     proj = F,
-                     stat,
-                     ensemble) %>%
+        spatial_prep(
+          data = rst,
+          index = 2,
+          ccs_sign = T,
+          stat,
+          ensemble
+        ) %>%
           spatial_plot(.,
                        sign = T,
                        ensemble,
@@ -182,11 +197,13 @@ plotting.CAVAanalytics_ccs <-
                        legend_range)
       } else {
         # individual models
-        spatial_prep(data = rst,
-                     index = 3,
-                     proj = F,
-                     stat,
-                     ensemble) %>%
+        spatial_prep(
+          data = rst,
+          index = 3,
+          ccs_sign = T,
+          stat,
+          ensemble
+        ) %>%
           spatial_plot(.,
                        sign = F,
                        ensemble,
@@ -241,334 +258,6 @@ plotting.CAVAanalytics_observations <-
         temporal)
       cli::cli_abort("spatiotemporal and temporal cannot be both equal TRUE")
 
-    # intermediate functions --------------------------------------------------
-
-
-    temporal_plot = function(data_list, index) {
-      cli::cli_alert_warning(" Arguments ensemble,bins,n.bins,alpha and legend_range are ignored")
-      rst <- do.call(rbind, data_list[[index]])
-      p <- rst %>%
-        dplyr::group_by(date, experiment, season) %>%
-        dplyr::summarise(value = mean(value)) %>%
-        ggplot2::ggplot() +
-        ggplot2::geom_line(
-          ggplot2::aes(y = value,
-                       x = date,
-                       color = experiment),
-          linetype = "dotted",
-          alpha = 0.7,
-          linewidth = 0.7
-        ) +
-        ggplot2::geom_smooth(
-          ggplot2::aes(y = value,
-                       x = date,
-                       color = experiment),
-          se = F,
-          linewidth = 0.8,
-          method = "gam",
-          formula = y ~ x
-        ) +
-        ggplot2::facet_wrap(~ season) +
-        ggplot2::scale_x_date(date_breaks = "4 years", date_labels = "%Y") +
-        ggplot2::theme_bw() +
-        ggplot2::theme(
-          legend.position = "none",
-          axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
-          panel.grid.major = ggplot2::element_blank(),
-          panel.grid.minor = ggplot2::element_blank()
-        ) +
-        ggplot2::labs(x = "Year", y = plot_titles) +
-        if (!is.null(palette)) {
-          ggplot2::scale_color_manual(values = palette)
-        }
-
-      return(p)
-    }
-
-
-    spatiotemporal_plot = function(data_list,
-                                   index,
-                                   ...) {
-      cli::cli_alert_warning(
-        " Arguments bins,n.bins,alpha,palette and ensemble are ignored. Change number of group intervals with n.groups"
-      )
-      rst <- do.call(rbind, data_list[[index]])
-
-      p <-
-        suppressMessages(
-          rst %>%
-            ridgeline(
-              rst,
-              group_col = 'date',
-              z_col = 'value',
-              num_grps = n.groups,
-              facet1 =  'season'
-            ) +
-            ggplot2::theme_bw() +
-            ggplot2::theme(legend.position = "none") +
-            ggplot2::labs(x = plot_titles) +
-            if (!is.null(legend_range)) {
-              ggplot2::xlim(legend_range[1], legend_range[2])
-            }
-
-        )
-
-      return(p)
-
-    }
-
-    spatial_plot <-
-      function(data_list,
-               index,
-               ...) {
-        cli::cli_alert_warning(" Argument ensemble is ignored")
-        rst <- data_list[[index]]
-
-        # Convert SpatRaster to dataframe
-        rs_df <-
-          terra::as.data.frame(rst, xy = TRUE, na.rm = TRUE) %>%
-          tidyr::pivot_longer(cols = 3:ncol(.),
-                              values_to = "value",
-                              names_to = "long_name") %>%
-          # Extract scenario and time frame from column names
-          tidyr::separate_wider_delim(
-            long_name,
-            delim = "_",
-            names = c("scenario", "time_frame", "season")
-          )  %>%
-          # Replace "." with "-" in time frame
-          dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
-
-
-        # Set default colors for legend
-        palette <-
-          if (is.null(palette))
-            c("blue",
-              "cyan",
-              "green",
-              "yellow",
-              "orange",
-              "red",
-              "black")
-        else
-          palette
-
-        # Set default range for legend
-        legend_range <-
-          if (is.null(legend_range))
-            c(range(rs_df$value, na.rm = TRUE))
-        else
-          legend_range
-
-        # Suppress warnings
-        options(warn = -1)
-
-        # Get countries data
-        countries <-
-          rnaturalearth::ne_countries(scale = "large", returnclass = "sf")
-        p <- ggplot2::ggplot() +
-          ggplot2::geom_sf(
-            fill = 'white',
-            color = "black",
-            data = countries,
-            alpha = 0.5
-          ) +
-          ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
-                               data = rs_df,
-                               alpha = alpha) +
-          ggplot2::geom_sf(fill = NA,
-                           color = "black",
-                           data = countries) +
-          {
-            if (!bins) {
-              ggplot2::scale_fill_gradientn(
-                colors = palette,
-                limits = legend_range,
-                na.value = "transparent",
-                n.breaks = 10,
-                guide = ggplot2::guide_colourbar(
-                  ticks.colour = "black",
-                  ticks.linewidth = 1,
-                  title.position = "top",
-                  title.hjust = 0.5,
-                  label.hjust = 1
-                )
-              )
-            } else {
-              ggplot2::scale_fill_stepsn(
-                colors = palette,
-                limits = legend_range,
-                na.value = "transparent",
-                n.breaks = ifelse(is.null(n.bins), 10, n.bins),
-                guide = ggplot2::guide_colourbar(
-                  ticks.colour = "black",
-                  ticks.linewidth = 1,
-                  title.position = "top",
-                  title.hjust = 0.5,
-                  label.hjust = 1
-                )
-              )
-
-            }
-
-          } +
-          ggplot2::coord_sf(
-            xlim = c(range(rs_df$x)[[1]] - 0.5, range(rs_df$x)[[2]] + 0.5),
-            ylim = c(range(rs_df$y)[[1]] - 0.5, range(rs_df$y)[[2]] + 0.5),
-            expand = F,
-            ndiscr = 500
-          ) +
-          ggh4x::facet_nested(scenario  ~ season) +
-          ggplot2::labs(fill = plot_titles, x = "", y = "") +
-          ggplot2::theme_bw() +
-          ggplot2::theme(
-            strip.text.y = ggplot2::element_blank(),
-            plot.background = ggplot2::element_blank(),
-            panel.background = ggplot2::element_blank(),
-            panel.border = ggplot2::element_blank(),
-            panel.grid.major = ggplot2::element_blank(),
-            panel.grid.minor = ggplot2::element_blank(),
-            axis.text.x = ggplot2::element_blank(),
-            axis.text.y = ggplot2::element_blank(),
-            axis.ticks = ggplot2::element_blank(),
-            axis.title = ggplot2::element_blank(),
-            legend.position = "right",
-            legend.key.height = ggplot2::unit(1, 'cm'),
-            legend.key.width = ggplot2::unit(0.3, 'cm'),
-            legend.box.spacing = ggplot2::unit(0.2, "pt")
-          )
-
-        return(p)
-
-
-      }
-
-
-    spatial_plot_trend <- function(data_list,
-                                   ...) {
-      cli::cli_alert_warning(" Argument ensemble is ignored")
-
-      palette <-
-        if (is.null(palette))
-          c("blue",
-            "cyan",
-            "green",
-            "yellow",
-            "orange",
-            "red",
-            "black")
-      else
-        palette
-
-      # Set default range for legend
-      legend_range <-
-        if (is.null(legend_range))
-          c(range(terra::values(data_list[[1]]), na.rm = TRUE)) # slope coef
-      else
-        legend_range
-      
-      # Get countries data
-      countries <-
-        rnaturalearth::ne_countries(scale = "large", returnclass = "sf")
-
-      rs_df <-
-        purrr::map(
-          data_list[1:2],
-          ~ terra::as.data.frame(.x, xy = TRUE, na.rm = TRUE) %>%
-            tidyr::pivot_longer(
-              cols = 3:ncol(.),
-              values_to = "value",
-              names_to = "long_name",
-            ) %>%
-            tidyr::separate_wider_delim(
-              .,
-              long_name,
-              delim = "_",
-              names = c("scenario", "type", "time_frame", "season")
-            ) %>%
-            # Replace "." with "-" in time frame
-            dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
-        )
-
-      p <- ggplot2::ggplot() +
-        ggplot2::geom_sf(
-          fill = 'white',
-          color = "black",
-          data = countries,
-          alpha = 0.5
-        ) +
-        ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
-                             data = rs_df[[1]],
-                             alpha = alpha) +
-        ggplot2::geom_sf(fill = NA,
-                         color = "black",
-                         data = countries) +
-        {
-          if (!bins) {
-            ggplot2::scale_fill_gradientn(
-              colors = palette,
-              limits = legend_range,
-              na.value = "transparent",
-              n.breaks = 10,
-              guide = ggplot2::guide_colourbar(
-                ticks.colour = "black",
-                ticks.linewidth = 1,
-                title.position = "top",
-                title.hjust = 0.5
-              )
-            )
-          } else {
-            ggplot2::scale_fill_stepsn(
-              colors = palette,
-              limits = legend_range,
-              na.value = "transparent",
-              n.breaks = ifelse(is.null(n.bins), 10, n.bins),
-              guide = ggplot2::guide_colourbar(
-                ticks.colour = "black",
-                ticks.linewidth = 1,
-                title.position = "top",
-                title.hjust = 0.5
-              )
-            )
-          }
-        } +
-        ggplot2::geom_point(
-          data = dplyr::filter(rs_df[[2]], value < 0.05),
-          size = 0.1,
-          alpha = 0.4,
-          color = "black",
-          ggplot2::aes(x, y)
-        ) +
-        ggplot2::coord_sf(
-          xlim = c(range(rs_df[[2]]$x)[[1]] - 0.5, range(rs_df[[2]]$x)[[2]] + 0.5),
-          ylim = c(range(rs_df[[2]]$y)[[1]] - 0.5, range(rs_df[[2]]$y)[[2]] + 0.5),
-          expand = F,
-          ndiscr = 500
-        ) +
-        ggh4x::facet_nested(scenario  ~ season) +
-        ggplot2::labs(fill = plot_titles, x = "", y = "") +
-        ggplot2::theme_bw() +
-        ggplot2::theme(
-          strip.text.y = ggplot2::element_blank(),
-          plot.background = ggplot2::element_blank(),
-          panel.background = ggplot2::element_blank(),
-          panel.border = ggplot2::element_blank(),
-          panel.grid.major = ggplot2::element_blank(),
-          panel.grid.minor = ggplot2::element_blank(),
-          axis.text.x = ggplot2::element_blank(),
-          axis.text.y = ggplot2::element_blank(),
-          axis.ticks = ggplot2::element_blank(),
-          axis.title = ggplot2::element_blank(),
-          legend.position = "right",
-          legend.key.height = ggplot2::unit(1, 'cm'),
-          legend.key.width = ggplot2::unit(0.3, 'cm'),
-          legend.box.spacing = ggplot2::unit(0.2, "pt")
-        )
-
-      return(p)
-
-    }
-
 
     # start of code -----------------------------------------------------------
     cli::cli_progress_step("Plotting")
@@ -576,27 +265,97 @@ plotting.CAVAanalytics_observations <-
     p <- if (length(rst) == 2) {
       # linear regression was not applied
       if (!temporal & !spatiotemporal) {
-        spatial_plot(rst, 1)
+        spatial_prep(
+          data = rst,
+          index = 1,
+          ccs_sign = F,
+          stat,
+          ensemble,
+          obs = T
+        ) %>%
+          spatial_plot(.,
+                       sign = F,
+                       ensemble,
+                       palette,
+                       bins,
+                       n.bins,
+                       alpha,
+                       plot_titles,
+                       legend_range,
+                       obs = T)
       } else {
         if (temporal) {
-          temporal_plot(rst, 2)
+          temporal_plot(
+            data = rst,
+            index = 2,
+            ensemble,
+            spatial.aggr = F,
+            plot_titles,
+            palette,
+            legend_range,
+            obs = T
+          )
         } else {
           # spatiotemporal
-          spatiotemporal_plot(rst, 2)
+          spatiotemporal_plot(rst,
+                              2,
+                              ensemble,
+                              plot_titles,
+                              palette,
+                              legend_range,
+                              n.groups,
+                              obs = T)
         }
       }
 
     } else {
       # when linear regression is used
       if (!temporal & !spatiotemporal) {
-        spatial_plot_trend(rst)
+        spatial_prep(
+          data = rst,
+          index = 1,
+          ccs_sign = F,
+          stat,
+          ensemble,
+          obs = T,
+          trends = T
+        ) %>%
+          spatial_plot(
+            .,
+            sign = F,
+            ensemble,
+            palette,
+            bins,
+            n.bins,
+            alpha,
+            plot_titles,
+            legend_range,
+            obs = T,
+            trends = T
+          )
       } else {
         # when spatiotemproal or temporal is TRUE
         if (temporal) {
-          temporal_plot(rst, 3)
+          temporal_plot(
+            data = rst,
+            index = 3,
+            ensemble,
+            spatial.aggr = F,
+            plot_titles,
+            palette,
+            legend_range,
+            obs = T
+          )
         } else {
           # spatiotemporal
-          spatiotemporal_plot(rst, 3)
+          spatiotemporal_plot(rst,
+                              3,
+                              ensemble,
+                              plot_titles,
+                              palette,
+                              legend_range,
+                              n.groups,
+                              obs = T)
         }
 
       }
@@ -641,16 +400,16 @@ plotting.CAVAanalytics_model_biases <-
     if (ensemble) {
       cli::cli_text(
         if (temporal)
-          "{cli::symbol$arrow_right} Visualizing the ensemble bias for spatially aggregated data"
+          "{cli::symbol$arrow_right} Visualizing annual time series for ensemble bias"
         else
-          "{cli::symbol$arrow_right} Visualizing the ensemble bias for temporally aggregated data"
+          "{cli::symbol$arrow_right} Visualizing spatial ensemble bias"
       )
     } else {
       cli::cli_text(
         if (temporal)
-          "{cli::symbol$arrow_right} Visualizing individual member biases for spatially aggregated data"
+          "{cli::symbol$arrow_right} Visualizing annual time series individual member biases"
         else
-          "{cli::symbol$arrow_right} Visualizing individual member biases for temporally aggregated data"
+          "{cli::symbol$arrow_right} Visualizing individual member spatial biases"
       )
     }
 

@@ -7,7 +7,7 @@
 make_raster(cl4.object, dimensions, shape.file, stat = "mean")
 }
 \arguments{
-\item{cl4.object}{A C4R list with the Data slot in two dimension}
+\item{cl4.object}{A C4R list}
 
 \item{dimensions}{vector specifying which dimensions corresponds to lat and lon. The rest will be averaged}
 
@@ -19,5 +19,5 @@ make_raster(cl4.object, dimensions, shape.file, stat = "mean")
 spatRaster
 }
 \description{
-Make a spatRaster from a C4R list with dim(Data)=2
+Make a spatRaster from a C4R list
 }

@@ -35,9 +35,9 @@ plotting(
 
 \item{alpha}{numeric. Transparency of colors}
 
-\item{spatiotemporal}{logical. Whether computed yearly data should be visualized without spatial and temporal aggregation}
+\item{spatiotemporal}{logical. Whether computed yearly data should be visualized without spatial and temporal aggregation. Basically, frequencies are visualized}
 
-\item{temporal}{logical. Whether computed yearly data should be visualized temporally after spatial aggregation}
+\item{temporal}{logical. Whether computed yearly data should be visualized temporally after spatial aggregation (median of all pixels)}
 }
 \value{
 ggplot object

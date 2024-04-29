@@ -59,7 +59,9 @@ load_data_and_model_biases <-
       )
     }
 
-
+    cli::cli_alert_warning(
+      "Interpolation may be required to merge the rasters. Be aware that interpolation can introduce slight discrepancies in the data, potentially affecting the consistency of results across different spatial segments."
+    )
     country_shp = if (!is.null(country) &
                       !inherits(country, "sf")) {
       suppressMessages(
@@ -87,6 +89,11 @@ load_data_and_model_biases <-
         sf::st_set_crs(., NA)
     }
 
+    lon_range <-
+      c(sf::st_bbox(country_shp)[[1]], sf::st_bbox(country_shp)[[3]])
+    lat_range <-
+      c(sf::st_bbox(country_shp)[[2]], sf::st_bbox(country_shp)[[4]])
+
     x_chunks <- seq(from = xlim[1], to = xlim[2], by = chunk.size)
     y_chunks <- seq(from = ylim[1], to = ylim[2], by = chunk.size)
     x_chunks <- if (length(x_chunks) < 2)
@@ -97,6 +104,12 @@ load_data_and_model_biases <-
       ylim
     else
       y_chunks
+
+    #making sure the whole area is loaded
+    if (x_chunks[length(x_chunks)] < lon_range[2])
+      x_chunks[length(x_chunks) + 1] = lon_range[2]
+    if (y_chunks[length(y_chunks)] < lat_range[2])
+      y_chunks[length(y_chunks) + 1] = lat_range[2]
     # create empty list to store output
     out_list <- list()
 
@@ -164,27 +177,36 @@ load_data_and_model_biases <-
     rst_mbrs <- lapply(out_list, `[[`, 2)
     # Merge the extracted rasters using `Reduce` and set their names
     merge_rasters <- function(rst_list) {
+      # Determine the smallest (finest) resolution among all rasters
+      resolutions <- sapply(rst_list, function(r)
+        terra::res(r))
+      common_res <- min(resolutions)
+
+      # Resample all rasters to the common resolution
+      resampled_rasters <- lapply(rst_list, function(r) {
+        terra::resample(r,
+                        terra::rast(
+                          terra::ext(r),
+                          resolution = common_res,
+                          crs = terra::crs(r)
+                        ),
+                        method = "bilinear")
+      })
+
+      # Merge the resampled rasters
+      merged_raster <-
+        Reduce(function(x, y)
+          terra::merge(x, y), resampled_rasters)
+
+      #Set names from the first raster in the list
       names <- names(rst_list[[1]])
-      Reduce(function(...)
-        terra::merge(...), rst_list) %>% setNames(names)
+      setNames(merged_raster, names)
     }
 
     cli::cli_process_done()
 
-    rasters_mean <- tryCatch(
-      expr = merge_rasters(rst_mean),
-      warning = function(w) {
-        # Translate the warning into something more understandable
-        translated_warning <-
-          "Terra had to interpolate your SpatRasters to merge them. You can ignore this warning if you used sensible values for overalp and chunk_size arguments"
-        # ... handle the warning ...
-        # You can print the translated warning, log it, or perform any other action
-        cli::cli_alert_warning(translated_warning)
-      }
-    )
+    rasters_mean <- merge_rasters(rst_mean)
     rasters_mbrs <- merge_rasters(rst_mbrs)
-
-
 
     invisible(structure(
       list(

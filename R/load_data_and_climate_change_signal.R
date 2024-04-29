@@ -48,7 +48,7 @@ load_data_and_climate_change_signal <-
            frequency = F,
            bias.correction = F,
            domain = NULL,
-           threshold=0.6,
+           threshold = 0.6,
            n.sessions = 6) {
     # calculate number of chunks based on xlim and ylim
     if (missing(chunk.size) | missing(season)) {
@@ -60,7 +60,9 @@ load_data_and_climate_change_signal <-
       )
     }
 
-
+    cli::cli_alert_warning(
+      "Interpolation may be required to merge the rasters. Be aware that interpolation can introduce slight discrepancies in the data, potentially affecting the consistency of results across different spatial segments."
+    )
 
     country_shp = if (!is.null(country) &
                       !inherits(country, "sf")) {
@@ -89,6 +91,11 @@ load_data_and_climate_change_signal <-
         sf::st_set_crs(., NA)
     }
 
+    lon_range <-
+      c(sf::st_bbox(country_shp)[[1]], sf::st_bbox(country_shp)[[3]])
+    lat_range <-
+      c(sf::st_bbox(country_shp)[[2]], sf::st_bbox(country_shp)[[4]])
+
     x_chunks <- seq(from = xlim[1], to = xlim[2], by = chunk.size)
     y_chunks <- seq(from = ylim[1], to = ylim[2], by = chunk.size)
 
@@ -100,6 +107,12 @@ load_data_and_climate_change_signal <-
       ylim
     else
       y_chunks
+
+    #making sure the whole area is loaded
+    if (x_chunks[length(x_chunks)] < lon_range[2])
+      x_chunks[length(x_chunks) + 1] = lon_range[2]
+    if (y_chunks[length(y_chunks)] < lat_range[2])
+      y_chunks[length(y_chunks) + 1] = lat_range[2]
     # create empty list to store output
     out_list <- list()
 
@@ -163,36 +176,49 @@ load_data_and_climate_change_signal <-
       }
     }
     cli::cli_progress_step("Merging rasters")
-    # Extract the first, second, and third elements of each list in `out_list`
+    # Extract elements of each list in `out_list`
     rst_mean <- lapply(out_list, `[[`, 1)
     rst_sd <- lapply(out_list, `[[`, 2)
     rst_mbrs <- lapply(out_list, `[[`, 3)
     rst_agree <- lapply(out_list, `[[`, 4)
-    # Merge the extracted rasters using `Reduce` and set their names
+    df_temp <-
+      do.call(rbind, lapply(out_list, `[[`, 5)) %>% # spatial average of all chunks
+      dplyr::group_by(date, experiment, Var1, season) %>%
+      dplyr::summarise(value = median(value, na.rm = T))
+
     merge_rasters <- function(rst_list) {
+      # Determine the smallest (finest) resolution among all rasters
+      resolutions <- sapply(rst_list, function(r)
+        terra::res(r))
+      common_res <- min(resolutions)
+
+      # Resample all rasters to the common resolution
+      resampled_rasters <- lapply(rst_list, function(r) {
+        terra::resample(r,
+                        terra::rast(
+                          terra::ext(r),
+                          resolution = common_res,
+                          crs = terra::crs(r)
+                        ),
+                        method = "bilinear")
+      })
+
+      # Merge the resampled rasters
+      merged_raster <-
+        Reduce(function(x, y)
+          terra::merge(x, y), resampled_rasters)
+
+      #Set names from the first raster in the list
       names <- names(rst_list[[1]])
-      Reduce(function(...)
-        terra::merge(...), rst_list) %>% setNames(names)
+      setNames(merged_raster, names)
     }
 
     cli::cli_process_done()
 
-    rasters_mean <- tryCatch(
-      expr = merge_rasters(rst_mean),
-      warning = function(w) {
-        # Translate the warning into something more understandable
-        translated_warning <-
-          "Terra had to interpolate your SpatRasters to merge them. You can ignore this warning if you used sensible values for overalp and chunk_size arguments"
-        # ... handle the warning ...
-        # You can print the translated warning, log it, or perform any other action
-        cli::cli_alert_warning(translated_warning)
-      }
-    )
+    rasters_mean <-  merge_rasters(rst_mean)
     rasters_sd <- merge_rasters(rst_sd)
     rasters_mbrs <- merge_rasters(rst_mbrs)
     rasters_agree <- merge_rasters(rst_agree)
-
-
 
     invisible(structure(
       list(
@@ -200,7 +226,7 @@ load_data_and_climate_change_signal <-
         rasters_sd %>% terra::crop(., country_shp) %>% terra::mask(., country_shp),
         rasters_mbrs %>% terra::crop(., country_shp) %>% terra::mask(., country_shp),
         rasters_agree %>% terra::crop(., country_shp) %>% terra::mask(., country_shp),
-        NULL
+        df_temp
       ),
       class = "CAVAanalytics_ccs",
       components = list(
@@ -208,7 +234,7 @@ load_data_and_climate_change_signal <-
         "SpatRaster for ensemble sd",
         "SpatRaster for individual members",
         "SpatRaster stack for ccs agreement",
-        "dataframe for spatially aggregated data"
+        "dataframe for spatially and annually aggregated data"
       )
     ))
 

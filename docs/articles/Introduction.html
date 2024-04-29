@@ -203,7 +203,7 @@ statistical significance of the yearly increase in the number of days
 with Tmax higher than 35 degrees Celsius.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/observations.html">observations</a></span><span class="op">(</span><span class="va">kenya_exmp</span>, season<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span>, uppert<span class="op">=</span><span class="fl">35</span>,trends<span class="op">=</span><span class="cn">T</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span><span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">.</span>, plot_titles <span class="op">=</span> <span class="st">"N.days &gt; 35/year"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">.</span>, plot_titles <span class="op">=</span> <span class="st">"N.days &gt; 35/year"</span>, palette<span class="op">=</span><span class="fu"><a href="../reference/IPCC_palette.html">IPCC_palette</a></span><span class="op">(</span>type<span class="op">=</span><span class="st">"tmp"</span>, divergent <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>, legend_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Introduction_files/figure-html/unnamed-chunk-9-1.png" width="384" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
@@ -273,14 +273,36 @@ correct for discrepancies between observed data and model outputs.</p>
 <span>plot_titles <span class="op">=</span> <span class="st">"N &gt; 35 bc"</span>, </span>
 <span>palette<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"white"</span>, <span class="st">"orange"</span>, <span class="st">"red"</span>, <span class="st">"darkred"</span><span class="op">)</span>, legend_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">180</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Introduction_files/figure-html/unnamed-chunk-16-1.png" width="480" style="display: block; margin: auto;"></p>
-<p>The results can also be visualized temporally.</p>
+<p>The results can also be visualized for the annual time series (data
+is spatially aggregated).</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">proj_kenya_35bc</span>, ensemble<span class="op">=</span><span class="cn">T</span>,  </span>
-<span>plot_titles <span class="op">=</span> <span class="st">"N &gt; 35 bc"</span>, temporal<span class="op">=</span><span class="cn">T</span><span class="op">)</span></span></code></pre></div>
+<span>plot_titles <span class="op">=</span> <span class="st">"N &gt; 35 bc"</span>, temporal<span class="op">=</span><span class="cn">T</span>, palette<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"blue"</span>, <span class="st">"red"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Introduction_files/figure-html/unnamed-chunk-17-1.png" width="480" style="display: block; margin: auto;"></p>
+<p>and without spatial or temporal aggregation. In this case we are
+looking at the frequency distribution of the yearly data across all
+pixels</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">proj_kenya_35bc</span>, ensemble<span class="op">=</span><span class="cn">T</span>,  </span>
+<span>plot_titles <span class="op">=</span> <span class="st">"N &gt; 35 bc"</span>, spatiotemporal<span class="op">=</span><span class="cn">T</span>, palette<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"blue"</span>, <span class="st">"red"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Introduction_files/figure-html/unnamed-chunk-18-1.png" width="480" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level2">
 <h2 id="climate-change-signal">Climate change signal<a class="anchor" aria-label="anchor" href="#climate-change-signal"></a>
+</h2>
+<p>While analyzing future periods can be useful, more often we
+prioritize understanding delta changes, which represent the relative
+increase or decrease in mean maximum temperatures compared to a
+baseline. CAVAanalytics facilitates this analysis as well.</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ccs_kenya</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/climate_change_signal.html">climate_change_signal</a></span><span class="op">(</span><span class="va">kenya_exmp</span>, season<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">ccs_kenya</span>, ensemble<span class="op">=</span><span class="cn">F</span>, plot_titles <span class="op">=</span> <span class="st">"Mean tasmax change"</span>, </span>
+<span>legend_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span>, </span>
+<span>palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"blue"</span>, <span class="st">"cyan"</span>, <span class="st">"green"</span>, <span class="st">"white"</span>, <span class="st">"yellow"</span> ,<span class="st">"orange"</span>, <span class="st">"red"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Introduction_files/figure-html/unnamed-chunk-19-1.png" width="960"></p>
+</div>
+<div class="section level2">
+<h2 id="climate-change-signal-1">Climate change signal<a class="anchor" aria-label="anchor" href="#climate-change-signal-1"></a>
 </h2>
 <p>While analyzing future periods can be useful, more often we
 prioritize understanding delta changes, which represent the relative
@@ -291,12 +313,17 @@ agreement in the sign of the change. Basically, with a threshold of 0.8,
 it means that if 80% of the models agree that the climate change signal
 is positive or negative, the pixel gets a score of 1. These results are
 visualized through a black dot.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ccs_kenya</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/climate_change_signal.html">climate_change_signal</a></span><span class="op">(</span><span class="va">kenya_exmp</span>, season<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span>,<span class="fl">7</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span>, threshold <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span></span>
+<span></span>
 <span><span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">ccs_kenya</span>, plot_titles <span class="op">=</span> <span class="st">"Mean tasmax change"</span>, </span>
 <span>legend_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span>, </span>
 <span>palette <span class="op">=</span> <span class="fu"><a href="../reference/IPCC_palette.html">IPCC_palette</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"tmp"</span>, divergent <span class="op">=</span> <span class="cn">T</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="Introduction_files/figure-html/unnamed-chunk-18-1.png" width="960"></p>
+<p><img src="Introduction_files/figure-html/unnamed-chunk-20-1.png" width="960"></p>
+<p>Anomalies can also be visualized for the annual time series</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">ccs_kenya</span>, plot_titles <span class="op">=</span> <span class="st">"Annual anomalies"</span>, temporal<span class="op">=</span><span class="cn">T</span>, palette<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"blue"</span>, <span class="st">"red"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Introduction_files/figure-html/unnamed-chunk-21-1.png" width="480"></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

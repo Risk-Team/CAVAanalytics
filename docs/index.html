@@ -199,13 +199,13 @@ sudo apt-get install snapd
 # if not already installed
 sudo snap install docker
 
-sudo docker pull docker.io/rso9192/cava:version2.1.0
+sudo docker pull docker.io/rso9192/cava:version3.0.0
 
 sudo docker run --rm \
            -p 8888:8787 \
            -e PASSWORD=password \
            -v /path/to/local/directory:/home \
-           rso9192/cava:version2.1.0
+           rso9192/cava:version3.0.0
 
 </code></pre>
 <p>Replace <strong>/path/to/local/directory</strong> with the local directory on your host machine where you want to save your plots or data. For example, you can create a folder on your Desktop called CAVA_results. Then, you would run the above command as:</p>
@@ -213,7 +213,7 @@ sudo docker run --rm \
            -p 8888:8787 \
            -e PASSWORD=password \
            -v /home/Desktop/CAVA_results:/home \
-           rso9192/cava:version2.1.0</code></pre>
+           rso9192/cava:version3.0.0</code></pre>
 <p>Now open your favorite browser and type <strong><a href="http://localhost:8888/" class="external-link uri">http://localhost:8888/</a></strong>. You should see a login page: enter the <strong>username “rstudio”</strong> and <strong>password “password”</strong> to login and that’s it! You can now use CAVAanalytics through Rstudio server.</p>
 </div>
 <div class="section level5">
@@ -229,7 +229,7 @@ sudo docker run --rm \
            -p 8888:8787 \
            -e PASSWORD=password \
            -v /mnt/c/Users/my_username/Desktop/CAVA_results:/home \
-           rso9192/cava:version2.1.0</code></pre>
+           rso9192/cava:version3.0.0</code></pre>
 <p>Now open your favorite browser and type <strong><a href="http://localhost:8888/" class="external-link uri">http://localhost:8888/</a></strong>. You should see a login page: enter the <strong>username “rstudio”</strong> and <strong>password “password”</strong> to login and that’s it! You can now use CAVAanalytics through Rstudio server.</p>
 </div>
 <div class="section level5">
@@ -237,13 +237,13 @@ sudo docker run --rm \
 </h5>
 <p>If you are using a Mac, you first need to install <a href="https://docs.docker.com/desktop/install/mac-install/" class="external-link">Docker desktop for Mac</a>.</p>
 <p>Then open a terminal and while Docker Desktop is open, run:</p>
-<pre><code>sudo docker pull docker.io/rso9192/cava:version2.1.0</code></pre>
+<pre><code>sudo docker pull docker.io/rso9192/cava:version3.0.0</code></pre>
 <p>At this point, you can run the Docker image with the below comand.</p>
 <pre><code>sudo docker run --rm \
            -p 8888:8787 \
            -e PASSWORD=password \
            -v /path/to/local/directory:/home \
-           rso9192/cava:version2.1.0</code></pre>
+           rso9192/cava:version3.0.0</code></pre>
 <p>Remember to replace <strong>/path/to/local/directory</strong> with the local directory on your host machine where you want to save your plots or data. Now open your favorite browser and type <strong><a href="http://localhost:8888/" class="external-link uri">http://localhost:8888/</a></strong>. You should see a login page: enter the <strong>username “rstudio”</strong> and <strong>password “password”</strong> to login and that’s it! You can now use CAVAanalytics through Rstudio server.</p>
 </div>
 </div>

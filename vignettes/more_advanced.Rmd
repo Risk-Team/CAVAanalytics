@@ -98,12 +98,4 @@ plotting(hwvs, plot_titles = "N° of heat waves", ensemble = T, palette = c("whi
 
 ```
 
-and their temporal evolution
-
-```{r,  warning=F, message=FALSE, fig.height=5, fig.width=6}
-
-plotting(hwvs, plot_titles = "N° of heat waves", ensemble = T, temporal=T)
-
-```
-
 

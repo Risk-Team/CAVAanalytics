@@ -271,24 +271,24 @@ observations <-
             list(
               data_list$obs_spat[[1]][[1]],
               data_list$obs_spat[[1]][[2]],
-              data_list$obs_temp
+              data_list$obs_temp[[1]]
             ),
             class = "CAVAanalytics_observations",
             components = list(
               "SpatRaster for trends coefficients",
               "SpatRaster for trends p.values",
-              "dataframe for spatially aggregated data"
+              "dataframe for annually aggregated data"
             )
           ))
 
         }  else {
           invisible(structure(
             list(data_list$rst_mean[[1]],
-                 data_list$obs_temp),
+                 data_list$obs_temp[[1]]),
             class = "CAVAanalytics_observations",
             components = list(
               "SpatRaster for observation mean",
-              "dataframe for spatially aggregated data"
+              "dataframe for annually aggregated data"
             )
           ))
 
@@ -366,7 +366,7 @@ observations <-
         class = "CAVAanalytics_observations",
         components = list(
           "SpatRaster for observation mean",
-          "dataframe for spatially aggregated data"
+          "dataframe for annually aggregated data"
         )
       ))
 
@@ -382,7 +382,7 @@ observations <-
         components = list(
           "SpatRaster for trends coefficients",
           "SpatRaster for trends p.values",
-          "dataframe for spatially aggregated data"
+          "dataframe for annually aggregated data"
         )
       ))
 

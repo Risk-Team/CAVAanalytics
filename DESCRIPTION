@@ -38,10 +38,10 @@ Imports:
     patchwork,
     ggridges,
     magrittr,
-    cli
-Depends:
-    R(>= 3.5.0),
+    cli,
     loadeR.java
+Depends:
+    R(>= 3.5.0)
 Suggests: 
     knitr,
     rmarkdown

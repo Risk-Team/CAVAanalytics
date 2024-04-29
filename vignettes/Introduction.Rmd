@@ -106,7 +106,7 @@ And we can apply linear regression to each pixel to assess the statistical signi
 
 ```{r, fig.height=4, fig.width=4, fig.align="center",  message=F, warning=F}
 observations(kenya_exmp, season=list(1:12), uppert=35,trends=T) %>% 
-plotting(., plot_titles = "N.days > 35/year")
+plotting(., plot_titles = "N.days > 35/year", palette=IPCC_palette(type="tmp", divergent = T), legend_range = c(-3,3))
 ```
 
 
@@ -175,7 +175,7 @@ plotting(proj_kenya_35bc, ensemble=T,
 plot_titles = "N > 35 bc", temporal=T, palette=c("blue", "red"))
 ```
 
-and without spatial or temporal aggregation. In this case we are looking at the frequency distribution of the yearly data across all pixels (no spatial aggregation)
+and without spatial or temporal aggregation. In this case we are looking at the frequency distribution of the yearly data across all pixels 
 
 ```{r, fig.height=3, fig.width=5, fig.align="center", message=F, warning=F}
 plotting(proj_kenya_35bc, ensemble=T,  
@@ -211,8 +211,9 @@ palette = IPCC_palette(type = "tmp", divergent = T))
 
 ```
 
+Anomalies can also be visualized for the annual time series
 
 ```{r, fig.height=3, fig.width=5,  message=F, warning=F}
-plotting(ccs_kenya, plot_titles = "Mean tasmax change", temporal=T,palette=c("blue", "red"))
+plotting(ccs_kenya, plot_titles = "Annual anomalies", temporal=T, palette=c("blue", "red"))
 
 ```

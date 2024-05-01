@@ -10,7 +10,7 @@
 #' @param plot_titles character. Title of the plot legend
 #' @param ensemble logical. Whether to visualize the ensemble mean or each individual model
 #' @param bins logical. Whether to visualize colors as a gradient or in bins
-#' @param n.bins numeric. Controlling the number of bins when bins equal TRUE
+#' @param intervals numeric vector. Controlling the number of bins when bins equal TRUE
 #' @param alpha numeric. Transparency of colors
 #' @param spatiotemporal logical. Whether computed yearly data should be visualized without spatial and temporal aggregation. Basically, frequencies are visualized
 #' @param temporal logical. Whether computed yearly data should be visualized temporally after spatial aggregation (median of all pixels)
@@ -24,7 +24,7 @@ plotting <-
            plot_titles,
            ensemble,
            bins,
-           n.bins,
+           intervals,
            alpha,
            spatiotemporal,
            temporal,
@@ -46,7 +46,7 @@ plotting.CAVAanalytics_projections <-
            plot_titles = "default",
            ensemble = TRUE,
            bins = FALSE,
-           n.bins = NULL,
+           intervals = NULL,
            alpha = NA,
            stat = "mean",
            spatiotemporal = F,
@@ -76,7 +76,7 @@ plotting.CAVAanalytics_projections <-
                        ensemble,
                        palette,
                        bins,
-                       n.bins,
+                       intervals,
                        alpha,
                        plot_titles,
                        legend_range)
@@ -87,7 +87,7 @@ plotting.CAVAanalytics_projections <-
                        ensemble,
                        palette,
                        bins,
-                       n.bins,
+                       intervals,
                        alpha,
                        plot_titles,
                        legend_range)
@@ -99,7 +99,7 @@ plotting.CAVAanalytics_projections <-
                        ensemble,
                        palette,
                        bins,
-                       n.bins,
+                       intervals,
                        alpha,
                        plot_titles,
                        legend_range)
@@ -140,7 +140,7 @@ plotting.CAVAanalytics_ccs <-
            plot_titles = "default",
            ensemble = TRUE,
            bins = FALSE,
-           n.bins = NULL,
+           intervals = NULL,
            alpha = NA,
            stat = "mean",
            spatiotemporal = F,
@@ -174,7 +174,7 @@ plotting.CAVAanalytics_ccs <-
                        ensemble,
                        palette,
                        bins,
-                       n.bins,
+                       intervals,
                        alpha,
                        plot_titles,
                        legend_range)
@@ -191,7 +191,7 @@ plotting.CAVAanalytics_ccs <-
                        ensemble,
                        palette,
                        bins,
-                       n.bins,
+                       intervals,
                        alpha,
                        plot_titles,
                        legend_range)
@@ -209,7 +209,7 @@ plotting.CAVAanalytics_ccs <-
                        ensemble,
                        palette,
                        bins,
-                       n.bins,
+                       intervals,
                        alpha,
                        plot_titles,
                        legend_range)
@@ -244,7 +244,7 @@ plotting.CAVAanalytics_observations <-
            plot_titles = "default",
            ensemble = FALSE,
            bins = FALSE,
-           n.bins = NULL,
+           intervals = NULL,
            alpha = NA,
            spatiotemporal = F,
            temporal = F,
@@ -278,7 +278,7 @@ plotting.CAVAanalytics_observations <-
                        ensemble,
                        palette,
                        bins,
-                       n.bins,
+                       intervals,
                        alpha,
                        plot_titles,
                        legend_range,
@@ -326,7 +326,7 @@ plotting.CAVAanalytics_observations <-
             ensemble,
             palette,
             bins,
-            n.bins,
+            intervals,
             alpha,
             plot_titles,
             legend_range,
@@ -381,7 +381,7 @@ plotting.CAVAanalytics_model_biases <-
            plot_titles = "default",
            ensemble = TRUE,
            bins = FALSE,
-           n.bins = NULL,
+           intervals = NULL,
            alpha = NA,
            temporal = F,
            spatiotemporal = F) {
@@ -517,7 +517,7 @@ plotting.CAVAanalytics_model_biases <-
               colors = colors,
               limits = legend_range,
               na.value = "transparent",
-              n.breaks = ifelse(is.null(n.bins), 10, n.bins),
+              breaks = if (is.null(intervals)) ggplot2::waiver() else intervals,
               guide = ggplot2::guide_colourbar(
                 ticks.colour = "black",
                 ticks.linewidth = 1,
@@ -588,7 +588,7 @@ plotting.CAVAanalytics_model_biases <-
       if (is.null(rst))
         cli::cli_abort(c("x" = "Not allowed with load_data_and_model_biases"))
 
-      cli::cli_alert_warning(" Arguments bins, n.bins, and alpha are ignored")
+      cli::cli_alert_warning(" Arguments bins, intervals, and alpha are ignored")
       cli::cli_progress_step("Plotting")
       if (ensemble) {
         p <- rst %>%

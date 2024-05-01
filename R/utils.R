@@ -595,7 +595,7 @@ spatial_plot = function(spatial_data,
                         ensemble,
                         palette,
                         bins,
-                        n.bins,
+                        intervals,
                         alpha,
                         plot_titles,
                         legend_range,
@@ -653,10 +653,10 @@ spatial_plot = function(spatial_data,
                          } else
                          {
                            ggplot2::scale_fill_stepsn(
-                             colors = colors,
+                             colors = palette,
                              limits = legend_range,
                              na.value = "transparent",
-                             n.breaks = ifelse(is.null(n.bins), 10, n.bins),
+                             breaks = if (is.null(intervals)) ggplot2::waiver() else intervals,
                              guide = ggplot2::guide_colourbar(
                                ticks.colour = "black",
                                ticks.linewidth = 1,
@@ -773,7 +773,7 @@ spatial_plot = function(spatial_data,
                                colors = palette,
                                limits = legend_range,
                                na.value = "transparent",
-                               n.breaks = ifelse(is.null(n.bins), 10, n.bins),
+                               breaks = if (is.null(intervals)) ggplot2::waiver() else intervals,
                                guide = ggplot2::guide_colourbar(
                                  ticks.colour = "black",
                                  ticks.linewidth = 1,
@@ -857,7 +857,7 @@ spatial_plot = function(spatial_data,
                                colors = palette,
                                limits = legend_range,
                                na.value = "transparent",
-                               n.breaks = ifelse(is.null(n.bins), 10, n.bins),
+                               breaks = if (is.null(intervals)) ggplot2::waiver() else intervals,
                                guide = ggplot2::guide_colourbar(
                                  ticks.colour = "black",
                                  ticks.linewidth = 1,
@@ -954,7 +954,7 @@ temporal_plot = function(data,
         "Set2")
     else
       palette
-    cli::cli_alert_warning(" Arguments stat, bins,n.bins and alpha are ignored")
+    cli::cli_alert_warning(" Arguments stat, bins,intervals and alpha are ignored")
     if (ensemble)
     {
       p <-  df.processed %>%
@@ -1061,7 +1061,7 @@ temporal_plot = function(data,
       palette
 
 
-    cli::cli_alert_warning(" Arguments ensemble,bins,n.bins and alpha are ignored")
+    cli::cli_alert_warning(" Arguments ensemble,bins,intervals and alpha are ignored")
     p <- df.processed  %>%
       dplyr::group_by(date, experiment, season) %>%
       dplyr::summarise(value = mean(value)) %>%
@@ -1202,7 +1202,7 @@ spatiotemporal_plot = function(data,
   {
     # when obs is TRUE
     cli::cli_alert_warning(
-      " Arguments bins,palette, n.bins,alpha and ensemble are ignored. Change number of group intervals with n.groups"
+      " Arguments bins,palette, intervals,alpha and ensemble are ignored. Change number of group intervals with n.groups"
     )
 
     p <-

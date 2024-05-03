@@ -599,8 +599,9 @@ spatial_plot = function(spatial_data,
                         alpha,
                         plot_titles,
                         legend_range,
-                        obs = F,
-                        trends = F)
+                        obs,
+                        trends,
+                        lwd)
 {
   # Suppress warnings
   options(warn = -1)
@@ -628,13 +629,15 @@ spatial_plot = function(spatial_data,
         fill = 'white',
         color = "black",
         data = countries,
-        alpha = 0.5
+        alpha = 0.5,
+        lwd=lwd
       ) +
       ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
                            data = spatial_data[[1]],
                            alpha = alpha) +
       ggplot2::geom_sf(fill = NA,
                        color = "black",
+                       lwd=lwd,
                        data = countries) + {
                          if (!bins)
                          {
@@ -744,13 +747,15 @@ spatial_plot = function(spatial_data,
           fill = 'white',
           color = "black",
           data = countries,
-          alpha = 0.5
+          alpha = 0.5,
+          lwd=lwd
         ) +
         ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
                              data = spatial_data[[1]],
                              alpha = alpha) +
         ggplot2::geom_sf(fill = NA,
                          color = "black",
+                         lwd=lwd,
                          data = countries) + {
                            if (!bins)
                            {
@@ -829,13 +834,15 @@ spatial_plot = function(spatial_data,
           fill = 'white',
           color = "black",
           data = countries,
-          alpha = 0.5
+          alpha = 0.5,
+          lwd=lwd
         ) +
         ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
                              data = spatial_data[[1]],
                              alpha = alpha) +
         ggplot2::geom_sf(fill = NA,
                          color = "black",
+                         lwd=lwd,
                          data = countries) + {
                            if (!bins)
                            {
@@ -954,7 +961,7 @@ temporal_plot = function(data,
         "Set2")
     else
       palette
-    cli::cli_alert_warning(" Arguments stat, bins,intervals and alpha are ignored")
+    cli::cli_alert_warning(" Arguments stat, bins,intervals, alpha and lwd are ignored")
     if (ensemble)
     {
       p <-  df.processed %>%
@@ -1061,7 +1068,7 @@ temporal_plot = function(data,
       palette
 
 
-    cli::cli_alert_warning(" Arguments ensemble,bins,intervals and alpha are ignored")
+    cli::cli_alert_warning(" Arguments stat, bins,intervals, alpha and lwd are ignored")
     p <- df.processed  %>%
       dplyr::group_by(date, experiment, season) %>%
       dplyr::summarise(value = mean(value)) %>%
@@ -1123,7 +1130,7 @@ spatiotemporal_plot = function(data,
   if (!obs)
   {
     cli::cli_alert_warning(
-      " Arguments bins, stat and alpha are ignored. Change number of group intervals with n.groups"
+      " Arguments bins, stat, alpha and lwd are ignored. Change number of group intervals with n.groups"
     )
 
 
@@ -1202,7 +1209,7 @@ spatiotemporal_plot = function(data,
   {
     # when obs is TRUE
     cli::cli_alert_warning(
-      " Arguments bins,palette, intervals,alpha and ensemble are ignored. Change number of group intervals with n.groups"
+      " Arguments bins,palette, intervals,alpha, lwd and ensemble are ignored. Change number of group intervals with n.groups"
     )
 
     p <-

@@ -15,29 +15,32 @@ plotting(
   alpha,
   spatiotemporal,
   temporal,
+  lwd,
   ...
 )
 }
 \arguments{
 \item{rst}{output of one of CAVAanalytics functions, such as projections. rst is of class SpatRaster}
 
-\item{palette}{charachter. Color Palette}
+\item{palette}{charachter. Color Palette. Default to NULL}
 
-\item{legend_range}{numeric. Fix legend limits}
+\item{legend_range}{numeric. Fix legend limits. Default to NULL}
 
-\item{plot_titles}{character. Title of the plot legend}
+\item{plot_titles}{character. Title of the plot legend. Default to default}
 
-\item{ensemble}{logical. Whether to visualize the ensemble mean or each individual model}
+\item{ensemble}{logical. Whether to visualize the ensemble mean or each individual model. Default to TRUE}
 
-\item{bins}{logical. Whether to visualize colors as a gradient or in bins}
+\item{bins}{logical. Whether to visualize colors as a gradient or in bins. Default to FALSE}
 
 \item{intervals}{numeric vector. Controlling the number of bins when bins equal TRUE}
 
-\item{alpha}{numeric. Transparency of colors}
+\item{alpha}{numeric. Transparency of colors. Default to NA}
 
 \item{spatiotemporal}{logical. Whether computed yearly data should be visualized without spatial and temporal aggregation. Basically, frequencies are visualized}
 
 \item{temporal}{logical. Whether computed yearly data should be visualized temporally after spatial aggregation (median of all pixels)}
+
+\item{lwd}{numerical. Width of country boundaries. Default to 0.1}
 }
 \value{
 ggplot object

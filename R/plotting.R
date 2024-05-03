@@ -5,15 +5,16 @@
 
 #' @import ggplot2
 #' @param rst output of one of CAVAanalytics functions, such as projections. rst is of class SpatRaster
-#' @param palette charachter. Color Palette
-#' @param legend_range  numeric. Fix legend limits
-#' @param plot_titles character. Title of the plot legend
-#' @param ensemble logical. Whether to visualize the ensemble mean or each individual model
-#' @param bins logical. Whether to visualize colors as a gradient or in bins
+#' @param palette charachter. Color Palette. Default to NULL
+#' @param legend_range  numeric. Fix legend limits. Default to NULL
+#' @param plot_titles character. Title of the plot legend. Default to default
+#' @param ensemble logical. Whether to visualize the ensemble mean or each individual model. Default to TRUE
+#' @param bins logical. Whether to visualize colors as a gradient or in bins. Default to FALSE
 #' @param intervals numeric vector. Controlling the number of bins when bins equal TRUE
-#' @param alpha numeric. Transparency of colors
+#' @param alpha numeric. Transparency of colors. Default to NA
 #' @param spatiotemporal logical. Whether computed yearly data should be visualized without spatial and temporal aggregation. Basically, frequencies are visualized
 #' @param temporal logical. Whether computed yearly data should be visualized temporally after spatial aggregation (median of all pixels)
+#' @param lwd numerical. Width of country boundaries. Default to 0.1
 
 #' @return ggplot object
 
@@ -28,6 +29,7 @@ plotting <-
            alpha,
            spatiotemporal,
            temporal,
+           lwd,
            ...) {
     UseMethod("plotting")
   }
@@ -51,7 +53,8 @@ plotting.CAVAanalytics_projections <-
            stat = "mean",
            spatiotemporal = F,
            temporal = F,
-           n.groups = 3) {
+           lwd=0.1,
+           n.groups=3) {
     # check -------------------------------------------------------------------
 
     stopifnot(is.logical(ensemble))
@@ -79,7 +82,10 @@ plotting.CAVAanalytics_projections <-
                        intervals,
                        alpha,
                        plot_titles,
-                       legend_range)
+                       legend_range,
+                       obs=F,
+                       trends=F,
+                       lwd)
       } else if (ensemble & stat == "sd") {
         spatial_prep(rst, 2, ccs_sign = F, stat, ensemble) %>%
           spatial_plot(.,
@@ -90,7 +96,10 @@ plotting.CAVAanalytics_projections <-
                        intervals,
                        alpha,
                        plot_titles,
-                       legend_range)
+                       legend_range,
+                       obs=F,
+                       trends=F,
+                       lwd)
       } else {
         # individual models
         spatial_prep(rst, 3, ccs_sign = F, stat, ensemble) %>%
@@ -102,7 +111,10 @@ plotting.CAVAanalytics_projections <-
                        intervals,
                        alpha,
                        plot_titles,
-                       legend_range)
+                       legend_range,
+                       obs=F,
+                       trends=F,
+                       lwd)
       }
     } else if (temporal & !spatiotemporal) {
       # when temporal is TRUE
@@ -144,7 +156,8 @@ plotting.CAVAanalytics_ccs <-
            alpha = NA,
            stat = "mean",
            spatiotemporal = F,
-           temporal = F) {
+           temporal = F,
+           lwd=0.1) {
     # check inputs ------------------------------------------------------------
 
     stopifnot(is.logical(ensemble))
@@ -177,7 +190,10 @@ plotting.CAVAanalytics_ccs <-
                        intervals,
                        alpha,
                        plot_titles,
-                       legend_range)
+                       legend_range,
+                       obs=F,
+                       trends=F,
+                       lwd)
       } else if (ensemble & stat == "sd") {
         spatial_prep(
           data = rst,
@@ -194,7 +210,10 @@ plotting.CAVAanalytics_ccs <-
                        intervals,
                        alpha,
                        plot_titles,
-                       legend_range)
+                       legend_range,
+                       obs=F,
+                       trends=F,
+                       lwd)
       } else {
         # individual models
         spatial_prep(
@@ -212,7 +231,10 @@ plotting.CAVAanalytics_ccs <-
                        intervals,
                        alpha,
                        plot_titles,
-                       legend_range)
+                       legend_range,
+                       obs=F,
+                       trends=F,
+                       lwd)
       }
     } else {
       # when temporal is TRUE
@@ -248,7 +270,8 @@ plotting.CAVAanalytics_observations <-
            alpha = NA,
            spatiotemporal = F,
            temporal = F,
-           n.groups = 3) {
+           lwd=0.1,
+           n.groups=3) {
     # check inputs ------------------------------------------------------------
 
     stopifnot(is.logical(bins))
@@ -282,7 +305,9 @@ plotting.CAVAanalytics_observations <-
                        alpha,
                        plot_titles,
                        legend_range,
-                       obs = T)
+                       obs = T,
+                       trends=F,
+                       lwd)
       } else {
         if (temporal) {
           temporal_plot(
@@ -331,7 +356,8 @@ plotting.CAVAanalytics_observations <-
             plot_titles,
             legend_range,
             obs = T,
-            trends = T
+            trends = T,
+            lwd
           )
       } else {
         # when spatiotemproal or temporal is TRUE
@@ -384,7 +410,8 @@ plotting.CAVAanalytics_model_biases <-
            intervals = NULL,
            alpha = NA,
            temporal = F,
-           spatiotemporal = F) {
+           spatiotemporal = F,
+           lwd=0.1) {
     # check -------------------------------------------------------------------
     if (spatiotemporal)
       cli::cli_abort("Not meaningful for model biases")
@@ -490,14 +517,16 @@ plotting.CAVAanalytics_model_biases <-
           fill = 'white',
           color = "black",
           data = countries,
-          alpha = 0.5
+          alpha = 0.5,
+          lwd=lwd
         ) +
         ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
                              data = rs_df,
                              alpha = alpha) +
         ggplot2::geom_sf(fill = NA,
                          color = "black",
-                         data = countries) +
+                         data = countries,
+                         lwd=lwd) +
         {
           if (!bins) {
             ggplot2::scale_fill_gradientn(

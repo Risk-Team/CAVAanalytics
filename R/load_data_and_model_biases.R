@@ -180,7 +180,7 @@ load_data_and_model_biases <-
       # Determine the smallest (finest) resolution among all rasters
       resolutions <- sapply(rst_list, function(r)
         terra::res(r))
-      common_res <- min(resolutions)
+      common_res <- max(resolutions)
 
       # Resample all rasters to the common resolution
       resampled_rasters <- lapply(rst_list, function(r) {
@@ -190,7 +190,7 @@ load_data_and_model_biases <-
                           resolution = common_res,
                           crs = terra::crs(r)
                         ),
-                        method = "bilinear")
+                        method = "mode")
       })
 
       # Merge the resampled rasters

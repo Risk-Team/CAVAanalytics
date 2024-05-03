@@ -11,7 +11,7 @@ plotting(
   plot_titles,
   ensemble,
   bins,
-  n.bins,
+  intervals,
   alpha,
   spatiotemporal,
   temporal,
@@ -31,7 +31,7 @@ plotting(
 
 \item{bins}{logical. Whether to visualize colors as a gradient or in bins}
 
-\item{n.bins}{numeric. Controlling the number of bins when bins equal TRUE}
+\item{intervals}{numeric vector. Controlling the number of bins when bins equal TRUE}
 
 \item{alpha}{numeric. Transparency of colors}
 

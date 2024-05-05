@@ -405,28 +405,16 @@ IPCC_palette <- function(type, divergent)
 
 #' @export
 
-convert_vector_to_month_initials <- function(month_vector)
-{
+convert_vector_to_month_initials <- function(month_vector) {
   # Ensure the vector is treated as a sequence, including wrapping cases
   seq_length <- length(month_vector)
-  if (seq_length > 1)
-  {
-    # For sequences like 12:3, generate a wrapping sequence
-    expanded_vector <-
-      if (month_vector[1] > month_vector[seq_length])
-      {
-        c(month_vector[1]:12, 1:month_vector[seq_length])
-      } else
-      {
-        month_vector[1]:month_vector[seq_length]
-      }
-  } else
-  {
-    expanded_vector <- month_vector
+  if (seq_length > 1) {
+    # Extract the first letter of each month
+    month_initials <- substr(month.abb[month_vector], 1, 1)
+  } else {
+    # If only one month is given, use the three-letter abbreviation
+    month_initials <- month.abb[month_vector]
   }
-
-  # Extract the first letter of each month
-  month_initials <- substr(month.abb[expanded_vector], 1, 1)
 
   # Collapse into a single string
   paste(month_initials, collapse = "")
@@ -441,6 +429,11 @@ spatial_prep = function(data,
                         ensemble,
                         obs = F,
                         trends = F) {
+  lngth <-
+    length(stringr::str_split(names(data[[1]]), "_")[[1]]) # season is always at the end of the string
+  order <-
+    unique(purrr::map_chr(stringr::str_split(names(data[[1]]), "_"), ~ .x[lngth])) # order of seasons
+
   if (!obs) {
     if (ensemble) {
       cli::cli_text(
@@ -466,7 +459,6 @@ spatial_prep = function(data,
       )
     }
 
-
     rs_df <-
       terra::as.data.frame(data[[index]], xy = TRUE, na.rm = TRUE) %>%
       tidyr::pivot_longer(cols = 3:ncol(.),
@@ -482,7 +474,8 @@ spatial_prep = function(data,
                                 names = c("scenario", "time_frame", "season")
                               ) %>%
                                 # Replace "." with "-" in time frame
-                                dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
+                                dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-")) %>%
+                                dplyr::mutate(., season = factor(season, levels = order))
 
                             } else
                             {
@@ -494,7 +487,8 @@ spatial_prep = function(data,
                                 names = c("member", "scenario", "time_frame", "season")
                               ) %>%
                                 # Replace "." with "-" in time frame
-                                dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
+                                dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-")) %>%
+                                dplyr::mutate(., season = factor(season, levels = order))
 
                             }
                           }
@@ -515,7 +509,8 @@ spatial_prep = function(data,
           names = c("scenario", "time_frame", "season")
         ) %>%
         # Replace "." with "-" in time frame
-        dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
+        dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-")) %>%
+        dplyr::mutate(., season = factor(season, levels = order))
 
 
       return(list(rs_df, rs_df_sign))
@@ -547,7 +542,8 @@ spatial_prep = function(data,
           names = c("scenario", "time_frame", "season")
         )  %>%
         # Replace "." with "-" in time frame
-        dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
+        dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-")) %>%
+        dplyr::mutate(., season = factor(season, levels = order))
 
       return(list(rs_df))
 
@@ -578,7 +574,8 @@ spatial_prep = function(data,
               names = c("scenario", "type", "time_frame", "season")
             ) %>%
             # Replace "." with "-" in time frame
-            dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-"))
+            dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-")) %>%
+            dplyr::mutate(., season = factor(season, levels = order))
         )
 
       return(rs_df)
@@ -630,45 +627,50 @@ spatial_plot = function(spatial_data,
         color = "black",
         data = countries,
         alpha = 0.5,
-        lwd=lwd
+        lwd = lwd
       ) +
       ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
                            data = spatial_data[[1]],
                            alpha = alpha) +
-      ggplot2::geom_sf(fill = NA,
-                       color = "black",
-                       lwd=lwd,
-                       data = countries) + {
-                         if (!bins)
-                         {
-                           ggplot2::scale_fill_gradientn(
-                             colors = palette,
-                             limits = legend_range,
-                             na.value = "transparent",
-                             n.breaks = 10,
-                             guide = ggplot2::guide_colourbar(
-                               ticks.colour = "black",
-                               ticks.linewidth = 1,
-                               title.position = "top",
-                               title.hjust = 0.5
-                             )
-                           )
-                         } else
-                         {
-                           ggplot2::scale_fill_stepsn(
-                             colors = palette,
-                             limits = legend_range,
-                             na.value = "transparent",
-                             breaks = if (is.null(intervals)) ggplot2::waiver() else intervals,
-                             guide = ggplot2::guide_colourbar(
-                               ticks.colour = "black",
-                               ticks.linewidth = 1,
-                               title.position = "top",
-                               title.hjust = 0.5
-                             )
-                           )
-                         }
-                       } +
+      ggplot2::geom_sf(
+        fill = NA,
+        color = "black",
+        lwd = lwd,
+        data = countries
+      ) + {
+        if (!bins)
+        {
+          ggplot2::scale_fill_gradientn(
+            colors = palette,
+            limits = legend_range,
+            na.value = "transparent",
+            n.breaks = 10,
+            guide = ggplot2::guide_colourbar(
+              ticks.colour = "black",
+              ticks.linewidth = 1,
+              title.position = "top",
+              title.hjust = 0.5
+            )
+          )
+        } else
+        {
+          ggplot2::scale_fill_stepsn(
+            colors = palette,
+            limits = legend_range,
+            na.value = "transparent",
+            breaks = if (is.null(intervals))
+              ggplot2::waiver()
+            else
+              intervals,
+            guide = ggplot2::guide_colourbar(
+              ticks.colour = "black",
+              ticks.linewidth = 1,
+              title.position = "top",
+              title.hjust = 0.5
+            )
+          )
+        }
+      } +
       ggplot2::coord_sf(
         xlim = c(
           range(spatial_data[[1]]$x)[[1]] - 0.5,
@@ -748,49 +750,54 @@ spatial_plot = function(spatial_data,
           color = "black",
           data = countries,
           alpha = 0.5,
-          lwd=lwd
+          lwd = lwd
         ) +
         ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
                              data = spatial_data[[1]],
                              alpha = alpha) +
-        ggplot2::geom_sf(fill = NA,
-                         color = "black",
-                         lwd=lwd,
-                         data = countries) + {
-                           if (!bins)
-                           {
-                             ggplot2::scale_fill_gradientn(
-                               colors = palette,
-                               limits = legend_range,
-                               na.value = "transparent",
-                               n.breaks = 10,
-                               guide = ggplot2::guide_colourbar(
-                                 ticks.colour = "black",
-                                 ticks.linewidth = 1,
-                                 title.position = "top",
-                                 title.hjust = 0.5,
-                                 label.hjust = 1
-                               )
-                             )
-                           } else
-                           {
-                             ggplot2::scale_fill_stepsn(
-                               colors = palette,
-                               limits = legend_range,
-                               na.value = "transparent",
-                               breaks = if (is.null(intervals)) ggplot2::waiver() else intervals,
-                               guide = ggplot2::guide_colourbar(
-                                 ticks.colour = "black",
-                                 ticks.linewidth = 1,
-                                 title.position = "top",
-                                 title.hjust = 0.5,
-                                 label.hjust = 1
-                               )
-                             )
+        ggplot2::geom_sf(
+          fill = NA,
+          color = "black",
+          lwd = lwd,
+          data = countries
+        ) + {
+          if (!bins)
+          {
+            ggplot2::scale_fill_gradientn(
+              colors = palette,
+              limits = legend_range,
+              na.value = "transparent",
+              n.breaks = 10,
+              guide = ggplot2::guide_colourbar(
+                ticks.colour = "black",
+                ticks.linewidth = 1,
+                title.position = "top",
+                title.hjust = 0.5,
+                label.hjust = 1
+              )
+            )
+          } else
+          {
+            ggplot2::scale_fill_stepsn(
+              colors = palette,
+              limits = legend_range,
+              na.value = "transparent",
+              breaks = if (is.null(intervals))
+                ggplot2::waiver()
+              else
+                intervals,
+              guide = ggplot2::guide_colourbar(
+                ticks.colour = "black",
+                ticks.linewidth = 1,
+                title.position = "top",
+                title.hjust = 0.5,
+                label.hjust = 1
+              )
+            )
 
-                           }
+          }
 
-                         } +
+        } +
         ggplot2::coord_sf(
           xlim = c(
             range(spatial_data[[1]]$x)[[1]] - 0.5,
@@ -835,45 +842,50 @@ spatial_plot = function(spatial_data,
           color = "black",
           data = countries,
           alpha = 0.5,
-          lwd=lwd
+          lwd = lwd
         ) +
         ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
                              data = spatial_data[[1]],
                              alpha = alpha) +
-        ggplot2::geom_sf(fill = NA,
-                         color = "black",
-                         lwd=lwd,
-                         data = countries) + {
-                           if (!bins)
-                           {
-                             ggplot2::scale_fill_gradientn(
-                               colors = palette,
-                               limits = legend_range,
-                               na.value = "transparent",
-                               n.breaks = 10,
-                               guide = ggplot2::guide_colourbar(
-                                 ticks.colour = "black",
-                                 ticks.linewidth = 1,
-                                 title.position = "top",
-                                 title.hjust = 0.5
-                               )
-                             )
-                           } else
-                           {
-                             ggplot2::scale_fill_stepsn(
-                               colors = palette,
-                               limits = legend_range,
-                               na.value = "transparent",
-                               breaks = if (is.null(intervals)) ggplot2::waiver() else intervals,
-                               guide = ggplot2::guide_colourbar(
-                                 ticks.colour = "black",
-                                 ticks.linewidth = 1,
-                                 title.position = "top",
-                                 title.hjust = 0.5
-                               )
-                             )
-                           }
-                         } +
+        ggplot2::geom_sf(
+          fill = NA,
+          color = "black",
+          lwd = lwd,
+          data = countries
+        ) + {
+          if (!bins)
+          {
+            ggplot2::scale_fill_gradientn(
+              colors = palette,
+              limits = legend_range,
+              na.value = "transparent",
+              n.breaks = 10,
+              guide = ggplot2::guide_colourbar(
+                ticks.colour = "black",
+                ticks.linewidth = 1,
+                title.position = "top",
+                title.hjust = 0.5
+              )
+            )
+          } else
+          {
+            ggplot2::scale_fill_stepsn(
+              colors = palette,
+              limits = legend_range,
+              na.value = "transparent",
+              breaks = if (is.null(intervals))
+                ggplot2::waiver()
+              else
+                intervals,
+              guide = ggplot2::guide_colourbar(
+                ticks.colour = "black",
+                ticks.linewidth = 1,
+                title.position = "top",
+                title.hjust = 0.5
+              )
+            )
+          }
+        } +
         ggplot2::geom_point(
           data = dplyr::filter(spatial_data[[2]], value < 0.05),
           size = 0.1,
@@ -931,6 +943,11 @@ temporal_plot = function(data,
                          legend_range,
                          obs = F)
 {
+  lngth <-
+    length(stringr::str_split(names(data[[1]]), "_")[[1]]) # season is always at the end of the string
+  order <-
+    unique(purrr::map_chr(stringr::str_split(names(data[[1]]), "_"), ~ .x[lngth])) # order of seasons
+
   df.processed <-  if (spatial.aggr)
   {
     cli::cli_text(paste0(
@@ -939,15 +956,25 @@ temporal_plot = function(data,
     ))
     data[[index]] %>%
       dplyr::group_by(date, experiment, Var1, season) %>%
-      dplyr::summarise(value = median(value)) # spatial aggregation
+      dplyr::summarise(value = median(value)) %>% # spatial aggregation
+      dplyr::mutate(season = factor(season, levels = order)) # ordering seasons
 
-  } else
-  {
-    cli::cli_text(paste0(
-      "{cli::symbol$arrow_right}",
-      " Visualizing annual anomaly time series "
-    ))
-    data[[index]]
+  } else {
+    if (!obs) {
+      cli::cli_text(paste0(
+        "{cli::symbol$arrow_right}",
+        " Visualizing annual anomaly time series "
+      ))
+    } else {
+      cli::cli_text(
+        paste0(
+          "{cli::symbol$arrow_right}",
+          " Visualizing annual time series for the observational dataset"
+        )
+      )
+    }
+    data[[index]] %>%
+      dplyr::mutate(season = factor(season, levels = order))
 
   }
 
@@ -1124,8 +1151,16 @@ spatiotemporal_plot = function(data,
                                n.groups,
                                obs = F)
 {
+  lngth <-
+    length(stringr::str_split(names(data[[1]])[3], "_")[[1]]) # season is always at the end of the string
+  order <-
+    unique(purrr::map_chr(stringr::str_split(names(data[[1]]), "_"), ~ .x[lngth])) # order of seasons
+
   cli::cli_text(paste0("{cli::symbol$arrow_right}",
                        " Visualizing frequencies "))
+
+  df.processed <-   data[[index]] %>%
+    dplyr::mutate(season = factor(season, levels = order))
 
   if (!obs)
   {
@@ -1148,14 +1183,15 @@ spatiotemporal_plot = function(data,
       p <-
         suppressWarnings(
           suppressMessages(
-            ridgeline(
-              data[[index]],
-              group_col = 'date',
-              z_col = 'value',
-              num_grps = n.groups,
-              fill = 'experiment',
-              facet1 = 'season'
-            ) +
+            df.processed  %>%
+              ridgeline(
+                .,
+                group_col = 'date',
+                z_col = 'value',
+                num_grps = n.groups,
+                fill = 'experiment',
+                facet1 = 'season'
+              ) +
               ggplot2::theme_bw() +
               ggplot2::theme(
                 legend.position = "bottom",
@@ -1178,15 +1214,16 @@ spatiotemporal_plot = function(data,
       p <-
         suppressWarnings(
           suppressMessages(
-            ridgeline(
-              data[[index]],
-              group_col = 'date',
-              z_col = 'value',
-              num_grps = n.groups,
-              fill = 'experiment',
-              facet1 = 'Var1',
-              facet2 = 'season'
-            ) +
+            df.processed %>%
+              ridgeline(
+                .,
+                group_col = 'date',
+                z_col = 'value',
+                num_grps = n.groups,
+                fill = 'experiment',
+                facet1 = 'Var1',
+                facet2 = 'season'
+              ) +
               ggplot2::theme_bw() +
               ggplot2::theme(
                 legend.position = "bottom",
@@ -1215,13 +1252,14 @@ spatiotemporal_plot = function(data,
     p <-
       suppressWarnings(
         suppressMessages(
-          ridgeline(
-            data[[index]],
-            group_col = 'date',
-            z_col = 'value',
-            num_grps = n.groups,
-            facet1 =  'season'
-          ) +
+          df.processed %>%
+            ridgeline(
+              .,
+              group_col = 'date',
+              z_col = 'value',
+              num_grps = n.groups,
+              facet1 =  'season'
+            ) +
             ggplot2::theme_bw() +
             ggplot2::theme(legend.position = "none") +
             ggplot2::labs(x = plot_titles) +

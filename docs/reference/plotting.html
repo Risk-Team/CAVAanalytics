@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">CAVAanalytics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -86,10 +86,11 @@
 <span>  <span class="va">plot_titles</span>,</span>
 <span>  <span class="va">ensemble</span>,</span>
 <span>  <span class="va">bins</span>,</span>
-<span>  <span class="va">n.bins</span>,</span>
+<span>  <span class="va">intervals</span>,</span>
 <span>  <span class="va">alpha</span>,</span>
 <span>  <span class="va">spatiotemporal</span>,</span>
 <span>  <span class="va">temporal</span>,</span>
+<span>  <span class="va">lwd</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -101,31 +102,31 @@
 
 
 <dt>palette</dt>
-<dd><p>charachter. Color Palette</p></dd>
+<dd><p>charachter. Color Palette. Default to NULL</p></dd>
 
 
 <dt>legend_range</dt>
-<dd><p>numeric. Fix legend limits</p></dd>
+<dd><p>numeric. Fix legend limits. Default to NULL</p></dd>
 
 
 <dt>plot_titles</dt>
-<dd><p>character. Title of the plot legend</p></dd>
+<dd><p>character. Title of the plot legend. Default to default</p></dd>
 
 
 <dt>ensemble</dt>
-<dd><p>logical. Whether to visualize the ensemble mean or each individual model</p></dd>
+<dd><p>logical. Whether to visualize the ensemble mean or each individual model. Default to TRUE</p></dd>
 
 
 <dt>bins</dt>
-<dd><p>logical. Whether to visualize colors as a gradient or in bins</p></dd>
+<dd><p>logical. Whether to visualize colors as a gradient or in bins. Default to FALSE</p></dd>
 
 
-<dt>n.bins</dt>
-<dd><p>numeric. Controlling the number of bins when bins equal TRUE</p></dd>
+<dt>intervals</dt>
+<dd><p>numeric vector. Controlling the number of bins when bins equal TRUE</p></dd>
 
 
 <dt>alpha</dt>
-<dd><p>numeric. Transparency of colors</p></dd>
+<dd><p>numeric. Transparency of colors. Default to NA</p></dd>
 
 
 <dt>spatiotemporal</dt>
@@ -134,6 +135,10 @@
 
 <dt>temporal</dt>
 <dd><p>logical. Whether computed yearly data should be visualized temporally after spatial aggregation (median of all pixels)</p></dd>
+
+
+<dt>lwd</dt>
+<dd><p>numerical. Width of country boundaries. Default to 0.1</p></dd>
 
 </dl></div>
     <div class="section level2">

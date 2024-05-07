@@ -126,12 +126,13 @@ plotting(biases_kenya, ensemble=F, temporal=T,
 plot_titles = "mean tasmax biases")+ggplot2::ggtitle("Before bias correction")
 ```
 As we can see, the biases are mainly positive, hence CORDEX-CORE models are warmer than the "observed" data. However, what happens if we bias correct the data?
-The results look much better now and mean biases are reduced thanks to bias correction. 
+The results look much better now and mean biases are reduced thanks to bias correction. Bias correction is applied with the [Empirical Quantile Mapping (eqm) method as default but Quantile Delta Mapping (qdm)](https://rdrr.io/github/SantanderMetGroup/downscaleR/man/biasCorrection.html) can also be used.
 
 ```{r, fig.height=3, fig.width=10,  message=F, warning=F}
 biases_kenya.bs <- model_biases(kenya_exmp, season=list(1:12), bias.correction = T)
-plotting(biases_kenya.bs, ensemble=F, temporal=T, plot_titles = "mean tasmax biases")+ggplot2::ggtitle("After bias correction")
+plotting(biases_kenya.bs, ensemble=F, temporal=T, plot_titles = "mean tasmax biases")+ggplot2::ggtitle("After bias correction-eqm method")
 ```
+
 
 ## Projections
 
@@ -201,6 +202,8 @@ palette = c("blue", "cyan", "green", "white", "yellow" ,"orange", "red"))
 While analyzing future periods can be useful, more often we prioritize understanding delta changes, which represent the relative increase or decrease in mean maximum temperatures compared to a baseline. CAVAanalytics facilitates this analysis as well.
 
 To notice that the function climate_change_signal also calculates the agreement in the sign of the change. Basically, with a threshold of 0.8, it means that if 80% of the models agree that the climate change signal is positive or negative, the pixel gets a score of 1. These results are visualized through a black dot. 
+
+When working with precipitation, it can be useful to look at the results in percentages. This can be done easily by specifying percentage as TRUE in climate_change_signal
 
 ```{r, fig.height=4, fig.width=10,  message=F, warning=F}
 ccs_kenya <- climate_change_signal(kenya_exmp, season=list(1:6,7:12), threshold = 0.8)

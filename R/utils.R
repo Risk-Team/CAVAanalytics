@@ -613,11 +613,26 @@ spatial_plot = function(spatial_data,
   else
     palette
 
-  legend_range <-
-    if (is.null(legend_range))
-      c(range(spatial_data[[1]]$value, na.rm = TRUE))
-  else
-    legend_range
+  if (!sign)  {
+    legend_range <-
+      if (is.null(legend_range))
+        c(range(spatial_data[[1]]$value, na.rm = TRUE))
+    else
+      legend_range
+  } else  {
+    # when for ccs, then give full legend_range values
+
+    legend_range <-
+      if (is.null(legend_range))
+        c(-max(abs(
+          range(spatial_data[[1]]$value, na.rm = TRUE)
+        )), +max(abs(
+          range(spatial_data[[1]]$value, na.rm = TRUE)
+        )))
+    else
+      legend_range
+
+  }
 
   if (!obs)
   {
@@ -1152,7 +1167,7 @@ spatiotemporal_plot = function(data,
                                obs = F)
 {
   lngth <-
-    length(stringr::str_split(names(data[[1]])[3], "_")[[1]]) # season is always at the end of the string
+    length(stringr::str_split(names(data[[1]]), "_")[[1]]) # season is always at the end of the string
   order <-
     unique(purrr::map_chr(stringr::str_split(names(data[[1]]), "_"), ~ .x[lngth])) # order of seasons
 

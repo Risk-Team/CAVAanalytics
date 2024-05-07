@@ -19,6 +19,8 @@ navbar:
           href: articles/more_advanced.html
         - text: Computation over large regions
           href: articles/large_areas.html
+        - text: CAVAanalytics and CMIP6 models
+          href: articles/own_data.html
     - icon: fa fa-file-code-o
       text: Functions
       href: reference/index.html

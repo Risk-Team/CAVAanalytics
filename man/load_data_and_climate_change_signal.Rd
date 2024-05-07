@@ -25,7 +25,9 @@ load_data_and_climate_change_signal(
   bias.correction = F,
   domain = NULL,
   threshold = 0.6,
-  n.sessions = 6
+  n.sessions = 6,
+  method = "eqm",
+  percentage = F
 )
 }
 \arguments{
@@ -71,6 +73,10 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 \item{threshold}{numerical value with range 0-1. It indicates the threshold for assigning model agreement. For example, 0.6 indicates that model agreement is assigned when 60 percent of the models agree in the sign of the change}
 
 \item{n.sessions}{numeric, number of sessions to use in parallel processing for loading the data. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary}
+
+\item{method}{character, bias-correction method to use. One of eqm (Empirical Quantile Mapping) or qdm (Quantile Delta Mapping). Default to eqm}
+
+\item{percentage}{logical, whether the climate change signal is to be calculated as relative changes (in percentage). Default to FALSE}
 }
 \value{
 list with SpatRaster. To explore the output run attributes(output)

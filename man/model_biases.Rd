@@ -13,7 +13,8 @@ model_biases(
   consecutive = F,
   frequency = F,
   n.sessions = 1,
-  duration = "max"
+  duration = "max",
+  method = "eqm"
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ model_biases(
 \item{n.sessions}{numeric, number of sessions to use, default is one. Parallelization can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelizing will increase RAM usage}
 
 \item{duration}{either "max" or specify a number. Used only when consecutive is TRUE. For example, to know the number of consecutive days with tmax above 35, lasting more than 3 days, specify uppert=35, consecutive =T and duration=3}
+
+\item{method}{character, bias-correction method to use. One of eqm (Empirical Quantile Mapping) or qdm (Quantile Delta Mapping). Default to eqm}
 }
 \value{
 list with SpatRaster. To explore the output run attributes(output)

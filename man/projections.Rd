@@ -13,7 +13,8 @@ projections(
   consecutive = F,
   frequency = F,
   n.sessions = 1,
-  duration = "max"
+  duration = "max",
+  method = "eqm"
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ projections(
 \item{n.sessions}{numeric, number of sessions to use, default is one. Parallelization can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelizing will increase RAM usage}
 
 \item{duration}{A parameter that can be set to either "max" or a specific number. It is relevant only when 'consecutive' is set to TRUE. For instance, to calculate the count of consecutive days with Tmax (maximum temperature) above 35°C, lasting for more than 3 days, you can set 'uppert' to 35, 'consecutive' to TRUE, and 'duration' to 3.}
+
+\item{method}{character, bias-correction method to use. One of eqm (Empirical Quantile Mapping) or qdm (Quantile Delta Mapping). Default to eqm}
 }
 \value{
 list with SpatRaster. To explore the output run attributes(output)

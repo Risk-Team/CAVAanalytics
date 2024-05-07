@@ -35,6 +35,7 @@
     <a class="dropdown-item" href="../articles/Introduction.html">Start here</a>
     <a class="dropdown-item" href="../articles/more_advanced.html">Climate indexes</a>
     <a class="dropdown-item" href="../articles/large_areas.html">Computation over large regions</a>
+    <a class="dropdown-item" href="../articles/own_data.html">CAVAanalytics and CMIP6 models</a>
   </div>
 </li>
 <li class="active nav-item">
@@ -88,7 +89,8 @@
 <span>  consecutive <span class="op">=</span> <span class="cn">F</span>,</span>
 <span>  frequency <span class="op">=</span> <span class="cn">F</span>,</span>
 <span>  n.sessions <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  duration <span class="op">=</span> <span class="st">"max"</span></span>
+<span>  duration <span class="op">=</span> <span class="st">"max"</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"eqm"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -128,6 +130,10 @@
 
 <dt>duration</dt>
 <dd><p>A parameter that can be set to either "max" or a specific number. It is relevant only when 'consecutive' is set to TRUE. For instance, to calculate the count of consecutive days with Tmax (maximum temperature) above 35°C, lasting for more than 3 days, you can set 'uppert' to 35, 'consecutive' to TRUE, and 'duration' to 3.</p></dd>
+
+
+<dt>method</dt>
+<dd><p>character, bias-correction method to use. One of eqm (Empirical Quantile Mapping) or qdm (Quantile Delta Mapping). Default to eqm</p></dd>
 
 </dl></div>
     <div class="section level2">

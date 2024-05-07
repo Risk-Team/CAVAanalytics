@@ -11,6 +11,7 @@
 #' @param duration either "max" or specify a number. Used only when consecutive is TRUE. For example, to know the number of consecutive days with tmax above 35, lasting more than 3 days, specify uppert=35, consecutive =T and duration=3
 #' @param frequency logical. Used only when consecutive is TRUE and duration is not "max". For example, to know the number of heatwaves defined as the number of days with Tmax higher than 35 for at least 3 consecutive days, specify uppert=35, consecutive =T and duration=3, frequency=T
 #' @param n.sessions numeric, number of sessions to use, default is one. Parallelization can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelizing will increase RAM usage
+#' @param method character, bias-correction method to use. One of eqm (Empirical Quantile Mapping) or qdm (Quantile Delta Mapping). Default to eqm
 #' @importFrom magrittr %>%
 #' @return list with SpatRaster. To explore the output run attributes(output)
 #'
@@ -26,7 +27,8 @@ model_biases <-
            consecutive = F,
            frequency = F,
            n.sessions = 1,
-           duration = "max") {
+           duration = "max",
+           method="eqm") {
     # Intermediate functions --------------------------------------------------
 
     # check inputs requirement
@@ -37,12 +39,16 @@ model_biases <-
                lowert,
                consecutive,
                duration,
-               season) {
+               season,
+               method) {
         if (!is.list(season))
           cli::cli_abort("season needs to be a list, for example, list(1:3)")
         stopifnot(is.logical(consecutive), is.logical(bias.correction))
         if (!(duration == "max" || is.numeric(duration))) {
           cli::cli_abort("duration must be 'max' or a number")
+        }
+        if (!(method == "eqm" ||method == "qdm")) {
+          cli::cli_abort("method must be 'eqm' or qdm")
         }
         if (!is.null(lowert) &
             !is.null(uppert))
@@ -196,7 +202,8 @@ model_biases <-
                duration,
                country_shp,
                season,
-               frequency) {
+               frequency,
+               method) {
         season_name <-
           convert_vector_to_month_initials(season)
         data_list <- datasets %>%
@@ -205,7 +212,7 @@ model_biases <-
               cli::cli_text(
                 paste(
                   "{cli::symbol$arrow_right}",
-                  " Performing monthly bias correction with the empirical quantile mapping",
+                  " Performing monthly bias correction with the ", method,
                   " method, for each model and month separately. This can take a while. Season",
                   glue::glue_collapse(season, "-")
                 )
@@ -218,7 +225,7 @@ model_biases <-
                                     y = obs[[1]],
                                     x = mod,
                                     precipitation = ifelse(var == "pr", TRUE, FALSE),
-                                    method = "eqm",
+                                    method =method,
                                     window = if (any(diffs == 1))
                                       c(30, 30)
                                     else
@@ -360,7 +367,8 @@ model_biases <-
                  lowert,
                  consecutive,
                  duration,
-                 season)
+                 season,
+                 method)
     # retrieve information
     mod.numb <- dim(data[[1]]$models_mbrs[[1]]$Data) [1]
     datasets <- data[[1]]
@@ -407,7 +415,8 @@ model_biases <-
           duration,
           country_shp,
           season = sns,
-          frequency
+          frequency,
+          method
         )
 
       cli::cli_progress_done()

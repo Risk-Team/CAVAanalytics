@@ -23,6 +23,8 @@
 #' @param chunk.size numeric, indicating the number of chunks. The smaller the better when working with limited RAM
 #' @param threshold numerical value with range 0-1. It indicates the threshold for assigning model agreement. For example, 0.6 indicates that model agreement is assigned when 60 percent of the models agree in the sign of the change
 #' @param overlap numeric, amount of overlap needed to create the composite. Default 0.25
+#' @param percentage logical, whether the climate change signal is to be calculated as relative changes (in percentage). Default to FALSE
+#' @param method character, bias-correction method to use. One of eqm (Empirical Quantile Mapping) or qdm (Quantile Delta Mapping). Default to eqm
 #' @importFrom magrittr %>%
 #' @return list with SpatRaster. To explore the output run attributes(output)
 #' @export
@@ -49,7 +51,9 @@ load_data_and_climate_change_signal <-
            bias.correction = F,
            domain = NULL,
            threshold = 0.6,
-           n.sessions = 6) {
+           n.sessions = 6,
+           method = "eqm",
+           percentage = F) {
     # calculate number of chunks based on xlim and ylim
     if (missing(chunk.size) | missing(season)) {
       cli::cli_abort("chunk.size and season must be specified")
@@ -164,7 +168,9 @@ load_data_and_climate_change_signal <-
                 duration =  duration,
                 frequency = frequency,
                 threshold =  threshold,
-                n.sessions = 1
+                n.sessions = 1,
+                method = method,
+                percentage = percentage
               )
           )
 

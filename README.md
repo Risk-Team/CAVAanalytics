@@ -6,7 +6,7 @@
 <div align="center">
    <img src="https://img.shields.io/github/v/release/Risk-team/CAVAanalytics?include_prereleases" alt="GitHub R package version" style="display: inline-block;">
    <img src="https://img.shields.io/github/release-date-pre/Risk-team/CAVAanalytics" alt="release date" style="display: inline-block;">
-   <[![DOI](https://zenodo.org/badge/568740864.svg)](https://zenodo.org/badge/latestdoi/568740864)>
+   [![DOI](https://zenodo.org/badge/568740864.svg)](https://zenodo.org/badge/latestdoi/568740864)
 <a href="http://hits.dwyl.com/Risk-team/CAVAanalytics"><img src="http://hits.dwyl.com/Risk-team/CAVAanalytics.svg"/></a>
 </div>
 </h1>

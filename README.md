@@ -6,14 +6,13 @@
 <div align="center">
    <img src="https://img.shields.io/github/v/release/Risk-team/CAVAanalytics?include_prereleases" alt="GitHub R package version" style="display: inline-block;">
    <img src="https://img.shields.io/github/release-date-pre/Risk-team/CAVAanalytics" alt="release date" style="display: inline-block;">
+   <a href="https://zenodo.org/doi/10.5281/zenodo.11127220"><img src="https://zenodo.org/badge/558266668.svg" alt="DOI"></a>
 <a href="http://hits.dwyl.com/Risk-team/CAVAanalytics"><img src="http://hits.dwyl.com/Risk-team/CAVAanalytics.svg"/></a>
 </div>
 </h1>
 
 --------------------------------------------------------------------------------------------------
 **CAVAanalytics is under constant improvement. You are encouraged to always work with the latest release**
-
- [![DOI](https://zenodo.org/badge/11127221.svg)](https://zenodo.org/badge/latestdoi/11127221)
 --------------------------------------------------------------------------------------------------
 
 #### **Updates

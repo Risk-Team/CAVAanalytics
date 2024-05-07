@@ -14,7 +14,9 @@ climate_change_signal(
   frequency = F,
   bias.correction = F,
   threshold = 0.6,
-  n.sessions = 1
+  n.sessions = 1,
+  method = "eqm",
+  percentage = F
 )
 }
 \arguments{
@@ -37,6 +39,10 @@ climate_change_signal(
 \item{threshold}{numerical value with range 0-1. It indicates the threshold for assigning model agreement. For example, 0.6 indicates that model agreement is assigned when 60 percent of the models agree in the sign of the change}
 
 \item{n.sessions}{numeric, number of sessions to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage}
+
+\item{method}{character, bias-correction method to use. One of eqm (Empirical Quantile Mapping) or qdm (Quantile Delta Mapping). Default to eqm}
+
+\item{percentage}{logical, whether the climate change signal is to be calculated as relative changes (in percentage). Default to FALSE}
 }
 \value{
 list with SpatRaster. To explore the output run attributes(output)

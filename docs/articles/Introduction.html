@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">CAVAanalytics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,6 +52,7 @@
     <a class="dropdown-item" href="../articles/Introduction.html">Start here</a>
     <a class="dropdown-item" href="../articles/more_advanced.html">Climate indexes</a>
     <a class="dropdown-item" href="../articles/large_areas.html">Computation over large regions</a>
+    <a class="dropdown-item" href="../articles/own_data.html">CAVAanalytics and CMIP6 models</a>
   </div>
 </li>
 <li class="nav-item">
@@ -229,10 +230,13 @@ experiments and ERA5.</p>
 As we can see, the biases are mainly positive, hence CORDEX-CORE models
 are warmer than the “observed” data. However, what happens if we bias
 correct the data? The results look much better now and mean biases are
-reduced thanks to bias correction.</p>
+reduced thanks to bias correction. Bias correction is applied with the
+<a href="https://rdrr.io/github/SantanderMetGroup/downscaleR/man/biasCorrection.html" class="external-link">Empirical
+Quantile Mapping (eqm) method as default but Quantile Delta Mapping
+(qdm)</a> can also be used.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">biases_kenya.bs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/model_biases.html">model_biases</a></span><span class="op">(</span><span class="va">kenya_exmp</span>, season<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span>, bias.correction <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">biases_kenya.bs</span>, ensemble<span class="op">=</span><span class="cn">F</span>, temporal<span class="op">=</span><span class="cn">T</span>, plot_titles <span class="op">=</span> <span class="st">"mean tasmax biases"</span><span class="op">)</span><span class="op">+</span><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"After bias correction"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">biases_kenya.bs</span>, ensemble<span class="op">=</span><span class="cn">F</span>, temporal<span class="op">=</span><span class="cn">T</span>, plot_titles <span class="op">=</span> <span class="st">"mean tasmax biases"</span><span class="op">)</span><span class="op">+</span><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"After bias correction-eqm method"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Introduction_files/figure-html/unnamed-chunk-12-1.png" width="960"></p>
 </div>
 <div class="section level2">
@@ -313,6 +317,9 @@ agreement in the sign of the change. Basically, with a threshold of 0.8,
 it means that if 80% of the models agree that the climate change signal
 is positive or negative, the pixel gets a score of 1. These results are
 visualized through a black dot.</p>
+<p>When working with precipitation, it can be useful to look at the
+results in percentages. This can be done easily by specifying percentage
+as TRUE in climate_change_signal</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ccs_kenya</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/climate_change_signal.html">climate_change_signal</a></span><span class="op">(</span><span class="va">kenya_exmp</span>, season<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span>,<span class="fl">7</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span>, threshold <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span></span>
 <span></span>

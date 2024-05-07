@@ -11,6 +11,7 @@
 #' @param duration A parameter that can be set to either "max" or a specific number. It is relevant only when 'consecutive' is set to TRUE. For instance, to calculate the count of consecutive days with Tmax (maximum temperature) above 35°C, lasting for more than 3 days, you can set 'uppert' to 35, 'consecutive' to TRUE, and 'duration' to 3.
 #' @param frequency logical value. This parameter is relevant only when 'consecutive' is set to TRUE and 'duration' is not set to "max". For instance, if you want to determine the count of heatwaves, defined as the number of days with Tmax (maximum temperature) exceeding 35°C for a minimum of 3 consecutive days, set 'uppert' to 35, 'consecutive' to TRUE, 'duration' to 3, and 'frequency' to TRUE.
 #' @param n.sessions numeric, number of sessions to use, default is one. Parallelization can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelizing will increase RAM usage
+#' @param method character, bias-correction method to use. One of eqm (Empirical Quantile Mapping) or qdm (Quantile Delta Mapping). Default to eqm
 #' @importFrom magrittr %>%
 #' @return list with SpatRaster. To explore the output run attributes(output)
 #'
@@ -27,7 +28,8 @@ projections <-
            consecutive = F,
            frequency = F,
            n.sessions = 1,
-           duration = "max") {
+           duration = "max",
+           method = "eqm") {
     # Intermediate functions --------------------------------------------------
 
     # check inputs requirement
@@ -38,12 +40,16 @@ projections <-
                lowert,
                consecutive,
                duration,
-               season) {
+               season,
+               method) {
         if (!is.list(season))
           cli::cli_abort("season needs to be a list, for example, list(1:3)")
         stopifnot(is.logical(consecutive), is.logical(bias.correction))
         if (!(duration == "max" || is.numeric(duration))) {
           cli::cli_abort("duration must be 'max' or a number")
+        }
+        if (!(method == "eqm" || method == "qdm")) {
+          cli::cli_abort("method must be 'eqm' or qdm")
         }
         if (length(data[[1]]$experiment) == 1 &
             data[[1]]$experiment[[1]] == "historical")
@@ -186,7 +192,8 @@ projections <-
                duration,
                country_shp,
                season,
-               frequency) {
+               frequency,
+               method) {
         season_name <-
           convert_vector_to_month_initials(season)
         data_list <- datasets %>%
@@ -196,7 +203,7 @@ projections <-
               cli::cli_text(
                 "{cli::symbol$arrow_right}",
                 paste(
-                  " Performing monthly bias correction with the empirical quantile mapping",
+                  " Performing monthly bias correction with the ", method,
                   " method, for each model and month separately. This can take a while. Season",
                   glue::glue_collapse(season, "-")
                 )
@@ -210,7 +217,7 @@ projections <-
                                     x = dplyr::filter(datasets, experiment == "historical")$models_mbrs[[1]],
                                     newdata = mod,
                                     precipitation = ifelse(var == "pr", TRUE, FALSE),
-                                    method = "eqm",
+                                    method = method,
                                     window = if (any(diffs == 1))
                                       c(30, 30)
                                     else
@@ -284,9 +291,9 @@ projections <-
               rs_list <- purrr::map(1:dim(y$Data)[[1]], function(ens) {
                 array_mean <-
                   if (length(y$Dates$start) == 1)
-                    apply(y$Data[ens, , ,], c(1, 2), mean, na.rm = TRUE)
+                    apply(y$Data[ens, , , ], c(1, 2), mean, na.rm = TRUE)
                 else
-                  apply(y$Data[ens, , ,], c(2, 3), mean, na.rm = TRUE) # climatology per member adjusting by array dimension
+                  apply(y$Data[ens, , , ], c(2, 3), mean, na.rm = TRUE) # climatology per member adjusting by array dimension
                 y$Data <- array_mean
                 rs <- make_raster(y, c(1, 2), country_shp)
                 names(rs) <-
@@ -342,7 +349,8 @@ projections <-
                  lowert,
                  consecutive,
                  duration,
-                 season)
+                 season,
+                 method)
     # retrieve information
     mod.numb <- dim(data[[1]]$models_mbrs[[1]]$Data) [1]
     datasets <- data[[1]]
@@ -357,7 +365,13 @@ projections <-
     # create plots by season
     data_list <- purrr::map(season, function(sns) {
       mes <-
-        create_message(var, bias.correction, uppert, lowert, consecutive, duration, frequency)
+        create_message(var,
+                       bias.correction,
+                       uppert,
+                       lowert,
+                       consecutive,
+                       duration,
+                       frequency)
       # filter data by season
       datasets <- filter_data_by_season(datasets, season = sns)
       cli::cli_text(
@@ -385,7 +399,8 @@ projections <-
           duration,
           country_shp,
           season = sns,
-          frequency
+          frequency,
+          method
         )
 
       cli::cli_progress_done()

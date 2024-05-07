@@ -6,7 +6,8 @@ articles:
   Introduction: Introduction.html
   large_areas: large_areas.html
   more_advanced: more_advanced.html
-last_built: 2024-04-29T12:57Z
+  own_data: own_data.html
+last_built: 2024-05-07T13:15Z
 urls:
   reference: https://risk-team.github.io/CAVAanalytics/reference
   article: https://risk-team.github.io/CAVAanalytics/articles

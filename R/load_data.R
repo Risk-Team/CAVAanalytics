@@ -245,6 +245,9 @@ load_data <-
       }
     }
 
+    # used to convert wind speed to 10 m to 2 m level following FAO guidelines Allen at al
+    conversion_factor <- 4.87 / log((67.8 * 10) - 5.42)
+
     # start -------------------------------------------------------------------
 
     # check for valid path
@@ -332,6 +335,9 @@ load_data <-
                   } else if (stringr::str_detect(variable, "pr")) {
                     suppressMessages(transformeR::gridArithmetics(., 86400, operator = "*"))
 
+                  } else if (stringr::str_detect(variable, "sfc")) {
+                    suppressMessages(transformeR::gridArithmetics(., conversion_factor, operator = "*"))
+
                   } else {
                     .
 
@@ -363,6 +369,9 @@ load_data <-
                     suppressMessages(transformeR::gridArithmetics(., 273.15, operator = "-"))
                   } else if (stringr::str_detect(variable, "pr")) {
                     suppressMessages(transformeR::gridArithmetics(., 86400, operator = "*"))
+
+                  } else if (stringr::str_detect(variable, "sfc")) {
+                    suppressMessages(transformeR::gridArithmetics(., conversion_factor, operator = "*"))
 
                   } else {
                     .
@@ -460,6 +469,12 @@ load_data <-
                                                        operator = "/")
                 obs_tr$Variable$varName = variable
                 obs_tr
+              } else if (stringr::str_detect(variable, "sfc")) {
+                obs_tr <- transformeR::gridArithmetics(.,
+                                                       conversion_factor,
+                                                       operator = "*")
+                obs_tr$Variable$varName = variable
+                obs_tr
               } else {
                 obs_tr <- transformeR::gridArithmetics(., 1, operator = "*")
                 obs_tr$Variable$varName = variable
@@ -497,6 +512,10 @@ load_data <-
           cli::cli_text(
             "{cli::symbol$arrow_right} Temperature data from CORDEX-CORE has been converted into Celsius"
           )
+        } else if (stringr::str_detect(variable, "sfc")) {
+          cli::cli_text(
+            "{cli::symbol$arrow_right} Wind speed data from CORDEX-CORE has been converted to 2 m level"
+          )
         }
 
       }
@@ -520,6 +539,15 @@ load_data <-
               " Temperature data from ",
               path.to.obs,
               " has been converted into Celsius"
+            )
+          )
+        } else if (stringr::str_detect(variable, "sfc")) {
+          cli::cli_text(
+            paste0(
+              "{cli::symbol$arrow_right}",
+              " Wind speed data from ",
+              path.to.obs,
+              " has been converted to 2 m level"
             )
           )
         }

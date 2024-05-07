@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">CAVAanalytics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,6 +35,7 @@
     <a class="dropdown-item" href="../articles/Introduction.html">Start here</a>
     <a class="dropdown-item" href="../articles/more_advanced.html">Climate indexes</a>
     <a class="dropdown-item" href="../articles/large_areas.html">Computation over large regions</a>
+    <a class="dropdown-item" href="../articles/own_data.html">CAVAanalytics and CMIP6 models</a>
   </div>
 </li>
 <li class="active nav-item">
@@ -100,7 +101,9 @@
 <span>  bias.correction <span class="op">=</span> <span class="cn">F</span>,</span>
 <span>  domain <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  threshold <span class="op">=</span> <span class="fl">0.6</span>,</span>
-<span>  n.sessions <span class="op">=</span> <span class="fl">6</span></span>
+<span>  n.sessions <span class="op">=</span> <span class="fl">6</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"eqm"</span>,</span>
+<span>  percentage <span class="op">=</span> <span class="cn">F</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -189,6 +192,14 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 
 <dt>n.sessions</dt>
 <dd><p>numeric, number of sessions to use in parallel processing for loading the data. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary</p></dd>
+
+
+<dt>method</dt>
+<dd><p>character, bias-correction method to use. One of eqm (Empirical Quantile Mapping) or qdm (Quantile Delta Mapping). Default to eqm</p></dd>
+
+
+<dt>percentage</dt>
+<dd><p>logical, whether the climate change signal is to be calculated as relative changes (in percentage). Default to FALSE</p></dd>
 
 </dl></div>
     <div class="section level2">

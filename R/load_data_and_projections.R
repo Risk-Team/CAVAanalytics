@@ -22,6 +22,7 @@
 #' @param n.sessions numeric, number of sessions to use in parallel processing for loading the data. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary
 #' @param chunk.size numeric, indicating the number of chunks. The smaller the better when working with limited RAM
 #' @param overlap numeric, amount of overlap needed to create the composite. Default 0.25
+#' @param method character, bias-correction method to use. One of eqm (Empirical Quantile Mapping) or qdm (Quantile Delta Mapping). Default to eqm
 #' @importFrom magrittr %>%
 #' @return list with SpatRaster. To explore the output run attributes(output)
 #' @export
@@ -46,7 +47,8 @@ load_data_and_projections <- function(variable,
                                       frequency = F,
                                       bias.correction = F,
                                       domain = NULL,
-                                      n.sessions = 6) {
+                                      n.sessions = 6,
+                                      method = "eqm") {
   # calculate number of chunks based on xlim and ylim
   if (missing(chunk.size) | missing(season)) {
     cli::cli_abort("chunk.size and season must be specified")
@@ -158,7 +160,8 @@ load_data_and_projections <- function(variable,
               consecutive = consecutive,
               frequency = frequency,
               n.sessions = 1,
-              duration =  duration
+              duration =  duration,
+              method = method
             )
         )
 
@@ -186,7 +189,7 @@ load_data_and_projections <- function(variable,
     # Determine the smallest (finest) resolution among all rasters
     resolutions <- sapply(rst_list, function(r)
       terra::res(r))
-    common_res <- min(resolutions)
+    common_res <- max(resolutions)
 
     # Resample all rasters to the common resolution
     resampled_rasters <- lapply(rst_list, function(r) {
@@ -196,7 +199,7 @@ load_data_and_projections <- function(variable,
                         resolution = common_res,
                         crs = terra::crs(r)
                       ),
-                      method = "bilinear")
+                      method = "mode")
     })
 
     # Merge the resampled rasters

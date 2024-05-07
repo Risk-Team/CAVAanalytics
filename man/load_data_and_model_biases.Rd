@@ -24,7 +24,8 @@ load_data_and_model_biases(
   frequency = F,
   bias.correction = F,
   domain = NULL,
-  n.sessions = 6
+  n.sessions = 6,
+  method = "eqm"
 )
 }
 \arguments{
@@ -68,6 +69,8 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 \item{domain}{specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE. Default is NULL}
 
 \item{n.sessions}{numeric, number of sessions to use in parallel processing for loading the data. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary}
+
+\item{method}{character, bias-correction method to use. One of eqm (Empirical Quantile Mapping) or qdm (Quantile Delta Mapping). Default to eqm}
 }
 \value{
 list with SpatRaster. To explore the output run attributes(output)

@@ -12,6 +12,8 @@
 #' @param bias.correction logical
 #' @param threshold numerical value with range 0-1. It indicates the threshold for assigning model agreement. For example, 0.6 indicates that model agreement is assigned when 60 percent of the models agree in the sign of the change
 #' @param n.sessions numeric, number of sessions to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage
+#' @param method character, bias-correction method to use. One of eqm (Empirical Quantile Mapping) or qdm (Quantile Delta Mapping). Default to eqm
+#' @param percentage logical, whether the climate change signal is to be calculated as relative changes (in percentage). Default to FALSE
 #' @importFrom magrittr %>%
 #' @return list with SpatRaster. To explore the output run attributes(output)
 #'
@@ -26,7 +28,9 @@ climate_change_signal <- function(data,
                                   frequency = F,
                                   bias.correction = F,
                                   threshold = 0.6,
-                                  n.sessions = 1) {
+                                  n.sessions = 1,
+                                  method = "eqm",
+                                  percentage = F) {
   # Intermediate functions --------------------------------------------------
 
   # check inputs requirement
@@ -38,11 +42,17 @@ climate_change_signal <- function(data,
              duration,
              bias.correction,
              season,
-             agreement) {
+             agreement,
+             method,
+             percentage) {
       stopifnot(is.logical(consecutive))
+      stopifnot(is.logical(percentage))
       stopifnot(is.numeric(threshold), threshold >= 0, threshold <= 1)
       if (!is.list(season))
         cli::cli_abort("season needs to be a list, for example, list(1:3)")
+      if (!(method == "eqm" || method == "qdm")) {
+        cli::cli_abort("method must be 'eqm' or qdm")
+      }
       if (!(duration == "max" || is.numeric(duration))) {
         cli::cli_abort("duration must be 'max' or a number")
       }
@@ -99,11 +109,15 @@ climate_change_signal <- function(data,
              consecutive,
              duration,
              bias.correction,
-             frequency) {
+             frequency,
+             percentage) {
       if (is.null(uppert) & is.null(lowert)) {
-        paste0("Climate change signal for ",
-               ifelse(var == "pr", "total ", "mean "),
-               var)
+        paste0(
+          "Climate change signal for ",
+          ifelse(var == "pr", "total ", "mean "),
+          var,
+          ifelse(percentage, " in %", "")
+        )
       }
       else if ((!is.null(uppert) |
                 !is.null(lowert)) & !consecutive) {
@@ -187,7 +201,9 @@ climate_change_signal <- function(data,
              bias.correction,
              season,
              frequency,
-             threshold) {
+             threshold,
+             method,
+             percentage) {
       season_name <-
         convert_vector_to_month_initials(season)
       data_list <- datasets  %>%
@@ -196,7 +212,8 @@ climate_change_signal <- function(data,
             cli::cli_text(
               paste(
                 "{cli::symbol$arrow_right}",
-                " Performing bias correction with the empirical quantile mapping",
+                " Performing bias correction with the ",
+                method,
                 " method, for each model and month separately. This can take a while. Season",
                 glue::glue_collapse(season, "-")
               )
@@ -210,7 +227,7 @@ climate_change_signal <- function(data,
                                     y = obs[[1]],
                                     x = mod,
                                     precipitation = ifelse(var == "pr", TRUE, FALSE),
-                                    method = "eqm",
+                                    method = method,
                                     window = if (any(diffs == 1))
                                       c(30, 30)
                                     else
@@ -226,7 +243,7 @@ climate_change_signal <- function(data,
                                     x = dplyr::filter(datasets, experiment == "historical")$models_mbrs[[1]],
                                     newdata = mod,
                                     precipitation = ifelse(var == "pr", TRUE, FALSE),
-                                    method = "eqm",
+                                    method = method,
                                     window = if (any(diffs == 1))
                                       c(30, 30)
                                     else
@@ -284,7 +301,16 @@ climate_change_signal <- function(data,
           ccs_mbrs = purrr::map(models_agg_tot, function(y) {
             h <-
               dplyr::filter(., stringr::str_detect(experiment, "hist"))$models_agg_tot[[1]]
-            transformeR::gridArithmetics(y, h, operator = "-")
+            delta <-
+              transformeR::gridArithmetics(y, h, operator = "-")
+
+            if (percentage) {
+              delta <-
+                transformeR::gridArithmetics(delta, h, operator = "/") %>%
+                transformeR::gridArithmetics(., 100, operator = "*")
+            }
+
+            delta
           }),
           rst_ccs_sign = purrr::map2(experiment, ccs_mbrs, function(x, y) {
             y$Data <- apply(y$Data, c(1, 3, 4), mean)
@@ -339,6 +365,12 @@ climate_change_signal <- function(data,
 
               delta <-
                 transformeR::gridArithmetics(y, h.expanded, operator = "-")
+              if (percentage) {
+                delta <-
+                  transformeR::gridArithmetics(delta, h.expanded, operator = "/") %>%
+                  transformeR::gridArithmetics(., 100, operator = "*")
+              }
+
               dimnames(delta$Data)[[1]] <- delta$Members
               dimnames(delta$Data)[[2]] <- delta$Dates$start
               dimnames(delta$Data)[[3]] <- delta$xyCoords$y
@@ -384,14 +416,18 @@ climate_change_signal <- function(data,
   if (class(data) != "CAVAanalytics_list")
     cli::cli_abort(c("x" = "The input data is not the output of CAVAanalytics load_data"))
   # check input requirements
-  check_inputs(data,
-               uppert,
-               lowert,
-               consecutive,
-               duration,
-               bias.correction,
-               season,
-               threshold)
+  check_inputs(
+    data,
+    uppert,
+    lowert,
+    consecutive,
+    duration,
+    bias.correction,
+    season,
+    threshold,
+    method,
+    percentage
+  )
 
   # retrieve information
   mod.numb <- dim(data[[1]]$models_mbrs[[1]]$Data) [1]
@@ -408,13 +444,16 @@ climate_change_signal <- function(data,
   #create plots by season
   data_list <- purrr::map(season, function(sns) {
     mes <-
-      create_message(var,
-                     uppert,
-                     lowert,
-                     consecutive,
-                     duration,
-                     bias.correction,
-                     frequency)
+      create_message(
+        var,
+        uppert,
+        lowert,
+        consecutive,
+        duration,
+        bias.correction,
+        frequency,
+        percentage
+      )
 
     # filter data by season
     datasets <- filter_data_by_season(datasets, sns)
@@ -445,7 +484,9 @@ climate_change_signal <- function(data,
         bias.correction,
         season = sns,
         frequency,
-        threshold
+        threshold,
+        method,
+        percentage
       )
     cli::cli_progress_done()
     # return results

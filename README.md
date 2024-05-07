@@ -13,7 +13,7 @@
 --------------------------------------------------------------------------------------------------
 **CAVAanalytics is under constant improvement. You are encouraged to always work with the latest release**
 
- [![DOI](https://zenodo.org/badge/568740864.svg)](https://zenodo.org/badge/latestdoi/568740864)
+ [![DOI](https://zenodo.org/badge/11127221.svg)](https://zenodo.org/badge/latestdoi/11127221)
 --------------------------------------------------------------------------------------------------
 
 #### **Updates

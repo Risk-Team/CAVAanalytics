@@ -59,10 +59,6 @@ load_data_and_projections <- function(variable,
     )
   }
 
-  cli::cli_alert_warning(
-    "Interpolation may be required to merge the rasters. Be aware that interpolation can introduce slight discrepancies in the data, potentially affecting the consistency of results across different spatial segments."
-  )
-
   country_shp = if (!is.null(country) & !inherits(country, "sf")) {
     suppressMessages(
       rnaturalearth::ne_countries(
@@ -186,28 +182,36 @@ load_data_and_projections <- function(variable,
   # Merge the extracted rasters using `Reduce` and set their names
 
   merge_rasters <- function(rst_list) {
-    # Determine the smallest (finest) resolution among all rasters
+    # Determine the resolution of each raster in the list
     resolutions <- sapply(rst_list, function(r)
       terra::res(r))
-    common_res <- max(resolutions)
 
-    # Resample all rasters to the common resolution
-    resampled_rasters <- lapply(rst_list, function(r) {
-      terra::resample(r,
-                      terra::rast(
-                        terra::ext(r),
-                        resolution = common_res,
-                        crs = terra::crs(r)
-                      ),
-                      method = "mode")
-    })
+    # Check if all rasters have the same resolution
+    if (length(unique(resolutions)) > 1) {
+      cli::cli_alert_warning("Interpolation was required to merge the rasters.")
+      # If resolutions differ, determine the smallest (finest) resolution among all rasters
+      common_res <- max(resolutions)
 
-    # Merge the resampled rasters
+      # Resample all rasters to the common resolution
+      rst_list <- lapply(rst_list, function(r) {
+        terra::resample(
+          r,
+          terra::rast(
+            terra::ext(r),
+            resolution = common_res,
+            crs = terra::crs(r)
+          ),
+          method = "mode"
+        )
+      })
+    }
+
+    # Merge rasters
     merged_raster <-
       Reduce(function(x, y)
-        terra::merge(x, y), resampled_rasters)
+        terra::merge(x, y), rst_list)
 
-    #Set names from the first raster in the list
+    # Set names from the first raster in the list
     names <- names(rst_list[[1]])
     setNames(merged_raster, names)
   }

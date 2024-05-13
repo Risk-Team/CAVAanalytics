@@ -17,6 +17,7 @@ knitr::opts_chunk$set(
 ```{r setup, message=F, warning=FALSE}
 library(CAVAanalytics)
 library(magrittr)
+library(patchwork)
 ```
 
 
@@ -73,64 +74,90 @@ We can examine historical data using the loaded observational dataset, which, in
 
 ```{r, fig.height=3, fig.width=4, fig.align="center",  message=F, warning=F}
 kenya_obs <- observations(kenya_exmp, season=list(1:12))
-plotting(kenya_obs, plot_titles = "Mean tasmax")
+plotting(kenya_obs, plot_titles = "°C")
 ```
 If you want, you can also use pre-defined IPCC color palettes. You can type ?IPCC_palette for more info
 
 ```{r, fig.height=3, fig.width=4, fig.align="center",  message=F, warning=F}
-plotting(kenya_obs, plot_titles = "Mean tasmax", 
+plotting(kenya_obs, plot_titles = "°C", 
 palette = IPCC_palette(type = "tmp", divergent = F))
 ```
 
 How many days above 35 °C occurred on average?
 ```{r, fig.height=3, fig.width=4, fig.align="center",  message=F, warning=F}
 kenya_obs.35 <- observations(kenya_exmp, season=list(1:12), uppert=35)
-plotting(kenya_obs.35, plot_titles = "N.days > 35")
+plotting(kenya_obs.35, plot_titles = "Days > 35 °C",  palette = IPCC_palette(type = "tmp", divergent = F))
 ```
 
 You can also specify more than one season at a time
 
-```{r, fig.height=4, fig.width=4, fig.align="center",  message=F, warning=F}
+```{r, fig.height=3, fig.width=6, fig.align="center",  message=F, warning=F}
 observations(kenya_exmp, season=list(1:6, 7:12), uppert=35) %>% 
-plotting(., plot_titles = "N.days > 35")
+plotting(., plot_titles = "Days > 35 °C", palette = IPCC_palette(type = "tmp", divergent = F))
 ```
 
 You can also visualize the results as a temporal trend
 
-```{r, fig.height=4, fig.width=4, fig.align="center",  message=F, warning=F}
+```{r, fig.height=2, fig.width=6, fig.align="center",  message=F, warning=F}
 observations(kenya_exmp, season=list(1:6, 7:12), uppert=35) %>% 
-plotting(., plot_titles = "N.days > 35", temporal=T, palette="black")
+plotting(., plot_titles = "N.days > 35 °C", temporal=T, palette="black")
 ```
 
 And we can apply linear regression to each pixel to assess the statistical significance of the yearly increase in the number of days with Tmax higher than 35 degrees Celsius.
 
-```{r, fig.height=4, fig.width=4, fig.align="center",  message=F, warning=F}
+```{r, fig.height=3, fig.width=4, fig.align="center",  message=F, warning=F}
 observations(kenya_exmp, season=list(1:12), uppert=35,trends=T) %>% 
-plotting(., plot_titles = "N.days > 35/year", palette=IPCC_palette(type="tmp", divergent = T), legend_range = c(-3,3))
+plotting(., plot_titles = "Days/year", palette=IPCC_palette(type="tmp", divergent = T), legend_range = c(-3,3))
 ```
 
 
 ## Model biases
 
-Before diving into the analyses of climate model projections, it is essential to examine model biases. Defining biases can be somewhat arbitrary as it depends on the specific and intended usage of climate models. However, CAVAanalytics offers a flexible and straightforward approach to conducting this analysis. Let's begin by exploring the differences in mean climatology between the CORDEX-CORE historical experiments and ERA5.
+Before diving into the analyses of climate model projections, it is essential to examine model biases. CAVAanalytics offers a flexible and straightforward approach to conducting this analysis. Let's begin by exploring the differences in mean climatology between the CORDEX-CORE historical experiments and ERA5.
 
-```{r, fig.height=3, fig.width=10,  message=F, warning=F}
+```{r, fig.height=6, fig.width=10,  message=F, warning=F}
 # you can specify the season. In this case we are looking at the whole year
 biases_kenya <- model_biases(kenya_exmp, season=list(1:12))
-plotting(biases_kenya, ensemble=F, 
-temporal=F, plot_titles = "mean tasmax biases", palette = IPCC_palette(type="tmp", divergent = T))
+
+a=plotting(biases_kenya, ensemble=F, temporal=T, 
+plot_titles = "Biases in °C")+ggplot2::ggtitle("Before bias correction")
+
+b=plotting(biases_kenya, ensemble=F, 
+temporal=F, plot_titles = "Biases in °C", palette = IPCC_palette(type="tmp", divergent = T))
+
+
+a/b
+
 ```
 
-```{r, fig.height=3, fig.width=10,  message=F, warning=F}
-plotting(biases_kenya, ensemble=F, temporal=T, 
-plot_titles = "mean tasmax biases")+ggplot2::ggtitle("Before bias correction")
-```
 As we can see, the biases are mainly positive, hence CORDEX-CORE models are warmer than the "observed" data. However, what happens if we bias correct the data?
-The results look much better now and mean biases are reduced thanks to bias correction. Bias correction is applied with the [Empirical Quantile Mapping (eqm) method as default but Quantile Delta Mapping (qdm)](https://rdrr.io/github/SantanderMetGroup/downscaleR/man/biasCorrection.html) can also be used.
+The results look much better now and mean biases are reduced thanks to bias correction. Bias correction is applied with the [Empirical Quantile Mapping (eqm) method as default but Quantile Delta Mapping (qdm) or scaling](https://rdrr.io/github/SantanderMetGroup/downscaleR/man/biasCorrection.html) can also be used. Cross-validation is used to avoid overfitting.
 
-```{r, fig.height=3, fig.width=10,  message=F, warning=F}
-biases_kenya.bs <- model_biases(kenya_exmp, season=list(1:12), bias.correction = T)
-plotting(biases_kenya.bs, ensemble=F, temporal=T, plot_titles = "mean tasmax biases")+ggplot2::ggtitle("After bias correction-eqm method")
+```{r, fig.height=6, fig.width=10,  message=F, warning=F}
+bs_scaling=model_biases(kenya_exmp, season=list(1:12), bias.correction = T, method="scaling", cross_validation = "3fold")
+
+a=plotting(bs_scaling, ensemble=F, temporal=T, plot_titles = "Biases in °C", legend_range = c(-1.5,1.5))+ggplot2::ggtitle("After bias correction-scaling method")
+b=plotting(bs_scaling, plot_titles =  "Biases in °C",legend_range = c(-0.09,0.09), ensemble = F ,palette=IPCC_palette(type="tmp", divergent = T))
+
+a/b
+
+
+```
+
+If we want to explore model biases biases on, let's say, the number of very warm days (days with maximum temperature above 35 °C), then the choice of the bias-correction method is very important. The eqm and qdm methods are much more suitable in this case because they correct the data distribution.
+
+
+```{r, fig.height=6, fig.width=10,  message=F, warning=F}
+
+bias.scaling=model_biases(kenya_exmp, season=list(1:12), uppert=35, bias.correction = T, method="scaling", cross_validation = "3fold")
+
+a=plotting(bias.scaling, ensemble=F,  legend_range = c(-40,40), palette = IPCC_palette(type = "tmp", divergent = T), plot_titles = "Biases in N° days")+ggplot2::ggtitle("After bias correction-scaling method")
+
+bias.eqm=model_biases(kenya_exmp, season=list(1:12), uppert=35, bias.correction = T, method="eqm", cross_validation = "3fold")
+
+b=plotting(bias.eqm, ensemble=F, legend_range = c(-40,40), palette = IPCC_palette(type = "tmp", divergent = T), plot_titles = "Biases in N° days")+ggplot2::ggtitle("After bias correction-eqm method")
+
+a/b
 ```
 
 
@@ -159,7 +186,7 @@ plotting(proj_kenya_35, ensemble=T,  legend_range = c(0, 180),
 plot_titles = "N > 35", palette=c("white", "orange", "red", "darkred"))
 ```
 
-When dealing with model biases, CAVAanalytics offers a straightforward solution by automatically implementing bias correction using the empirical quantile mapping method. This process allows us to correct for discrepancies between observed data and model outputs.
+When dealing with model biases, CAVAanalytics offers a straightforward solution by automatically implementing bias correction using the empirical quantile mapping method. This process allows us to correct for discrepancies between observed data and model outputs. Note that CAVAanalytics allows the selection of three bias-correction methods. 
 
 ```{r, fig.height=4, fig.width=5, fig.align="center", message=F, warning=F}
 # bias correction is applied with the widely used empirical quantile method
@@ -191,7 +218,7 @@ While analyzing future periods can be useful, more often we prioritize understan
 
 ```{r, fig.height=4, fig.width=10,  message=F, warning=F}
 ccs_kenya <- climate_change_signal(kenya_exmp, season=list(1:12))
-plotting(ccs_kenya, ensemble=F, plot_titles = "Mean tasmax change", 
+plotting(ccs_kenya, ensemble=F, plot_titles = "Δ °C", 
 legend_range = c(-3, 3), 
 palette = c("blue", "cyan", "green", "white", "yellow" ,"orange", "red"))
 ```
@@ -208,7 +235,7 @@ When working with precipitation, it can be useful to look at the results in perc
 ```{r, fig.height=4, fig.width=10,  message=F, warning=F}
 ccs_kenya <- climate_change_signal(kenya_exmp, season=list(1:6,7:12), threshold = 0.8)
 
-plotting(ccs_kenya, plot_titles = "Mean tasmax change", 
+plotting(ccs_kenya, plot_titles = "Δ °C", 
 legend_range = c(-3, 3), 
 palette = IPCC_palette(type = "tmp", divergent = T))
 
@@ -216,7 +243,7 @@ palette = IPCC_palette(type = "tmp", divergent = T))
 
 Anomalies can also be visualized for the annual time series
 
-```{r, fig.height=3, fig.width=5,  message=F, warning=F}
-plotting(ccs_kenya, plot_titles = "Annual anomalies", temporal=T, palette=c("blue", "red"))
+```{r, fig.height=3, fig.width=6,  message=F, warning=F}
+plotting(ccs_kenya, plot_titles = "Annual Δ (°C)", temporal=T, palette=c("blue", "red"))
 
 ```

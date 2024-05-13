@@ -16,7 +16,8 @@ climate_change_signal(
   threshold = 0.6,
   n.sessions = 1,
   method = "eqm",
-  percentage = F
+  percentage = F,
+  window = "monthly"
 )
 }
 \arguments{
@@ -40,9 +41,11 @@ climate_change_signal(
 
 \item{n.sessions}{numeric, number of sessions to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage}
 
-\item{method}{character, bias-correction method to use. One of eqm (Empirical Quantile Mapping) or qdm (Quantile Delta Mapping). Default to eqm}
+\item{method}{character, bias-correction method to use. One of eqm (Empirical Quantile Mapping), qdm (Quantile Delta Mapping) or scaling. Default to eqm. When using the scaling method, the multiplicative approach is automatically applied only when the variable is precipitation.}
 
 \item{percentage}{logical, whether the climate change signal is to be calculated as relative changes (in percentage). Default to FALSE}
+
+\item{window}{character, one of none or monthly. Whether bias correction should be applied on a monthly or annual basis. Monthly is the preferred option when performing bias-correction using daily data}
 }
 \value{
 list with SpatRaster. To explore the output run attributes(output)

@@ -9,9 +9,18 @@ output:
     toc_depth: 2
 ---
 
+## CAVAanalytics 3.2.0
+
+In this new version of CAVAanalytics we improve the bias correction funcionalities of CAVAanalytics. Specifically:
+
+- the scaling method was included among bias-correction options
+- Cross-validation was added as an option in model_biases to take care of overfitting
+- The window argument allows to bias-correct data monthly or on annual basis
+- The memory efficient functions performs interpolation when needed to merge spatial chunks with different resolutions
+
 ## CAVAanalytics 3.1.0
 
-In this new version of CAVAanalytics, many improvments have been made:
+In this new version of CAVAanalytics, many improvements have been made:
 
 - Users can now select which bias correction method to use (default to Empirical Quantile Mapping)
 - Intervals can be specified for customizing breaks in the color palette

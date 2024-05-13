@@ -22,7 +22,9 @@
 #' @param n.sessions numeric, number of sessions to use in parallel processing for loading the data. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary
 #' @param chunk.size numeric, indicating the number of chunks. The smaller the better when working with limited RAM
 #' @param overlap numeric, amount of overlap needed to create the composite. Default 0.25
-#' @param method character, bias-correction method to use. One of eqm (Empirical Quantile Mapping) or qdm (Quantile Delta Mapping). Default to eqm
+#' @param method character, bias-correction method to use. One of eqm (Empirical Quantile Mapping), qdm (Quantile Delta Mapping) or scaling. Default to eqm. When using the scaling method, the multiplicative approach is automatically applied only when the variable is precipitation.
+#' @param cross_validation character, one of none or 3fold. Whether 3-fold cross validation should be used to avoid overfitting during bias-correction. Default to "none"
+#' @param window character, one of none or monthly. Whether bias correction should be applied on a monthly or annual basis. Monthly is the preferred option when performing bias-correction using daily data
 #' @importFrom magrittr %>%
 #' @return list with SpatRaster. To explore the output run attributes(output)
 #' @export
@@ -49,7 +51,9 @@ load_data_and_model_biases <-
            bias.correction = F,
            domain = NULL,
            n.sessions = 6,
-           method = "eqm") {
+           method = "eqm",
+           cross_validation = "none",
+           window = "monthly") {
     # calculate number of chunks based on xlim and ylim
     if (missing(chunk.size) | missing(season)) {
       cli::cli_abort("chunk.size and season must be specified")
@@ -160,7 +164,9 @@ load_data_and_model_biases <-
                 duration =  duration,
                 frequency = frequency,
                 n.sessions = 1,
-                method = method
+                method = method,
+                cross_validation = cross_validation,
+                window = window
               )
           )
 

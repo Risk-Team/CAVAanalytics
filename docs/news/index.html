@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">CAVAanalytics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.2.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -74,8 +74,16 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="3.2.0" id="cavaanalytics-320">CAVAanalytics 3.2.0<a class="anchor" aria-label="anchor" href="#cavaanalytics-320"></a></h2>
+<p>In this new version of CAVAanalytics we improve the bias correction funcionalities of CAVAanalytics. Specifically:</p>
+<ul><li>the scaling method was included among bias-correction options</li>
+<li>Cross-validation was added as an option in model_biases to take care of overfitting</li>
+<li>The window argument allows to bias-correct data monthly or on annual basis</li>
+<li>The memory efficient functions performs interpolation when needed to merge spatial chunks with different resolutions</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="3.1.0" id="cavaanalytics-310">CAVAanalytics 3.1.0<a class="anchor" aria-label="anchor" href="#cavaanalytics-310"></a></h2>
-<p>In this new version of CAVAanalytics, many improvments have been made:</p>
+<p>In this new version of CAVAanalytics, many improvements have been made:</p>
 <ul><li>Users can now select which bias correction method to use (default to Empirical Quantile Mapping)</li>
 <li>Intervals can be specified for customizing breaks in the color palette</li>
 <li>Improved performance of the memory efficient functions</li>

@@ -14,7 +14,8 @@ projections(
   frequency = F,
   n.sessions = 1,
   duration = "max",
-  method = "eqm"
+  method = "eqm",
+  window = "monthly"
 )
 }
 \arguments{
@@ -36,7 +37,9 @@ projections(
 
 \item{duration}{A parameter that can be set to either "max" or a specific number. It is relevant only when 'consecutive' is set to TRUE. For instance, to calculate the count of consecutive days with Tmax (maximum temperature) above 35°C, lasting for more than 3 days, you can set 'uppert' to 35, 'consecutive' to TRUE, and 'duration' to 3.}
 
-\item{method}{character, bias-correction method to use. One of eqm (Empirical Quantile Mapping) or qdm (Quantile Delta Mapping). Default to eqm}
+\item{method}{character, bias-correction method to use. One of eqm (Empirical Quantile Mapping), qdm (Quantile Delta Mapping) or scaling. Default to eqm. When using the scaling method, the multiplicative approach is automatically applied only when the variable is precipitation.}
+
+\item{window}{character, one of none or monthly. Whether bias correction should be applied on a monthly or annual basis. Monthly is the preferred option when performing bias-correction using daily data}
 }
 \value{
 list with SpatRaster. To explore the output run attributes(output)

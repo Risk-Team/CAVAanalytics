@@ -12,7 +12,8 @@
 #' @param bias.correction logical
 #' @param threshold numerical value with range 0-1. It indicates the threshold for assigning model agreement. For example, 0.6 indicates that model agreement is assigned when 60 percent of the models agree in the sign of the change
 #' @param n.sessions numeric, number of sessions to use, default is one. Parallelisation can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelising will increase RAM usage
-#' @param method character, bias-correction method to use. One of eqm (Empirical Quantile Mapping) or qdm (Quantile Delta Mapping). Default to eqm
+#' @param method character, bias-correction method to use. One of eqm (Empirical Quantile Mapping), qdm (Quantile Delta Mapping) or scaling. Default to eqm. When using the scaling method, the multiplicative approach is automatically applied only when the variable is precipitation.
+#' @param window character, one of none or monthly. Whether bias correction should be applied on a monthly or annual basis. Monthly is the preferred option when performing bias-correction using daily data
 #' @param percentage logical, whether the climate change signal is to be calculated as relative changes (in percentage). Default to FALSE
 #' @importFrom magrittr %>%
 #' @return list with SpatRaster. To explore the output run attributes(output)
@@ -30,7 +31,8 @@ climate_change_signal <- function(data,
                                   threshold = 0.6,
                                   n.sessions = 1,
                                   method = "eqm",
-                                  percentage = F) {
+                                  percentage = F,
+                                  window = "monthly") {
   # Intermediate functions --------------------------------------------------
 
   # check inputs requirement
@@ -44,7 +46,8 @@ climate_change_signal <- function(data,
              season,
              agreement,
              method,
-             percentage) {
+             percentage,
+             window) {
       stopifnot(is.logical(consecutive))
       stopifnot(is.logical(percentage))
       stopifnot(is.numeric(threshold), threshold >= 0, threshold <= 1)
@@ -53,8 +56,23 @@ climate_change_signal <- function(data,
       if (!(method == "eqm" || method == "qdm")) {
         cli::cli_abort("method must be 'eqm' or qdm")
       }
+      if (!(window == "none" || window == "monthly")) {
+        cli::cli_abort("window must be one of 'none', or 'monthly'")
+      }
       if (!(duration == "max" || is.numeric(duration))) {
         cli::cli_abort("duration must be 'max' or a number")
+      }
+      if (bias.correction & window == "monthly") {
+        dates <- data[[1]]$models_mbrs[[1]]$Dates$start
+        dates <- as.Date(dates)
+        # calculate the differences between consecutive dates
+        diffs <- diff(dates)
+        # check if the differences are equal to 1
+        if (any(diffs == 1)) {
+
+        } else {
+          cli::cli_abort(c("x" = "Data is monthly or greater, set window to none"))
+        }
       }
       if (!any(stringr::str_detect(colnames(data[[1]]), "obs")) &
           isTRUE(bias.correction)) {
@@ -66,9 +84,9 @@ climate_change_signal <- function(data,
           !is.null(uppert))
         cli::cli_abort(c("x" = "Specify only one threshold argument"))
       if ((is.null(lowert) &
-           is.null(uppert)) & bias.correction)
+           is.null(uppert)) & bias.correction & method == "scaling")
         cli::cli_abort(
-          c("x" = "Bias correction can change the results of the climate change signal only for the calculation of indicators. Specify lowert or uppert aguments to use this option")
+          c("x" = "Bias correction with the scaling method can change the results of the climate change signal only for the calculation of indicators. Specify lowert or uppert aguments to use this option")
         )
       if (!is.null(lowert) |
           !is.null(uppert)) {
@@ -83,6 +101,20 @@ climate_change_signal <- function(data,
           cli::cli_abort(c("x" = "Data is monthly or greater, thresholds cannot be calculated. Set as NULL"))
         }
       }
+
+      if (bias.correction & window == "monthly") {
+        dates <- data[[1]]$models_mbrs[[1]]$Dates$start
+        dates <- as.Date(dates)
+        # calculate the differences between consecutive dates
+        diffs <- diff(dates)
+        # check if the differences are equal to 1
+        if (any(diffs == 1)) {
+
+        } else {
+          cli::cli_abort(c("x" = "Data is monthly or greater, set window to none"))
+        }
+      }
+
       if (consecutive &
           is.null(uppert) &
           is.null(lowert))
@@ -203,7 +235,8 @@ climate_change_signal <- function(data,
              frequency,
              threshold,
              method,
-             percentage) {
+             percentage,
+             window) {
       season_name <-
         convert_vector_to_month_initials(season)
       data_list <- datasets  %>%
@@ -212,9 +245,11 @@ climate_change_signal <- function(data,
             cli::cli_text(
               paste(
                 "{cli::symbol$arrow_right}",
-                " Performing bias correction with the ",
+                " Performing ",
+                ifelse(window == "monthly", "monthly", ""),
+                " bias correction with the ",
                 method,
-                " method, for each model and month separately. This can take a while. Season",
+                " method, for each model separately. This can take a while. Season",
                 glue::glue_collapse(season, "-")
               )
             )
@@ -226,12 +261,19 @@ climate_change_signal <- function(data,
                                   downscaleR::biasCorrection(
                                     y = obs[[1]],
                                     x = mod,
-                                    precipitation = ifelse(var == "pr", TRUE, FALSE),
+                                    precipitation =  if (var == "pr")
+                                      TRUE
+                                    else
+                                      FALSE,
                                     method = method,
-                                    window = if (any(diffs == 1))
+                                    scaling.type = if (var == "pr")
+                                      "multiplicative"
+                                    else
+                                      "additive",
+                                    window = if (window == "monthly")
                                       c(30, 30)
                                     else
-                                      c(1, 1),
+                                      NULL,
                                     extrapolation = "constant"
                                   )
                                 )
@@ -426,7 +468,8 @@ climate_change_signal <- function(data,
     season,
     threshold,
     method,
-    percentage
+    percentage,
+    window
   )
 
   # retrieve information
@@ -486,7 +529,8 @@ climate_change_signal <- function(data,
         frequency,
         threshold,
         method,
-        percentage
+        percentage,
+        window
       )
     cli::cli_progress_done()
     # return results

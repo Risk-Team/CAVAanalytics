@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">CAVAanalytics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.2.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -103,7 +103,8 @@
 <span>  threshold <span class="op">=</span> <span class="fl">0.6</span>,</span>
 <span>  n.sessions <span class="op">=</span> <span class="fl">6</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"eqm"</span>,</span>
-<span>  percentage <span class="op">=</span> <span class="cn">F</span></span>
+<span>  percentage <span class="op">=</span> <span class="cn">F</span>,</span>
+<span>  window <span class="op">=</span> <span class="st">"monthly"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -195,11 +196,15 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 
 
 <dt>method</dt>
-<dd><p>character, bias-correction method to use. One of eqm (Empirical Quantile Mapping) or qdm (Quantile Delta Mapping). Default to eqm</p></dd>
+<dd><p>character, bias-correction method to use. One of eqm (Empirical Quantile Mapping), qdm (Quantile Delta Mapping) or scaling. Default to eqm. When using the scaling method, the multiplicative approach is automatically applied only when the variable is precipitation.</p></dd>
 
 
 <dt>percentage</dt>
 <dd><p>logical, whether the climate change signal is to be calculated as relative changes (in percentage). Default to FALSE</p></dd>
+
+
+<dt>window</dt>
+<dd><p>character, one of none or monthly. Whether bias correction should be applied on a monthly or annual basis. Monthly is the preferred option when performing bias-correction using daily data</p></dd>
 
 </dl></div>
     <div class="section level2">

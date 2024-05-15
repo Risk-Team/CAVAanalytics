@@ -71,7 +71,7 @@ load_data_hub <-
             )
           )
         }
-         if (is.null(years.proj) |
+        if (is.null(years.proj) |
             is.null(years.hist))
           cli::cli_abort(c("x" = "years.hist and years.proj needs to be specified"))
 
@@ -87,7 +87,7 @@ load_data_hub <-
               any(!(years.obs %in% 1980:2021)))
             cli::cli_abort(c("x" = "Available years for W5E5 observations are 1980:2019"))
 
-   
+
         }
 
         variable <-
@@ -97,7 +97,7 @@ load_data_hub <-
 
     # return the xlim and ylim of a country of interest or BBox
 
-      geo_localize <- function(country, xlim, ylim, buffer) {
+    geo_localize <- function(country, xlim, ylim, buffer) {
       if (!is.null(country) & !is.null(xlim)) {
         cli::cli_abort(c("x" = "Either select a country or a region of interest, not both"))
       } else {
@@ -160,6 +160,8 @@ load_data_hub <-
     ylim <- result$ylim
 
     # making the dataset
+    conversion_factor <- 4.87 / log((67.8 * 10) - 5.42)
+
     start <-
       paste0(path.to.data,
              "/ncml/ESGF/",
@@ -258,6 +260,9 @@ load_data_hub <-
                 } else if (stringr::str_detect(variable, "pr")) {
                   suppressMessages(transformeR::gridArithmetics(., 86400, operator = "*"))
 
+                } else if (stringr::str_detect(variable, "sfc")) {
+                  suppressMessages(transformeR::gridArithmetics(.,  conversion_factor, operator = "*"))
+
                 } else {
                   .
 
@@ -337,6 +342,12 @@ load_data_hub <-
                 obs_tr <- transformeR::gridArithmetics(.,
                                                        ifelse(path.to.obs == "ERA5", 86400, 1),
                                                        operator = "/")
+                obs_tr$Variable$varName = variable
+                obs_tr
+              } else if (stringr::str_detect(variable, "sfc")) {
+                obs_tr <- transformeR::gridArithmetics(.,
+                                                       conversion_factor,
+                                                       operator = "*")
                 obs_tr$Variable$varName = variable
                 obs_tr
               } else {

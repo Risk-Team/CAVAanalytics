@@ -11,7 +11,9 @@
 #' @param duration either "max" or specify a number. Used only when consecutive is TRUE. For example, to know the number of consecutive days with tmax above 35, lasting more than 3 days, specify uppert=35, consecutive =T and duration=3
 #' @param frequency logical. Used only when consecutive is TRUE and duration is not "max". For example, to know the number of heatwaves defined as the number of days with Tmax higher than 35 for at least 3 consecutive days, specify uppert=35, consecutive =T and duration=3, frequency=T
 #' @param n.sessions numeric, number of sessions to use, default is one. Parallelization can be useful when multiple scenarios are used (RCPS, SSPs). However, note that parallelizing will increase RAM usage
-#' @param method character, bias-correction method to use. One of eqm (Empirical Quantile Mapping) or qdm (Quantile Delta Mapping). Default to eqm
+#' @param method character, bias-correction method to use. One of eqm (Empirical Quantile Mapping), qdm (Quantile Delta Mapping) or scaling. Default to eqm. When using the scaling method, the multiplicative approach is automatically applied only when the variable is precipitation.
+#' @param cross_validation character, one of none or 3fold. Whether 3-fold cross validation should be used to avoid overfitting during bias-correction. Default to "none"
+#' @param window character, one of none or monthly. Whether bias correction should be applied on a monthly or annual basis. Monthly is the preferred option when performing bias-correction using daily data
 #' @importFrom magrittr %>%
 #' @return list with SpatRaster. To explore the output run attributes(output)
 #'
@@ -28,7 +30,9 @@ model_biases <-
            frequency = F,
            n.sessions = 1,
            duration = "max",
-           method="eqm") {
+           method = "eqm",
+           cross_validation = "none",
+           window = "monthly") {
     # Intermediate functions --------------------------------------------------
 
     # check inputs requirement
@@ -40,15 +44,25 @@ model_biases <-
                consecutive,
                duration,
                season,
-               method) {
+               method,
+               cross_validation,
+               window) {
         if (!is.list(season))
           cli::cli_abort("season needs to be a list, for example, list(1:3)")
         stopifnot(is.logical(consecutive), is.logical(bias.correction))
         if (!(duration == "max" || is.numeric(duration))) {
           cli::cli_abort("duration must be 'max' or a number")
         }
-        if (!(method == "eqm" ||method == "qdm")) {
-          cli::cli_abort("method must be 'eqm' or qdm")
+        if (!(method == "eqm" ||
+              method == "qdm" || method == "scaling")) {
+          cli::cli_abort("method must be one of 'eqm', 'qdm' or 'scaling'")
+        }
+        if (!(cross_validation == "none" ||
+              cross_validation == "3fold")) {
+          cli::cli_abort("cross_validation must be one of 'none', or '3fold'")
+        }
+        if (!(window == "none" || window == "monthly")) {
+          cli::cli_abort("window must be one of 'none', or 'monthly'")
         }
         if (!is.null(lowert) &
             !is.null(uppert))
@@ -64,6 +78,19 @@ model_biases <-
 
           } else {
             cli::cli_abort(c("x" = "Data is monthly or greater, thresholds cannot be calculated. Set as NULL"))
+          }
+        }
+
+        if (bias.correction & window == "monthly") {
+          dates <- data[[1]]$models_mbrs[[1]]$Dates$start
+          dates <- as.Date(dates)
+          # calculate the differences between consecutive dates
+          diffs <- diff(dates)
+          # check if the differences are equal to 1
+          if (any(diffs == 1)) {
+
+          } else {
+            cli::cli_abort(c("x" = "Data is monthly or greater, set window to none"))
           }
         }
 
@@ -168,12 +195,12 @@ model_biases <-
           (length(lat) != length(lat_obs))) {
         datasets <- datasets %>%
           dplyr::filter(experiment == "historical") %>%
-          dplyr::mutate(models_mbrs = purrr::map(
-            models_mbrs,
-            ~ suppressMessages(suppressWarnings(
-              transformeR::interpGrid(.x, new.coordinates = transformeR::getGrid(obs[[1]]))
-            ))
-          ))
+          dplyr::mutate(models_mbrs = purrr::map(models_mbrs,
+                                                 ~ suppressMessages(
+                                                   suppressWarnings(
+                                                     transformeR::interpGrid(.x, new.coordinates = transformeR::getGrid(obs[[1]]))
+                                                   )
+                                                 )))
       } else {
         cli::cli_alert_warning(
           "Observations and model simulations have the same spatial resolution, proceeding with calculations"
@@ -203,7 +230,9 @@ model_biases <-
                country_shp,
                season,
                frequency,
-               method) {
+               method,
+               cross_validation,
+               window) {
         season_name <-
           convert_vector_to_month_initials(season)
         data_list <- datasets %>%
@@ -212,9 +241,17 @@ model_biases <-
               cli::cli_text(
                 paste(
                   "{cli::symbol$arrow_right}",
-                  " Performing monthly bias correction with the ", method,
-                  " method, for each model and month separately. This can take a while. Season",
-                  glue::glue_collapse(season, "-")
+                  " Performing ",
+                  ifelse(window == "monthly", "monthly", ""),
+                  " bias correction with the ",
+                  method,
+                  " method, for each model separately. This can take a while. Season",
+                  glue::glue_collapse(season, "-"),
+                  ifelse(
+                    cross_validation == "3fold",
+                    ". kfold cross-validation is applied to avoid overfitting",
+                    ""
+                  )
                 )
               )
               dplyr::mutate(.,
@@ -224,12 +261,21 @@ model_biases <-
                                   downscaleR::biasCorrection(
                                     y = obs[[1]],
                                     x = mod,
-                                    precipitation = ifelse(var == "pr", TRUE, FALSE),
-                                    method =method,
-                                    window = if (any(diffs == 1))
+                                    scaling.type = if (var == "pr")
+                                      "multiplicative"
+                                    else
+                                      "additive",
+                                    precipitation = if (var == "pr") TRUE else FALSE,
+                                    method = method,
+                                    cross.val = if (cross_validation == "3fold")
+                                      "kfold"
+                                    else
+                                      "none",
+                                    folds = 3,
+                                    window = if (window == "monthly")
                                       c(30, 30)
                                     else
-                                      c(1, 1),
+                                      NULL,
                                     extrapolation = "constant"
                                   )
                                 )
@@ -286,9 +332,9 @@ model_biases <-
             rs_list <- purrr::map(1:dim(y$Data)[[1]], function(ens) {
               array_mean <-
                 if (length(y$Dates$start) == 1)
-                  apply(y$Data[ens, , , ], c(1, 2), mean, na.rm = TRUE)
+                  apply(y$Data[ens, , ,], c(1, 2), mean, na.rm = TRUE)
               else
-                apply(y$Data[ens, , , ], c(2, 3), mean, na.rm = TRUE) # climatology per member adjusting by array dimension
+                apply(y$Data[ens, , ,], c(2, 3), mean, na.rm = TRUE) # climatology per member adjusting by array dimension
 
               y$Data <- array_mean
 
@@ -361,14 +407,18 @@ model_biases <-
     if (class(data) != "CAVAanalytics_list")
       cli::cli_abort(c("x" = "The input data is not the output of CAVAanalytics load_data"))
     # check input requirements
-    check_inputs(data,
-                 bias.correction,
-                 uppert,
-                 lowert,
-                 consecutive,
-                 duration,
-                 season,
-                 method)
+    check_inputs(
+      data,
+      bias.correction,
+      uppert,
+      lowert,
+      consecutive,
+      duration,
+      season,
+      method,
+      cross_validation,
+      window
+    )
     # retrieve information
     mod.numb <- dim(data[[1]]$models_mbrs[[1]]$Data) [1]
     datasets <- data[[1]]
@@ -383,7 +433,13 @@ model_biases <-
     #create plots by season
     data_list <- purrr::map(season, function(sns) {
       mes <-
-        create_message(var, bias.correction, uppert, lowert, consecutive, duration,frequency)
+        create_message(var,
+                       bias.correction,
+                       uppert,
+                       lowert,
+                       consecutive,
+                       duration,
+                       frequency)
 
       # set parallel processing
       future::plan(future::multisession, workers = n.sessions)
@@ -416,7 +472,9 @@ model_biases <-
           country_shp,
           season = sns,
           frequency,
-          method
+          method,
+          cross_validation,
+          window
         )
 
       cli::cli_progress_done()

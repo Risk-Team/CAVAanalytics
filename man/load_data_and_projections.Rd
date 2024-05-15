@@ -25,7 +25,8 @@ load_data_and_projections(
   bias.correction = F,
   domain = NULL,
   n.sessions = 6,
-  method = "eqm"
+  method = "eqm",
+  window = "monthly"
 )
 }
 \arguments{
@@ -70,7 +71,9 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 
 \item{n.sessions}{numeric, number of sessions to use in parallel processing for loading the data. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary}
 
-\item{method}{character, bias-correction method to use. One of eqm (Empirical Quantile Mapping) or qdm (Quantile Delta Mapping). Default to eqm}
+\item{method}{character, bias-correction method to use. One of eqm (Empirical Quantile Mapping), qdm (Quantile Delta Mapping) or scaling. Default to eqm. When using the scaling method, the multiplicative approach is automatically applied only when the variable is precipitation.}
+
+\item{window}{character, one of none or monthly. Whether bias correction should be applied on a monthly or annual basis. Monthly is the preferred option when performing bias-correction using daily data}
 }
 \value{
 list with SpatRaster. To explore the output run attributes(output)

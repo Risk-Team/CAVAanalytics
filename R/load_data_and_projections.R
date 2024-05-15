@@ -22,7 +22,8 @@
 #' @param n.sessions numeric, number of sessions to use in parallel processing for loading the data. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary
 #' @param chunk.size numeric, indicating the number of chunks. The smaller the better when working with limited RAM
 #' @param overlap numeric, amount of overlap needed to create the composite. Default 0.25
-#' @param method character, bias-correction method to use. One of eqm (Empirical Quantile Mapping) or qdm (Quantile Delta Mapping). Default to eqm
+#' @param method character, bias-correction method to use. One of eqm (Empirical Quantile Mapping), qdm (Quantile Delta Mapping) or scaling. Default to eqm. When using the scaling method, the multiplicative approach is automatically applied only when the variable is precipitation.
+#' @param window character, one of none or monthly. Whether bias correction should be applied on a monthly or annual basis. Monthly is the preferred option when performing bias-correction using daily data
 #' @importFrom magrittr %>%
 #' @return list with SpatRaster. To explore the output run attributes(output)
 #' @export
@@ -48,7 +49,8 @@ load_data_and_projections <- function(variable,
                                       bias.correction = F,
                                       domain = NULL,
                                       n.sessions = 6,
-                                      method = "eqm") {
+                                      method = "eqm",
+                                      window="monthly") {
   # calculate number of chunks based on xlim and ylim
   if (missing(chunk.size) | missing(season)) {
     cli::cli_abort("chunk.size and season must be specified")
@@ -58,10 +60,6 @@ load_data_and_projections <- function(variable,
       "xlim and ylim need to be specified to load data in spatial chunks. The country argument is just used for cropping the final raster"
     )
   }
-
-  cli::cli_alert_warning(
-    "Interpolation may be required to merge the rasters. Be aware that interpolation can introduce slight discrepancies in the data, potentially affecting the consistency of results across different spatial segments."
-  )
 
   country_shp = if (!is.null(country) & !inherits(country, "sf")) {
     suppressMessages(
@@ -161,7 +159,8 @@ load_data_and_projections <- function(variable,
               frequency = frequency,
               n.sessions = 1,
               duration =  duration,
-              method = method
+              method = method,
+              window=window
             )
         )
 
@@ -186,28 +185,36 @@ load_data_and_projections <- function(variable,
   # Merge the extracted rasters using `Reduce` and set their names
 
   merge_rasters <- function(rst_list) {
-    # Determine the smallest (finest) resolution among all rasters
+    # Determine the resolution of each raster in the list
     resolutions <- sapply(rst_list, function(r)
       terra::res(r))
-    common_res <- max(resolutions)
 
-    # Resample all rasters to the common resolution
-    resampled_rasters <- lapply(rst_list, function(r) {
-      terra::resample(r,
-                      terra::rast(
-                        terra::ext(r),
-                        resolution = common_res,
-                        crs = terra::crs(r)
-                      ),
-                      method = "mode")
-    })
+    # Check if all rasters have the same resolution
+    if (length(unique(resolutions)) > 1) {
+      cli::cli_alert_warning("Interpolation was required to merge the rasters.")
+      # If resolutions differ, determine the smallest (finest) resolution among all rasters
+      common_res <- max(resolutions)
 
-    # Merge the resampled rasters
+      # Resample all rasters to the common resolution
+      rst_list <- lapply(rst_list, function(r) {
+        terra::resample(
+          r,
+          terra::rast(
+            terra::ext(r),
+            resolution = common_res,
+            crs = terra::crs(r)
+          ),
+          method = "mode"
+        )
+      })
+    }
+
+    # Merge rasters
     merged_raster <-
       Reduce(function(x, y)
-        terra::merge(x, y), resampled_rasters)
+        terra::merge(x, y), rst_list)
 
-    #Set names from the first raster in the list
+    # Set names from the first raster in the list
     names <- names(rst_list[[1]])
     setNames(merged_raster, names)
   }

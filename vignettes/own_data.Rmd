@@ -73,9 +73,9 @@ plotting(try, plot_titles = "mm", ensemble = F, palette = IPCC_palette(type = "p
 knitr::include_graphics("../man/figures/fig2_isimip.png")
 ```
 
-## Comparative Analysis: CORDEX-CORE vs. CMIP6 Model Outputs
+## CORDEX-CORE vs. CMIP6 Model Outputs
 
-This section presents a quick comparison between the climate change signals in mean total annual precipitation projected by the CMIP6 and CORDEX-CORE ensembles for Kenya.
+This section presents a quick comparison between the climate change signals in mean total annual precipitation projected by the CMIP6 and CORDEX-CORE ensembles for Kenya (**for demonstration purposes only**).
 
 ```{r, eval=FALSE}
 
@@ -84,8 +84,7 @@ cordex_data <- load_data(path.to.data = "CORDEX-CORE", country = "Kenya", variab
 
 ```
 
-The following figures provide a comparative visualization of the projected changes, allowing for an in-depth examination of both overall and temporal changes in precipitation patterns.
-
+The following figures provide a comparative visualization of the projected changes
 
 
 ```{r, eval=FALSE}
@@ -121,9 +120,10 @@ combined/(a.tr+b.tr)+ plot_layout(heights = c(2, 1))
 knitr::include_graphics("../man/figures/fig3_isimip.png")
 ```
 
-Initial analysis indicates a significant discrepancy in the climate change signal for precipitation between the two data sets. The CMIP6-ISIMIP ensemble shows a positive climate change signal for precipitation compared to the CORDEX-CORE ensemble. This difference may be attributed to how each model captures the impact of large-scale phenomena such as the El Niño Southern Oscillation (ENSO) and regional spatial patterns.
+Initial analysis indicates a significant discrepancy in the climate change signal for precipitation between the two data sets. The CMIP6-ISIMIP ensemble shows a positive climate change signal for precipitation compared to the CORDEX-CORE ensemble. 
 
 **CORDEX-CORE Models**: These models potentially provide better resolution of [large-scale phenomena impacts](https://journals.ametsoc.org/view/journals/clim/26/21/jcli-d-12-00708.1.xml) and spatial variability.
+
 **ISIMIP CMIP6 Data**: This dataset is not dynamically downscaled, possibly leading to less precise representation of local spatial precipitation patterns compared to CORDEX-CORE under these circumstances.
 
 

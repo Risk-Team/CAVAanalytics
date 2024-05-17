@@ -153,18 +153,18 @@ precipitation for the CMIP6 models</p>
 <p><img src="../reference/figures/fig2_isimip.png" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="comparative-analysis-cordex-core-vs--cmip6-model-outputs">Comparative Analysis: CORDEX-CORE vs. CMIP6 Model Outputs<a class="anchor" aria-label="anchor" href="#comparative-analysis-cordex-core-vs--cmip6-model-outputs"></a>
+<h3 id="cordex-core-vs--cmip6-model-outputs">CORDEX-CORE vs. CMIP6 Model Outputs<a class="anchor" aria-label="anchor" href="#cordex-core-vs--cmip6-model-outputs"></a>
 </h3>
 <p>This section presents a quick comparison between the climate change
 signals in mean total annual precipitation projected by the CMIP6 and
-CORDEX-CORE ensembles for Kenya.</p>
+CORDEX-CORE ensembles for Kenya (<strong>for demonstration purposes
+only</strong>).</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">cordex_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/load_data.html">load_data</a></span><span class="op">(</span>path.to.data <span class="op">=</span> <span class="st">"CORDEX-CORE"</span>, country <span class="op">=</span> <span class="st">"Kenya"</span>, variable <span class="op">=</span> <span class="st">"pr"</span>, </span>
 <span>                        years.proj <span class="op">=</span> <span class="fl">2030</span><span class="op">:</span><span class="fl">2050</span>, years.hist <span class="op">=</span> <span class="fl">1980</span><span class="op">:</span><span class="fl">2000</span>, domain <span class="op">=</span> <span class="st">"AFR-22"</span>, path.to.obs <span class="op">=</span> <span class="st">"W5E5"</span><span class="op">)</span></span></code></pre></div>
 <p>The following figures provide a comparative visualization of the
-projected changes, allowing for an in-depth examination of both overall
-and temporal changes in precipitation patterns.</p>
+projected changes</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">a</span><span class="op">=</span><span class="fu"><a href="../reference/climate_change_signal.html">climate_change_signal</a></span><span class="op">(</span><span class="va">cordex_data</span> , season <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span>, percentage <span class="op">=</span> <span class="cn">T</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
@@ -194,16 +194,14 @@ and temporal changes in precipitation patterns.</p>
 <p>Initial analysis indicates a significant discrepancy in the climate
 change signal for precipitation between the two data sets. The
 CMIP6-ISIMIP ensemble shows a positive climate change signal for
-precipitation compared to the CORDEX-CORE ensemble. This difference may
-be attributed to how each model captures the impact of large-scale
-phenomena such as the El Niño Southern Oscillation (ENSO) and regional
-spatial patterns.</p>
+precipitation compared to the CORDEX-CORE ensemble.</p>
 <p><strong>CORDEX-CORE Models</strong>: These models potentially provide
 better resolution of <a href="https://journals.ametsoc.org/view/journals/clim/26/21/jcli-d-12-00708.1.xml" class="external-link">large-scale
-phenomena impacts</a> and spatial variability. <strong>ISIMIP CMIP6
-Data</strong>: This dataset is not dynamically downscaled, possibly
-leading to less precise representation of local spatial precipitation
-patterns compared to CORDEX-CORE under these circumstances.</p>
+phenomena impacts</a> and spatial variability.</p>
+<p><strong>ISIMIP CMIP6 Data</strong>: This dataset is not dynamically
+downscaled, possibly leading to less precise representation of local
+spatial precipitation patterns compared to CORDEX-CORE under these
+circumstances.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

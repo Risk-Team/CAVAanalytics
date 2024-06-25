@@ -19,7 +19,7 @@
 #### **Updates
 
 
-**Current available CORDEX domains are: AFR-22, SEA-22, EAS-22, WAS-22, AUS-22,CAM-22, SAM-22**
+**Current available CORDEX domains are: AFR-22, SEA-22, EAS-22, WAS-22, AUS-22,CAM-22, SAM-22, CAS-22, EUR-22**
 
 **Current available observational datasets: W5E5, ERA5**
 

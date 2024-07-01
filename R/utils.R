@@ -31,12 +31,12 @@ make_raster <-
       if (is.null(cl4.object$xyCoords$lon))
         min(cl4.object$xyCoords$x)
     else
-      min(cl4.object$xyCoords$lon[1,])
+      min(cl4.object$xyCoords$lon[1, ])
     xmax <-
       if (is.null(cl4.object$xyCoords$lon))
         max(cl4.object$xyCoords$x)
     else
-      max(cl4.object$xyCoords$lon[1,])
+      max(cl4.object$xyCoords$lon[1, ])
     ymin <-
       if (is.null(cl4.object$xyCoords$lat))
         min(cl4.object$xyCoords$y)
@@ -626,7 +626,7 @@ spatial_plot = function(spatial_data,
       if (is.null(legend_range))
         c(-max(abs(
           range(spatial_data[[1]]$value, na.rm = TRUE)
-        )),+max(abs(
+        )), +max(abs(
           range(spatial_data[[1]]$value, na.rm = TRUE)
         )))
     else
@@ -1132,7 +1132,7 @@ temporal_plot = function(data,
         method = "gam",
         formula = y ~ x
       ) +
-      ggplot2::facet_wrap(~ season) +
+      ggplot2::facet_wrap( ~ season) +
       ggplot2::scale_x_date(date_breaks = "4 years", date_labels = "%Y") +
       ggplot2::theme_bw() +
       ggplot2::theme(
@@ -1303,6 +1303,8 @@ spatiotemporal_plot = function(data,
 #' @export
 
 years_selection = function(CAVAlist, years, projections = T) {
+  cli::cli_progress_step("Performing calculations")
+
   if (projections) {
     new_data = CAVAlist[[1]] %>%
       dplyr::mutate(models_mbrs = purrr::map2(models_mbrs, experiment, function(x, y) {
@@ -1327,6 +1329,7 @@ years_selection = function(CAVAlist, years, projections = T) {
   }
 
   CAVAlist[[1]] = new_data
+  cli::cli_progress_done()
   return(CAVAlist)
 
 }
@@ -1351,14 +1354,10 @@ remove_facets = function(position = "both") {
     )
   else if (position == "x")
 
-    ggplot2::theme(
-      strip.text.x = ggplot2::element_blank()
-    )
+    ggplot2::theme(strip.text.x = ggplot2::element_blank())
   else if (position == "y")
 
-    ggplot2::theme(
-      strip.text.y = ggplot2::element_blank()
-    )
+    ggplot2::theme(strip.text.y = ggplot2::element_blank())
   else
 
     cli::cli_abort(c("x" = "position can be equal to both, x or y"))

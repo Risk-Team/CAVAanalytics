@@ -52,6 +52,9 @@
     <loc>https://risk-team.github.io/CAVAanalytics/reference/convert_vector_to_month_initials.html</loc>
   </url>
   <url>
+    <loc>https://risk-team.github.io/CAVAanalytics/reference/customise_facets.html</loc>
+  </url>
+  <url>
     <loc>https://risk-team.github.io/CAVAanalytics/reference/ens_trends.html</loc>
   </url>
   <url>
@@ -100,6 +103,12 @@
     <loc>https://risk-team.github.io/CAVAanalytics/reference/projections.html</loc>
   </url>
   <url>
+    <loc>https://risk-team.github.io/CAVAanalytics/reference/remove_facets.html</loc>
+  </url>
+  <url>
+    <loc>https://risk-team.github.io/CAVAanalytics/reference/rename_facets.html</loc>
+  </url>
+  <url>
     <loc>https://risk-team.github.io/CAVAanalytics/reference/thrs.html</loc>
   </url>
   <url>
@@ -107,5 +116,8 @@
   </url>
   <url>
     <loc>https://risk-team.github.io/CAVAanalytics/reference/trends.html</loc>
+  </url>
+  <url>
+    <loc>https://risk-team.github.io/CAVAanalytics/reference/years_selection.html</loc>
   </url>
 </urlset>

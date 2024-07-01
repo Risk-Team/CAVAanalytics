@@ -9,6 +9,15 @@ output:
     toc_depth: 2
 ---
 
+## CAVAanalytics 3.2.5
+
+In this new version of CAVAanalytics we added some functionalities to easily customise plot appearances. Specifically:
+
+- the remove_facet function can be used with ggplot syntax to remove facet labels and produce a "clean" plot
+- the rename_facet function can be used to change the facet labels when ensemble is TRUE in the plotting function
+- The years_selection function can be used to subselect specific years after load_data. This is useful to create composite plots as shown in the Introduction vignette
+
+
 ## CAVAanalytics 3.2.0
 
 In this new version of CAVAanalytics we improve the bias correction funcionalities of CAVAanalytics. Specifically:

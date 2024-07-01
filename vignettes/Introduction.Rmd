@@ -247,3 +247,49 @@ Anomalies can also be visualized for the annual time series
 plotting(ccs_kenya, plot_titles = "Annual Δ (°C)", temporal=T, palette=c("blue", "red"))
 
 ```
+
+## Customise plot apperances
+
+CAVAanalytics also offer some easy to use function to modify plot appearances. For example, we can remove all facet text from the ggplot object
+
+```{r, fig.height=4, fig.width=10,  message=F, warning=F}
+
+plotting(ccs_kenya, plot_titles = "Δ °C", 
+legend_range = c(-3, 3), 
+palette = IPCC_palette(type = "tmp", divergent = T))+
+remove_facets(position = "both") # remove facet text
+
+```
+
+We can also produce more complex plots, for example we can look at two time frames
+
+```{r, fig.height=4, fig.width=5,  message=F, warning=F}
+
+# subset model projections years
+kenya_exmp_2030_2040= years_selection(kenya_exmp, years = 2030:2040, projections = T)
+kenya_exmp_2040_2050= years_selection(kenya_exmp, years = 2040:2050, projections = T)
+
+# calculate climate change signal for thw two time frames
+ccs_kenya_2030_2040 <- climate_change_signal(kenya_exmp_2030_2040, season=list(1:12), threshold = 0.8)
+ccs_kenya_2040_2050 <- climate_change_signal(kenya_exmp_2040_2050, season=list(1:12), threshold = 0.8)
+
+# make first plot, rename facet label
+p1= plotting(ccs_kenya_2030_2040, plot_titles = "Δ °C", 
+legend_range = c(-3, 3), 
+palette = IPCC_palette(type = "tmp", divergent = T))+
+rename_facets(current_label = "JFMAMJJASOND", new_label = "2030-2040")+
+remove_facets(position = "y")
+
+# make second plot, rename facet label
+p2= plotting(ccs_kenya_2040_2050, plot_titles = "Δ °C", 
+legend_range = c(-3, 3), 
+palette = IPCC_palette(type = "tmp", divergent = T))+
+rename_facets(current_label = "JFMAMJJASOND", new_label = "2040-2050")
+
+# combine the plots and collect the legend. You need to have patchwork installed first 
+p1+p2+plot_layout(guides = "collect")
+
+
+
+
+```

@@ -49,7 +49,7 @@
     Tutorials
   </a>
   <div class="dropdown-menu" aria-labelledby="dropdown--tutorials">
-    <a class="dropdown-item" href="../articles/Introduction.html">Start here</a>
+    <a class="dropdown-item" href="../articles/Introduction.html">Introduction</a>
     <a class="dropdown-item" href="../articles/more_advanced.html">Climate indexes</a>
     <a class="dropdown-item" href="../articles/large_areas.html">Computation over large regions</a>
     <a class="dropdown-item" href="../articles/own_data.html">CAVAanalytics and CMIP6 models</a>
@@ -357,6 +357,48 @@ as TRUE in climate_change_signal</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">ccs_kenya</span>, plot_titles <span class="op">=</span> <span class="st">"Annual Δ (°C)"</span>, temporal<span class="op">=</span><span class="cn">T</span>, palette<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"blue"</span>, <span class="st">"red"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="Introduction_files/figure-html/unnamed-chunk-21-1.png" width="576"></p>
+</div>
+<div class="section level2">
+<h2 id="customise-plot-apperances">Customise plot apperances<a class="anchor" aria-label="anchor" href="#customise-plot-apperances"></a>
+</h2>
+<p>CAVAanalytics also offer some easy to use function to modify plot
+appearances. For example, we can remove all facet text from the ggplot
+object</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">ccs_kenya</span>, plot_titles <span class="op">=</span> <span class="st">"Δ °C"</span>, </span>
+<span>legend_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span>, </span>
+<span>palette <span class="op">=</span> <span class="fu"><a href="../reference/IPCC_palette.html">IPCC_palette</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"tmp"</span>, divergent <span class="op">=</span> <span class="cn">T</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span><span class="fu"><a href="../reference/remove_facets.html">remove_facets</a></span><span class="op">(</span>position <span class="op">=</span> <span class="st">"both"</span><span class="op">)</span> <span class="co"># remove facet text</span></span></code></pre></div>
+<p><img src="Introduction_files/figure-html/unnamed-chunk-22-1.png" width="960"></p>
+<p>We can also produce more complex plots, for example we can look at
+two time frames</p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="co"># subset model projections years</span></span>
+<span><span class="va">kenya_exmp_2030_2040</span><span class="op">=</span> <span class="fu"><a href="../reference/years_selection.html">years_selection</a></span><span class="op">(</span><span class="va">kenya_exmp</span>, years <span class="op">=</span> <span class="fl">2030</span><span class="op">:</span><span class="fl">2040</span>, projections <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span><span class="va">kenya_exmp_2040_2050</span><span class="op">=</span> <span class="fu"><a href="../reference/years_selection.html">years_selection</a></span><span class="op">(</span><span class="va">kenya_exmp</span>, years <span class="op">=</span> <span class="fl">2040</span><span class="op">:</span><span class="fl">2050</span>, projections <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># calculate climate change signal for thw two time frames</span></span>
+<span><span class="va">ccs_kenya_2030_2040</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/climate_change_signal.html">climate_change_signal</a></span><span class="op">(</span><span class="va">kenya_exmp_2030_2040</span>, season<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span>, threshold <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span></span>
+<span><span class="va">ccs_kenya_2040_2050</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/climate_change_signal.html">climate_change_signal</a></span><span class="op">(</span><span class="va">kenya_exmp_2040_2050</span>, season<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span>, threshold <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># make first plot, rename facet label</span></span>
+<span><span class="va">p1</span><span class="op">=</span> <span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">ccs_kenya_2030_2040</span>, plot_titles <span class="op">=</span> <span class="st">"Δ °C"</span>, </span>
+<span>legend_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span>, </span>
+<span>palette <span class="op">=</span> <span class="fu"><a href="../reference/IPCC_palette.html">IPCC_palette</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"tmp"</span>, divergent <span class="op">=</span> <span class="cn">T</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span><span class="fu"><a href="../reference/rename_facets.html">rename_facets</a></span><span class="op">(</span>current_label <span class="op">=</span> <span class="st">"JFMAMJJASOND"</span>, new_label <span class="op">=</span> <span class="st">"2030-2040"</span><span class="op">)</span><span class="op">+</span></span>
+<span><span class="fu"><a href="../reference/remove_facets.html">remove_facets</a></span><span class="op">(</span>position <span class="op">=</span> <span class="st">"y"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># make second plot, rename facet label</span></span>
+<span><span class="va">p2</span><span class="op">=</span> <span class="fu"><a href="../reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">ccs_kenya_2040_2050</span>, plot_titles <span class="op">=</span> <span class="st">"Δ °C"</span>, </span>
+<span>legend_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span>, </span>
+<span>palette <span class="op">=</span> <span class="fu"><a href="../reference/IPCC_palette.html">IPCC_palette</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"tmp"</span>, divergent <span class="op">=</span> <span class="cn">T</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span><span class="fu"><a href="../reference/rename_facets.html">rename_facets</a></span><span class="op">(</span>current_label <span class="op">=</span> <span class="st">"JFMAMJJASOND"</span>, new_label <span class="op">=</span> <span class="st">"2040-2050"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># combine the plots and collect the legend. You need to have patchwork installed first </span></span>
+<span><span class="va">p1</span><span class="op">+</span><span class="va">p2</span><span class="op">+</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_layout.html" class="external-link">plot_layout</a></span><span class="op">(</span>guides <span class="op">=</span> <span class="st">"collect"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="Introduction_files/figure-html/unnamed-chunk-23-1.png" width="480"></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

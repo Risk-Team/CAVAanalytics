@@ -13,7 +13,7 @@ navbar:
     - text: Tutorials
       icon: fas fa-book
       menu:
-        - text: Start here
+        - text: Introduction
           href: articles/Introduction.html
         - text: Climate indexes
           href: articles/more_advanced.html
@@ -62,5 +62,8 @@ reference:
       - make_raster
       - thrs
       - thrs_consec
+      - rename_facets
+      - remove_facets
+      - years_selection
 
 

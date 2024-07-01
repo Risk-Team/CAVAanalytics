@@ -31,12 +31,12 @@ make_raster <-
       if (is.null(cl4.object$xyCoords$lon))
         min(cl4.object$xyCoords$x)
     else
-      min(cl4.object$xyCoords$lon[1, ])
+      min(cl4.object$xyCoords$lon[1,])
     xmax <-
       if (is.null(cl4.object$xyCoords$lon))
         max(cl4.object$xyCoords$x)
     else
-      max(cl4.object$xyCoords$lon[1, ])
+      max(cl4.object$xyCoords$lon[1,])
     ymin <-
       if (is.null(cl4.object$xyCoords$lat))
         min(cl4.object$xyCoords$y)
@@ -626,7 +626,7 @@ spatial_plot = function(spatial_data,
       if (is.null(legend_range))
         c(-max(abs(
           range(spatial_data[[1]]$value, na.rm = TRUE)
-        )), +max(abs(
+        )),+max(abs(
           range(spatial_data[[1]]$value, na.rm = TRUE)
         )))
     else
@@ -1132,7 +1132,7 @@ temporal_plot = function(data,
         method = "gam",
         formula = y ~ x
       ) +
-      ggplot2::facet_wrap( ~ season) +
+      ggplot2::facet_wrap(~ season) +
       ggplot2::scale_x_date(date_breaks = "4 years", date_labels = "%Y") +
       ggplot2::theme_bw() +
       ggplot2::theme(
@@ -1289,5 +1289,105 @@ spatiotemporal_plot = function(data,
 
 
   }
+
+}
+
+
+#' Subset years in CAVAlist
+#'
+#' Select specific years for projections or observations in a CAVAlist
+#'
+#' @param CAVAlist output of the load_data or load_data_hub function
+#' @param years numeric, years to select
+#' @param projections logical, whether years selection should be applied to projections or observations
+#' @export
+
+years_selection = function(CAVAlist, years, projections = T) {
+  if (projections) {
+    new_data = CAVAlist[[1]] %>%
+      dplyr::mutate(models_mbrs = purrr::map2(models_mbrs, experiment, function(x, y) {
+        if (y == "historical") {
+          x
+
+        } else {
+          transformeR::subsetGrid(x, years = years)
+
+        }
+
+
+      }))
+  } else {
+    cli::cli_alert_warning(c("!" = "Years selection is applied to observations"))
+    new_data = CAVAlist[[1]] %>%
+      dplyr::mutate(obs = map(obs, function(x) {
+        transformeR::subsetGrid(x, years = years)
+
+      }))
+
+  }
+
+  CAVAlist[[1]] = new_data
+  return(CAVAlist)
+
+}
+
+
+
+#' Clean text from plots
+#'
+#' Remove facets labels from ggplot object
+#'
+#' @param position character indicating which facets to remove (both, x or y).
+#' @export
+#'
+
+remove_facets = function(position = "both") {
+  if (position == "both")
+    ggplot2::theme(
+      strip.text.x = ggplot2::element_blank(),
+      strip.text.y = ggplot2::element_blank(),
+      panel.border = ggplot2::element_rect(color = "black", fill =
+                                             NA)
+    )
+  else if (position == "x")
+
+    ggplot2::theme(
+      strip.text.x = ggplot2::element_blank()
+    )
+  else if (position == "y")
+
+    ggplot2::theme(
+      strip.text.y = ggplot2::element_blank()
+    )
+  else
+
+    cli::cli_abort(c("x" = "position can be equal to both, x or y"))
+
+}
+
+
+#' Customise facet text
+#'
+#' Customise facets labels in ggplot object. It only works when ensemble is TRUE
+#'
+#' @param current_label character indicating the current facet label.
+#' @param new_label character indicating which new label to use.
+#' @param position character indicating which facets to change (x or y).
+#' @export
+#'
+
+rename_facets = function(current_label, new_label, position = "x") {
+  cli::cli_alert_warning(c("!" = "Customise_facets can only be used with ensemble equal TRUE"))
+
+  names(new_label) = current_label
+
+  if (position == "x")
+    ggh4x::facet_nested(scenario ~ season,  labeller = ggplot2::labeller(season = new_label))
+  else if (position == "y")
+
+    ggh4x::facet_nested(scenario ~ season,  labeller = ggplot2::labeller(scenario = new_label))
+  else
+
+    cli::cli_abort(c("x" = "position can be equal to x or y"))
 
 }

@@ -44,7 +44,7 @@ climate_change_signal <- function(data,
              duration,
              bias.correction,
              season,
-             agreement,
+             threshold,
              method,
              percentage,
              window) {

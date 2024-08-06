@@ -1,8 +1,8 @@
 #' Models upload (only works from the University of Cantabria Jupyter HUB environment)
 #'
-#' Automatically upload CORDEX-CORE models available at UC servers
+#' Automatically upload databases available at UC servers
 
-#' @param path.to.data character, indicating the shared path to the data. Leave as default unless necessary
+#' @param path.to.data character, indicating the database of interest (e.g CORDEX-CORE).
 #' @param country character, in English, indicating the country of interest or an object of class sf. To select a bounding box,
 #' set country to NULL and define arguments xlim and ylim
 #' @param variable  character indicating the variable name
@@ -14,7 +14,6 @@
 #' @param years.obs NULL or numeric, specify year range for observation. Specifying years.obs will overwrite years.hist for observations
 #' @param domain charachter, specify the CORDEX-CORE domain (e.g AFR-22, EAS-22).
 #' @param buffer numeric, default is zero.
-#' @param res_folder character, either interp05 or interp025. Default is interp05
 #' @param aggr.m character, monthly aggregation. One of none, mean or sum
 #' @param n.sessions numeric, number of sessions to use in parallel processing. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary
 #' @return list of length 2. List[[1]] contains a tibble with list columns and List[[2]] the bbox
@@ -23,57 +22,59 @@
 #'
 #' @export
 
-
-load_data_hub <-
-  function(path.to.data = "/home/jovyan/shared/data",
+load_data <-
+  function(path.to.data,
            country,
            variable,
            xlim = NULL,
            ylim = NULL,
-           years.hist,
+           years.hist = NULL,
            years.proj,
-           buffer = 0,
-           domain,
-           aggr.m = "none",
            path.to.obs = NULL,
-           years.obs = NULL,
-           res_folder = "interp05",
-           n.sessions = 6) {
+           buffer = 0,
+           domain = NULL,
+           aggr.m = "none",
+           n.sessions = 6,
+           years.obs = NULL) {
     # intermediate functions --------------------------------------------------
 
     # check that the arguments have been correctly specified and return an error when not
 
     check_args <-
-      function(years.hist,
+      function(path.to.data,
+               years.hist,
                domain,
                years.proj,
                variable,
                aggr.m,
+               n.sessions,
                path.to.obs,
-               res_folder,
                years.obs) {
+        stopifnot(is.numeric(n.sessions))
         match.arg(aggr.m, choices = c("none", "sum", "mean"))
-        match.arg(res_folder, choices = c("interp05", "interp025"))
-        if (!is.null(path.to.obs))
-          match.arg(path.to.obs, choices = c("W5E5", "ERA5"))
         if (!is.null(domain)) {
           match.arg(
             domain,
             choices = c(
               "AFR-22",
-              "CAS-22",
-              "WAS-22",
               "SEA-22",
               "AUS-22",
               "EAS-22",
               "CAM-22",
-              "SAM-22"
+              "SAM-22",
+              "WAS-22",
+              "CAM-22",
+              "SAM-22",
+              "NAM-22",
+              "EUR-22",
+              "CAS-22"
             )
           )
+
         }
-        if (is.null(years.proj) |
-            is.null(years.hist))
-          cli::cli_abort(c("x" = "years.hist and years.proj needs to be specified"))
+        if (is.null(years.proj) &
+            is.null(years.hist) & is.null(years.obs))
+          cli::cli_abort(c("x" = "select at least one of years.hist, years.proj or years.obs"))
 
         if (missing(variable))
           cli::cli_abort(c("x" = "argument variable as no default"))
@@ -87,13 +88,107 @@ load_data_hub <-
               any(!(years.obs %in% 1980:2021)))
             cli::cli_abort(c("x" = "Available years for W5E5 observations are 1980:2019"))
 
+          if (is.null(years.obs) & is.null(years.hist))
+            cli::cli_abort(c("x" = "Specify years.hist or years.obs since path.obs is not NULL"))
 
         }
 
-        variable <-
-          match.arg(variable,
-                    choices = c("tas", "tasmax", "tasmin", "hurs", "rsds", "sfcWind", "pr"))
+        if (!is.null(path.to.data) &&
+            path.to.data == "CORDEX-CORE") {
+          if (is.null(domain))
+            cli::cli_abort(c("x" = "domain has no default when uploading CORDEX-CORE data remotely"))
+          if (is.null(years.proj) &
+              is.null(years.hist) & !is.null(years.obs))
+            cli::cli_abort(c("x" = "set path.to.data as NULL to only upload observations"))
+
+          if (!is.null(years.hist) & !is.null(years.obs))
+            cli::cli_alert_warning(c("!" = "years.obs overwrite years.hist for the observational dataset"))
+
+          if (is.null(years.hist) &
+              !is.null(years.obs) & !is.null(years.proj))
+            cli::cli_abort(
+              c("x" = "If you are loading observations and projections, also specify an historical period")
+            )
+
+          if (any(!(years.hist %in% 1976:2005)))
+            cli::cli_abort(c("x" = "Available years for the CORDEX historical simulation are 1976:2005"))
+
+
+          if (any(!(years.proj %in% 2006:2099)))
+            cli::cli_abort(c("x" = "Available years for projections are 2006:2099"))
+
+          variable <-
+            match.arg(variable,
+                      choices = c("tas", "tasmax", "tasmin", "hurs", "rsds", "sfcWind", "pr"))
+
+        } else if (is.null(path.to.data)) {
+          cli::cli_alert_warning(c("!" = "Only observations will be uploaded"))
+        } else {
+          if (!is.null(domain))
+            cli::cli_alert_warning(c("!" = "Argument domain is ignored"))
+          if (!stringr::str_detect(path.to.data, "/"))
+            cli::cli_abort(c("x" = "please specify a valid path or CORDEX-CORE for remote upload"))
+          if (!any(stringr::str_detect(list.files(path.to.data), "historical")) &
+              is.null(years.hist)) {
+            cli::cli_alert_warning(
+              c("!" = "Historical experiment not found. If present, the folder needs to be named historical")
+            )
+          } else if (!any(stringr::str_detect(list.files(path.to.data), "historical")) &
+                     !is.null(years.hist)) {
+            cli::cli_abort(
+              c("x" = "Historical experiment not found. The folder needs to be named historical")
+            )
+          } else if (any(stringr::str_detect(list.files(path.to.data), "historical")) &
+                     is.null(years.hist)) {
+            cli::cli_abort(c("x" = "Historical experiment found but years.hist is not specified"))
+          } else {
+            cli::cli_alert_info(c(
+              "Your directory contains the following folders:\n",
+              paste0(list.dirs(path.to.data)[-1], "\n")
+            ))
+          }
+        }
+
+
       }
+
+    # create the file names used later for the loadGridData function for remote upload
+
+    load_model_data <- function(domains) {
+      cli::cli_progress_step("Accessing inventory")
+      csv_url <- https://hub.ipcc.ifca.es/thredds/fileServer/inventories/cava.csv
+      data <- read.csv(url(csv_url)) %>%
+        dplyr::filter(stringr::str_detect(activity, "CORDEX"), domain ==  domains) %>%
+        dplyr::group_by(experiment) %>%
+        dplyr::summarise(path = list(as.character(hub))) %>%
+        {
+          if (is.null(years.hist) & !is.null(years.proj)) {
+            dplyr::filter(., experiment != "historical")
+
+          } else if (!is.null(years.hist) & is.null(years.proj)) {
+            dplyr::filter(., experiment == "historical")
+          } else {
+            .
+          }
+        } %>%
+        dplyr::select(path)
+
+      return(data[[1]])
+
+    }
+
+    # create the file name used for loading the obs data. This can be the W5E5 dataset or satellite data
+    load_obs_data <- function(path.to.obs) {
+      if (path.to.obs == "ERA5") {
+        "home/jovyan/shared/data/observations/ERA5/0.25/ERA5_025.ncml"
+      } else if (path.to.obs == "W5E5") {
+        "home/jovyan/shared/data/observations/W5E5/v2.0/w5e5_v2.0.ncml"
+
+      } else  {
+        list.files(path.to.obs, full.names = TRUE)
+      }
+
+    }
 
     # return the xlim and ylim of a country of interest or BBox
 
@@ -140,19 +235,45 @@ load_data_hub <-
         ))
       }
     }
+
+    # used to convert wind speed to 10 m to 2 m level following FAO guidelines Allen at al
+    conversion_factor <- 4.87 / log((67.8 * 10) - 5.42)
+
     # start -------------------------------------------------------------------
 
     # check for valid path
     check_args(
+      path.to.data,
       years.hist,
       domain,
       years.proj,
       variable,
       aggr.m,
+      n.sessions,
       path.to.obs,
-      res_folder,
       years.obs
     )
+
+    # load data
+    if (is.null(path.to.data)) {
+
+    } else if (path.to.data == "CORDEX-CORE") {
+      files <- load_cordex_data(domains = domain)
+      experiment <-
+        if (!is.null(years.hist) & !is.null(years.proj))
+          c("historical", "rcp26", "rcp85")
+      else if (is.null(years.hist) & !is.null(years.proj))
+        c("rcp26", "rcp85")
+      else
+        "historical"
+    } else {
+      files <- load_local_data(path.to.data)
+      experiment <- list.dirs(path.to.data, full.names = F)[-1]
+    }
+
+    # load observation data
+    obs.file <- if (!is.null(path.to.obs))
+      load_obs_data(path.to.obs)
 
     # geolocalization
     result <- geo_localize(country, xlim, ylim, buffer)
@@ -160,153 +281,146 @@ load_data_hub <-
     ylim <- result$ylim
 
     # making the dataset
-    conversion_factor <- 4.87 / log((67.8 * 10) - 5.42)
-
-    start <-
-      paste0(path.to.data,
-             "/ncml/ESGF/",
-             res_folder,
-             "/CORDEX/output/",
-             domain,
-             "//")
-    run <-
-      c("GERICS/", ifelse(domain == "WAS-22", "ORNL/", "ICTP/"))
-    GCMs <-
-      c("MOHC-HadGEM2-ES/", "MPI-M-MPI-ESM-LR/", "NCC-NorESM1-M/")
-    time_frame <- c("historical/", "rcp26/", "rcp85/")
-    file_end <-
-      c("r1i1p1//REMO2015//v1//day//",
-        "r1i1p1//RegCM4-7//v0/day//")
-
-    # building the dataset
-    cli::cli_text(paste(Sys.time(), "Uploading data, this might take several minutes.."))
-
-    files <- paste0(start, run) %>%
-      purrr::map(.,
-                 ~ paste0(.x, GCMs) %>%
-                   purrr::map(., ~ paste0(.x, time_frame) %>%
-                                purrr::map(., ~ paste0(.x, file_end)))) %>%
-      unlist() %>%
-      stringr::str_replace(
-        .,
-        "MPI-M-MPI-ESM-LR/",
-        ifelse(
-          stringr::str_detect(., "(ICTP)|(ORNL)"),
-          "MPI-M-MPI-ESM-MR/",
-          "MPI-M-MPI-ESM-LR/"
-        )
-      ) %>%
-      stringr::str_replace(
-        .,
-        "MOHC-HadGEM2-ES/",
-        ifelse(
-          stringr::str_detect(., "ORNL"),
-          "MIROC-MIROC5/",
-          "MOHC-HadGEM2-ES/"
-        )
-      )  %>%
-      list.files(., full.names = TRUE)
-
     future::plan(future::multisession, workers = n.sessions)
-    models_df <-
-      dplyr::tibble(
-        path = unlist(files),
-        experiment = stringr::str_extract(path, "rcp\\d+"),
-        simulation = stringr::str_extract(path, "GERICS")
-      ) %>%
-      dplyr::mutate(
-        experiment = ifelse(is.na(experiment), "historical", experiment),
-        simulation = ifelse(is.na(simulation), "ICTP", simulation)
-      ) %>%
-      dplyr::mutate(climate_data = furrr::future_map(path,   function(x)  {
-        if (stringr::str_detect(x, "historical"))
-          suppressMessages(
-            loadeR::loadGridData(
-              dataset = x,
-              var = variable,
-              years = years.hist,
-              lonLim = xlim,
-              latLim = ylim,
-              season = 1:12
-            )    %>%
-              {
-                if (stringr::str_detect(variable, "tas")) {
-                  suppressMessages(transformeR::gridArithmetics(., 273.15, operator = "-"))
-                } else if (stringr::str_detect(variable, "pr")) {
-                  suppressMessages(transformeR::gridArithmetics(., 86400, operator = "*"))
+    if (is.null(path.to.data)) {
 
-                } else {
-                  .
-
-                }
-
-
-              }
-          )
-
-        else
-          suppressMessages(
-            loadeR::loadGridData(
-              dataset = x,
-              var = variable,
-              years = years.proj,
-              lonLim = xlim,
-              latLim = ylim,
-              season = 1:12
-            )  %>%
-              {
-                if (stringr::str_detect(variable, "tas")) {
-                  suppressMessages(transformeR::gridArithmetics(., 273.15, operator = "-"))
-                } else if (stringr::str_detect(variable, "pr")) {
-                  suppressMessages(transformeR::gridArithmetics(., 86400, operator = "*"))
-
-                } else if (stringr::str_detect(variable, "sfc")) {
-                  suppressMessages(transformeR::gridArithmetics(.,  conversion_factor, operator = "*"))
-
-                } else {
-                  .
-
-                }
-
-
-              }
-          )
-
-      }))
-
-    cli::cli_text(paste(Sys.time(), "Done"))
-
-    cli::cli_text(
-      paste0(
-        Sys.time(),
-        " Making multi-model ensemble with ",
-        length(files) / 3,
-        " members and loading ",
-        path.to.obs,
-        " dataset"
+    } else if (path.to.data == "CORDEX-CORE") {
+      cli::cli_progress_step(
+        paste0(
+          "Downloading CORDEX-CORE data (" ,
+          ifelse(is.null(years.hist), 12, ifelse(is.null(years.proj), 6, 18)),
+          " simulations)",
+          " using ",
+          n.sessions,
+          " sessions",
+          ifelse(n.sessions == 6, " by default", "")
+        )
       )
-    )
+    }  else {
+      cli::cli_progress_step("Uploading local data...")
+    }
 
-    options(warn = -1)
+    if (!is.null(path.to.data)) {
+      # when observations only are to be loaded or downloaded
 
-    models_df <- models_df %>%
-      dplyr::group_by(experiment) %>%
-      dplyr::summarise(models = list(climate_data)) %>%
-      dplyr::mutate(models_mbrs = lapply(models, function(x)  {
-        CAVAanalytics::common_dates(x)
-      })) %>%
-      dplyr::select(-models)
+      models_df <-
+        dplyr::tibble(path = files, experiment = experiment) %>%
+        tidyr::unnest(cols = path) %>%
+        dplyr::mutate(models = suppressWarnings(furrr::future_map(unlist(files), function(x)  {
+          if (stringr::str_detect(x, "historical")) {
+            data <-
+              suppressMessages(
+                loadeR::loadGridData(
+                  dataset = x,
+                  var = variable,
+                  years = years.hist,
+                  lonLim = xlim,
+                  latLim = ylim,
+                  aggr.m =  aggr.m
+                )
+              ) %>%
+              {
+                if (path.to.data == "CORDEX-CORE") {
+                  if (stringr::str_detect(variable, "tas")) {
+                    suppressMessages(transformeR::gridArithmetics(., 273.15, operator = "-"))
+                  } else if (stringr::str_detect(variable, "pr")) {
+                    suppressMessages(transformeR::gridArithmetics(., 86400, operator = "*"))
 
+                  } else if (stringr::str_detect(variable, "sfc")) {
+                    suppressMessages(transformeR::gridArithmetics(., conversion_factor, operator = "*"))
+
+                  } else {
+                    .
+
+                  }
+
+                } else {
+                  .
+
+                }
+
+              }
+
+            return(data)
+          } else {
+            data <-
+              suppressMessages(
+                loadeR::loadGridData(
+                  dataset = x,
+                  var = variable,
+                  years = years.proj,
+                  lonLim = xlim,
+                  latLim = ylim,
+                  aggr.m =  aggr.m
+                )
+              ) %>%
+              {
+                if (path.to.data == "CORDEX-CORE") {
+                  if (stringr::str_detect(variable, "tas")) {
+                    suppressMessages(transformeR::gridArithmetics(., 273.15, operator = "-"))
+                  } else if (stringr::str_detect(variable, "pr")) {
+                    suppressMessages(transformeR::gridArithmetics(., 86400, operator = "*"))
+
+                  } else if (stringr::str_detect(variable, "sfc")) {
+                    suppressMessages(transformeR::gridArithmetics(., conversion_factor, operator = "*"))
+
+                  } else {
+                    .
+
+                  }
+
+                } else {
+                  .
+
+                }
+
+              }
+
+            return(data)
+          }
+
+        }))) %>%
+        dplyr::group_by(experiment) %>%
+        dplyr::summarise(models_mbrs = list(models))
+
+      cli::cli_progress_done()
+      size <- as.numeric(object.size(models_df))
+      cli::cli_text(
+        if (path.to.data == "CORDEX-CORE")
+          "{cli::symbol$arrow_right} Downloaded {prettyunits::pretty_bytes(size)}"
+        else
+          "{cli::symbol$arrow_right} Uploaded {prettyunits::pretty_bytes(size)}"
+      )
+
+      cli::cli_progress_step("Making multi-model ensemble and checking temporal consistency")
+
+      models_df <- models_df %>%
+        dplyr::mutate(models_mbrs = purrr::map(models_mbrs, ~ common_dates(.x)))
+
+      cli::cli_progress_done()
+
+    } else {
+      # when path.to.data is NULL and only observations are needed
+
+      models_df <-
+        dplyr::tibble(obs = NA) # empty tibble to add obs later
+
+    }
+
+    # Load obs data outside of mutate
     if (!is.null(path.to.obs)) {
-      path <-
-        if (path.to.obs == "W5E5")
-          paste0(path.to.data, "/observations/W5E5/v2.0/w5e5_v2.0.ncml")
-      else
-        paste0(path.to.data, "/observations/ERA5/0.25/ERA5_025.ncml")
+      cli::cli_progress_step(paste0(
+        ifelse(
+          path.to.obs %in% c("ERA5", "W5E5"),
+          "Downloading ",
+          "Uploading "
+        ),
+        path.to.obs
+      ))
 
-      obs = list(suppressMessages(
-        loadGridData(
-          path,
+      out_obs <- suppressMessages(list(
+        loadeR::loadGridData(
+          obs.file,
           var = if (path.to.obs == "ERA5")
             c(
               "pr" = "tp",
@@ -314,18 +428,20 @@ load_data_hub <-
               "tasmin" = "t2mn",
               "hurs" = "hurs",
               "sfcWind" = "sfcwind",
-              "tas" = "t2m"
+              "tas" = "t2m",
+              "rsds" = "ssrd"
             )[variable]
           else
             variable,
-          years = if (is.null(years.obs))
-            years.hist
+          years = if (!is.null(years.obs))
+            years.obs
           else
-            years.obs,
+            years.hist,
           lonLim = xlim,
           latLim = ylim,
-          season = 1:12
-        )    %>%
+          aggr.m = aggr.m
+        )
+        %>%
           {
             if (path.to.obs == "ERA5" | path.to.obs == "W5E5") {
               if (stringr::str_detect(variable, "tas")) {
@@ -362,17 +478,104 @@ load_data_hub <-
           }
       ))
 
-      models_df$obs <- obs
+      cli::cli_progress_done()
 
     }
 
-    cli::cli_text(paste(Sys.time(), "Done"))
+    # Add obs to models_df if loaded
 
+    if (!is.null(path.to.obs)) {
+      models_df$obs <- out_obs
+
+    } else {
+      models_df$obs <- NULL
+    }
+
+
+    # Conversion of units messages
+    if (!is.null(path.to.data)) {
+      if (path.to.data == "CORDEX-CORE") {
+        if (variable == "pr")  {
+          cli::cli_text(
+            "{cli::symbol$arrow_right} Precipitation data from CORDEX-CORE has been converted into mm/day"
+          )
+        }  else if (stringr::str_detect(variable, "tas")) {
+          cli::cli_text(
+            "{cli::symbol$arrow_right} Temperature data from CORDEX-CORE has been converted into Celsius"
+          )
+        } else if (stringr::str_detect(variable, "sfc")) {
+          cli::cli_text(
+            "{cli::symbol$arrow_right} Wind speed data from CORDEX-CORE has been converted to 2 m level"
+          )
+        }
+
+      }
+    }
+
+    if (!is.null(path.to.obs)) {
+      if (path.to.obs %in% c("W5E5", "ERA5")) {
+        if (variable == "pr")  {
+          cli::cli_text(
+            paste0(
+              "{cli::symbol$arrow_right}",
+              " Precipitation data from ",
+              path.to.obs,
+              " has been converted into mm/day"
+            )
+          )
+        }  else if (stringr::str_detect(variable, "tas")) {
+          cli::cli_text(
+            paste0(
+              "{cli::symbol$arrow_right}",
+              " Temperature data from ",
+              path.to.obs,
+              " has been converted into Celsius"
+            )
+          )
+        } else if (stringr::str_detect(variable, "sfc")) {
+          cli::cli_text(
+            paste0(
+              "{cli::symbol$arrow_right}",
+              " Wind speed data from ",
+              path.to.obs,
+              " has been converted to 2 m level"
+            )
+          )
+        }
+      }
+    }
+
+    if (ncol(models_df) > 1) {
+      # when models are loaded
+      # check temporal resolutions only when models are uploaded/downloded.
+      # Defining temporal resolution
+      temp_res <- purrr::map(1:nrow(models_df), function(i) {
+        dates <- models_df$models_mbrs[[i]]$Dates$start
+        dates <- as.Date(dates)
+        table(lubridate::year(dates), lubridate::month(dates))
+      })
+
+      names(temp_res) <- models_df$experiment
+
+      # Checking temporal resolution
+      differ_check <- lapply(1:nrow(models_df), function(n) {
+        sapply(temp_res[[n]], function(x) {
+          any(x != x[1])
+        })
+      }) %>% unlist()
+
+      if (any(differ_check)) {
+        cli::cli_bullets(c("!" = "There might be temporal inconsistency in your data, check .[[3]]"))
+      }
+    } else {
+      # no need to check temporal consistency as only observations are loaded
+      temp_res <- NULL
+    }
     # returning object
     invisible(structure(
-      list(models_df, result$country_shp),
+      list(models_df, result$country_shp, temp_res),
       class = "CAVAanalytics_list",
-      components = list("data.frame with list columns", "bbox")
+      components = list("data.frame with list columns", "bbox", "temporal resolution")
     ))
 
   }

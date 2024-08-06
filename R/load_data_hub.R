@@ -2,7 +2,7 @@
 #'
 #' Automatically upload databases available at UC servers
 
-#' @param path.to.data character, indicating the database of interest (e.g CORDEX-CORE).
+#' @param database character, indicating the database of interest (default to CORDEX-CORE).
 #' @param country character, in English, indicating the country of interest or an object of class sf. To select a bounding box,
 #' set country to NULL and define arguments xlim and ylim
 #' @param variable  character indicating the variable name
@@ -22,8 +22,8 @@
 #'
 #' @export
 
-load_data <-
-  function(path.to.data,
+load_data_hub <-
+  function(database="CORDEX-CORE",
            country,
            variable,
            xlim = NULL,
@@ -41,7 +41,7 @@ load_data <-
     # check that the arguments have been correctly specified and return an error when not
 
     check_args <-
-      function(path.to.data,
+      function(database,
                years.hist,
                domain,
                years.proj,
@@ -93,13 +93,13 @@ load_data <-
 
         }
 
-        if (!is.null(path.to.data) &&
-            path.to.data == "CORDEX-CORE") {
+        if (!is.null(database) &&
+            database == "CORDEX-CORE") {
           if (is.null(domain))
             cli::cli_abort(c("x" = "domain has no default when uploading CORDEX-CORE data remotely"))
           if (is.null(years.proj) &
               is.null(years.hist) & !is.null(years.obs))
-            cli::cli_abort(c("x" = "set path.to.data as NULL to only upload observations"))
+            cli::cli_abort(c("x" = "set database as NULL to only upload observations"))
 
           if (!is.null(years.hist) & !is.null(years.obs))
             cli::cli_alert_warning(c("!" = "years.obs overwrite years.hist for the observational dataset"))
@@ -121,30 +121,30 @@ load_data <-
             match.arg(variable,
                       choices = c("tas", "tasmax", "tasmin", "hurs", "rsds", "sfcWind", "pr"))
 
-        } else if (is.null(path.to.data)) {
+        } else if (is.null(database)) {
           cli::cli_alert_warning(c("!" = "Only observations will be uploaded"))
         } else {
           if (!is.null(domain))
             cli::cli_alert_warning(c("!" = "Argument domain is ignored"))
-          if (!stringr::str_detect(path.to.data, "/"))
+          if (!stringr::str_detect(database, "/"))
             cli::cli_abort(c("x" = "please specify a valid path or CORDEX-CORE for remote upload"))
-          if (!any(stringr::str_detect(list.files(path.to.data), "historical")) &
+          if (!any(stringr::str_detect(list.files(database), "historical")) &
               is.null(years.hist)) {
             cli::cli_alert_warning(
               c("!" = "Historical experiment not found. If present, the folder needs to be named historical")
             )
-          } else if (!any(stringr::str_detect(list.files(path.to.data), "historical")) &
+          } else if (!any(stringr::str_detect(list.files(database), "historical")) &
                      !is.null(years.hist)) {
             cli::cli_abort(
               c("x" = "Historical experiment not found. The folder needs to be named historical")
             )
-          } else if (any(stringr::str_detect(list.files(path.to.data), "historical")) &
+          } else if (any(stringr::str_detect(list.files(database), "historical")) &
                      is.null(years.hist)) {
             cli::cli_abort(c("x" = "Historical experiment found but years.hist is not specified"))
           } else {
             cli::cli_alert_info(c(
               "Your directory contains the following folders:\n",
-              paste0(list.dirs(path.to.data)[-1], "\n")
+              paste0(list.dirs(database)[-1], "\n")
             ))
           }
         }
@@ -243,7 +243,7 @@ load_data <-
 
     # check for valid path
     check_args(
-      path.to.data,
+      database,
       years.hist,
       domain,
       years.proj,
@@ -255,10 +255,10 @@ load_data <-
     )
 
     # load data
-    if (is.null(path.to.data)) {
+    if (is.null(database)) {
 
-    } else if (path.to.data == "CORDEX-CORE") {
-      files <- load_cordex_data(domains = domain)
+    } else if (database == "CORDEX-CORE") {
+      files <- load_model_data(domains = domain)
       experiment <-
         if (!is.null(years.hist) & !is.null(years.proj))
           c("historical", "rcp26", "rcp85")
@@ -267,8 +267,7 @@ load_data <-
       else
         "historical"
     } else {
-      files <- load_local_data(path.to.data)
-      experiment <- list.dirs(path.to.data, full.names = F)[-1]
+     cli::cli_abort("Only CORDEX-CORE is supported when using load_data_hub")
     }
 
     # load observation data
@@ -282,12 +281,12 @@ load_data <-
 
     # making the dataset
     future::plan(future::multisession, workers = n.sessions)
-    if (is.null(path.to.data)) {
+    if (is.null(database)) {
 
-    } else if (path.to.data == "CORDEX-CORE") {
+    } else if (database == "CORDEX-CORE") {
       cli::cli_progress_step(
         paste0(
-          "Downloading CORDEX-CORE data (" ,
+          "Uploading CORDEX-CORE data (" ,
           ifelse(is.null(years.hist), 12, ifelse(is.null(years.proj), 6, 18)),
           " simulations)",
           " using ",
@@ -297,10 +296,10 @@ load_data <-
         )
       )
     }  else {
-      cli::cli_progress_step("Uploading local data...")
+
     }
 
-    if (!is.null(path.to.data)) {
+    if (!is.null(database)) {
       # when observations only are to be loaded or downloaded
 
       models_df <-
@@ -320,7 +319,7 @@ load_data <-
                 )
               ) %>%
               {
-                if (path.to.data == "CORDEX-CORE") {
+                if (database == "CORDEX-CORE") {
                   if (stringr::str_detect(variable, "tas")) {
                     suppressMessages(transformeR::gridArithmetics(., 273.15, operator = "-"))
                   } else if (stringr::str_detect(variable, "pr")) {
@@ -355,7 +354,7 @@ load_data <-
                 )
               ) %>%
               {
-                if (path.to.data == "CORDEX-CORE") {
+                if (database == "CORDEX-CORE") {
                   if (stringr::str_detect(variable, "tas")) {
                     suppressMessages(transformeR::gridArithmetics(., 273.15, operator = "-"))
                   } else if (stringr::str_detect(variable, "pr")) {
@@ -386,10 +385,10 @@ load_data <-
       cli::cli_progress_done()
       size <- as.numeric(object.size(models_df))
       cli::cli_text(
-        if (path.to.data == "CORDEX-CORE")
-          "{cli::symbol$arrow_right} Downloaded {prettyunits::pretty_bytes(size)}"
-        else
+        if (database == "CORDEX-CORE")
           "{cli::symbol$arrow_right} Uploaded {prettyunits::pretty_bytes(size)}"
+        else
+
       )
 
       cli::cli_progress_step("Making multi-model ensemble and checking temporal consistency")
@@ -400,7 +399,7 @@ load_data <-
       cli::cli_progress_done()
 
     } else {
-      # when path.to.data is NULL and only observations are needed
+      # when database is NULL and only observations are needed
 
       models_df <-
         dplyr::tibble(obs = NA) # empty tibble to add obs later
@@ -410,11 +409,7 @@ load_data <-
     # Load obs data outside of mutate
     if (!is.null(path.to.obs)) {
       cli::cli_progress_step(paste0(
-        ifelse(
-          path.to.obs %in% c("ERA5", "W5E5"),
-          "Downloading ",
-          "Uploading "
-        ),
+        "Uploading ",
         path.to.obs
       ))
 
@@ -493,8 +488,8 @@ load_data <-
 
 
     # Conversion of units messages
-    if (!is.null(path.to.data)) {
-      if (path.to.data == "CORDEX-CORE") {
+    if (!is.null(database)) {
+      if (database == "CORDEX-CORE") {
         if (variable == "pr")  {
           cli::cli_text(
             "{cli::symbol$arrow_right} Precipitation data from CORDEX-CORE has been converted into mm/day"

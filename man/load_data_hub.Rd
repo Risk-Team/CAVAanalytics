@@ -5,24 +5,23 @@
 \title{Models upload (only works from the University of Cantabria Jupyter HUB environment)}
 \usage{
 load_data_hub(
-  path.to.data = "/home/jovyan/shared/data",
+  path.to.data,
   country,
   variable,
   xlim = NULL,
   ylim = NULL,
-  years.hist,
+  years.hist = NULL,
   years.proj,
-  buffer = 0,
-  domain,
-  aggr.m = "none",
   path.to.obs = NULL,
-  years.obs = NULL,
-  res_folder = "interp05",
-  n.sessions = 6
+  buffer = 0,
+  domain = NULL,
+  aggr.m = "none",
+  n.sessions = 6,
+  years.obs = NULL
 )
 }
 \arguments{
-\item{path.to.data}{character, indicating the shared path to the data. Leave as default unless necessary}
+\item{path.to.data}{character, indicating the database of interest (e.g CORDEX-CORE).}
 
 \item{country}{character, in English, indicating the country of interest or an object of class sf. To select a bounding box,
 set country to NULL and define arguments xlim and ylim}
@@ -37,23 +36,21 @@ set country to NULL and define arguments xlim and ylim}
 
 \item{years.proj}{numeric, specify year range for projections}
 
+\item{path.to.obs}{character, default to NULL. To automatically load W5E5 or ERA5, specify W5E5 or ERA5.}
+
 \item{buffer}{numeric, default is zero.}
 
 \item{domain}{charachter, specify the CORDEX-CORE domain (e.g AFR-22, EAS-22).}
 
 \item{aggr.m}{character, monthly aggregation. One of none, mean or sum}
 
-\item{path.to.obs}{character, default to NULL. To automatically load W5E5 or ERA5, specify W5E5 or ERA5.}
+\item{n.sessions}{numeric, number of sessions to use in parallel processing. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary}
 
 \item{years.obs}{NULL or numeric, specify year range for observation. Specifying years.obs will overwrite years.hist for observations}
-
-\item{res_folder}{character, either interp05 or interp025. Default is interp05}
-
-\item{n.sessions}{numeric, number of sessions to use in parallel processing. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary}
 }
 \value{
 list of length 2. List[[1]] contains a tibble with list columns and List[[2]] the bbox
 }
 \description{
-Automatically upload CORDEX-CORE models available at UC servers
+Automatically upload databases available at UC servers
 }

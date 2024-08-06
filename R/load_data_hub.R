@@ -23,7 +23,7 @@
 #' @export
 
 load_data_hub <-
-  function(database="CORDEX-CORE",
+  function(database = "CORDEX-CORE",
            country,
            variable,
            xlim = NULL,
@@ -156,7 +156,8 @@ load_data_hub <-
 
     load_model_data <- function(domains) {
       cli::cli_progress_step("Accessing inventory")
-      csv_url <- "https://hub.ipcc.ifca.es/thredds/fileServer/inventories/cava.csv"
+      csv_url <-
+        "https://hub.ipcc.ifca.es/thredds/fileServer/inventories/cava.csv"
       data <- read.csv(url(csv_url)) %>%
         dplyr::filter(stringr::str_detect(activity, "CORDEX"), domain ==  domains) %>%
         dplyr::group_by(experiment) %>%
@@ -267,7 +268,7 @@ load_data_hub <-
       else
         "historical"
     } else {
-     cli::cli_abort("Only CORDEX-CORE is supported when using load_data_hub")
+      cli::cli_abort("Only CORDEX-CORE is supported when using load_data_hub")
     }
 
     # load observation data
@@ -384,12 +385,7 @@ load_data_hub <-
 
       cli::cli_progress_done()
       size <- as.numeric(object.size(models_df))
-      cli::cli_text(
-        if (database == "CORDEX-CORE")
-          "{cli::symbol$arrow_right} Uploaded {prettyunits::pretty_bytes(size)}"
-        else
-
-      )
+      cli::cli_text("{cli::symbol$arrow_right} Uploaded {prettyunits::pretty_bytes(size)}")
 
       cli::cli_progress_step("Making multi-model ensemble and checking temporal consistency")
 
@@ -408,10 +404,8 @@ load_data_hub <-
 
     # Load obs data outside of mutate
     if (!is.null(path.to.obs)) {
-      cli::cli_progress_step(paste0(
-        "Uploading ",
-        path.to.obs
-      ))
+      cli::cli_progress_step(paste0("Uploading ",
+                                    path.to.obs))
 
       out_obs <- suppressMessages(list(
         loadeR::loadGridData(

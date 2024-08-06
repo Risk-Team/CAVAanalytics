@@ -156,7 +156,7 @@ load_data <-
 
     load_model_data <- function(domains) {
       cli::cli_progress_step("Accessing inventory")
-      csv_url <- https://hub.ipcc.ifca.es/thredds/fileServer/inventories/cava.csv
+      csv_url <- "https://hub.ipcc.ifca.es/thredds/fileServer/inventories/cava.csv"
       data <- read.csv(url(csv_url)) %>%
         dplyr::filter(stringr::str_detect(activity, "CORDEX"), domain ==  domains) %>%
         dplyr::group_by(experiment) %>%

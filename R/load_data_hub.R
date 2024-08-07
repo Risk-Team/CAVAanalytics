@@ -181,9 +181,9 @@ load_data_hub <-
     # create the file name used for loading the obs data. This can be the W5E5 dataset or satellite data
     load_obs_data <- function(path.to.obs) {
       if (path.to.obs == "ERA5") {
-        "home/jovyan/shared/data/observations/ERA5/0.25/ERA5_025.ncml"
+        "/home/jovyan/shared/data/observations/ERA5/0.25/ERA5_025.ncml"
       } else if (path.to.obs == "W5E5") {
-        "home/jovyan/shared/data/observations/W5E5/v2.0/w5e5_v2.0.ncml"
+        "/home/jovyan/shared/data/observations/W5E5/v2.0/w5e5_v2.0.ncml"
 
       } else  {
         list.files(path.to.obs, full.names = TRUE)

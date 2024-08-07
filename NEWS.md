@@ -9,6 +9,11 @@ output:
     toc_depth: 2
 ---
 
+## CAVAanalytics 3.2.6
+
+In this new version of CAVAanalytics there have been two minor changes to the load_data and load_data_hub functions to better handle requests to the database where climate data is stored. 
+
+
 ## CAVAanalytics 3.2.5
 
 In this new version of CAVAanalytics we added some functionalities to easily customise plot appearances. Specifically:

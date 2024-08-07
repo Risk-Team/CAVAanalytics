@@ -5,7 +5,7 @@
 \title{Models upload (only works from the University of Cantabria Jupyter HUB environment)}
 \usage{
 load_data_hub(
-  path.to.data,
+  database = "CORDEX-CORE",
   country,
   variable,
   xlim = NULL,
@@ -21,7 +21,7 @@ load_data_hub(
 )
 }
 \arguments{
-\item{path.to.data}{character, indicating the database of interest (e.g CORDEX-CORE).}
+\item{database}{character, indicating the database of interest (default to CORDEX-CORE).}
 
 \item{country}{character, in English, indicating the country of interest or an object of class sf. To select a bounding box,
 set country to NULL and define arguments xlim and ylim}

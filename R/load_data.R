@@ -156,11 +156,12 @@ load_data <-
 
     # create the file names used later for the loadGridData function for remote upload
 
-    load_cordex_data <- function(domains) {
+    load_model_data <- function(domains) {
       cli::cli_progress_step("Accessing inventory")
-      csv_url <- "https://data.meteo.unican.es/inventory.csv"
+      csv_url <-
+        "https://hub.ipcc.ifca.es/thredds/fileServer/inventories/cava.csv"
       data <- read.csv(url(csv_url)) %>%
-        dplyr::filter(stringr::str_detect(activity, "FAO"), domain ==  domains) %>%
+        dplyr::filter(stringr::str_detect(activity, "CORDEX"), domain ==  domains) %>%
         dplyr::group_by(experiment) %>%
         dplyr::summarise(path = list(as.character(location))) %>%
         {
@@ -267,7 +268,7 @@ load_data <-
     if (is.null(path.to.data)) {
 
     } else if (path.to.data == "CORDEX-CORE") {
-      files <- load_cordex_data(domains = domain)
+      files <- load_model_data(domains = domain)
       experiment <-
         if (!is.null(years.hist) & !is.null(years.proj))
           c("historical", "rcp26", "rcp85")

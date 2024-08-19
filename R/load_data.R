@@ -187,12 +187,12 @@ load_data <-
 
     }
 
-    # create the file name used for loading the obs data. This can be the W5E5 dataset or satellite data
+    # create the file name used for loading the obs data. This can be the W5E5 dataset or ERA5
     load_obs_data <- function(path.to.obs) {
       if (path.to.obs == "ERA5") {
-        "https://data.meteo.unican.es/thredds/dodsC/copernicus/cds/ERA5_0.25"
+        "https://hub.ipcc.ifca.es/thredds/dodsC/fao/observations/ERA5/0.25/ERA5_025.ncml"
       } else if (path.to.obs == "W5E5") {
-        "https://data.meteo.unican.es/thredds/dodsC/mirrors/W5E5/W5E5_v2"
+        "https://hub.ipcc.ifca.es/thredds/dodsC/fao/observations/aggregations/W5E5/v2.0/w5e5_v2.0.ncml"
 
       } else  {
         list.files(path.to.obs, full.names = TRUE)

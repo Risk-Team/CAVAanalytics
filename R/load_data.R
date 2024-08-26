@@ -160,21 +160,27 @@ load_data <-
       cli::cli_progress_step("Accessing inventory")
       csv_url <-
         "https://hub.ipcc.ifca.es/thredds/fileServer/inventories/cava.csv"
-      data <- read.csv(url(csv_url)) %>%
-        dplyr::filter(stringr::str_detect(activity, "CORDEX"), domain ==  domains) %>%
-        dplyr::group_by(experiment) %>%
-        dplyr::summarise(path = list(as.character(location))) %>%
-        {
-          if (is.null(years.hist) & !is.null(years.proj)) {
-            dplyr::filter(., experiment != "historical")
+      data <- tryCatch({
+        # Attempt to read and process the CSV data
+        read.csv(url(csv_url)) %>%
+          dplyr::filter(stringr::str_detect(activity, "CORDEX"), domain == domains) %>%
+          dplyr::group_by(experiment) %>%
+          dplyr::summarise(path = list(as.character(location))) %>%
+          {
+            if (is.null(years.hist) & !is.null(years.proj)) {
+              dplyr::filter(., experiment != "historical")
+            } else if (!is.null(years.hist) & is.null(years.proj)) {
+              dplyr::filter(., experiment == "historical")
+            } else {
+              .
+            }
+          } %>%
+          dplyr::select(path)
+      }, error = function(e) {
+        # If an error occurs, print a message and return NULL
+        cli::cli_abort(c("x"= "Failed to retrieve remote data from the specified URL. This issue may be temporary due to network instability or server availability. If the problem continues, please report it by opening an issue on our GitHub repository."))
 
-          } else if (!is.null(years.hist) & is.null(years.proj)) {
-            dplyr::filter(., experiment == "historical")
-          } else {
-            .
-          }
-        } %>%
-        dplyr::select(path)
+      })
 
       return(data[[1]])
 
@@ -187,12 +193,12 @@ load_data <-
 
     }
 
-    # create the file name used for loading the obs data. This can be the W5E5 dataset or satellite data
+    # create the file name used for loading the obs data. This can be the W5E5 dataset or ERA5
     load_obs_data <- function(path.to.obs) {
       if (path.to.obs == "ERA5") {
-        "https://data.meteo.unican.es/thredds/dodsC/copernicus/cds/ERA5_0.25"
+        "https://hub.ipcc.ifca.es/thredds/dodsC/fao/observations/ERA5/0.25/ERA5_025.ncml"
       } else if (path.to.obs == "W5E5") {
-        "https://data.meteo.unican.es/thredds/dodsC/mirrors/W5E5/W5E5_v2"
+        "https://hub.ipcc.ifca.es/thredds/dodsC/fao/observations/aggregations/W5E5/v2.0/w5e5_v2.0.ncml"
 
       } else  {
         list.files(path.to.obs, full.names = TRUE)

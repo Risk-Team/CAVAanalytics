@@ -160,21 +160,27 @@ load_data <-
       cli::cli_progress_step("Accessing inventory")
       csv_url <-
         "https://hub.ipcc.ifca.es/thredds/fileServer/inventories/cava.csv"
-      data <- read.csv(url(csv_url)) %>%
-        dplyr::filter(stringr::str_detect(activity, "CORDEX"), domain ==  domains) %>%
-        dplyr::group_by(experiment) %>%
-        dplyr::summarise(path = list(as.character(location))) %>%
-        {
-          if (is.null(years.hist) & !is.null(years.proj)) {
-            dplyr::filter(., experiment != "historical")
+      data <- tryCatch({
+        # Attempt to read and process the CSV data
+        read.csv(url(csv_url)) %>%
+          dplyr::filter(stringr::str_detect(activity, "CORDEX"), domain == domains) %>%
+          dplyr::group_by(experiment) %>%
+          dplyr::summarise(path = list(as.character(location))) %>%
+          {
+            if (is.null(years.hist) & !is.null(years.proj)) {
+              dplyr::filter(., experiment != "historical")
+            } else if (!is.null(years.hist) & is.null(years.proj)) {
+              dplyr::filter(., experiment == "historical")
+            } else {
+              .
+            }
+          } %>%
+          dplyr::select(path)
+      }, error = function(e) {
+        # If an error occurs, print a message and return NULL
+        cli::cli_abort(c("x"= "Failed to retrieve remote data from the specified URL. This issue may be temporary due to network instability or server availability. If the problem continues, please report it by opening an issue on our GitHub repository."))
 
-          } else if (!is.null(years.hist) & is.null(years.proj)) {
-            dplyr::filter(., experiment == "historical")
-          } else {
-            .
-          }
-        } %>%
-        dplyr::select(path)
+      })
 
       return(data[[1]])
 

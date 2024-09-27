@@ -87,7 +87,7 @@ load_data <-
             cli::cli_abort(c("x" = "Available years for ERA5 observations are 1976:2021"))
 
           if (!is.null(years.obs) & path.to.obs == "W5E5" &
-              any(!(years.obs %in% 1980:2021)))
+              any(!(years.obs %in% 1980:2019)))
             cli::cli_abort(c("x" = "Available years for W5E5 observations are 1980:2019"))
 
           if (is.null(years.obs) & is.null(years.hist))

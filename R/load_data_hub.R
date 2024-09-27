@@ -157,7 +157,7 @@ load_data_hub <-
     load_model_data <- function(domains) {
       cli::cli_progress_step("Accessing inventory")
       csv_url <-
-        "/home/jovyan/shared/inventories/cava/cava.csv"
+        "/home/jovyan/shared/inventories/cava/inventory.csv"
         data <- read.csv(csv_url) %>%
         dplyr::filter(stringr::str_detect(activity, "CORDEX"), domain ==  domains) %>%
         dplyr::group_by(experiment) %>%

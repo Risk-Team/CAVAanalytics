@@ -12,7 +12,8 @@
 </h1>
 
 --------------------------------------------------------------------------------------------------
-**CAVAanalytics is under constant improvement. You are encouraged to always work with the latest release**
+
+**Server status**:    Downtime <span style="color:red;">&#9679;</span>
 
 --------------------------------------------------------------------------------------------------
 

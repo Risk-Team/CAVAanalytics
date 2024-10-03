@@ -3,6 +3,9 @@ title: "Server Status"
 output: html_document
 ---
 
+
+Status of the THREDDS servers: During downtimes, CAVAanalytics will be unable to access data, resulting in an error when attempting to use the load_data function.
+
 ```{r, echo=FALSE}
 library(magrittr)
 

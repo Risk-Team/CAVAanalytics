@@ -24,9 +24,6 @@ navbar:
     - icon: fa fa-file-code-o
       text: Functions
       href: reference/index.html
-    - icon: fa fa-server
-      text: Server Status
-      href: articles/server_status.html
     - icon: fa fa-github fa-lg
       text: GitHub
       href: https://github.com/Risk-team/CAVAanalytics/

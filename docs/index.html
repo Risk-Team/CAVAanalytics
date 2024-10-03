@@ -22,7 +22,7 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary" data-bs-theme="dark"><div class="container">
+    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary"><div class="container">
     
     <a class="navbar-brand me-2" href="index.html">CAVAanalytics</a>
 
@@ -63,6 +63,13 @@
   </a>
 </li>
 <li class="nav-item">
+  <a class="nav-link" href="articles/server_status.html">
+    <span class="fa fa fa fa-server"></span>
+     
+    Server Status
+  </a>
+</li>
+<li class="nav-item">
   <a class="external-link nav-link" href="https://github.com/Risk-team/CAVAanalytics/">
     <span class="fa fa fa fa-github fa-lg"></span>
      
@@ -93,7 +100,7 @@
 R package providing a framework for easy access, processing, and advanced visualization of gridded climate products
 </h5>
 <br><div align="center">
-<p><img src="https://img.shields.io/github/v/release/Risk-team/CAVAanalytics?include_prereleases" alt="GitHub R package version" style="display: inline-block;"><img src="https://img.shields.io/github/release-date-pre/Risk-team/CAVAanalytics" alt="release date" style="display: inline-block;"><a href="https://zenodo.org/doi/10.5281/zenodo.11127220" class="external-link"><img src="https://zenodo.org/badge/558266668.svg" alt="DOI"></a> <a href="http://hits.dwyl.com/Risk-team/CAVAanalytics" class="external-link"><img src="http://hits.dwyl.com/Risk-team/CAVAanalytics.svg"></a></p>
+<p><img src="https://img.shields.io/github/r-package/v/Risk-Team/CAVAanalytics" alt="GitHub R package version" style="display: inline-block;"><img src="https://img.shields.io/github/release-date-pre/Risk-team/CAVAanalytics" alt="release date" style="display: inline-block;"><a href="https://zenodo.org/doi/10.5281/zenodo.11127220" class="external-link"><img src="https://zenodo.org/badge/558266668.svg" alt="DOI"></a> <a href="http://hits.dwyl.com/Risk-team/CAVAanalytics" class="external-link"><img src="http://hits.dwyl.com/Risk-team/CAVAanalytics.svg"></a></p>
 </div>
 </h1></div>
 <table class="table">
@@ -102,12 +109,6 @@ R package providing a framework for easy access, processing, and advanced visual
 <td><strong>CAVAanalytics is under constant improvement. You are encouraged to always work with the latest release</strong></td>
 </tr></tbody>
 </table>
-<div class="section level4">
-<h4 id="updates">**Updates<a class="anchor" aria-label="anchor" href="#updates"></a>
-</h4>
-<p><strong>All CORDEX domains are now available. These are: AFR-22, SEA-22, EAS-22, WAS-22, AUS-22,CAM-22, SAM-22, CAS-22, EUR-22 and NAM-22</strong></p>
-<p><strong>Current available observational datasets: W5E5, ERA5</strong></p>
-<hr>
 <p><a href="https://risk-team.github.io/CAVAanalytics/"><strong>CAVAanalytics</strong></a> is an R package for climate services. It offers a consistent framework to load, analyze, calculate indicators, and visualize results for multi-model ensembles.</p>
 <p><a href="https://risk-team.github.io/CAVAanalytics/"><strong>CAVAanalytics</strong></a> provides:</p>
 <ul>
@@ -117,7 +118,6 @@ R package providing a framework for easy access, processing, and advanced visual
 </ul>
 <p>CAVAanalytics can be seen as a wrapper of several packages, but the main engine for loading and processing climate model outputs is the <a href="https://github.com/SantanderMetGroup/climate4R" class="external-link">climate4Rframework</a>, applied with a tidyverse approach.</p>
 <p>CAVAanalytics is part of a bigger framework, called <a href="https://risk-team.github.io/CAVAanalytics/articles/CAVA.html">Climate and Agriculture Risk Visualization and Assessment (CAVA)</a>.</p>
-</div>
 <div class="section level3">
 <h3 id="quick-example">Quick example<a class="anchor" aria-label="anchor" href="#quick-example"></a>
 </h3>
@@ -318,7 +318,7 @@ data = pd.read_csv(csv_url)
 
 <div class="pkgdown-footer-right">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.8.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
     </footer>

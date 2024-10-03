@@ -16,15 +16,6 @@
 
 --------------------------------------------------------------------------------------------------
 
-#### **Updates
-
-
-**All CORDEX domains are now available. These are: AFR-22, SEA-22, EAS-22, WAS-22, AUS-22,CAM-22, SAM-22, CAS-22, EUR-22 and NAM-22**
-
-**Current available observational datasets: W5E5, ERA5**
-
---------------------------------------------------------------------------------------------------
-
 [**CAVAanalytics**](https://risk-team.github.io/CAVAanalytics/) is an R package for climate services. 
 It offers a consistent framework to load, analyze, calculate indicators, and visualize results for multi-model ensembles.
 

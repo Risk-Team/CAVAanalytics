@@ -25,7 +25,8 @@
 - You tried to work with multiple climate models but found the process of computing climate indicators and then visualising the results hard
 
 **CAVAanalytics** addresses these issues by:
-- Providing streamlined access to CORDEX-CORE models for the whole world. This means that you don't need to download netCDF files, data requests are sent to THREDDS servers and you retrieve only the information you asked, directly in memory.
+
+- Providing streamlined access to CORDEX-CORE models for the whole world. This means that you don't need to download netCDF files, data requests are sent to THREDDS servers and you retrieve only the information you asked, directly in memory
 - Providing a framework to work with multiple models so that indicators calculation and visualization of results is extremely easy
 
 

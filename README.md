@@ -17,37 +17,26 @@
 
 --------------------------------------------------------------------------------------------------
 
-[**CAVAanalytics**](https://risk-team.github.io/CAVAanalytics/) is an R package for climate services. 
-It offers a consistent framework to load, analyze, calculate indicators, and visualize results for multi-model ensembles.
+[**CAVAanalytics**](https://risk-team.github.io/CAVAanalytics/) is an R package offering a consistent framework to load, analyze, calculate indicators, and visualize results for climate and impact models. It also streamlines access to W5E5, ERA5 and CORDEX-CORE models.
 
-[**CAVAanalytics**](https://risk-team.github.io/CAVAanalytics/) provides:
+### Read on if:
 
-- Direct remote access to CORDEX-CORE simulations at 25 Km resolution already interpolated (EPSG:4326) 
-- Direct remote access to W5E5 and ERA5 datasets
-- Processing and visualization capabilities
+- You tried to download CORDEX models from ESGF or COPERNICUS but found the process difficult (managing netCDF files, etc)
+- You tried to work with multiple climate models but found the process of computing climate indicators and then visualising the results hard
 
-CAVAanalytics can be seen as a wrapper of several packages, but the main engine for loading and processing climate model outputs is the [climate4Rframework](https://github.com/SantanderMetGroup/climate4R), applied with a tidyverse approach.
-
-CAVAanalytics is part of a bigger framework, called [Climate and Agriculture Risk Visualization and Assessment (CAVA)](https://risk-team.github.io/CAVAanalytics/articles/CAVA.html). 
+**CAVAanalytics** addresses these issues by:
+- Providing streamlined access to CORDEX-CORE models for the whole world. This means that you don't need to download netCDF files, data requests are sent to THREDDS servers and you retrieve only the information you asked, directly in memory.
+- Providing a framework to work with multiple models so that indicators calculation and visualization of results is extremely easy
 
 
 ### Quick example
-
-The idea behind CAVAanalytics is to divide the process of working with multiple models into 3 steps. **Firstly**  download or upload data (multiple
-models), **secondly** perform the intended analysis, **thirdly** visualize the results.
-One nice thing about step 1, is that CAVAanalytics will automatically bind multiple members to create the multimodel ensemble and check temporal consistency. It will also automatically convert units (e.g. Kelvin into Celsius). 
-
+**Firstly**  download or upload data, **secondly** perform the intended analysis, **thirdly** visualize the results.
 
 | ![Framework](https://user-images.githubusercontent.com/40058235/199256415-ed32c42b-e2f8-48e0-b4fe-558de6612038.png) |
 |:-------------------------------------------------------------------------------------------------------------------:|
 |                                                *CAVAanalytics steps*                                                |
 
-Below we give an example of how you can use CAVAanalytics to easily retrieve climate information (both past and future). Detailed examples are available from the [tutorial webpage](https://risk-team.github.io/CAVAanalytics/articles/Introduction.html).
-
-**To load CORDEX-CORE data stored remotely**, set path.to.data to
-“CORDEX-CORE” and specify the domain. This will download in real-time CORDEX-CORE
-simulations from the University of Cantabria (UC) THREDDS servers. Similarly, when path.to.obs is set to W5E5 or ERA5, you access datasets stored in UC THREDDS servers.
-One of the great things about CAVAanalytics is that data is stored in memory so there is no need to process netCDF files. Additionally, data retrieval is speedy thanks to the state-of-the-art THREDDS server of the University of Cantabria.
+Below we give an example of how you can use CAVAanalytics to retrieve climate information easily (both past and future). Detailed examples are available from the [tutorial webpage](https://risk-team.github.io/CAVAanalytics/articles/Introduction.html).
 
 ``` r
 library(CAVAanalytics)

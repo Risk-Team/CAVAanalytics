@@ -198,9 +198,9 @@ While CAVAanalytics was built on top of R packages, such as `climate4R` and `tid
 import xarray as xr
 
 # URL to ERA5 data
-obs_url =  "https://data.meteo.unican.es/thredds/dodsC/copernicus/cds/ERA5_0.25"
+obs_url =  "https://hub.ipcc.ifca.es/thredds/dodsC/fao/observations/ERA5/0.25/ERA5_025.ncml"
 # URL to W5E5 V2 data
-obs_url =    "https://data.meteo.unican.es/thredds/dodsC/mirrors/W5E5/W5E5_v2"
+obs_url =    "https://hub.ipcc.ifca.es/thredds/dodsC/fao/observations/aggregations/W5E5/v2.0/w5e5_v2.0.ncml"
 # Open dataset
 ds = xr.open_dataset(obs_url)
 ```

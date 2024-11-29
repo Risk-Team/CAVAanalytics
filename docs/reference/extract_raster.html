@@ -6,11 +6,11 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary"><div class="container">
+    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary" data-bs-theme="dark"><div class="container">
     
     <a class="navbar-brand me-2" href="../index.html">CAVAanalytics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.2.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.2.7</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,13 +43,6 @@
     <span class="fa fa fa fa-file-code-o"></span>
      
     Functions
-  </a>
-</li>
-<li class="nav-item">
-  <a class="nav-link" href="../articles/server_status.html">
-    <span class="fa fa fa fa-server"></span>
-     
-    Server Status
   </a>
 </li>
 <li class="nav-item">
@@ -87,7 +80,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">extract_raster</span><span class="op">(</span><span class="va">step2</span>, <span class="va">filename</span>, <span class="va">ensemble</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">extract_raster</span><span class="op">(</span><span class="va">step2</span>, <span class="va">file.extension</span>, <span class="va">ensemble</span>, <span class="va">path</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -96,12 +89,16 @@
 <dd><p>output of one of CAVAanalytics functions, such as projections.</p></dd>
 
 
-<dt>filename</dt>
-<dd><p>charachter, specifying the file name (needs to end in .tif)</p></dd>
+<dt>file.extension</dt>
+<dd><p>charachter, specifying the file extension (needs to end in .tif). For example, tasmax.tif</p></dd>
 
 
 <dt>ensemble</dt>
 <dd><p>logical. Whether to save the raster for the ensemble or for individual models</p></dd>
+
+
+<dt>path</dt>
+<dd><p>charachter, specify where to save the files. Default to current working directory.</p></dd>
 
 
 <dt>stat</dt>
@@ -118,7 +115,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.8.</p>
 </div>
 
     </footer></div>

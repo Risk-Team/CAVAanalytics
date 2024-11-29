@@ -4,14 +4,16 @@
 \alias{extract_raster}
 \title{Write rasters}
 \usage{
-extract_raster(step2, filename, ensemble)
+extract_raster(step2, file.extension, ensemble, path)
 }
 \arguments{
 \item{step2}{output of one of CAVAanalytics functions, such as projections.}
 
-\item{filename}{charachter, specifying the file name (needs to end in .tif)}
+\item{file.extension}{charachter, specifying the file extension (needs to end in .tif). For example, tasmax.tif}
 
 \item{ensemble}{logical. Whether to save the raster for the ensemble or for individual models}
+
+\item{path}{charachter, specify where to save the files. Default to current working directory.}
 
 \item{stat}{charachter. One of mean or sd. Only valid when ensemble is TRUE}
 }

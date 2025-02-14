@@ -12,6 +12,8 @@
 </h1>
 
 --------------------------------------------------------------------------------------------------
+Check GitHub issues for known issues with the servers
+--------------------------------------------------------------------------------------------------
 
 
 [**CAVAanalytics**](https://risk-team.github.io/CAVAanalytics/) is an R package offering a consistent framework to load, analyze, calculate indicators, and visualize results for climate and impact models. It also streamlines access to W5E5, ERA5 and CORDEX-CORE models.

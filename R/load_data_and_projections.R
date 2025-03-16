@@ -50,7 +50,7 @@ load_data_and_projections <- function(variable,
                                       domain = NULL,
                                       n.sessions = 6,
                                       method = "eqm",
-                                      window="monthly") {
+                                      window = "monthly") {
   # calculate number of chunks based on xlim and ylim
   if (missing(chunk.size) | missing(season)) {
     cli::cli_abort("chunk.size and season must be specified")
@@ -160,7 +160,7 @@ load_data_and_projections <- function(variable,
               n.sessions = 1,
               duration =  duration,
               method = method,
-              window=window
+              window = window
             )
         )
 

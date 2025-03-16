@@ -2,49 +2,109 @@
 % Please edit documentation in R/plotting.R
 \name{plotting}
 \alias{plotting}
-\title{Visualize results}
+\alias{plotting.CAVAanalytics_projections}
+\alias{plotting.CAVAanalytics_ccs}
+\alias{plotting.CAVAanalytics_observations}
+\alias{plotting.CAVAanalytics_model_biases}
+\title{Plot CAVAanalytics Results}
 \usage{
-plotting(
+plotting(rst, palette, ...)
+
+\method{plotting}{CAVAanalytics_projections}(
   rst,
-  palette,
-  legend_range,
-  plot_titles,
-  ensemble,
-  bins,
-  intervals,
-  alpha,
-  spatiotemporal,
-  temporal,
-  lwd,
-  ...
+  palette = NULL,
+  legend_range = NULL,
+  plot_titles = "default",
+  ensemble = TRUE,
+  bins = FALSE,
+  intervals = NULL,
+  alpha = DEFAULT_ALPHA,
+  stat = "mean",
+  spatiotemporal = FALSE,
+  temporal = FALSE,
+  lwd = DEFAULT_LINE_WIDTH,
+  n.groups = 3
+)
+
+\method{plotting}{CAVAanalytics_ccs}(
+  rst,
+  palette = NULL,
+  legend_range = NULL,
+  plot_titles = "default",
+  ensemble = TRUE,
+  bins = FALSE,
+  intervals = NULL,
+  alpha = DEFAULT_ALPHA,
+  stat = "mean",
+  spatiotemporal = FALSE,
+  temporal = FALSE,
+  lwd = DEFAULT_LINE_WIDTH
+)
+
+\method{plotting}{CAVAanalytics_observations}(
+  rst,
+  palette = NULL,
+  legend_range = NULL,
+  plot_titles = "default",
+  ensemble = FALSE,
+  bins = FALSE,
+  intervals = NULL,
+  alpha = DEFAULT_ALPHA,
+  spatiotemporal = FALSE,
+  temporal = FALSE,
+  lwd = DEFAULT_LINE_WIDTH,
+  n.groups = 3
+)
+
+\method{plotting}{CAVAanalytics_model_biases}(
+  rst,
+  palette = NULL,
+  legend_range = NULL,
+  plot_titles = "default",
+  ensemble = TRUE,
+  bins = FALSE,
+  intervals = NULL,
+  alpha = DEFAULT_ALPHA,
+  temporal = FALSE,
+  spatiotemporal = FALSE,
+  lwd = DEFAULT_LINE_WIDTH
 )
 }
 \arguments{
-\item{rst}{output of one of CAVAanalytics functions, such as projections. rst is of class SpatRaster}
+\item{rst}{Output from CAVAanalytics functions}
 
-\item{palette}{charachter. Color Palette. Default to NULL}
+\item{palette}{Color palette to use. Default is NULL}
 
-\item{legend_range}{numeric. Fix legend limits. Default to NULL}
+\item{...}{Additional arguments passed to specific methods}
 
-\item{plot_titles}{character. Title of the plot legend. Default to default}
+\item{legend_range}{Fix legend limits. Default is NULL}
 
-\item{ensemble}{logical. Whether to visualize the ensemble mean or each individual model. Default to TRUE}
+\item{plot_titles}{Title of the plot legend. Default is "default"}
 
-\item{bins}{logical. Whether to visualize colors as a gradient or in bins. Default to FALSE}
+\item{ensemble}{Whether to visualize ensemble mean or individual models. Default is TRUE}
 
-\item{intervals}{numeric vector. Controlling the number of bins when bins equal TRUE}
+\item{bins}{Whether to visualize colors as gradient or bins. Default is FALSE}
 
-\item{alpha}{numeric. Transparency of colors. Default to NA}
+\item{intervals}{Control number of bins when bins=TRUE. Default is NULL}
 
-\item{spatiotemporal}{logical. Whether computed yearly data should be visualized without spatial and temporal aggregation. Basically, frequencies are visualized}
+\item{alpha}{Transparency of colors. Default is NA}
 
-\item{temporal}{logical. Whether computed yearly data should be visualized temporally after spatial aggregation (median of all pixels)}
+\item{stat}{Statistic to compute ("mean" or "sd"). Default is "mean"}
 
-\item{lwd}{numerical. Width of country boundaries. Default to 0.1}
+\item{spatiotemporal}{Whether to show frequencies without aggregation. Default is FALSE}
+
+\item{temporal}{Whether to show temporal aggregation. Default is FALSE}
+
+\item{lwd}{Width of country boundaries. Default is 0.1}
+
+\item{n.groups}{Number of groups for spatiotemporal plots. Default is 3}
 }
 \value{
-ggplot object
+A ggplot2 object
 }
 \description{
-Automatically plot results from CAVAanalytics main functions
+Generic plotting function for CAVAanalytics outputs
+}
+\details{
+Plot CAVAanalytics Results
 }

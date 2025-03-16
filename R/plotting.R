@@ -1,46 +1,39 @@
-#' Visualize results
+#' Plot CAVAanalytics Results
 #'
-#' Automatically plot results from CAVAanalytics main functions
+#' @title Plot CAVAanalytics Results
+#' @description Generic plotting function for CAVAanalytics outputs
+#' @param rst Output from CAVAanalytics functions
+#' @param palette Color palette to use
+#' @param ... Additional arguments passed to specific methods
+#' @return A ggplot2 object
+#' @importFrom ggplot2 ggplot geom_raster aes scale_fill_gradientn theme_bw theme labs
 #' @export
+plotting <- function(rst, palette, ...) {
+  UseMethod("plotting")
+}
 
-#' @import ggplot2
-#' @param rst output of one of CAVAanalytics functions, such as projections. rst is of class SpatRaster
-#' @param palette charachter. Color Palette. Default to NULL
-#' @param legend_range  numeric. Fix legend limits. Default to NULL
-#' @param plot_titles character. Title of the plot legend. Default to default
-#' @param ensemble logical. Whether to visualize the ensemble mean or each individual model. Default to TRUE
-#' @param bins logical. Whether to visualize colors as a gradient or in bins. Default to FALSE
-#' @param intervals numeric vector. Controlling the number of bins when bins equal TRUE
-#' @param alpha numeric. Transparency of colors. Default to NA
-#' @param spatiotemporal logical. Whether computed yearly data should be visualized without spatial and temporal aggregation. Basically, frequencies are visualized
-#' @param temporal logical. Whether computed yearly data should be visualized temporally after spatial aggregation (median of all pixels)
-#' @param lwd numerical. Width of country boundaries. Default to 0.1
+# Constants --------------------------------------------------
+DEFAULT_COLORS <- c("blue", "cyan", "green", "white", "orange", "red", "black")
+DEFAULT_LINE_WIDTH <- 0.1
+DEFAULT_ALPHA <- NA
+DEFAULT_DATE_BREAKS <- "4 years"
+DEFAULT_DATE_FORMAT <- "%Y"
 
-#' @return ggplot object
-
-plotting <-
-  function(rst,
-           palette,
-           legend_range,
-           plot_titles,
-           ensemble,
-           bins,
-           intervals,
-           alpha,
-           spatiotemporal,
-           temporal,
-           lwd,
-           ...) {
-    UseMethod("plotting")
-  }
-
-
-
-# projections -------------------------------------------------------------
-
-
+#' @rdname plotting
+#' @method plotting CAVAanalytics_projections
+#' @param palette Color palette to use. Default is NULL
+#' @param legend_range Fix legend limits. Default is NULL
+#' @param plot_titles Title of the plot legend. Default is "default"
+#' @param ensemble Whether to visualize ensemble mean or individual models. Default is TRUE
+#' @param bins Whether to visualize colors as gradient or bins. Default is FALSE
+#' @param intervals Control number of bins when bins=TRUE. Default is NULL
+#' @param alpha Transparency of colors. Default is NA
+#' @param stat Statistic to compute ("mean" or "sd"). Default is "mean"
+#' @param spatiotemporal Whether to show frequencies without aggregation. Default is FALSE
+#' @param temporal Whether to show temporal aggregation. Default is FALSE
+#' @param lwd Width of country boundaries. Default is 0.1
+#' @param n.groups Number of groups for spatiotemporal plots. Default is 3
 #' @export
-
 plotting.CAVAanalytics_projections <-
   function(rst,
            palette = NULL,
@@ -49,11 +42,11 @@ plotting.CAVAanalytics_projections <-
            ensemble = TRUE,
            bins = FALSE,
            intervals = NULL,
-           alpha = NA,
+           alpha = DEFAULT_ALPHA,
            stat = "mean",
-           spatiotemporal = F,
-           temporal = F,
-           lwd = 0.1,
+           spatiotemporal = FALSE,
+           temporal = FALSE,
+           lwd = DEFAULT_LINE_WIDTH,
            n.groups = 3) {
     # check -------------------------------------------------------------------
 
@@ -149,8 +142,20 @@ plotting.CAVAanalytics_projections <-
 # climate change signal ---------------------------------------------------
 
 
+#' @rdname plotting
+#' @method plotting CAVAanalytics_ccs
+#' @param palette Color palette to use. Default is NULL
+#' @param legend_range Fix legend limits. Default is NULL
+#' @param plot_titles Title of the plot legend. Default is "default"
+#' @param ensemble Whether to visualize ensemble mean or individual models. Default is TRUE
+#' @param bins Whether to visualize colors as gradient or bins. Default is FALSE
+#' @param intervals Control number of bins when bins=TRUE. Default is NULL
+#' @param alpha Transparency of colors. Default is NA
+#' @param stat Statistic to compute ("mean" or "sd"). Default is "mean"
+#' @param spatiotemporal Whether to show frequencies without aggregation. Default is FALSE
+#' @param temporal Whether to show temporal aggregation. Default is FALSE
+#' @param lwd Width of country boundaries. Default is 0.1
 #' @export
-
 plotting.CAVAanalytics_ccs <-
   function(rst,
            palette = NULL,
@@ -159,11 +164,11 @@ plotting.CAVAanalytics_ccs <-
            ensemble = TRUE,
            bins = FALSE,
            intervals = NULL,
-           alpha = NA,
+           alpha = DEFAULT_ALPHA,
            stat = "mean",
-           spatiotemporal = F,
-           temporal = F,
-           lwd = 0.1) {
+           spatiotemporal = FALSE,
+           temporal = FALSE,
+           lwd = DEFAULT_LINE_WIDTH) {
     # check inputs ------------------------------------------------------------
 
     stopifnot(is.logical(ensemble))
@@ -269,8 +274,20 @@ plotting.CAVAanalytics_ccs <-
 
 # observations ------------------------------------------------------------
 
+#' @rdname plotting
+#' @method plotting CAVAanalytics_observations
+#' @param palette Color palette to use. Default is NULL
+#' @param legend_range Fix legend limits. Default is NULL
+#' @param plot_titles Title of the plot legend. Default is "default"
+#' @param ensemble Whether to visualize ensemble mean or individual models. Default is FALSE
+#' @param bins Whether to visualize colors as gradient or bins. Default is FALSE
+#' @param intervals Control number of bins when bins=TRUE. Default is NULL
+#' @param alpha Transparency of colors. Default is NA
+#' @param spatiotemporal Whether to show frequencies without aggregation. Default is FALSE
+#' @param temporal Whether to show temporal aggregation. Default is FALSE
+#' @param lwd Width of country boundaries. Default is 0.1
+#' @param n.groups Number of groups for spatiotemporal plots. Default is 3
 #' @export
-
 plotting.CAVAanalytics_observations <-
   function(rst,
            palette = NULL,
@@ -279,10 +296,10 @@ plotting.CAVAanalytics_observations <-
            ensemble = FALSE,
            bins = FALSE,
            intervals = NULL,
-           alpha = NA,
-           spatiotemporal = F,
-           temporal = F,
-           lwd = 0.1,
+           alpha = DEFAULT_ALPHA,
+           spatiotemporal = FALSE,
+           temporal = FALSE,
+           lwd = DEFAULT_LINE_WIDTH,
            n.groups = 3) {
     # check inputs ------------------------------------------------------------
 
@@ -412,8 +429,19 @@ plotting.CAVAanalytics_observations <-
 # biases ------------------------------------------------------------------
 
 
+#' @rdname plotting
+#' @method plotting CAVAanalytics_model_biases
+#' @param palette Color palette to use. Default is NULL
+#' @param legend_range Fix legend limits. Default is NULL
+#' @param plot_titles Title of the plot legend. Default is "default"
+#' @param ensemble Whether to visualize ensemble mean or individual models. Default is TRUE
+#' @param bins Whether to visualize colors as gradient or bins. Default is FALSE
+#' @param intervals Control number of bins when bins=TRUE. Default is NULL
+#' @param alpha Transparency of colors. Default is NA
+#' @param temporal Whether to show temporal aggregation. Default is FALSE
+#' @param spatiotemporal Whether to show frequencies without aggregation. Default is FALSE
+#' @param lwd Width of country boundaries. Default is 0.1
 #' @export
-
 plotting.CAVAanalytics_model_biases <-
   function(rst,
            palette = NULL,
@@ -422,10 +450,10 @@ plotting.CAVAanalytics_model_biases <-
            ensemble = TRUE,
            bins = FALSE,
            intervals = NULL,
-           alpha = NA,
-           temporal = F,
-           spatiotemporal = F,
-           lwd = 0.1) {
+           alpha = DEFAULT_ALPHA,
+           temporal = FALSE,
+           spatiotemporal = FALSE,
+           lwd = DEFAULT_LINE_WIDTH) {
     # check -------------------------------------------------------------------
     if (spatiotemporal)
       cli::cli_abort("Not meaningful for model biases")
@@ -473,7 +501,7 @@ plotting.CAVAanalytics_model_biases <-
       # Set default colors for legend
       colors <-
         if (is.null(palette))
-          c("blue", "cyan", "green", "white", "orange", "red", "black")
+          DEFAULT_COLORS
       else
         palette
 
@@ -532,54 +560,11 @@ plotting.CAVAanalytics_model_biases <-
                             }
 
       p <- ggplot2::ggplot() +
-        ggplot2::geom_sf(
-          fill = 'white',
-          color = "black",
-          data = countries,
-          alpha = 0.5,
-          lwd = lwd
-        ) +
+        create_base_map(countries, lwd) +
         ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
                              data = rs_df,
                              alpha = alpha) +
-        ggplot2::geom_sf(
-          fill = NA,
-          color = "black",
-          data = countries,
-          lwd = lwd
-        ) +
-        {
-          if (!bins) {
-            ggplot2::scale_fill_gradientn(
-              colors = colors,
-              limits = legend_range,
-              na.value = "transparent",
-              n.breaks = 10,
-              guide = ggplot2::guide_colourbar(
-                ticks.colour = "black",
-                ticks.linewidth = 1,
-                title.position = "top",
-                title.hjust = 0.5
-              )
-            )
-          } else {
-            ggplot2::scale_fill_stepsn(
-              colors = colors,
-              limits = legend_range,
-              na.value = "transparent",
-              breaks = if (is.null(intervals))
-                ggplot2::waiver()
-              else
-                intervals,
-              guide = ggplot2::guide_colourbar(
-                ticks.colour = "black",
-                ticks.linewidth = 1,
-                title.position = "top",
-                title.hjust = 0.5
-              )
-            )
-          }
-        } +
+        create_color_scale(colors, legend_range, bins, intervals) +
         ggplot2::coord_sf(
           xlim = c(range(rs_df$x)[[1]] - 0.5, range(rs_df$x)[[2]] + 0.5),
           ylim = c(range(rs_df$y)[[1]] - 0.5, range(rs_df$y)[[2]] + 0.5),
@@ -594,39 +579,7 @@ plotting.CAVAanalytics_model_biases <-
           }
         } +
         ggplot2::labs(fill = plot_titles, x = "", y = "") +
-        ggplot2::theme_bw() +
-        ggplot2::theme(
-          plot.background = ggplot2::element_blank(),
-          panel.background = ggplot2::element_blank(),
-          panel.border = ggplot2::element_blank(),
-          panel.grid.major = ggplot2::element_blank(),
-          panel.grid.minor = ggplot2::element_blank(),
-          axis.text.x = ggplot2::element_blank(),
-          axis.text.y = ggplot2::element_blank(),
-          axis.ticks = ggplot2::element_blank(),
-          axis.title = ggplot2::element_blank(),
-          legend.position = if (ensemble)
-            "right"
-          else
-            "bottom",
-          legend.direction = if (ensemble)
-            "vertical"
-          else
-            "horizontal",
-          legend.key.height = if (ensemble)
-            ggplot2::unit(1.2, 'cm')
-          else
-            ggplot2::unit(0.3, 'cm'),
-          legend.key.width = if (ensemble)
-            ggplot2::unit(0.3, 'cm')
-          else
-            ggplot2::unit(2, 'cm'),
-          legend.box.spacing = ggplot2::unit(0, "pt"),
-          legend.text =  if (ensemble)
-            NULL
-          else
-            ggplot2::element_text(angle = 45, hjust = 1)
-        )
+        create_common_theme(ensemble)
 
       cli::cli_progress_done()
 
@@ -635,7 +588,7 @@ plotting.CAVAanalytics_model_biases <-
     } else {
       # to look at temporal trends
       palette <- if (is.null(palette))
-        "black"
+        DEFAULT_COLORS[1]
       else
         palette
       if (is.null(rst))
@@ -669,7 +622,7 @@ plotting.CAVAanalytics_model_biases <-
             alpha = 0.1,
             show.legend = F
           ) +
-          ggplot2::scale_x_date(date_breaks = "4 years", date_labels = "%Y") +
+          ggplot2::scale_x_date(date_breaks = DEFAULT_DATE_BREAKS, date_labels = DEFAULT_DATE_FORMAT) +
           ggplot2::theme_bw() +
           ggplot2::theme(
             legend.position = "bottom",
@@ -695,7 +648,7 @@ plotting.CAVAanalytics_model_biases <-
           ggplot2::geom_line(ggplot2::aes(y = value,
                                           x = date),
                              alpha = 0.5) +
-          ggplot2::scale_x_date(date_breaks = "4 years", date_labels = "%Y") +
+          ggplot2::scale_x_date(date_breaks = DEFAULT_DATE_BREAKS, date_labels = DEFAULT_DATE_FORMAT) +
           ggplot2::facet_grid(season ~ Var1) +
           ggplot2::theme_bw() +
           ggplot2::labs(x = "Year", y = plot_titles) +
@@ -719,3 +672,130 @@ plotting.CAVAanalytics_model_biases <-
 
 
   }
+
+# Helper functions --------------------------------------------------
+
+#' Create base map with country boundaries
+#' @noRd
+create_base_map <- function(countries, lwd = 0.1) {
+  list(
+    ggplot2::geom_sf(
+      fill = 'white',
+      color = "black", 
+      data = countries,
+      alpha = 0.5,
+      lwd = lwd
+    ),
+    ggplot2::geom_sf(
+      fill = NA,
+      color = "black",
+      data = countries,
+      lwd = lwd
+    )
+  )
+}
+
+#' Create common theme elements
+#' @noRd 
+create_common_theme <- function(ensemble = TRUE) {
+  ggplot2::theme_bw() +
+    ggplot2::theme(
+      plot.background = ggplot2::element_blank(),
+      panel.background = ggplot2::element_blank(),
+      panel.border = ggplot2::element_blank(),
+      panel.grid.major = ggplot2::element_blank(),
+      panel.grid.minor = ggplot2::element_blank(),
+      axis.text.x = ggplot2::element_blank(),
+      axis.text.y = ggplot2::element_blank(),
+      axis.ticks = ggplot2::element_blank(),
+      axis.title = ggplot2::element_blank(),
+      legend.position = if (ensemble) "right" else "bottom",
+      legend.direction = if (ensemble) "vertical" else "horizontal",
+      legend.key.height = if (ensemble) ggplot2::unit(1.2, 'cm') else ggplot2::unit(0.3, 'cm'),
+      legend.key.width = if (ensemble) ggplot2::unit(0.3, 'cm') else ggplot2::unit(2, 'cm'),
+      legend.box.spacing = ggplot2::unit(0, "pt"),
+      legend.text = if (ensemble) NULL else ggplot2::element_text(angle = 45, hjust = 1)
+    )
+}
+
+#' Create color scale
+#' @noRd
+create_color_scale <- function(colors = DEFAULT_COLORS, legend_range, bins = FALSE, intervals = NULL) {
+  if (!bins) {
+    ggplot2::scale_fill_gradientn(
+      colors = colors,
+      limits = legend_range,
+      na.value = "transparent",
+      n.breaks = 10,
+      guide = ggplot2::guide_colourbar(
+        ticks.colour = "black",
+        ticks.linewidth = 1,
+        title.position = "top",
+        title.hjust = 0.5
+      )
+    )
+  } else {
+    ggplot2::scale_fill_stepsn(
+      colors = colors,
+      limits = legend_range,
+      na.value = "transparent", 
+      breaks = if (is.null(intervals)) ggplot2::waiver() else intervals,
+      guide = ggplot2::guide_colourbar(
+        ticks.colour = "black",
+        ticks.linewidth = 1,
+        title.position = "top",
+        title.hjust = 0.5
+      )
+    )
+  }
+}
+
+#' Create spatial plot
+#' @noRd
+create_spatial_plot <- function(data, ensemble, colors, legend_range, bins, intervals, alpha, plot_titles, lwd) {
+  countries <- rnaturalearth::ne_countries(scale = "large", returnclass = "sf")
+  
+  ggplot2::ggplot() +
+    create_base_map(countries, lwd) +
+    ggplot2::geom_raster(
+      ggplot2::aes(x = x, y = y, fill = value),
+      data = data,
+      alpha = alpha
+    ) +
+    create_color_scale(colors, legend_range, bins, intervals) +
+    create_common_theme(ensemble) +
+    ggplot2::labs(fill = plot_titles)
+}
+
+#' Create temporal plot 
+#' @noRd
+create_temporal_plot <- function(data, ensemble, plot_titles, palette, legend_range) {
+  base_plot <- ggplot2::ggplot(data) +
+    ggplot2::geom_line(ggplot2::aes(x = date, y = value), 
+                       color = if(is.null(palette)) DEFAULT_COLORS[1] else palette) +
+    ggplot2::scale_x_date(date_breaks = DEFAULT_DATE_BREAKS, 
+                         date_labels = DEFAULT_DATE_FORMAT) +
+    ggplot2::theme_bw() +
+    ggplot2::labs(x = "Year", y = plot_titles)
+    
+  if (!is.null(legend_range)) {
+    base_plot + ggplot2::scale_y_continuous(limits = legend_range)
+  } else {
+    base_plot
+  }
+}
+
+#' Validate common plotting parameters
+#' @noRd
+validate_plot_params <- function(ensemble, bins, spatiotemporal, temporal) {
+  stopifnot(
+    is.logical(ensemble),
+    is.logical(bins),
+    is.logical(spatiotemporal),
+    is.logical(temporal)
+  )
+  
+  if (spatiotemporal && temporal) {
+    cli::cli_abort("spatiotemporal and temporal cannot be both equal TRUE")
+  }
+}

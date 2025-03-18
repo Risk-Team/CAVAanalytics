@@ -26,7 +26,7 @@
 
 **CAVAanalytics** addresses these issues by:
 
-- Providing streamlined access to CORDEX-CORE models for the whole world. This means that you don't need to download netCDF files, data requests are sent to THREDDS servers and you retrieve only the information you asked, directly in memory
+- Providing streamlined access to CORDEX-CORE models for the whole world. This means that you don't need to download netCDF files, data requests are sent to THREDDS servers with an openDAP protocol and you retrieve only the information you asked, directly in memory
 - Providing a framework to work with multiple models so that indicators calculation and visualization of results is extremely easy
 
 
@@ -93,16 +93,7 @@ remotes::install_github(c("SantanderMetGroup/loadeR.java",
 remotes::install_github("Risk-Team/CAVAanalytics")
 ```
 
-#### 2) JupyterHub
-
-You can request access to the University of Cantabria JupyterHub, where
-CAVAanalytics is already installed. This will give you access to
-computational resources and you would be able to perform your climate
-analysis using a Jupyter Notebook environment. When using JupyterHub you will be using data physically stored at the Cantabria server. If you would like to
-access these resources, you are welcome to contact
-<riccardo.soldan@fao.org> or <Hideki.Kanamaru@fao.org> stating your intended usage type.
-
-#### 3) Docker
+#### 2) Docker
 
 The Docker image is available at Docker.io, rso9192/cava. This docker image is built on top of [rocker/rstudio](https://davetang.org/muse/2021/04/24/running-rstudio-server-with-docker/)
 
@@ -192,28 +183,9 @@ Remember to replace **/path/to/local/directory** with the local directory on you
 ### Python
 **Firstly, why Python?** 
 
-While CAVAanalytics was built on top of R packages, such as `climate4R` and `tidyverse` to allow users to focus on visualizing results, R does not leverage the same level of "computational efficiency" as Python. This is mainly because Python offers out-of-memory computation for arrays thanks to the integration between `xarray` and `dask`. R does not have this feature for arrays, which is typically the way in which climate data is used. This means that CAVAanalytics largely works on memory (RAM), effectively limiting the geographical area in which analyses can be performed ([check out the memory-efficient functions available from CAVAanalytics though](https://risk-team.github.io/CAVAanalytics/reference/index.html)). CAVAanalytics would not allow users to perform analyses for entire CORDEX domains very efficiently because it would need a lot of RAM. However, CAVAanalytics was mainly developed for country-level assessment and never conceived to be used for large-scale climate data analyses. This is where Python comes in. The regridded CORDEX-CORE models and all observational datasets used by CAVAanalytics can also be accessed using Python. **The benefit of using our data is that we provide one URL per model for all supported variables and that we have already regridded CORDEX-CORE models, making retrieving the data extremely easy**. See below an example:
+While CAVAanalytics was developed using R packages like `climate4R` and `tidyverse` to prioritize result visualization, R lacks the computational efficiency of Python, particularly for handling large climate datasets. Python supports out-of-memory parallel computation for arrays through the integration of`xarray` and `dask`, a feature absent in R. Consequently, CAVAanalytics relies heavily on in-memory (RAM) processing, which limits its ability to efficiently analyze large-scale geographical areas, such as entire CORDEX domains. This limitation arises because such analyses demand substantial RAM resources. However, CAVAanalytics was primarily designed for country-level assessments rather than extensive climate data analyses. ([check out the memory-efficient functions available from CAVAanalytics though](https://risk-team.github.io/CAVAanalytics/reference/index.html))
 
-```
-import xarray as xr
-
-# URL to ERA5 data
-obs_url =  "https://hub.ipcc.ifca.es/thredds/dodsC/fao/observations/ERA5/0.25/ERA5_025.ncml"
-# URL to W5E5 V2 data
-obs_url =    "https://hub.ipcc.ifca.es/thredds/dodsC/fao/observations/aggregations/W5E5/v2.0/w5e5_v2.0.ncml"
-# Open dataset
-ds = xr.open_dataset(obs_url)
-```
-
-The list of available CORDEX-CORE models can be accessed with:
-
-```
-import pandas as pd
-
-csv_url = "https://hub.ipcc.ifca.es/thredds/fileServer/inventories/cava.csv"
-data = pd.read_csv(csv_url)
-
-```
+For users interested in accessing gridded climate projections more efficiently, [cavapy](https://github.com/Risk-Team/cavapy) is recommended. Cavapy focuses on data retrieval in Python, whereas CAVAanalytics offers a broader suite of tools for processing and visualization.
 
 ### Contributions
 

@@ -26,6 +26,7 @@
 #' @param percentage logical, whether the climate change signal is to be calculated as relative changes (in percentage). Default to FALSE
 #' @param method character, bias-correction method to use. One of eqm (Empirical Quantile Mapping), qdm (Quantile Delta Mapping) or scaling. Default to eqm. When using the scaling method, the multiplicative approach is automatically applied only when the variable is precipitation.
 #' @param window character, one of none or monthly. Whether bias correction should be applied on a monthly or annual basis. Monthly is the preferred option when performing bias-correction using daily data
+#' @param verbose logical, whether to print progress messages
 #' @importFrom magrittr %>%
 #' @return list with SpatRaster. To explore the output run attributes(output)
 #' @export
@@ -55,7 +56,8 @@ load_data_and_climate_change_signal <-
            n.sessions = 6,
            method = "eqm",
            percentage = F,
-           window="monthly") {
+           window="monthly",
+           verbose = TRUE) {
     # calculate number of chunks based on xlim and ylim
     if (missing(chunk.size) | missing(season)) {
       cli::cli_abort("chunk.size and season must be specified")
@@ -65,8 +67,6 @@ load_data_and_climate_change_signal <-
         "xlim and ylim need to be specified to load data in spatial chunks. The country argument is just used for cropping the final raster"
       )
     }
-
-
 
     country_shp = if (!is.null(country) &
                       !inherits(country, "sf")) {
@@ -139,8 +139,8 @@ load_data_and_climate_change_signal <-
           " ylim=",
           paste(ylim_chunk, collapse = ",")
         ))
-        # load data for current chunk
-        proj_chunk <-
+        # load data for current chunk with error handling
+        proj_chunk <- tryCatch({
           suppressMessages(
             load_data(
               country = NULL,
@@ -155,9 +155,7 @@ load_data_and_climate_change_signal <-
               aggr.m = aggr.m,
               buffer = 0,
               n.sessions = n.sessions
-            )  %>%
-
-              # do ccs for current chunk
+            ) %>%
               climate_change_signal(
                 .,
                 season = season,
@@ -165,16 +163,21 @@ load_data_and_climate_change_signal <-
                 uppert = uppert,
                 lowert = lowert,
                 consecutive = consecutive,
-                duration =  duration,
+                duration = duration,
                 frequency = frequency,
-                threshold =  threshold,
+                threshold = threshold,
                 n.sessions = 1,
                 method = method,
                 percentage = percentage,
-                window=window
+                window = window
               )
           )
-
+        }, error = function(e) {
+          cli::cli_alert_danger(paste("Error in chunk", i, j, ":", e$message))
+          return(NULL)
+        })
+        
+        if (is.null(proj_chunk)) next
 
         # add chunk to output list
         out_list[[paste0("chunk_", i, "_", j)]] <- proj_chunk
@@ -194,35 +197,53 @@ load_data_and_climate_change_signal <-
       dplyr::summarise(value = median(value, na.rm = T))
 
     merge_rasters <- function(rst_list) {
+      if (length(rst_list) == 0) {
+        cli::cli_abort("Empty raster list provided")
+      }
+      
       # Determine the resolution of each raster in the list
-      resolutions <- sapply(rst_list, function(r)
-        terra::res(r))
-
+      resolutions <- tryCatch({
+        sapply(rst_list, terra::res)
+      }, error = function(e) {
+        cli::cli_abort(paste("Error getting raster resolutions:", e$message))
+      })
+      
       # Check if all rasters have the same resolution
       if (length(unique(resolutions)) > 1) {
-        cli::cli_alert_warning("Interpolation was required to merge the rasters.")
-        # If resolutions differ, determine the smallest (finest) resolution among all rasters
+        cli::cli_alert_warning(sprintf(
+          "Rasters have different resolutions: %s. Resampling to %s",
+          paste(unique(resolutions), collapse = ", "),
+          max(resolutions)
+        ))
+        
         common_res <- max(resolutions)
-
+        
         # Resample all rasters to the common resolution
         rst_list <- lapply(rst_list, function(r) {
-          terra::resample(
-            r,
-            terra::rast(
-              terra::ext(r),
-              resolution = common_res,
-              crs = terra::crs(r)
-            ),
-            method = "mode"
-          )
+          tryCatch({
+            terra::resample(
+              r,
+              terra::rast(
+                terra::ext(r),
+                resolution = common_res,
+                crs = terra::crs(r)
+              ),
+              method = "mode"
+            )
+          }, error = function(e) {
+            cli::cli_abort(paste("Error resampling raster:", e$message))
+          })
         })
       }
-
-      # Merge rasters
-      merged_raster <-
-        Reduce(function(x, y)
-          terra::merge(x, y), rst_list)
-
+      
+      # Merge rasters with progress indication
+      cli::cli_alert_info("Merging...")
+      merged_raster <- tryCatch({
+        Reduce(function(x, y) terra::merge(x, y), rst_list)
+      }, error = function(e) {
+        cli::cli_abort(paste("Error merging rasters:", e$message))
+      })
+      
       # Set names from the first raster in the list
       names <- names(rst_list[[1]])
       setNames(merged_raster, names)
@@ -234,6 +255,10 @@ load_data_and_climate_change_signal <-
     rasters_sd <- merge_rasters(rst_sd)
     rasters_mbrs <- merge_rasters(rst_mbrs)
     rasters_agree <- merge_rasters(rst_agree)
+
+    end_time <- Sys.time()
+    progress_report(sprintf("Total processing time: %.2f minutes", 
+                           as.numeric(difftime(end_time, start_time, units = "mins"))))
 
     invisible(structure(
       list(

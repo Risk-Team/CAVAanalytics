@@ -23,12 +23,11 @@ load_data_hub(
 \arguments{
 \item{database}{character, indicating the database of interest (default to CORDEX-CORE).}
 
-\item{country}{character, in English, indicating the country of interest or an object of class sf. To select a bounding box,
-set country to NULL and define arguments xlim and ylim}
+\item{country}{character, in English, indicating the country of interest or an object of class sf.}
 
 \item{variable}{character indicating the variable name}
 
-\item{xlim}{numeric of length = 2, with minimum and maximum longitude coordinates, in decimal degrees, of the bounding box of interest}
+\item{xlim}{numeric of length = 2, with minimum and maximum longitude coordinates}
 
 \item{ylim}{same as xlim, but for the selection of the latitudinal range}
 
@@ -36,17 +35,17 @@ set country to NULL and define arguments xlim and ylim}
 
 \item{years.proj}{numeric, specify year range for projections}
 
-\item{path.to.obs}{character, default to NULL. To automatically load W5E5 or ERA5, specify W5E5 or ERA5.}
+\item{path.to.obs}{character, default to NULL. To automatically load W5E5 or ERA5}
 
-\item{buffer}{numeric, default is zero.}
+\item{buffer}{numeric, default is zero}
 
-\item{domain}{charachter, specify the CORDEX-CORE domain (e.g AFR-22, EAS-22).}
+\item{domain}{character, specify the CORDEX-CORE domain}
 
 \item{aggr.m}{character, monthly aggregation. One of none, mean or sum}
 
-\item{n.sessions}{numeric, number of sessions to use in parallel processing. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary}
+\item{n.sessions}{numeric, number of sessions for parallel processing}
 
-\item{years.obs}{NULL or numeric, specify year range for observation. Specifying years.obs will overwrite years.hist for observations}
+\item{years.obs}{NULL or numeric, specify year range for observation}
 }
 \value{
 list of length 2. List[[1]] contains a tibble with list columns and List[[2]] the bbox

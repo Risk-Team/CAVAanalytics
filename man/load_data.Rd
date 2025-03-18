@@ -37,7 +37,7 @@ set country to NULL and define arguments xlim and ylim}
 
 \item{years.proj}{NULL or numeric, specify year range for projections}
 
-\item{path.to.obs}{character, default to NULL. To automatically load W5E5 or ERA5, specify W5E5 or ERA5. Otherwise, indicate the absolute path to the directory containing another observational dataset}
+\item{path.to.obs}{character, default to NULL. To automatically load W5E5 or ERA5, specify W5E5 or ERA5. Otherwise, indicate the observational dataset path to be used}
 
 \item{buffer}{numeric, default is zero.}
 

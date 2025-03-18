@@ -50,7 +50,8 @@ load_data_and_projections <- function(variable,
                                       domain = NULL,
                                       n.sessions = 6,
                                       method = "eqm",
-                                      window = "monthly") {
+                                      window = "monthly",
+                                      verbose = TRUE) {
   # calculate number of chunks based on xlim and ylim
   if (missing(chunk.size) | missing(season)) {
     cli::cli_abort("chunk.size and season must be specified")
@@ -109,29 +110,31 @@ load_data_and_projections <- function(variable,
   if (y_chunks[length(y_chunks)] < lat_range[2])
     y_chunks[length(y_chunks) + 1] = lat_range[2]
   # create empty list to store output
-  out_list <- list()
+  out_list <- vector("list", (length(x_chunks) - 1) * (length(y_chunks) - 1))
+  chunk_counter <- 1
 
-  # loop over chunks
+  # loop over chunks with error handling
   for (i in 1:(length(x_chunks) - 1)) {
     for (j in 1:(length(y_chunks) - 1)) {
-      # set xlim and ylim for current chunk
       xlim_chunk <- c(x_chunks[i] - overlap, x_chunks[i + 1])
       ylim_chunk <- c(y_chunks[j] - overlap, y_chunks[j + 1])
-      cli::cli_progress_step(paste(
-        paste0(
-          "Loading data and applying projections function to spatial CHUNK_",
-          i,
-          "_",
-          j
-        ),
-        ". Coordinates ",
-        "xlim=",
-        paste(xlim_chunk, collapse = ","),
-        " ylim=",
-        paste(ylim_chunk, collapse = ",")
-      ))
-      # load data for current chunk
-      proj_chunk <-
+      
+      if (verbose) {
+        cli::cli_alert_info(sprintf(
+          "Processing chunk %d/%d [%d,%d] - Coordinates: xlim=[%.2f,%.2f], ylim=[%.2f,%.2f]", 
+          chunk_counter, 
+          (length(x_chunks) - 1) * (length(y_chunks) - 1), 
+          i, 
+          j,
+          xlim_chunk[1],
+          xlim_chunk[2],
+          ylim_chunk[1],
+          ylim_chunk[2]
+        ))
+      }
+      
+      # Process chunk with error handling
+      proj_chunk <- tryCatch({
         suppressMessages(
           load_data(
             country = NULL,
@@ -146,9 +149,7 @@ load_data_and_projections <- function(variable,
             aggr.m = aggr.m,
             buffer = 0,
             n.sessions = n.sessions
-          )  %>%
-
-            # do projections for current chunk
+          ) %>%
             projections(
               .,
               bias.correction = bias.correction,
@@ -158,19 +159,21 @@ load_data_and_projections <- function(variable,
               consecutive = consecutive,
               frequency = frequency,
               n.sessions = 1,
-              duration =  duration,
+              duration = duration,
               method = method,
               window = window
             )
         )
-
-
-      # add chunk to output list
-      out_list[[paste0("chunk_", i, "_", j)]] <- proj_chunk
-      cli::cli_process_done()
-
+      }, error = function(e) {
+        cli::cli_alert_danger(sprintf("Error in chunk [%d,%d]: %s", i, j, e$message))
+        return(NULL)
+      })
+      
+      if (!is.null(proj_chunk)) {
+        out_list[[chunk_counter]] <- proj_chunk
+        chunk_counter <- chunk_counter + 1
+      }
     }
-
   }
 
   cli::cli_progress_step("Merging rasters")
@@ -185,38 +188,50 @@ load_data_and_projections <- function(variable,
   # Merge the extracted rasters using `Reduce` and set their names
 
   merge_rasters <- function(rst_list) {
+    if (length(rst_list) == 0) {
+      cli::cli_abort("Empty raster list provided")
+    }
+    
+    # Remove NULL entries if any
+    rst_list <- Filter(Negate(is.null), rst_list)
+    
     # Determine the resolution of each raster in the list
-    resolutions <- sapply(rst_list, function(r)
-      terra::res(r))
-
+    resolutions <- tryCatch({
+      sapply(rst_list, terra::res)
+    }, error = function(e) {
+      cli::cli_abort(paste("Error getting raster resolutions:", e$message))
+    })
+    
     # Check if all rasters have the same resolution
     if (length(unique(resolutions)) > 1) {
-      cli::cli_alert_warning("Interpolation was required to merge the rasters.")
-      # If resolutions differ, determine the smallest (finest) resolution among all rasters
+      cli::cli_alert_warning(sprintf(
+        "Rasters have different resolutions: %s. Resampling to %s",
+        paste(unique(resolutions), collapse = ", "),
+        max(resolutions)
+      ))
+      
       common_res <- max(resolutions)
-
-      # Resample all rasters to the common resolution
       rst_list <- lapply(rst_list, function(r) {
-        terra::resample(
-          r,
-          terra::rast(
-            terra::ext(r),
-            resolution = common_res,
-            crs = terra::crs(r)
-          ),
-          method = "mode"
-        )
+        tryCatch({
+          terra::resample(
+            r,
+            terra::rast(terra::ext(r), resolution = common_res, crs = terra::crs(r)),
+            method = "mode"
+          )
+        }, error = function(e) {
+          cli::cli_abort(paste("Error resampling raster:", e$message))
+        })
       })
     }
-
-    # Merge rasters
-    merged_raster <-
-      Reduce(function(x, y)
-        terra::merge(x, y), rst_list)
-
-    # Set names from the first raster in the list
-    names <- names(rst_list[[1]])
-    setNames(merged_raster, names)
+    
+    if (verbose) cli::cli_alert_info("Merging rasters...")
+    merged_raster <- tryCatch({
+      Reduce(function(x, y) terra::merge(x, y), rst_list)
+    }, error = function(e) {
+      cli::cli_abort(paste("Error merging rasters:", e$message))
+    })
+    
+    setNames(merged_raster, names(rst_list[[1]]))
   }
 
 
@@ -226,21 +241,16 @@ load_data_and_projections <- function(variable,
   rasters_sd <- merge_rasters(rst_sd)
   rasters_mbrs <- merge_rasters(rst_mbrs)
 
-
-  invisible(structure(
-    list(
-      rasters_mean %>% terra::crop(., country_shp) %>% terra::mask(., country_shp),
-      rasters_sd %>% terra::crop(., country_shp) %>% terra::mask(., country_shp),
-      rasters_mbrs %>% terra::crop(., country_shp) %>% terra::mask(., country_shp),
-      df_temp
-    ),
-    class = "CAVAanalytics_projections",
-    components = list(
-      "SpatRaster for ensemble mean",
-      "SpatRaster for ensemble sd",
-      "SpatRaster for individual members",
-      "dataframe for annually aggregated data"
-    )
-  ))
-
+  # Crop and mask rasters
+  rasters_mean <- terra::crop(rasters_mean, country_shp) %>% terra::mask(., country_shp)
+  rasters_sd <- terra::crop(rasters_sd, country_shp) %>% terra::mask(., country_shp)
+  rasters_mbrs <- terra::crop(rasters_mbrs, country_shp) %>% terra::mask(., country_shp)
+  
+  # Use your constructor with the correct argument names
+  new_CAVAanalytics_projections(
+    ensemble_mean = rasters_mean,
+    ensemble_sd = rasters_sd,
+    individual_members = rasters_mbrs,
+    annual_data = df_temp
+  )
 }

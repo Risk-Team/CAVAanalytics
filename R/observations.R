@@ -76,32 +76,18 @@ observations <- function(data,
   })
 
   if (!trends) {
-    invisible(structure(
-      list(terra::rast(lapply(
-        data_list, `[[`, 1
-      )), do.call(rbind, lapply(
-        data_list, `[[`, 2
-      ))),
-      class = "CAVAanalytics_observations",
-      components = list(
-        "SpatRaster for observation mean",
-        "dataframe for annually aggregated data"
-      )
+    invisible(new_CAVAanalytics_observations(
+      spatraster_data = terra::rast(lapply(data_list, `[[`, 1)),
+      annual_data = do.call(rbind, lapply(data_list, `[[`, 2)),
+      trends = FALSE
     ))
   } else {
     # when linear regression is applied
-    invisible(structure(
-      list(
-        terra::rast(lapply(data_list, `[[`, 1)),
-        terra::rast(lapply(data_list, `[[`, 2)),
-        do.call(rbind, lapply(data_list, `[[`, 3))
-      ),
-      class = "CAVAanalytics_observations",
-      components = list(
-        "SpatRaster for trends coefficients",
-        "SpatRaster for trends p.values",
-        "dataframe for annually aggregated data"
-      )
+    invisible(new_CAVAanalytics_observations(
+      spatraster_data = terra::rast(lapply(data_list, `[[`, 1)),
+      pvalues = terra::rast(lapply(data_list, `[[`, 2)),
+      annual_data = do.call(rbind, lapply(data_list, `[[`, 3)),
+      trends = TRUE
     ))
   }
 }

@@ -108,19 +108,10 @@ model_biases <- function(data,
     return(data_list)
   })
 
-  invisible(structure(
-    list(
-      terra::rast(lapply(data_list, `[[`, 1)),
-      terra::rast(lapply(data_list, `[[`, 2)),
-      do.call(rbind, lapply(data_list, `[[`, 3))
-    ),
-    class = "CAVAanalytics_model_biases",
-    components = list(
-      "SpatRaster for ensemble biases",
-      "SpatRaster for model biases",
-      "data frame for temporal biases"
-    )
+  invisible(new_CAVAanalytics_model_biases(
+    terra::rast(lapply(data_list, `[[`, 1)),
+    terra::rast(lapply(data_list, `[[`, 2)),
+    do.call(rbind, lapply(data_list, `[[`, 3))
   ))
 }
-
 

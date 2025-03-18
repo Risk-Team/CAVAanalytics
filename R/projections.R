@@ -84,21 +84,13 @@ projections <- function(data,
     return(data_list)
   })
 
-  invisible(structure(
-    list(
-      terra::rast(lapply(data_list, `[[`, 1)),
-      terra::rast(lapply(data_list, `[[`, 2)),
-      terra::rast(lapply(data_list, `[[`, 3)),
-      do.call(rbind, lapply(data_list, `[[`, 4))
-    ),
-    class = "CAVAanalytics_projections",
-    components = list(
-      "SpatRaster for ensemble mean",
-      "SpatRaster for ensemble sd",
-      "SpatRaster for individual members",
-      "dataframe for annually aggregated data"
-    )
-  ))
+  new_CAVAanalytics_projections(
+    terra::rast(lapply(data_list, `[[`, 1)),
+    terra::rast(lapply(data_list, `[[`, 2)),
+    terra::rast(lapply(data_list, `[[`, 3)),
+    do.call(rbind, lapply(data_list, `[[`, 4))
+  )
 }
+
 
 

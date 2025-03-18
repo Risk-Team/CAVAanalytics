@@ -32,7 +32,7 @@ Imports:
     RColorBrewer,
     tidyr,
     ggh4x,
-    mvabund,
+    trend,
     reshape2,
     loadeR,
     patchwork,

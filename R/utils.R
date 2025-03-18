@@ -1,12 +1,4 @@
 # Loading model paths ------------------------------------------------------
-
-
-#' Generic function for loading model paths
-#' @noRd
-load_model_paths <- function(...) {
-  UseMethod("load_model_paths")
-}
-
 #' Load model paths from thredds
 #' @noRd
 load_model_paths.thredds <- function(domain, years.hist, years.proj) {
@@ -14,7 +6,7 @@ load_model_paths.thredds <- function(domain, years.hist, years.proj) {
   csv_url <- "https://hub.ipcc.ifca.es/thredds/fileServer/inventories/cava.csv"
   data <- tryCatch({
     read.csv(url(csv_url)) %>%
-      dplyr::filter(stringr::str_detect(activity, "CORDEX"), domain == domain) %>%
+      dplyr::filter(stringr::str_detect(activity, "CORDEX"),  domain %in% !!domain) %>%
       dplyr::group_by(experiment) %>%
       dplyr::summarise(path = list(as.character(location))) %>%
       {
@@ -29,7 +21,7 @@ load_model_paths.thredds <- function(domain, years.hist, years.proj) {
       dplyr::select(path)
   }, error = function(e) {
     cli::cli_abort(
-      c("x" = "Failed to retrieve remote data from the specified URL. This issue may be temporary due to network instability or server availability. If the problem continues, please report it by opening an issue on our GitHub repository.")
+      c("x" = "Error establishing connection with servers. If the issue persist, flag it on our GitHub repo at https://github.com/Risk-Team/CAVAanalytics/issues")
     )
   })
   return(data[[1]])
@@ -65,13 +57,6 @@ load_model_paths.local <- function(path.to.data) {
 }
 
 
-
-#' Generic function for loading observation paths
-#' @noRd
-load_obs_paths <- function(path.to.obs) {
-  UseMethod("load_obs_paths")
-}
-
 #' Load observation paths from thredds
 #' @noRd
 load_obs_paths.thredds <- function(path.to.obs) {
@@ -98,13 +83,6 @@ load_obs_paths.hub <- function(path.to.obs) {
 
 
 # Checking inputs ---------------------------------------------------------
-
-
-#' Check inputs for different analysis types
-#' @noRd
-check_inputs <- function(...) {
-  UseMethod("check_inputs")
-}
 
 #' Check inputs for thredds data loading
 #' @noRd
@@ -591,7 +569,7 @@ check_inputs.model_biases <- function(data,
 
 #' Check inputs for observation
 #' @noRd
-check_inputs.observation <-  function(data,
+check_inputs.observations <-  function(data,
                                       uppert,
                                       lowert,
                                       consecutive,
@@ -1946,75 +1924,66 @@ agreement = function(array3d, threshold) {
 #' @noRd
 
 models_trends <- function(c4R, observation = F) {
+  # Add trend package to imports if not already present
   if (length(dim(c4R$Data)) > 2) {
     # in cases in which there is a spatial dimension
-    cli::cli_progress_step(
-      paste0(
-        " Applying linear regression. P-value calculated using 999 iterations via residual (without replacement) resampling."
-      )
-    )
-    # single model
+    cli::cli_progress_step(" Calculating Sen's slope and Mann-Kendall test")
 
     if (dim(c4R$Data)[ifelse(observation, 1, 2)] > 100)
       cli::cli_alert_warning("Check that your performed annual aggregation before using this function")
 
-
-    ind.lm <-
+    ind.trends <-
       apply(c4R$Data, if (observation)
         c(2, 3)
         else
           c(1, 3, 4), function(y) {
-            df <- reshape2::melt(y) %>%
-              dplyr::mutate(time = 1:nrow(.))
-
-            mod = mvabund::manylm(value ~ time, data = df)
-            out <- anova(mod)
-            return(cbind(mod$coefficients[2, 1], out$table[2, 4]))
-
+            df <- reshape2::melt(y)
+            # Use trend package functions
+            mk <- trend::mk.test(df$value)
+            sen <- trend::sens.slope(df$value)
+            return(c(sen$estimates, mk$p.value))
           })
 
     cli::cli_process_done()
-    return(ind.lm)
+    return(ind.trends)
   } else {
     # when spatial averages are performed
     if (dim(c4R$Data)[ifelse(observation, 1, 2)] > 100)
       cli::cli_alert_warning("Check that your performed annual aggregation before using this function")
+
     if (!observation) {
       df_tm_series <- reshape2::melt(c4R$Data) %>%
         dplyr::group_by(Var1) %>%
-        dplyr::mutate(
-          coef = mvabund::manylm(value ~ Var2)$coefficients[2, 1],
-          p.value = anova(mvabund::manylm(value ~ Var2))$table[2, 4]
+        dplyr::summarise(
+          coef = trend::sens.slope(value)$estimates,
+          p.value = trend::mk.test(value)$p.value
         ) %>%
-        dplyr::select(-Var2) %>%
         dplyr::mutate(date = seq(
           as.Date(c4R$Dates$start[[1]]),
           as.Date(c4R$Dates$start[[length(c4R$Dates$start)]]),
           by = "year"
         )) %>%
-        dplyr::select(Var1, value, date, coef, p.value)
+        dplyr::select(Var1, value = coef, date, coef, p.value)
 
       return(df_tm_series)
     } else {
-      df_tm_series <-
-        data.frame(value = c4R$Data,
-                   Var2 = 1:length(c4R$Data)) %>%
-        dplyr::mutate(
-          coef = mvabund::manylm(value ~ Var2)$coefficients[2, 1],
-          p.value = anova(mvabund::manylm(value ~ Var2))$table[2, 4]
-        ) %>%
-        dplyr::select(-Var2) %>%
-        dplyr::mutate(date = seq(
+      values <- c4R$Data
+      sen <- trend::sens.slope(values)
+      mk <- trend::mk.test(values)
+
+      df_tm_series <- data.frame(
+        value = values,
+        date = seq(
           as.Date(c4R$Dates$start[[1]]),
           as.Date(c4R$Dates$start[[length(c4R$Dates$start)]]),
           by = "year"
-        )) %>%
-        dplyr::select(value, date, coef, p.value)
+        ),
+        coef = sen$estimates,
+        p.value = mk$p.value
+      )
 
       return(df_tm_series)
-
     }
-
   }
 }
 
@@ -3127,7 +3096,7 @@ rename_facets = function(current_label, new_label, position = "x") {
 
 # S3 Classes constuctors  -------------------------------------------
 
-#' Create a new CAVAanalytics_list object
+#' Create a new CAVAanalytics_list class
 #' @param models_df data.frame containing model data
 #' @param country_shp spatial object containing country shape
 #' @return A CAVAanalytics_list object
@@ -3151,7 +3120,7 @@ new_CAVAanalytics_list <- function(models_df, country_shp) {
   )
 }
 
-#' Create a new CAVAanalytics_ccs object
+#' Create a new CAVAanalytics_ccs class
 #' @param ccs_mean SpatRaster for climate change signal mean
 #' @param ccs_sd SpatRaster for climate change signal standard deviation
 #' @param members_ccs SpatRaster for individual members
@@ -3187,5 +3156,117 @@ new_CAVAanalytics_ccs <- function(ccs_mean, ccs_sd, members_ccs, agreement, temp
   )
 }
 
+#' Constructor for CAVAanalytics_observations class
+#'
+#' Creates a properly structured CAVAanalytics_observations object
+#'
+#' @param spatraster_data A SpatRaster or list of SpatRasters containing the observation data
+#' @param pvalues A SpatRaster of p-values (only used when trends=TRUE)
+#' @param annual_data A dataframe containing annually aggregated data
+#' @param trends Logical indicating whether this is a trends analysis object
+#' @return A CAVAanalytics_observations object
+#' @noRd
+#'
+new_CAVAanalytics_observations <- function(spatraster_data, pvalues = NULL, annual_data, trends = FALSE) {
+  if (!trends) {
+    structure(
+      list(spatraster_data, annual_data),
+      class = "CAVAanalytics_observations",
+      components = list(
+        "SpatRaster for observation mean",
+        "dataframe for annually aggregated data"
+      )
+    )
+  } else {
+    if (is.null(pvalues)) {
+      stop("pvalues must be provided when trends=TRUE")
+    }
+    structure(
+      list(spatraster_data, pvalues, annual_data),
+      class = "CAVAanalytics_observations",
+      components = list(
+        "SpatRaster for trends coefficients",
+        "SpatRaster for trends p.values",
+        "dataframe for annually aggregated data"
+      )
+    )
+  }
+}
+
+#' Constructor for CAVAanalytics_projections class
+#'
+#' @param ensemble_mean SpatRaster object for ensemble mean
+#' @param ensemble_sd SpatRaster object for ensemble standard deviation
+#' @param individual_members SpatRaster object for individual members
+#' @param annual_data data.frame for annually aggregated data
+#' @return An object of class "CAVAanalytics_projections"
+#' @noRd
+new_CAVAanalytics_projections <- function(ensemble_mean, ensemble_sd, individual_members, annual_data) {
+  # Input validation
+  if (!inherits(ensemble_mean, "SpatRaster")) {
+    stop("ensemble_mean must be a SpatRaster object")
+  }
+  if (!inherits(ensemble_sd, "SpatRaster")) {
+    stop("ensemble_sd must be a SpatRaster object")
+  }
+  if (!inherits(individual_members, "SpatRaster")) {
+    stop("individual_members must be a SpatRaster object")
+  }
+  if (!is.data.frame(annual_data)) {
+    stop("annual_data must be a data.frame")
+  }
+
+  # Create the object with proper structure
+  structure(
+    list(
+      ensemble_mean,
+      ensemble_sd,
+      individual_members,
+      annual_data
+    ),
+    class = "CAVAanalytics_projections",
+    components = list(
+      "SpatRaster for ensemble mean",
+      "SpatRaster for ensemble sd",
+      "SpatRaster for individual members",
+      "dataframe for annually aggregated data"
+    )
+  )
+}
+
+#' Constructor for CAVAanalytics_model_biases class
+#'
+#' @param ensemble_biases SpatRaster object containing ensemble biases
+#' @param model_biases SpatRaster object containing model biases
+#' @param temporal_biases data.frame containing temporal biases
+#' @return An object of class CAVAanalytics_model_biases
+#' @noRd
+new_CAVAanalytics_model_biases <- function(ensemble_biases, model_biases, temporal_biases) {
+  # Input validation
+  if (!inherits(ensemble_biases, "SpatRaster")) {
+    cli::cli_abort("ensemble_biases must be a SpatRaster object")
+  }
+  if (!inherits(model_biases, "SpatRaster")) {
+    cli::cli_abort("model_biases must be a SpatRaster object")
+  }
+  if (!is.data.frame(temporal_biases)) {
+    cli::cli_abort("temporal_biases must be a data.frame")
+  }
+
+  # Create the object
+  structure(
+    list(
+      ensemble_biases = ensemble_biases,
+      model_biases = model_biases,
+      temporal_biases = temporal_biases
+    ),
+    class = "CAVAanalytics_model_biases",
+    components = list(
+      "SpatRaster for ensemble biases",
+      "SpatRaster for model biases",
+      "data frame for temporal biases"
+    )
+  )
+}
 
 

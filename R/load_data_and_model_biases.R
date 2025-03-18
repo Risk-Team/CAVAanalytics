@@ -25,6 +25,7 @@
 #' @param method character, bias-correction method to use. One of eqm (Empirical Quantile Mapping), qdm (Quantile Delta Mapping) or scaling. Default to eqm. When using the scaling method, the multiplicative approach is automatically applied only when the variable is precipitation.
 #' @param cross_validation character, one of none or 3fold. Whether 3-fold cross validation should be used to avoid overfitting during bias-correction. Default to "none"
 #' @param window character, one of none or monthly. Whether bias correction should be applied on a monthly or annual basis. Monthly is the preferred option when performing bias-correction using daily data
+#' @param verbose logical, whether to print processing time
 #' @importFrom magrittr %>%
 #' @return list with SpatRaster. To explore the output run attributes(output)
 #' @export
@@ -53,7 +54,10 @@ load_data_and_model_biases <-
            n.sessions = 6,
            method = "eqm",
            cross_validation = "none",
-           window = "monthly") {
+           window = "monthly",
+           verbose = TRUE) {
+    start_time <- Sys.time()
+
     # calculate number of chunks based on xlim and ylim
     if (missing(chunk.size) | missing(season)) {
       cli::cli_abort("chunk.size and season must be specified")
@@ -114,29 +118,25 @@ load_data_and_model_biases <-
     if (y_chunks[length(y_chunks)] < lat_range[2])
       y_chunks[length(y_chunks) + 1] = lat_range[2]
     # create empty list to store output
-    out_list <- list()
+    out_list <- vector("list", (length(x_chunks) - 1) * (length(y_chunks) - 1))
+    chunk_counter <- 1
 
-    # loop over chunks
+    # loop over chunks with error handling
     for (i in 1:(length(x_chunks) - 1)) {
       for (j in 1:(length(y_chunks) - 1)) {
-        # set xlim and ylim for current chunk
         xlim_chunk <- c(x_chunks[i] - overlap, x_chunks[i + 1])
         ylim_chunk <- c(y_chunks[j] - overlap, y_chunks[j + 1])
-        cli::cli_progress_step(paste(
-          paste0(
-            "Loading data and calculating model biases for spatial CHUNK_",
-            i,
-            "_",
-            j
-          ),
-          ". Coordinates ",
-          "xlim=",
-          paste(xlim_chunk, collapse = ","),
-          " ylim=",
-          paste(ylim_chunk, collapse = ",")
+        
+        cli::cli_alert_info(sprintf(
+          "Processing chunk %d/%d [%d,%d]", 
+          chunk_counter, 
+          (length(x_chunks) - 1) * (length(y_chunks) - 1), 
+          i, 
+          j
         ))
-        # load data for current chunk
-        proj_chunk <-
+        
+        # Process chunk with error handling
+        proj_chunk <- tryCatch({
           suppressMessages(
             load_data(
               country = NULL,
@@ -151,9 +151,7 @@ load_data_and_model_biases <-
               aggr.m = aggr.m,
               buffer = 0,
               n.sessions = n.sessions
-            )  %>%
-
-              # do ccs for current chunk
+            ) %>%
               model_biases(
                 .,
                 season = season,
@@ -161,7 +159,7 @@ load_data_and_model_biases <-
                 uppert = uppert,
                 lowert = lowert,
                 consecutive = consecutive,
-                duration =  duration,
+                duration = duration,
                 frequency = frequency,
                 n.sessions = 1,
                 method = method,
@@ -169,12 +167,15 @@ load_data_and_model_biases <-
                 window = window
               )
           )
-
-
-        # add chunk to output list
-        out_list[[paste0("chunk_", i, "_", j)]] <- proj_chunk
-        cli::cli_progress_done()
-
+        }, error = function(e) {
+          cli::cli_alert_danger(sprintf("Error in chunk [%d,%d]: %s", i, j, e$message))
+          return(NULL)
+        })
+        
+        if (!is.null(proj_chunk)) {
+          out_list[[chunk_counter]] <- proj_chunk
+          chunk_counter <- chunk_counter + 1
+        }
       }
     }
     cli::cli_progress_step("Merging rasters")
@@ -183,57 +184,79 @@ load_data_and_model_biases <-
     rst_mbrs <- lapply(out_list, `[[`, 2)
     # Merge the extracted rasters using `Reduce` and set their names
     merge_rasters <- function(rst_list) {
+      if (length(rst_list) == 0) {
+        cli::cli_abort("Empty raster list provided")
+      }
+      
+      # Remove NULL entries if any
+      rst_list <- Filter(Negate(is.null), rst_list)
+      
       # Determine the resolution of each raster in the list
-      resolutions <- sapply(rst_list, function(r)
-        terra::res(r))
-
+      resolutions <- tryCatch({
+        sapply(rst_list, terra::res)
+      }, error = function(e) {
+        cli::cli_abort(paste("Error getting raster resolutions:", e$message))
+      })
+      
       # Check if all rasters have the same resolution
       if (length(unique(resolutions)) > 1) {
-        cli::cli_alert_warning("Interpolation was required to merge the rasters.")
-        # If resolutions differ, determine the smallest (finest) resolution among all rasters
+        cli::cli_alert_warning(sprintf(
+          "Rasters have different resolutions: %s. Resampling to %s",
+          paste(unique(resolutions), collapse = ", "),
+          max(resolutions)
+        ))
+        
         common_res <- max(resolutions)
-
-        # Resample all rasters to the common resolution
         rst_list <- lapply(rst_list, function(r) {
-          terra::resample(
-            r,
-            terra::rast(
-              terra::ext(r),
-              resolution = common_res,
-              crs = terra::crs(r)
-            ),
-            method = "mode"
-          )
+          tryCatch({
+            terra::resample(
+              r,
+              terra::rast(terra::ext(r), resolution = common_res, crs = terra::crs(r)),
+              method = "mode"
+            )
+          }, error = function(e) {
+            cli::cli_abort(paste("Error resampling raster:", e$message))
+          })
         })
       }
-
-      # Merge rasters
-      merged_raster <-
-        Reduce(function(x, y)
-          terra::merge(x, y), rst_list)
-
-      # Set names from the first raster in the list
-      names <- names(rst_list[[1]])
-      setNames(merged_raster, names)
+      
+      # Merge rasters with progress indication
+      cli::cli_alert_info("Merging...")
+      merged_raster <- tryCatch({
+        Reduce(function(x, y) terra::merge(x, y), rst_list)
+      }, error = function(e) {
+        cli::cli_abort(paste("Error merging rasters:", e$message))
+      })
+      
+      setNames(merged_raster, names(rst_list[[1]]))
     }
 
     cli::cli_process_done()
 
     rasters_mean <- merge_rasters(rst_mean)
     rasters_mbrs <- merge_rasters(rst_mbrs)
-
-    invisible(structure(
-      list(
-        rasters_mean %>% terra::crop(., country_shp) %>% terra::mask(., country_shp),
-        rasters_mbrs %>% terra::crop(., country_shp) %>% terra::mask(., country_shp),
-        NULL
-      ),
-      class =  "CAVAanalytics_model_biases",
-      components = list(
-        "SpatRaster for ensemble biases",
-        "SpatRaster for model biases",
-        "data frame for temporal biases"
-      )
-    ))
-
+    
+    # Crop and mask rasters
+    rasters_mean <- terra::crop(rasters_mean, country_shp) %>% terra::mask(., country_shp)
+    rasters_mbrs <- terra::crop(rasters_mbrs, country_shp) %>% terra::mask(., country_shp)
+    
+    # Clean up after merging
+    rm(rst_mean, rst_mbrs, out_list)
+    gc()
+    
+    end_time <- Sys.time()
+    if (verbose) {
+      cli::cli_alert_success(sprintf(
+        "Processing completed in %.2f minutes",
+        as.numeric(difftime(end_time, start_time, units = "mins"))
+      ))
+    }
+    
+    # Return result
+    result <- new_CAVAanalytics_model_biases(
+      ensemble_biases = rasters_mean,
+      model_biases = rasters_mbrs,
+      temporal_biases = NULL
+    )
+    return(result)
   }

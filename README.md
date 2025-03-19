@@ -82,15 +82,15 @@ library(rJava)
 You can now install CAVAanalytics and its main packages
 
 ```
-install.packages("devtools")
+install.packages("pak")
 
-remotes::install_github(c("SantanderMetGroup/loadeR.java",
+pak::pkg_install(c("SantanderMetGroup/loadeR.java",
                  "SantanderMetGroup/climate4R.UDG",
                  "SantanderMetGroup/loadeR",
                  "SantanderMetGroup/transformeR",
                  "SantanderMetGroup/downscaleR"))
 
-remotes::install_github("Risk-Team/CAVAanalytics")
+pak::pkg_install("Risk-Team/CAVAanalytics")
 ```
 
 #### 2) Docker

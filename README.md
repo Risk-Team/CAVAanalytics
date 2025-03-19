@@ -73,24 +73,30 @@ Based on how you want to use CAVAanalytics, there are three options.
 
 [Installing rJava in Linux and macOS](https://github.com/SantanderMetGroup/loadeR/wiki/Installation)
 
-If the installation of rJava is successful, you should be able to load the library from Rstudio.
+If the installation of rJava is successful, you should be able to load the library from Rstudio and you can now installed CAVAanalytics.
 
 ```
-# This should not give any error
-library(rJava)
-```
-You can now install CAVAanalytics and its main packages
+# Step 1: Ensure rJava is installed and working
+if (!requireNamespace("rJava", quietly = TRUE)) {
+  install.packages("rJava")
+}
+library(rJava)  # Verify no errors here
 
-```
-install.packages("pak")
+# Step 2: Install pak (if not already installed)
+if (!requireNamespace("pak", quietly = TRUE)) {
+  install.packages("pak")
+}
 
-pak::pkg_install(c("SantanderMetGroup/loadeR.java",
-                 "SantanderMetGroup/climate4R.UDG",
-                 "SantanderMetGroup/loadeR",
-                 "SantanderMetGroup/transformeR",
-                 "SantanderMetGroup/downscaleR"))
-
-pak::pkg_install("Risk-Team/CAVAanalytics")
+# Step 3: Install all required packages from GitHub using pak
+required_packages <- c(
+  "SantanderMetGroup/loadeR.java",
+  "SantanderMetGroup/climate4R.UDG",
+  "SantanderMetGroup/loadeR",
+  "SantanderMetGroup/transformeR",
+  "SantanderMetGroup/downscaleR",
+  "Risk-Team/CAVAanalytics"
+)
+pak::pkg_install(required_packages)
 ```
 
 #### 2) Docker

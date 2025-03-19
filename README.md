@@ -17,27 +17,19 @@
 --------------------------------------------------------------------------------------------------
 
 
-[**CAVAanalytics**](https://risk-team.github.io/CAVAanalytics/) is an R package offering a consistent framework to load, analyze, calculate indicators, and visualize results for climate and impact models. It also streamlines access to W5E5, ERA5 and CORDEX-CORE models.
+[**CAVAanalytics**](https://risk-team.github.io/CAVAanalytics/) is a comprehensive R package designed to simplify and enhance climate data analysis. It offers a unified framework that streamlines access to datasets such as W5E5, ERA5, and CORDEX-CORE models, facilitating efficient loading, analysis, indicator calculation, and visualization of climate and impact model data
 
-### Read on if:
+### Key Features:
 
-- You tried to download CORDEX models from ESGF or COPERNICUS but found the process difficult (managing netCDF files, etc)
-- You tried to work with multiple climate models but found the process of computing climate indicators and then visualising the results hard
-
-**CAVAanalytics** addresses these issues by:
-
-- Providing streamlined access to CORDEX-CORE models for the whole world. This means that you don't need to download netCDF files, data requests are sent to THREDDS servers with an openDAP protocol and you retrieve only the information you asked, directly in memory
-- Providing a framework to work with multiple models so that indicators calculation and visualization of results is extremely easy
+- **Simplified Data Access:** Retrieve CORDEX-CORE models globally without the need to manage netCDF files. Data requests are sent to THREDDS servers, allowing you to access only the necessary information directly in memory.
+- **Consistent Analytical Framework:** Work seamlessly with multiple climate models, making indicator calculation and result visualization straightforward and efficient. 
 
 
 ### Quick example
-**Firstly**  download or upload data, **secondly** perform the intended analysis, **thirdly** visualize the results.
+Below is an example of how to use CAVAanalytics to retrieve and analyze climate information for Sudan, covering both historical and projected data.
+Detailed examples are available from the [tutorial webpage](https://risk-team.github.io/CAVAanalytics/articles/Introduction.html).
 
-| ![Framework](https://user-images.githubusercontent.com/40058235/199256415-ed32c42b-e2f8-48e0-b4fe-558de6612038.png) |
-|:-------------------------------------------------------------------------------------------------------------------:|
-|                                                *CAVAanalytics steps*                                                |
-
-Below we give an example of how you can use CAVAanalytics to retrieve climate information easily (both past and future). Detailed examples are available from the [tutorial webpage](https://risk-team.github.io/CAVAanalytics/articles/Introduction.html).
+This script retrieves precipitation data for Sudan from 1990 to 2000 (historical) and 2020 to 2030 (projected), analyzes the climate change signal, and visualizes the projected change in total annual precipitation compared to the 1990-2000 baseline period.
 
 ``` r
 library(CAVAanalytics)
@@ -57,9 +49,10 @@ sudan_ccs <- climate_change_signal(remote.data, season=list(1:12), bias.correcti
 | *Projected change in total annual precipitation compared to the 1990-2000 baseline period in Sudan* |
 
 
-### Installation
 
-Based on how you want to use CAVAanalytics, there are three options.
+### Installation options
+
+Depending on your preferences and setup, CAVAanalytics can be installed in the following ways:
 
 #### 1) Locally
 

@@ -54,7 +54,7 @@
 <span>  <span class="va">rst</span>,</span>
 <span>  palette <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  legend_range <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  plot_titles <span class="op">=</span> <span class="st">"default"</span>,</span>
+<span>  plot_titles <span class="op">=</span> <span class="va">PLOT_TITLES</span>,</span>
 <span>  ensemble <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  bins <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  intervals <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -71,7 +71,7 @@
 <span>  <span class="va">rst</span>,</span>
 <span>  palette <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  legend_range <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  plot_titles <span class="op">=</span> <span class="st">"default"</span>,</span>
+<span>  plot_titles <span class="op">=</span> <span class="va">PLOT_TITLES</span>,</span>
 <span>  ensemble <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  bins <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  intervals <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -79,7 +79,8 @@
 <span>  stat <span class="op">=</span> <span class="st">"mean"</span>,</span>
 <span>  spatiotemporal <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  temporal <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  lwd <span class="op">=</span> <span class="va">DEFAULT_LINE_WIDTH</span></span>
+<span>  lwd <span class="op">=</span> <span class="va">DEFAULT_LINE_WIDTH</span>,</span>
+<span>  point_size <span class="op">=</span> <span class="va">POINT_SIZE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'CAVAanalytics_observations'</span></span>
@@ -87,7 +88,7 @@
 <span>  <span class="va">rst</span>,</span>
 <span>  palette <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  legend_range <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  plot_titles <span class="op">=</span> <span class="st">"default"</span>,</span>
+<span>  plot_titles <span class="op">=</span> <span class="va">PLOT_TITLES</span>,</span>
 <span>  ensemble <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  bins <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  intervals <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -95,7 +96,8 @@
 <span>  spatiotemporal <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  temporal <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  lwd <span class="op">=</span> <span class="va">DEFAULT_LINE_WIDTH</span>,</span>
-<span>  n.groups <span class="op">=</span> <span class="fl">3</span></span>
+<span>  n.groups <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  point_size <span class="op">=</span> <span class="va">POINT_SIZE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'CAVAanalytics_model_biases'</span></span>
@@ -103,7 +105,7 @@
 <span>  <span class="va">rst</span>,</span>
 <span>  palette <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  legend_range <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  plot_titles <span class="op">=</span> <span class="st">"default"</span>,</span>
+<span>  plot_titles <span class="op">=</span> <span class="va">PLOT_TITLES</span>,</span>
 <span>  ensemble <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  bins <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  intervals <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -172,6 +174,10 @@
 
 <dt id="arg-n-groups">n.groups<a class="anchor" aria-label="anchor" href="#arg-n-groups"></a></dt>
 <dd><p>Number of groups for spatiotemporal plots. Default is 3</p></dd>
+
+
+<dt id="arg-point-size">point_size<a class="anchor" aria-label="anchor" href="#arg-point-size"></a></dt>
+<dd><p>Size of dots for significance of trends. Default is 0.1</p></dd>
 
 </dl></div>
     <div class="section level2">

@@ -1292,7 +1292,7 @@ models_trends <- function(c4R, observation = F) {
 
 
 
-# Visualization -----------------------------------------------------------
+# Make raster -----------------------------------------------------------
 
 #' Make a spatRaster from a C4R list
 #' @noRd

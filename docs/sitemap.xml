@@ -1,123 +1,48 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/404.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/articles/CAVA.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/articles/Introduction.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/articles/large_areas.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/articles/more_advanced.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/articles/own_data.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/index.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/news/index.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/reference/C4R_to_CAVA.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/reference/CAVAanalytics.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/reference/IPCC_palette.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/reference/climate_change_signal.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/reference/common_dates.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/reference/convert_vector_to_month_initials.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/reference/customise_facets.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/reference/ens_trends.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/reference/extract_raster.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/reference/loadGridData_xarray.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/reference/load_data.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/reference/load_data_and_climate_change_signal.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/reference/load_data_and_model_biases.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/reference/load_data_and_projections.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/reference/load_data_and_trends.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/reference/load_data_hub.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/reference/make_raster.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/reference/model_biases.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/reference/models_trends.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/reference/observations.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/reference/plotting.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/reference/projections.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/reference/remove_facets.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/reference/rename_facets.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/reference/thrs.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/reference/thrs_consec.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/reference/trends.html</loc>
-  </url>
-  <url>
-    <loc>https://risk-team.github.io/CAVAanalytics/reference/years_selection.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://risk-team.github.io/CAVAanalytics/404.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/LICENSE-text.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/articles/CAVA.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/articles/Introduction.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/articles/index.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/articles/large_areas.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/articles/more_advanced.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/articles/own_data.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/authors.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/index.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/news/index.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/reference/C4R_to_CAVA.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/reference/CAVAanalytics.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/reference/CONSTANTS.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/reference/IPCC_palette.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/reference/climate_change_signal.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/reference/common_dates.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/reference/convert_vector_to_month_initials.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/reference/customise_facets.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/reference/ens_trends.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/reference/extract_raster.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/reference/index.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/reference/loadGridData_xarray.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/reference/load_data.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/reference/load_data_and_climate_change_signal.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/reference/load_data_and_model_biases.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/reference/load_data_and_projections.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/reference/load_data_and_trends.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/reference/load_data_hub.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/reference/load_model_data.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/reference/load_model_data.hub.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/reference/load_observation_data.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/reference/load_observation_data.hub.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/reference/make_raster.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/reference/model_biases.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/reference/models_trends.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/reference/observations.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/reference/plotting.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/reference/projections.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/reference/remove_facets.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/reference/rename_facets.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/reference/thrs.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/reference/thrs_consec.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/reference/trends.html</loc></url>
+<url><loc>https://risk-team.github.io/CAVAanalytics/reference/years_selection.html</loc></url>
 </urlset>
+

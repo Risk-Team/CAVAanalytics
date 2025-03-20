@@ -206,7 +206,8 @@ plotting.CAVAanalytics_ccs <-
             legend_range,
             obs = F,
             trends = F,
-            lwd
+            lwd,
+            point_size
           )
       } else if (ensemble & stat == "sd") {
         spatial_prep(
@@ -228,7 +229,8 @@ plotting.CAVAanalytics_ccs <-
             legend_range,
             obs = F,
             trends = F,
-            lwd
+            lwd,
+            point_size
           )
       } else {
         # individual models
@@ -251,7 +253,8 @@ plotting.CAVAanalytics_ccs <-
             legend_range,
             obs = F,
             trends = F,
-            lwd
+            lwd,
+            point_size
           )
       }
     } else {
@@ -340,7 +343,8 @@ plotting.CAVAanalytics_observations <-
             legend_range,
             obs = T,
             trends = F,
-            lwd
+            lwd,
+            point_size
           )
       } else {
         if (temporal) {
@@ -391,7 +395,8 @@ plotting.CAVAanalytics_observations <-
             legend_range,
             obs = T,
             trends = T,
-            lwd
+            lwd,
+            point_size
           )
       } else {
         # when spatiotemproal or temporal is TRUE

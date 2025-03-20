@@ -28,7 +28,8 @@ load_data_and_climate_change_signal(
   n.sessions = 6,
   method = "eqm",
   percentage = F,
-  window = "monthly"
+  window = "monthly",
+  verbose = TRUE
 )
 }
 \arguments{
@@ -80,6 +81,8 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 \item{percentage}{logical, whether the climate change signal is to be calculated as relative changes (in percentage). Default to FALSE}
 
 \item{window}{character, one of none or monthly. Whether bias correction should be applied on a monthly or annual basis. Monthly is the preferred option when performing bias-correction using daily data}
+
+\item{verbose}{logical, whether to print progress messages}
 }
 \value{
 list with SpatRaster. To explore the output run attributes(output)

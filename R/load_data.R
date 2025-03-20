@@ -189,14 +189,6 @@ load_data <- function(path.to.data,
   # Process model data
   models_df <- if (!is.null(path.to.data)) {
     if (path.to.data == "CORDEX-CORE") {
-      cli::cli_progress_step(
-        sprintf(
-          "Downloading CORDEX-CORE data (%d simulations) using %d sessions%s",
-          ifelse(is.null(years.hist), 12, ifelse(is.null(years.proj), 6, 18)),
-          n.sessions,
-          ifelse(n.sessions == 6, " by default", "")
-        )
-      )
       files <- load_model_paths.thredds(domain, years.hist, years.proj)
       experiment <- if (!is.null(years.hist) &
                         !is.null(years.proj)) {
@@ -206,29 +198,47 @@ load_data <- function(path.to.data,
       } else {
         "historical"
       }
+
+      cli::cli_alert_info(sprintf(
+        "Downloading CORDEX-CORE data (%d simulations) using %d sessions%s",
+        length(unlist(files)),
+        n.sessions,
+        ifelse(n.sessions == 6, " by default", "")
+      ))
+
     } else {
-      cli::cli_progress_step("Uploading local data...")
       files <- load_model_paths.local(path.to.data)
       experiment <- list.dirs(path.to.data, full.names = FALSE)[-1]
+
+      cli::cli_alert_info(sprintf(
+        "Uploading local data (%d files) using %d sessions%s",
+        length(unlist(files)),
+        n.sessions,
+        ifelse(n.sessions == 6, " by default", "")
+      ))
     }
 
     df <- dplyr::tibble(path = files, experiment = experiment) %>%
       tidyr::unnest(cols = path) %>%
-      dplyr::mutate(models = suppressWarnings(furrr::future_map(unlist(files), function(x) {
-        years <- if (stringr::str_detect(x, "historical"))
-          years.hist
-        else
-          years.proj
-        load_model_data(x, variable, years, xlim, ylim, aggr.m, path.to.data)
-      }))) %>%
+      dplyr::mutate(models = suppressWarnings(furrr::future_map(
+        unlist(files),
+        function(x) {
+          years <- if (stringr::str_detect(x, "historical"))
+            years.hist
+          else
+            years.proj
+          load_model_data(x, variable, years, xlim, ylim, aggr.m, path.to.data)
+        },
+        .progress = TRUE
+      ))) %>%
       dplyr::group_by(experiment) %>%
       dplyr::summarise(models_mbrs = list(models))
 
-    cli::cli_progress_done()
+    cli::cli_text("")
     size <- as.numeric(object.size(df))
-    cli::cli_text(
+    cli::cli_alert_success(
       sprintf(
-        "{cli::symbol$arrow_right} %s {prettyunits::pretty_bytes(size)}",
+        "%s {prettyunits::pretty_bytes(size)}",
         if (path.to.data == "CORDEX-CORE")
           "Downloaded"
         else
@@ -236,8 +246,10 @@ load_data <- function(path.to.data,
       )
     )
 
-    cli::cli_progress_step("Making multi-model ensemble and checking temporal consistency")
-    df %>% dplyr::mutate(models_mbrs = purrr::map(models_mbrs, ~ common_dates(.x)))
+    cli::cli_progress_step("Making multi-model ensemble")
+    df_aggr <- df %>% dplyr::mutate(models_mbrs = purrr::map(models_mbrs, ~ common_dates(.x)))
+    cli::cli_progress_done()
+    df_aggr
   } else {
     dplyr::tibble(obs = NA)
   }

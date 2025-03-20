@@ -6,7 +6,8 @@ load_model_paths.thredds <- function(domain, years.hist, years.proj) {
   csv_url <- "https://hub.ipcc.ifca.es/thredds/fileServer/inventories/cava.csv"
   data <- tryCatch({
     read.csv(url(csv_url)) %>%
-      dplyr::filter(stringr::str_detect(activity, "CORDEX"),  domain %in% !!domain) %>%
+      dplyr::filter(stringr::str_detect(activity, "CORDEX"),
+                    domain %in% !!domain) %>%
       dplyr::group_by(experiment) %>%
       dplyr::summarise(path = list(as.character(location))) %>%
       {
@@ -180,9 +181,7 @@ check_inputs.load_data <-  function(path.to.data,
       )
     } else if (!any(stringr::str_detect(list.files(path.to.data), "historical")) &
                !is.null(years.hist)) {
-      cli::cli_abort(
-        c("x" = "Historical experiment not found. The folder needs to be named historical")
-      )
+      cli::cli_abort(c("x" = "Historical experiment not found. The folder needs to be named historical"))
     } else if (any(stringr::str_detect(list.files(path.to.data), "historical")) &
                is.null(years.hist)) {
       cli::cli_abort(c("x" = "Historical experiment found but years.hist is not specified"))
@@ -293,9 +292,7 @@ check_inputs.load_data_hub <- function(database,
       )
     } else if (!any(stringr::str_detect(list.files(database), "historical")) &
                !is.null(years.hist)) {
-      cli::cli_abort(
-        c("x" = "Historical experiment not found. The folder needs to be named historical")
-      )
+      cli::cli_abort(c("x" = "Historical experiment not found. The folder needs to be named historical"))
     } else if (any(stringr::str_detect(list.files(database), "historical")) &
                is.null(years.hist)) {
       cli::cli_abort(c("x" = "Historical experiment found but years.hist is not specified"))
@@ -570,12 +567,12 @@ check_inputs.model_biases <- function(data,
 #' Check inputs for observation
 #' @noRd
 check_inputs.observations <-  function(data,
-                                      uppert,
-                                      lowert,
-                                      consecutive,
-                                      duration,
-                                      season,
-                                      trends) {
+                                       uppert,
+                                       lowert,
+                                       consecutive,
+                                       duration,
+                                       season,
+                                       trends) {
   if (!is.list(season))
     cli::cli_abort("season needs to be a list, for example, list(1:3)")
   if (!any(stringr::str_detect(colnames(data[[1]]), "obs")))
@@ -898,14 +895,23 @@ common_dates <- function(data) {
 
 #' Conversion of Units
 #' @noRd
-transform_climate_data <- function(data, variable, source, conversion_factor = CONSTANTS$CONVERSION_FACTOR) {
+transform_climate_data <- function(data,
+                                   variable,
+                                   source,
+                                   conversion_factor = CONSTANTS$CONVERSION_FACTOR) {
   if (stringr::str_detect(variable, "tas")) {
     data <- suppressMessages(transformeR::gridArithmetics(data, 273.15, operator = "-"))
   } else if (stringr::str_detect(variable, "pr")) {
-    factor <- if (source == "ERA5") 1000 else 86400
+    factor <- if (source == "ERA5")
+      1000
+    else
+      86400
     data <- suppressMessages(transformeR::gridArithmetics(data, factor, operator = "*"))
   } else if (stringr::str_detect(variable, "rsds")) {
-    factor <- if (source == "ERA5") 86400 else 1
+    factor <- if (source == "ERA5")
+      86400
+    else
+      1
     data <- suppressMessages(transformeR::gridArithmetics(data, factor, operator = "/"))
   } else if (stringr::str_detect(variable, "sfc")) {
     data <- suppressMessages(transformeR::gridArithmetics(data, conversion_factor, operator = "*"))
@@ -922,11 +928,17 @@ transform_climate_data <- function(data, variable, source, conversion_factor = C
 #' @noRd
 print_conversion_message <- function(variable, source) {
   if (variable == "pr") {
-    cli::cli_text("{cli::symbol$arrow_right} Precipitation data from {source} has been converted into mm/day")
+    cli::cli_text(
+      "{cli::symbol$arrow_right} Precipitation data from {source} has been converted into mm/day"
+    )
   } else if (stringr::str_detect(variable, "tas")) {
-    cli::cli_text("{cli::symbol$arrow_right} Temperature data from {source} has been converted into Celsius")
+    cli::cli_text(
+      "{cli::symbol$arrow_right} Temperature data from {source} has been converted into Celsius"
+    )
   } else if (stringr::str_detect(variable, "sfc")) {
-    cli::cli_text("{cli::symbol$arrow_right} Wind speed data from {source} has been converted to 2 m level")
+    cli::cli_text(
+      "{cli::symbol$arrow_right} Wind speed data from {source} has been converted to 2 m level"
+    )
   }
 }
 
@@ -1003,11 +1015,51 @@ filter_data_by_season.observations <- function(datasets, season) {
       "Some data will be lost on year-crossing season subset (see the 'Time slicing' section of subsetGrid documentation for more details)"
     )
   }
-  datasets %>%  dplyr::mutate_at(c("obs"),
-                                 ~ purrr::map(., ~ suppressMessages(
-                                   transformeR::subsetGrid(., season = season)
-                                 )))
+  datasets %>%  dplyr::mutate_at(c("obs"), ~ purrr::map(., ~ suppressMessages(
+    transformeR::subsetGrid(., season = season)
+  )))
 }
+
+#' subset based on a season of interest and experiment for model_biases
+#' @noRd
+filter_data_by_season.model_biases <- function(datasets, season) {
+  if (all(season == sort(season))) {
+
+  } else {
+    cli::cli_alert_warning(
+      "Some data will be lost on year-crossing season subset (see the 'Time slicing' section of subsetGrid documentation for more details)"
+    )
+  }
+
+  lon <- datasets$models_mbrs[[1]]$xyCoords$x
+  lon_obs <- datasets$obs[[1]]$xyCoords$x
+  lat <- datasets$models_mbrs[[1]]$xyCoords$y
+  lat_obs <- datasets$obs[[1]]$xyCoords$y
+
+  if ((length(lon) != length(lon_obs)) |
+      (length(lat) != length(lat_obs))) {
+    datasets <- datasets %>%
+      dplyr::filter(experiment == "historical") %>%
+      dplyr::mutate(models_mbrs = purrr::map(models_mbrs,
+                                             ~ suppressMessages(
+                                               suppressWarnings(
+                                                 transformeR::interpGrid(.x, new.coordinates = transformeR::getGrid(obs[[1]]))
+                                               )
+                                             )))
+  } else {
+    cli::cli_alert_warning(
+      "Observations and model simulations have the same spatial resolution, proceeding with calculations"
+    )
+  }
+  datasets %>%
+    dplyr::filter(experiment == "historical") %>%
+    dplyr::mutate_at(c("models_mbrs", "obs"),
+                     ~ purrr::map(., ~ suppressMessages(
+                       transformeR::subsetGrid(., season = season)
+                     )))
+
+}
+
 
 #' Return xlim and ylim of a country or BBox
 #' @noRd
@@ -1057,13 +1109,239 @@ geo_localize <- function(country, xlim, ylim, buffer) {
 
 
 
-# performing calculations -------------------------------------------------
+# Helper functions for calculating indices --------------------------------------------------------------
 
-#' @noRd
-perform_calculations <- function(...) {
-  UseMethod("perform_calculations")
+#' Consecutive days
+#'
+#' Calculation of consecutive days. It can be used with aggregateGrid.
+#'
+#' @param col numeric vector
+#' @param duration either "max" or "total".
+#' @param lowert numeric. Lower threshold
+#' @param uppert numeric. Upper threshold
+#' @param frequency logical. Whether frequency or abosulte numbers should be returned. Only works with duration != max
+#' @return numeric of length 1
+#' @export
+# functions for consecutive days
+
+thrs_consec = function(col, duration, lowert, uppert, frequency) {
+  if (!is.numeric(col))
+    stop("input has to be a numeric vector")
+
+  if (!(duration == "max" || is.numeric(duration))) {
+    stop("duration must be 'max' or a number")
+  }
+  #analyse consecutive days
+
+  if (!is.null(lowert)) {
+    consec = rle(col < lowert)
+
+  } else{
+    consec = rle(col > uppert)
+
+  }
+
+  if (duration == "max" &
+      frequency)
+    stop(
+      "Not meaningful. By definition, the maximum duration of an event, let's say a dry spell, has frequency of 1"
+    )
+
+  #get only connsecutive days matching the threshold
+
+  consec_days = consec$lengths[consec$values == TRUE]
+
+  #return values out
+
+  if (duration == "max") {
+    val <- max(consec_days, na.rm = T)
+    return(if (val == "-Inf")
+      0
+      else
+        val)
+
+  } else{
+    if (!frequency)
+      return(sum(consec_days[consec_days > duration], na.rm = T))
+    else
+      return(length(na.omit(consec_days[consec_days > duration])))
+
+  }
+
 }
 
+
+#' Calculation of thresholds
+#'
+#' Calculation of number of days with certain condition. It can be used with aggregateGrid.
+
+#' @param col numeric vector
+#' @param lowert numeric. lower threshold
+#' @param uppert numeric. upper threshold
+#' @return numeric of length 1
+#'
+#' @export
+
+
+thrs = function(col, lowert, uppert) {
+  if (!is.numeric(col))
+
+    stop("input has to be a numeric vector")
+
+  if (!is.null(lowert)) {
+    sum(col < lowert, na.rm = T)
+
+  } else{
+    sum(col > uppert, na.rm = T)
+
+  }
+
+}
+
+
+#' @noRd
+
+agreement = function(array3d, threshold) {
+  # Define the inner function find.agreement within the agreement function
+  find.agreement = function(x, threshold) {
+    # Calculate proportion of models predicting each sign of change (negative(-1), no change(0), positive(+1))
+    sign.proportion = c(length(x[x < 0]) / length(x),
+                        length(x[x == 0]) / length(x),
+                        length(x[x > 0]) / length(x))
+    names(sign.proportion) = c("-1", "0", "1")
+    # Compare the set threshold to the maximum proportion of models agreeing on any one sign of change
+    # If the max proportion is higher than threshold, return 1 (meaning there is agreement in signs among model)
+    # Otherwise return 0 (no agreement meeting the set threshold)
+    if (max(sign.proportion) > threshold) {
+      return(1)
+    } else {
+      return(0)
+    }
+  }
+
+  # Apply find.agreement to each element of the array3d over the second and third dimensions
+  array1_agreement = apply(array3d, c(2, 3), find.agreement, threshold)
+  return(array1_agreement)
+}
+
+
+#' @noRd
+models_trends <- function(c4R, observation = F) {
+  # Add trend package to imports if not already present
+  if (length(dim(c4R$Data)) > 2) {
+    # in cases in which there is a spatial dimension
+    cli::cli_progress_step(" Calculating Sen's slope and Mann-Kendall test")
+
+    if (dim(c4R$Data)[ifelse(observation, 1, 2)] > 100)
+      cli::cli_alert_warning("Check that your performed annual aggregation before using this function")
+
+    ind.trends <-
+      apply(c4R$Data, if (observation)
+        c(2, 3)
+        else
+          c(1, 3, 4), function(y) {
+            df <- reshape2::melt(y)
+            # Use trend package functions
+            mk <- trend::mk.test(df$value)
+            sen <- trend::sens.slope(df$value)
+            return(c(sen$estimates, mk$p.value))
+          })
+
+    cli::cli_process_done()
+    return(ind.trends)
+  } else {
+    # when spatial averages are performed
+    if (dim(c4R$Data)[ifelse(observation, 1, 2)] > 100)
+      cli::cli_alert_warning("Check that your performed annual aggregation before using this function")
+
+    if (!observation) {
+      df_tm_series <- reshape2::melt(c4R$Data) %>%
+        dplyr::group_by(Var1) %>%
+        dplyr::summarise(
+          coef = trend::sens.slope(value)$estimates,
+          p.value = trend::mk.test(value)$p.value
+        ) %>%
+        dplyr::mutate(date = seq(
+          as.Date(c4R$Dates$start[[1]]),
+          as.Date(c4R$Dates$start[[length(c4R$Dates$start)]]),
+          by = "year"
+        )) %>%
+        dplyr::select(Var1, value = coef, date, coef, p.value)
+
+      return(df_tm_series)
+    } else {
+      values <- c4R$Data
+      sen <- trend::sens.slope(values)
+      mk <- trend::mk.test(values)
+
+      df_tm_series <- data.frame(
+        value = values,
+        date = seq(
+          as.Date(c4R$Dates$start[[1]]),
+          as.Date(c4R$Dates$start[[length(c4R$Dates$start)]]),
+          by = "year"
+        ),
+        coef = sen$estimates,
+        p.value = mk$p.value
+      )
+
+      return(df_tm_series)
+    }
+  }
+}
+
+
+
+# Visualization -----------------------------------------------------------
+
+#' Make a spatRaster from a C4R list
+#' @noRd
+make_raster <-
+  function(cl4.object, dimensions, shape.file, stat = "mean") {
+    xmin <-
+      if (is.null(cl4.object$xyCoords$lon))
+        min(cl4.object$xyCoords$x)
+    else
+      min(cl4.object$xyCoords$lon[1, ])
+    xmax <-
+      if (is.null(cl4.object$xyCoords$lon))
+        max(cl4.object$xyCoords$x)
+    else
+      max(cl4.object$xyCoords$lon[1, ])
+    ymin <-
+      if (is.null(cl4.object$xyCoords$lat))
+        min(cl4.object$xyCoords$y)
+    else
+      min(cl4.object$xyCoords$lat[, 1])
+    ymax <-
+      if (is.null(cl4.object$xyCoords$lat))
+        max(cl4.object$xyCoords$y)
+    else
+      max(cl4.object$xyCoords$lat[, 1])
+
+    array_mean <-
+      apply(cl4.object$Data, dimensions, stat, na.rm = TRUE)
+
+
+    cl4.object$Data <- array_mean
+
+    rasters <- terra::rast(cl4.object$Data, extent = terra::ext(xmin, xmax, ymin, ymax)) %>%
+      terra::flip(., direction = 'vertical') %>%
+      terra::crop(., shape.file, snap = "out") %>%
+      terra::mask(., shape.file)
+
+    nms <-
+      paste0(
+        stringr::str_extract(cl4.object$Dates$start[1], "\\d{4}"),
+        ".",
+        stringr::str_extract(cl4.object$Dates$end[length(cl4.object$Dates$start)], "\\d{4}")
+      )
+    names(rasters) <-  nms
+
+    return(rasters)
+
+  }
+# performing calculations -------------------------------------------------
 #' function used to perform the calculations
 #' @noRd
 perform_calculations.ccs <-
@@ -1202,7 +1480,7 @@ perform_calculations.ccs <-
         rst_ccs_sign = purrr::map2(experiment, ccs_mbrs, function(x, y) {
           y$Data <- apply(y$Data, c(1, 3, 4), mean)
           arry_sign <-
-            agreement(y$Data,  threshold)
+            agreement(y$Data, threshold)
           y$Data <- arry_sign
           rast_sign <- make_raster(y, c(1, 2), country_shp)
           names(rast_sign) <-
@@ -1276,25 +1554,14 @@ perform_calculations.ccs <-
       dplyr::filter(!stringr::str_detect(experiment, "hist"))
 
     gc()
-    invisible(structure(
-      list(
-        terra::rast(data_list$rst_ens_mean_ccs),
-        terra::rast(data_list$rst_ens_sd_ccs),
-        terra::rast(unlist(data_list$rst_models_ccs)),
-        terra::rast(data_list$rst_ccs_sign),
-        do.call(rbind, purrr::map(
-          1:nrow(data_list), ~ data_list$models_temp_ccs[[.]]
-        ))
-      ),
-      class = "CAVAanalytics_ccs",
-      components = list(
-        "SpatRaster for ccs mean",
-        "SparRaster stack for ccs sd",
-        "SpatRaster stack for individual members",
-        "SpatRaster stack for ccs agreement",
-        "dataframe for spatially and annually aggregated data"
-
-      )
+    invisible(new_CAVAanalytics_ccs(
+      ccs_mean = terra::rast(data_list$rst_ens_mean_ccs),
+      ccs_sd = terra::rast(data_list$rst_ens_sd_ccs),
+      members_ccs = terra::rast(unlist(data_list$rst_models_ccs)),
+      agreement = terra::rast(data_list$rst_ccs_sign),
+      temporal_data = do.call(rbind, purrr::map(
+        1:nrow(data_list), ~ data_list$models_temp_ccs[[.]]
+      ))
     ))
   }
 
@@ -1415,30 +1682,20 @@ perform_calculations.obs <-
       }
 
     if (trends) {
-      invisible(structure(
-        list(
-          data_list$obs_spat[[1]][[1]],
-          data_list$obs_spat[[1]][[2]],
-          data_list$obs_temp[[1]]
-        ),
-        class = "CAVAanalytics_observations",
-        components = list(
-          "SpatRaster for trends coefficients",
-          "SpatRaster for trends p.values",
-          "dataframe for annually aggregated data"
-        )
+      # Replace direct structure() call with constructor
+      invisible(new_CAVAanalytics_observations(
+        spatraster_data = data_list$obs_spat[[1]][[1]],
+        pvalues = data_list$obs_spat[[1]][[2]],
+        annual_data = data_list$obs_temp[[1]],
+        trends = TRUE
       ))
-
-    }  else {
-      invisible(structure(
-        list(data_list$rst_mean[[1]], data_list$obs_temp[[1]]),
-        class = "CAVAanalytics_observations",
-        components = list(
-          "SpatRaster for observation mean",
-          "dataframe for annually aggregated data"
-        )
+    } else {
+      # Replace direct structure() call with constructor
+      invisible(new_CAVAanalytics_observations(
+        spatraster_data = data_list$rst_mean[[1]],
+        annual_data = data_list$obs_temp[[1]],
+        trends = FALSE
       ))
-
     }
   }
 
@@ -1619,37 +1876,30 @@ perform_calculations.model_biases <-
 
         })
       )
-    invisible(structure(
-      list(
-        data_list$rst_ens_biases[[1]],
-        data_list$rst_mod_biases[[1]],
-        data_list$models_temp[[1]]
-      ),
-      class = "CAVAanalytics_model_biases",
-      components = list(
-        "SpatRaster for ensemble biases",
-        "SpatRaster for model biases",
-        "data frame for temporal biases"
-      )
+    invisible(new_CAVAanalytics_model_biases(
+      ensemble_biases = data_list$rst_ens_biases[[1]],
+      model_biases = data_list$rst_mod_biases[[1]],
+      temporal_biases = data_list$models_temp[[1]]
     ))
   }
 
 
+
 #' function used to perform the calculations on prjections
 #' @noRd
-perform_calculations.prj <- function(datasets,
-                                     mod.numb,
-                                     var,
-                                     bias.correction,
-                                     uppert,
-                                     lowert,
-                                     consecutive,
-                                     duration,
-                                     country_shp,
-                                     season,
-                                     frequency,
-                                     method,
-                                     window) {
+perform_calculations.projections <- function(datasets,
+                                             mod.numb,
+                                             var,
+                                             bias.correction,
+                                             uppert,
+                                             lowert,
+                                             consecutive,
+                                             duration,
+                                             country_shp,
+                                             season,
+                                             frequency,
+                                             method,
+                                             window) {
   season_name <-
     convert_vector_to_month_initials(season)
   data_list <- datasets %>%
@@ -1783,1315 +2033,17 @@ perform_calculations.prj <- function(datasets,
       })
     )
 
-  invisible(structure(
-    list(
-      terra::rast(data_list$rst_ens_mean),
-      terra::rast(data_list$rst_ens_sd),
-      terra::rast(purrr::map(
-        data_list$rst_models, ~ terra::rast(.x)
-      )),
-      do.call(rbind, purrr::map(
-        1:nrow(data_list), ~ data_list$models_temp[[.]]
-      ))
-    ),
-    class = "CAVAanalytics_projections",
-    components = list(
-      "SpatRaster for ensemble mean",
-      "SpatRaster for ensemble sd",
-      "SpatRaster for individual members",
-      "dataframe for annualy aggregated data"
-    )
+  invisible(new_CAVAanalytics_projections(
+    ensemble_mean = terra::rast(data_list$rst_ens_mean),
+    ensemble_sd = terra::rast(data_list$rst_ens_sd),
+    individual_members = terra::rast(purrr::map(
+      data_list$rst_models, ~ terra::rast(.x)
+    )),
+    annual_data = do.call(rbind, purrr::map(
+      1:nrow(data_list), ~ data_list$models_temp[[.]]
+    ))
   ))
 }
-
-
-# Helper functions for calculating indices --------------------------------------------------------------
-
-#' Consecutive days
-#'
-#' Calculation of consecutive days. It can be used with aggregateGrid.
-#'
-#' @param col numeric vector
-#' @param duration either "max" or "total".
-#' @param lowert numeric. Lower threshold
-#' @param uppert numeric. Upper threshold
-#' @param frequency logical. Whether frequency or abosulte numbers should be returned. Only works with duration != max
-#' @return numeric of length 1
-#' @export
-# functions for consecutive days
-
-thrs_consec = function(col, duration, lowert, uppert, frequency) {
-  if (!is.numeric(col))
-    stop("input has to be a numeric vector")
-
-  if (!(duration == "max" || is.numeric(duration))) {
-    stop("duration must be 'max' or a number")
-  }
-  #analyse consecutive days
-
-  if (!is.null(lowert)) {
-    consec = rle(col < lowert)
-
-  } else{
-    consec = rle(col > uppert)
-
-  }
-
-  if (duration == "max" &
-      frequency)
-    stop(
-      "Not meaningful. By definition, the maximum duration of an event, let's say a dry spell, has frequency of 1"
-    )
-
-  #get only connsecutive days matching the threshold
-
-  consec_days = consec$lengths[consec$values == TRUE]
-
-  #return values out
-
-  if (duration == "max") {
-    val <- max(consec_days, na.rm = T)
-    return(if (val == "-Inf")
-      0
-      else
-        val)
-
-  } else{
-    if (!frequency)
-      return(sum(consec_days[consec_days > duration], na.rm = T))
-    else
-      return(length(na.omit(consec_days[consec_days > duration])))
-
-  }
-
-}
-
-
-#' Calculation of thresholds
-#'
-#' Calculation of number of days with certain condition. It can be used with aggregateGrid.
-
-#' @param col numeric vector
-#' @param lowert numeric. lower threshold
-#' @param uppert numeric. upper threshold
-#' @return numeric of length 1
-#'
-#' @export
-
-
-thrs = function(col, lowert, uppert) {
-  if (!is.numeric(col))
-
-    stop("input has to be a numeric vector")
-
-  if (!is.null(lowert)) {
-    sum(col < lowert, na.rm = T)
-
-  } else{
-    sum(col > uppert, na.rm = T)
-
-  }
-
-}
-
-
-#' @noRd
-
-agreement = function(array3d, threshold) {
-  # Define the inner function find.agreement within the agreement function
-  find.agreement = function(x, threshold) {
-    # Calculate proportion of models predicting each sign of change (negative(-1), no change(0), positive(+1))
-    sign.proportion = c(length(x[x < 0]) / length(x),
-                        length(x[x == 0]) / length(x),
-                        length(x[x > 0]) / length(x))
-    names(sign.proportion) = c("-1", "0", "1")
-    # Compare the set threshold to the maximum proportion of models agreeing on any one sign of change
-    # If the max proportion is higher than threshold, return 1 (meaning there is agreement in signs among model)
-    # Otherwise return 0 (no agreement meeting the set threshold)
-    if (max(sign.proportion) > threshold) {
-      return(1)
-    } else {
-      return(0)
-    }
-  }
-
-  # Apply find.agreement to each element of the array3d over the second and third dimensions
-  array1_agreement = apply(array3d, c(2, 3), find.agreement, threshold)
-  return(array1_agreement)
-}
-
-
-#' @noRd
-
-models_trends <- function(c4R, observation = F) {
-  # Add trend package to imports if not already present
-  if (length(dim(c4R$Data)) > 2) {
-    # in cases in which there is a spatial dimension
-    cli::cli_progress_step(" Calculating Sen's slope and Mann-Kendall test")
-
-    if (dim(c4R$Data)[ifelse(observation, 1, 2)] > 100)
-      cli::cli_alert_warning("Check that your performed annual aggregation before using this function")
-
-    ind.trends <-
-      apply(c4R$Data, if (observation)
-        c(2, 3)
-        else
-          c(1, 3, 4), function(y) {
-            df <- reshape2::melt(y)
-            # Use trend package functions
-            mk <- trend::mk.test(df$value)
-            sen <- trend::sens.slope(df$value)
-            return(c(sen$estimates, mk$p.value))
-          })
-
-    cli::cli_process_done()
-    return(ind.trends)
-  } else {
-    # when spatial averages are performed
-    if (dim(c4R$Data)[ifelse(observation, 1, 2)] > 100)
-      cli::cli_alert_warning("Check that your performed annual aggregation before using this function")
-
-    if (!observation) {
-      df_tm_series <- reshape2::melt(c4R$Data) %>%
-        dplyr::group_by(Var1) %>%
-        dplyr::summarise(
-          coef = trend::sens.slope(value)$estimates,
-          p.value = trend::mk.test(value)$p.value
-        ) %>%
-        dplyr::mutate(date = seq(
-          as.Date(c4R$Dates$start[[1]]),
-          as.Date(c4R$Dates$start[[length(c4R$Dates$start)]]),
-          by = "year"
-        )) %>%
-        dplyr::select(Var1, value = coef, date, coef, p.value)
-
-      return(df_tm_series)
-    } else {
-      values <- c4R$Data
-      sen <- trend::sens.slope(values)
-      mk <- trend::mk.test(values)
-
-      df_tm_series <- data.frame(
-        value = values,
-        date = seq(
-          as.Date(c4R$Dates$start[[1]]),
-          as.Date(c4R$Dates$start[[length(c4R$Dates$start)]]),
-          by = "year"
-        ),
-        coef = sen$estimates,
-        p.value = mk$p.value
-      )
-
-      return(df_tm_series)
-    }
-  }
-}
-
-
-
-# Visualization -----------------------------------------------------------
-
-#' Make a spatRaster from a C4R list
-#' @noRd
-make_raster <-
-  function(cl4.object, dimensions, shape.file, stat = "mean") {
-    xmin <-
-      if (is.null(cl4.object$xyCoords$lon))
-        min(cl4.object$xyCoords$x)
-    else
-      min(cl4.object$xyCoords$lon[1, ])
-    xmax <-
-      if (is.null(cl4.object$xyCoords$lon))
-        max(cl4.object$xyCoords$x)
-    else
-      max(cl4.object$xyCoords$lon[1, ])
-    ymin <-
-      if (is.null(cl4.object$xyCoords$lat))
-        min(cl4.object$xyCoords$y)
-    else
-      min(cl4.object$xyCoords$lat[, 1])
-    ymax <-
-      if (is.null(cl4.object$xyCoords$lat))
-        max(cl4.object$xyCoords$y)
-    else
-      max(cl4.object$xyCoords$lat[, 1])
-
-    array_mean <-
-      apply(cl4.object$Data, dimensions, stat, na.rm = TRUE)
-
-
-    cl4.object$Data <- array_mean
-
-    rasters <- terra::rast(cl4.object$Data, extent = terra::ext(xmin, xmax, ymin, ymax)) %>%
-      terra::flip(., direction = 'vertical') %>%
-      terra::crop(., shape.file, snap = "out") %>%
-      terra::mask(., shape.file)
-
-    nms <-
-      paste0(
-        stringr::str_extract(cl4.object$Dates$start[1], "\\d{4}"),
-        ".",
-        stringr::str_extract(cl4.object$Dates$end[length(cl4.object$Dates$start)], "\\d{4}")
-      )
-    names(rasters) <-  nms
-
-    return(rasters)
-
-  }
-
-#' @noRd
-
-ridgeline <- suppressWarnings({
-  suppressMessages({
-    function(x,
-             num_grps = 10,
-             xlab = "Value",
-             ylab = "Group Intervals",
-             title = "",
-             legend_title = "z",
-             group_col,
-             z_col,
-             fill = NULL,
-             facet1 = NULL,
-             facet2 = NULL) {
-      if (missing(x)) {
-        stop("Empty dataframe x. Please give a proper input.")
-      }
-
-      if (missing(group_col)) {
-        stop("Group column not specified. Use group_col to specify group.")
-      }
-
-      if (missing(z_col)) {
-        stop("Variable to plot is not specified. Use z_col to specify variable.")
-      }
-
-      df <- x
-      ctgrp <- x <- NULL
-      grp <- df[, group_col]
-      z <- df[, z_col]
-      f <- df[, fill]
-      fc1 <- df[, facet1]
-      fc2 <- df[, facet2]
-
-
-      df2 <- data.frame(
-        grp = grp,
-        z = z,
-        f = f,
-        fc1 = fc1,
-        fc2 = fc2
-      )
-      df2$ctgrp <- cut(df2$grp, breaks = num_grps)
-
-
-      ggplot2::ggplot(df2, ggplot2::aes(y = ctgrp)) +
-        ggridges::geom_density_ridges(
-          ggplot2::aes(x = z, fill = if (!is.null(fill))
-            f
-            else
-              NULL),
-          scale = 1,
-          rel_min_height = 0.01,
-          alpha = .8,
-          color = "white"
-        ) +
-        ggplot2::scale_y_discrete(expand = c(0, 0)) +
-        ggplot2::scale_x_continuous(expand = c(0, 0)) +
-        ggplot2::ylab(ylab) +
-        ggplot2::xlab(xlab) +
-        if (!is.null(facet1) & !is.null(facet2)) {
-          ggplot2::facet_grid(fc1 ~ fc2)
-        } else if (!is.null(facet1) & is.null(facet2)) {
-          ggplot2::facet_grid(fc1 ~ .)
-        } else if (is.null(facet1) & !is.null(facet2)) {
-          ggplot2::facet_grid(fc2 ~ .)
-        }
-    }
-  })
-})
-
-#' IPCC color palette
-#'
-#' automatically use the suggested IPCC colors for precipitation and temperature.
-#' @param type character, one of tmp or pr.
-#' @param divergent logical. If TRUE, divergent palette are used. Useful in combination with legend.range to assign central colors in the palette to zero values
-#' @export
-IPCC_palette <- function(type, divergent)
-{
-  stopifnot(is.logical(divergent))
-  match.arg(type, c("pr", "tmp"))
-  if (type == "pr" & divergent)
-  {
-    c(
-      rgb(84, 48, 5, maxColorValue = 255),
-      rgb(140, 81, 10, maxColorValue = 255),
-      rgb(191, 129, 45, maxColorValue = 255),
-      rgb(223, 194, 125, maxColorValue = 255),
-      rgb(246, 232, 195, maxColorValue = 255),
-      "white",
-      rgb(199, 234, 229, maxColorValue = 255),
-      rgb(128, 205, 193, maxColorValue = 255),
-      rgb(53, 151, 143, maxColorValue = 255),
-      rgb(1, 102, 94, maxColorValue = 255),
-      rgb(0, 60, 48, maxColorValue = 255)
-    )
-  } else
-    if (type == "tmp" & divergent)
-    {
-      c(
-        rgb(5, 48, 97, maxColorValue = 255),
-        rgb(33, 102, 172, maxColorValue = 255),
-        rgb(67, 147, 195, maxColorValue = 255),
-        rgb(146, 197, 222, maxColorValue = 255),
-        rgb(209, 229, 240, maxColorValue = 255),
-        "white",
-        rgb(253, 219, 199, maxColorValue = 255),
-        rgb(244 , 165, 130, maxColorValue = 255),
-        rgb(214, 96, 77, maxColorValue = 255),
-        rgb(178, 24, 43, maxColorValue = 255),
-        rgb(103, 0, 31, maxColorValue = 255)
-      )
-
-    } else
-      if (type == "pr" & !divergent)
-      {
-        c(
-          rgb(255, 255, 204, maxColorValue = 255),
-          rgb(237, 248, 177, maxColorValue = 255),
-          rgb(161, 218, 180, maxColorValue = 255),
-          rgb(65, 182, 196, maxColorValue = 255),
-          rgb(44, 127, 184, maxColorValue = 255),
-          rgb(37, 52, 148, maxColorValue = 255)
-
-        )
-      } else
-      {
-        c(
-          rgb(255, 255, 178, maxColorValue = 255),
-          rgb(254, 204, 92, maxColorValue = 255),
-          rgb(253, 141, 60, maxColorValue = 255),
-          rgb(240, 59, 32, maxColorValue = 255),
-          rgb(189, 0, 38, maxColorValue = 255),
-          "#660000"
-        )
-
-      }
-}
-
-
-#' @noRd
-convert_vector_to_month_initials <- function(month_vector) {
-  # Ensure the vector is treated as a sequence, including wrapping cases
-  seq_length <- length(month_vector)
-  if (seq_length > 1) {
-    # Extract the first letter of each month
-    month_initials <- substr(month.abb[month_vector], 1, 1)
-  } else {
-    # If only one month is given, use the three-letter abbreviation
-    month_initials <- month.abb[month_vector]
-  }
-
-  # Collapse into a single string
-  paste(month_initials, collapse = "")
-}
-
-#' @noRd
-spatial_prep = function(data,
-                        index,
-                        ccs_sign = F,
-                        stat,
-                        ensemble,
-                        obs = F,
-                        trends = F) {
-  lngth <-
-    length(stringr::str_split(names(data[[1]]), "_")[[1]]) # season is always at the end of the string
-  order <-
-    unique(purrr::map_chr(stringr::str_split(names(data[[1]]), "_"), ~ .x[lngth])) # order of seasons
-
-  if (!obs) {
-    if (ensemble) {
-      cli::cli_text(
-        paste0(
-          "{cli::symbol$arrow_right}",
-          " Visualizing ensemble ",
-          stat,
-          if (ccs_sign)
-            " and agreement in the sign of change"
-          else
-            ""
-        )
-      )
-    } else {
-      cli::cli_text(
-        paste0(
-          "{cli::symbol$arrow_right} Visualizing individual members, argument stat is ignored.",
-          if (ccs_sign)
-            "To visualize model agreement set ensemble to F "
-          else
-            ""
-        )
-      )
-    }
-
-    rs_df <-
-      terra::as.data.frame(data[[index]], xy = TRUE, na.rm = TRUE) %>%
-      tidyr::pivot_longer(cols = 3:ncol(.),
-                          values_to = "value",
-                          names_to = "long_name") %>%  {
-                            if (ensemble)
-                            {
-                              # Extract scenario and time frame from column names
-                              tidyr::separate_wider_delim(
-                                .,
-                                long_name,
-                                delim = "_",
-                                names = c("scenario", "time_frame", "season")
-                              ) %>%
-                                # Replace "." with "-" in time frame
-                                dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-")) %>%
-                                dplyr::mutate(., season = factor(season, levels = order))
-
-                            } else
-                            {
-                              # Extract Member, scenario and time frame from column names
-                              tidyr::separate_wider_delim(
-                                .,
-                                long_name,
-                                delim = "_",
-                                names = c("member", "scenario", "time_frame", "season")
-                              ) %>%
-                                # Replace "." with "-" in time frame
-                                dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-")) %>%
-                                dplyr::mutate(., season = factor(season, levels = order))
-
-                            }
-                          }
-
-    if (ccs_sign) {
-      rs_df_sign <-
-        terra::as.data.frame(data[[4]], xy = TRUE, na.rm = TRUE) %>%
-        tidyr::pivot_longer(
-          cols = 3:ncol(.),
-          values_to = "value",
-          names_to = "long_name"
-        ) %>%
-        # Extract scenario and time frame from column names
-        tidyr::separate_wider_delim(
-          .,
-          long_name,
-          delim = "_",
-          names = c("scenario", "time_frame", "season")
-        ) %>%
-        # Replace "." with "-" in time frame
-        dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-")) %>%
-        dplyr::mutate(., season = factor(season, levels = order))
-
-
-      return(list(rs_df, rs_df_sign))
-
-
-    } else {
-      return(list(rs_df))
-    }
-  } else {
-    # when obs is TRUE
-    if (!trends) {
-      cli::cli_text(paste0(
-        "{cli::symbol$arrow_right}",
-        " Visualizing observational dataset "
-      ))
-
-      cli::cli_alert_warning(" Argument ensemble and stat are ignored")
-      rs_df <-
-        terra::as.data.frame(data[[index]], xy = TRUE, na.rm = TRUE) %>%
-        tidyr::pivot_longer(
-          cols = 3:ncol(.),
-          values_to = "value",
-          names_to = "long_name"
-        ) %>%
-        # Extract scenario and time frame from column names
-        tidyr::separate_wider_delim(
-          long_name,
-          delim = "_",
-          names = c("scenario", "time_frame", "season")
-        )  %>%
-        # Replace "." with "-" in time frame
-        dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-")) %>%
-        dplyr::mutate(., season = factor(season, levels = order))
-
-      return(list(rs_df))
-
-    } else {
-      # linear regression for observations
-      cli::cli_text(
-        paste0(
-          "{cli::symbol$arrow_right}",
-          " Visualizing linear regression results for the observational dataset "
-        )
-      )
-
-      cli::cli_alert_warning(" Argument ensemble and stat are ignored")
-
-      rs_df <-
-        purrr::map(
-          data[1:2],
-          ~ terra::as.data.frame(.x, xy = TRUE, na.rm = TRUE) %>%
-            tidyr::pivot_longer(
-              cols = 3:ncol(.),
-              values_to = "value",
-              names_to = "long_name",
-            ) %>%
-            tidyr::separate_wider_delim(
-              .,
-              long_name,
-              delim = "_",
-              names = c("scenario", "type", "time_frame", "season")
-            ) %>%
-            # Replace "." with "-" in time frame
-            dplyr::mutate(., time_frame =  stringr::str_replace(time_frame, "\\.", "-")) %>%
-            dplyr::mutate(., season = factor(season, levels = order))
-        )
-
-      return(rs_df)
-    }
-  }
-
-}
-
-
-
-#' @noRd
-spatial_plot = function(spatial_data,
-                        sign,
-                        ensemble,
-                        palette,
-                        bins,
-                        intervals,
-                        alpha,
-                        plot_titles,
-                        legend_range,
-                        obs,
-                        trends,
-                        lwd)
-{
-  # Suppress warnings
-  options(warn = -1)
-
-  # Get countries data
-  countries <-
-    rnaturalearth::ne_countries(scale = "large", returnclass = "sf")
-
-  palette <-
-    if (is.null(palette))
-      c("blue", "cyan", "green", "yellow", "orange", "red", "black")
-  else
-    palette
-
-  if (!sign)  {
-    legend_range <-
-      if (is.null(legend_range))
-        c(range(spatial_data[[1]]$value, na.rm = TRUE))
-    else
-      legend_range
-  } else  {
-    # when for ccs, then give full legend_range values
-
-    legend_range <-
-      if (is.null(legend_range))
-        c(-max(abs(
-          range(spatial_data[[1]]$value, na.rm = TRUE)
-        )), +max(abs(
-          range(spatial_data[[1]]$value, na.rm = TRUE)
-        )))
-    else
-      legend_range
-
-  }
-
-  if (!obs)
-  {
-    p <- ggplot2::ggplot() +
-      ggplot2::geom_sf(
-        fill = 'white',
-        color = "black",
-        data = countries,
-        alpha = 0.5,
-        lwd = lwd
-      ) +
-      ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
-                           data = spatial_data[[1]],
-                           alpha = alpha) +
-      ggplot2::geom_sf(
-        fill = NA,
-        color = "black",
-        lwd = lwd,
-        data = countries
-      ) + {
-        if (!bins)
-        {
-          ggplot2::scale_fill_gradientn(
-            colors = palette,
-            limits = legend_range,
-            na.value = "transparent",
-            n.breaks = 10,
-            guide = ggplot2::guide_colourbar(
-              ticks.colour = "black",
-              ticks.linewidth = 1,
-              title.position = "top",
-              title.hjust = 0.5
-            )
-          )
-        } else
-        {
-          ggplot2::scale_fill_stepsn(
-            colors = palette,
-            limits = legend_range,
-            na.value = "transparent",
-            breaks = if (is.null(intervals))
-              ggplot2::waiver()
-            else
-              intervals,
-            guide = ggplot2::guide_colourbar(
-              ticks.colour = "black",
-              ticks.linewidth = 1,
-              title.position = "top",
-              title.hjust = 0.5
-            )
-          )
-        }
-      } +
-      ggplot2::coord_sf(
-        xlim = c(
-          range(spatial_data[[1]]$x)[[1]] - 0.5,
-          range(spatial_data[[1]]$x)[[2]] + 0.5
-        ),
-        ylim = c(
-          range(spatial_data[[1]]$y)[[1]] - 0.5,
-          range(spatial_data[[1]]$y)[[2]] + 0.5
-        ),
-        expand = F,
-        ndiscr = 500
-      ) + {
-        if (ensemble)
-        {
-          ggh4x::facet_nested(scenario ~ season)
-        } else
-        {
-          ggh4x::facet_nested(scenario ~ season + member)
-        }
-      } +
-      ggplot2::labs(fill = plot_titles, x = "", y = "") +
-      ggplot2::theme_bw() +
-      ggplot2::theme(
-        plot.background = ggplot2::element_blank(),
-        panel.background = ggplot2::element_blank(),
-        panel.border = ggplot2::element_blank(),
-        panel.grid.major = ggplot2::element_blank(),
-        panel.grid.minor = ggplot2::element_blank(),
-        axis.text.x = ggplot2::element_blank(),
-        axis.text.y = ggplot2::element_blank(),
-        axis.ticks = ggplot2::element_blank(),
-        axis.title = ggplot2::element_blank(),
-        legend.position = if (ensemble)
-          "right"
-        else
-          "bottom",
-        legend.direction = if (ensemble)
-          "vertical"
-        else
-          "horizontal",
-        legend.key.height = if (ensemble)
-          ggplot2::unit(1.2, 'cm')
-        else
-          ggplot2::unit(0.3, 'cm'),
-        legend.key.width = if (ensemble)
-          ggplot2::unit(0.3, 'cm')
-        else
-          ggplot2::unit(2, 'cm'),
-        legend.box.spacing = ggplot2::unit(0, "pt"),
-        legend.text =  if (ensemble)
-          NULL
-        else
-          ggplot2::element_text(angle = 45, hjust = 1)
-      ) + {
-        if (sign)
-          ggplot2::geom_point(
-            data = dplyr::filter(spatial_data[[2]], value == 1),
-            size = 0.1,
-            alpha = 0.4,
-            color = "black",
-            ggplot2::aes(x, y)
-          )
-
-      }
-
-    return(p)
-
-  } else
-  {
-    # when obs is TRUE
-
-    if (!trends)
-    {
-      p <- ggplot2::ggplot() +
-        ggplot2::geom_sf(
-          fill = 'white',
-          color = "black",
-          data = countries,
-          alpha = 0.5,
-          lwd = lwd
-        ) +
-        ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
-                             data = spatial_data[[1]],
-                             alpha = alpha) +
-        ggplot2::geom_sf(
-          fill = NA,
-          color = "black",
-          lwd = lwd,
-          data = countries
-        ) + {
-          if (!bins)
-          {
-            ggplot2::scale_fill_gradientn(
-              colors = palette,
-              limits = legend_range,
-              na.value = "transparent",
-              n.breaks = 10,
-              guide = ggplot2::guide_colourbar(
-                ticks.colour = "black",
-                ticks.linewidth = 1,
-                title.position = "top",
-                title.hjust = 0.5,
-                label.hjust = 1
-              )
-            )
-          } else
-          {
-            ggplot2::scale_fill_stepsn(
-              colors = palette,
-              limits = legend_range,
-              na.value = "transparent",
-              breaks = if (is.null(intervals))
-                ggplot2::waiver()
-              else
-                intervals,
-              guide = ggplot2::guide_colourbar(
-                ticks.colour = "black",
-                ticks.linewidth = 1,
-                title.position = "top",
-                title.hjust = 0.5,
-                label.hjust = 1
-              )
-            )
-
-          }
-
-        } +
-        ggplot2::coord_sf(
-          xlim = c(
-            range(spatial_data[[1]]$x)[[1]] - 0.5,
-            range(spatial_data[[1]]$x)[[2]] + 0.5
-          ),
-          ylim = c(
-            range(spatial_data[[1]]$y)[[1]] - 0.5,
-            range(spatial_data[[1]]$y)[[2]] + 0.5
-          ),
-          expand = F,
-          ndiscr = 500
-        ) +
-        ggh4x::facet_nested(scenario  ~ season) +
-        ggplot2::labs(fill = plot_titles, x = "", y = "") +
-        ggplot2::theme_bw() +
-        ggplot2::theme(
-          strip.text.y = ggplot2::element_blank(),
-          plot.background = ggplot2::element_blank(),
-          panel.background = ggplot2::element_blank(),
-          panel.border = ggplot2::element_blank(),
-          panel.grid.major = ggplot2::element_blank(),
-          panel.grid.minor = ggplot2::element_blank(),
-          axis.text.x = ggplot2::element_blank(),
-          axis.text.y = ggplot2::element_blank(),
-          axis.ticks = ggplot2::element_blank(),
-          axis.title = ggplot2::element_blank(),
-          legend.position = "right",
-          legend.key.height = ggplot2::unit(1, 'cm'),
-          legend.key.width = ggplot2::unit(0.3, 'cm'),
-          legend.box.spacing = ggplot2::unit(0.2, "pt")
-        )
-
-      return(p)
-
-    } else
-    {
-      # when linear regression is visualized
-
-      p <- ggplot2::ggplot() +
-        ggplot2::geom_sf(
-          fill = 'white',
-          color = "black",
-          data = countries,
-          alpha = 0.5,
-          lwd = lwd
-        ) +
-        ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value),
-                             data = spatial_data[[1]],
-                             alpha = alpha) +
-        ggplot2::geom_sf(
-          fill = NA,
-          color = "black",
-          lwd = lwd,
-          data = countries
-        ) + {
-          if (!bins)
-          {
-            ggplot2::scale_fill_gradientn(
-              colors = palette,
-              limits = legend_range,
-              na.value = "transparent",
-              n.breaks = 10,
-              guide = ggplot2::guide_colourbar(
-                ticks.colour = "black",
-                ticks.linewidth = 1,
-                title.position = "top",
-                title.hjust = 0.5
-              )
-            )
-          } else
-          {
-            ggplot2::scale_fill_stepsn(
-              colors = palette,
-              limits = legend_range,
-              na.value = "transparent",
-              breaks = if (is.null(intervals))
-                ggplot2::waiver()
-              else
-                intervals,
-              guide = ggplot2::guide_colourbar(
-                ticks.colour = "black",
-                ticks.linewidth = 1,
-                title.position = "top",
-                title.hjust = 0.5
-              )
-            )
-          }
-        } +
-        ggplot2::geom_point(
-          data = dplyr::filter(spatial_data[[2]], value < 0.05),
-          size = 0.1,
-          alpha = 0.4,
-          color = "black",
-          ggplot2::aes(x, y)
-        ) +
-        ggplot2::coord_sf(
-          xlim = c(
-            range(spatial_data[[2]]$x)[[1]] - 0.5,
-            range(spatial_data[[2]]$x)[[2]] + 0.5
-          ),
-          ylim = c(
-            range(spatial_data[[2]]$y)[[1]] - 0.5,
-            range(spatial_data[[2]]$y)[[2]] + 0.5
-          ),
-          expand = F,
-          ndiscr = 500
-        ) +
-        ggh4x::facet_nested(scenario  ~ season) +
-        ggplot2::labs(fill = plot_titles, x = "", y = "") +
-        ggplot2::theme_bw() +
-        ggplot2::theme(
-          strip.text.y = ggplot2::element_blank(),
-          plot.background = ggplot2::element_blank(),
-          panel.background = ggplot2::element_blank(),
-          panel.border = ggplot2::element_blank(),
-          panel.grid.major = ggplot2::element_blank(),
-          panel.grid.minor = ggplot2::element_blank(),
-          axis.text.x = ggplot2::element_blank(),
-          axis.text.y = ggplot2::element_blank(),
-          axis.ticks = ggplot2::element_blank(),
-          axis.title = ggplot2::element_blank(),
-          legend.position = "right",
-          legend.key.height = ggplot2::unit(1, 'cm'),
-          legend.key.width = ggplot2::unit(0.3, 'cm'),
-          legend.box.spacing = ggplot2::unit(0.2, "pt")
-        )
-
-      return(p)
-
-    }
-
-  }
-
-}
-
-#' @noRd
-temporal_plot = function(data,
-                         index,
-                         ensemble,
-                         spatial.aggr = F,
-                         plot_titles,
-                         palette,
-                         legend_range,
-                         obs = F)
-{
-  lngth <-
-    length(stringr::str_split(names(data[[1]]), "_")[[1]]) # season is always at the end of the string
-  order <-
-    unique(purrr::map_chr(stringr::str_split(names(data[[1]]), "_"), ~ .x[lngth])) # order of seasons
-
-  df.processed <-  if (spatial.aggr)
-  {
-    cli::cli_text(paste0(
-      "{cli::symbol$arrow_right}",
-      " Visualizing annual time series "
-    ))
-    data[[index]] %>%
-      dplyr::group_by(date, experiment, Var1, season) %>%
-      dplyr::summarise(value = median(value)) %>% # spatial aggregation
-      dplyr::mutate(season = factor(season, levels = order)) # ordering seasons
-
-  } else {
-    if (!obs) {
-      cli::cli_text(paste0(
-        "{cli::symbol$arrow_right}",
-        " Visualizing annual anomaly time series "
-      ))
-    } else {
-      cli::cli_text(
-        paste0(
-          "{cli::symbol$arrow_right}",
-          " Visualizing annual time series for the observational dataset"
-        )
-      )
-    }
-    data[[index]] %>%
-      dplyr::mutate(season = factor(season, levels = order))
-
-  }
-
-  if (!obs)
-  {
-    palette <-
-      if (is.null(palette))
-        RColorBrewer::brewer.pal(min(length(unique(
-          data[[index]]$experiment
-        )), RColorBrewer::brewer.pal.info["Set2", "maxcolors"]), "Set2")
-    else
-      palette
-    cli::cli_alert_warning(" Arguments stat, bins,intervals, alpha and lwd are ignored")
-    if (ensemble)
-    {
-      p <-  df.processed %>%
-        dplyr::group_by(date, experiment, season) %>%
-        dplyr::summarise(sd = sd(value), value = mean(value)) %>%
-        ggplot2::ggplot() +
-        ggplot2::geom_line(
-          ggplot2::aes(y = value, x = date, color = experiment),
-          linetype = "dotted",
-          alpha = 0.5,
-          linewidth = 0.9
-        ) +
-        ggplot2::geom_smooth(
-          ggplot2::aes(y = value, x = date, color = experiment),
-          se = F,
-          linewidth = 1,
-          method = "gam",
-          formula = y ~ x
-        ) +
-        ggplot2::geom_ribbon(
-          ggplot2::aes(
-            y = value,
-            x = date,
-            ymin = value - sd,
-            ymax = value + sd,
-            fill = experiment
-          ),
-          alpha = 0.15,
-          show.legend = F
-        ) +
-        ggplot2::facet_wrap(season ~ .) +
-        ggplot2::scale_x_date(date_breaks = "4 years", date_labels = "%Y") +
-        ggplot2::theme_bw() +
-        ggplot2::theme(
-          legend.position = "bottom",
-          axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
-          legend.title = ggplot2::element_blank(),
-          panel.grid.major = ggplot2::element_blank(),
-          panel.grid.minor = ggplot2::element_blank()
-        ) +
-        ggplot2::labs(x = "Year", y = plot_titles) +
-        ggplot2::scale_color_manual(values = palette) +
-        ggplot2::scale_fill_manual(values = palette) +
-        if (!is.null(legend_range))
-        {
-          ggplot2::ylim(legend_range[1], legend_range[2])
-        }
-
-      return(p)
-
-
-    } else
-    {
-      # individual models
-      p <- df.processed  %>%
-        ggplot2::ggplot() +
-        ggplot2::geom_line(
-          ggplot2::aes(y = value, x = date, color = experiment),
-          linetype = "dotted",
-          alpha = 0.7
-        ) +
-        ggplot2::geom_smooth(
-          ggplot2::aes(y = value, x = date, color = experiment),
-          se = F,
-          linewidth = 0.5,
-          method = "gam",
-          formula = y ~ x
-        ) +
-        ggplot2::facet_grid(season ~ Var1) +
-        ggplot2::scale_x_date(date_breaks = "4 years", date_labels = "%Y") +
-        ggplot2::theme_bw() +
-        ggplot2::theme(
-          legend.position = "bottom",
-          axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
-          legend.title = ggplot2::element_blank(),
-          panel.grid.major = ggplot2::element_blank(),
-          panel.grid.minor = ggplot2::element_blank()
-        ) +
-        ggplot2::labs(x = "Year", y = plot_titles) +
-        ggplot2::scale_color_manual(values = palette) +
-        ggplot2::scale_fill_manual(values = palette) +
-        if (!is.null(legend_range))
-        {
-          ggplot2::ylim(legend_range[1], legend_range[2])
-        }
-
-      return(p)
-    }
-  } else
-  {
-    # when obs is TRUE
-    palette <- if (is.null(palette))
-      "black"
-    else
-      palette
-
-
-    cli::cli_alert_warning(" Arguments stat, bins,intervals, alpha and lwd are ignored")
-    p <- df.processed  %>%
-      dplyr::group_by(date, experiment, season) %>%
-      dplyr::summarise(value = mean(value)) %>%
-      ggplot2::ggplot() +
-      ggplot2::geom_line(
-        ggplot2::aes(y = value, x = date, color = experiment),
-        linetype = "dotted",
-        alpha = 0.7,
-        linewidth = 0.7
-      ) +
-      ggplot2::geom_smooth(
-        ggplot2::aes(y = value, x = date, color = experiment),
-        se = F,
-        linewidth = 0.8,
-        method = "gam",
-        formula = y ~ x
-      ) +
-      ggplot2::facet_wrap(~ season) +
-      ggplot2::scale_x_date(date_breaks = "4 years", date_labels = "%Y") +
-      ggplot2::theme_bw() +
-      ggplot2::theme(
-        legend.position = "none",
-        axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
-        panel.grid.major = ggplot2::element_blank(),
-        panel.grid.minor = ggplot2::element_blank()
-      ) +
-      ggplot2::labs(x = "Year", y = plot_titles) +
-      ggplot2::scale_color_manual(values = palette) +
-      if (!is.null(legend_range))
-      {
-        ggplot2::ylim(legend_range[1], legend_range[2])
-      }
-
-    return(p)
-
-  }
-
-}
-
-#' @noRd
-
-spatiotemporal_plot = function(data,
-                               index,
-                               ensemble,
-                               plot_titles,
-                               palette,
-                               legend_range,
-                               n.groups,
-                               obs = F)
-{
-  lngth <-
-    length(stringr::str_split(names(data[[1]]), "_")[[1]]) # season is always at the end of the string
-  order <-
-    unique(purrr::map_chr(stringr::str_split(names(data[[1]]), "_"), ~ .x[lngth])) # order of seasons
-
-  cli::cli_text(paste0("{cli::symbol$arrow_right}", " Visualizing frequencies "))
-
-  df.processed <-   data[[index]] %>%
-    dplyr::mutate(season = factor(season, levels = order))
-
-  if (!obs)
-  {
-    cli::cli_alert_warning(
-      " Arguments bins, stat, alpha and lwd are ignored. Change number of group intervals with n.groups"
-    )
-
-
-    palette <-
-      if (is.null(palette))
-        RColorBrewer::brewer.pal(min(length(unique(
-          data[[index]]$experiment
-        )), RColorBrewer::brewer.pal.info["Set2", "maxcolors"]), "Set2")
-    else
-      palette
-
-    if (ensemble)
-    {
-      p <-
-        suppressWarnings(
-          suppressMessages(
-            df.processed  %>%
-              ridgeline(
-                .,
-                group_col = 'date',
-                z_col = 'value',
-                num_grps = n.groups,
-                fill = 'experiment',
-                facet1 = 'season'
-              ) +
-              ggplot2::theme_bw() +
-              ggplot2::theme(
-                legend.position = "bottom",
-                legend.title = ggplot2::element_blank()
-              ) +
-              ggplot2::labs(x = plot_titles) +
-              ggplot2::scale_fill_manual(values =  palette) +
-              if (!is.null(legend_range))
-              {
-                ggplot2::xlim(legend_range[1], legend_range[2])
-              }
-          )
-        )
-
-      return(p)
-
-    } else
-    {
-      # when ensemble is FALSE for individual models and spatiotemporal
-      p <-
-        suppressWarnings(
-          suppressMessages(
-            df.processed %>%
-              ridgeline(
-                .,
-                group_col = 'date',
-                z_col = 'value',
-                num_grps = n.groups,
-                fill = 'experiment',
-                facet1 = 'Var1',
-                facet2 = 'season'
-              ) +
-              ggplot2::theme_bw() +
-              ggplot2::theme(
-                legend.position = "bottom",
-                legend.title = ggplot2::element_blank()
-              ) +
-              ggplot2::labs(x = plot_titles) +
-              ggplot2::scale_fill_manual(values =  palette) +
-              if (!is.null(legend_range))
-              {
-                ggplot2::xlim(legend_range[1], legend_range[2])
-              }
-          )
-        )
-
-      return(p)
-
-    }
-
-  } else
-  {
-    # when obs is TRUE
-    cli::cli_alert_warning(
-      " Arguments bins,palette, intervals,alpha, lwd and ensemble are ignored. Change number of group intervals with n.groups"
-    )
-
-    p <-
-      suppressWarnings(
-        suppressMessages(
-          df.processed %>%
-            ridgeline(
-              .,
-              group_col = 'date',
-              z_col = 'value',
-              num_grps = n.groups,
-              facet1 =  'season'
-            ) +
-            ggplot2::theme_bw() +
-            ggplot2::theme(legend.position = "none") +
-            ggplot2::labs(x = plot_titles) +
-            if (!is.null(legend_range))
-            {
-              ggplot2::xlim(legend_range[1], legend_range[2])
-            }
-        )
-      )
-
-    return(p)
-
-
-  }
-
-}
-
-
-
-
-#' @noRd
-remove_facets = function(position = "both") {
-  if (position == "both")
-    ggplot2::theme(
-      strip.text.x = ggplot2::element_blank(),
-      strip.text.y = ggplot2::element_blank(),
-      panel.border = ggplot2::element_rect(color = "black", fill =
-                                             NA)
-    )
-  else if (position == "x")
-
-    ggplot2::theme(strip.text.x = ggplot2::element_blank())
-  else if (position == "y")
-
-    ggplot2::theme(strip.text.y = ggplot2::element_blank())
-  else
-
-    cli::cli_abort(c("x" = "position can be equal to both, x or y"))
-
-}
-
-
-#' @noRd
-rename_facets = function(current_label, new_label, position = "x") {
-  cli::cli_alert_warning(c("!" = "Customise_facets can only be used with ensemble equal TRUE"))
-
-  names(new_label) = current_label
-
-  if (position == "x")
-    ggh4x::facet_nested(scenario ~ season, labeller = ggplot2::labeller(season = new_label))
-  else if (position == "y")
-
-    ggh4x::facet_nested(scenario ~ season, labeller = ggplot2::labeller(scenario = new_label))
-  else
-
-    cli::cli_abort(c("x" = "position can be equal to x or y"))
-
-}
-
 
 
 # S3 Classes constuctors  -------------------------------------------
@@ -3108,15 +2060,9 @@ new_CAVAanalytics_list <- function(models_df, country_shp) {
 
   # Create and return object
   structure(
-    list(
-      models_df,
-      country_shp
-    ),
+    list(models_df, country_shp),
     class = "CAVAanalytics_list",
-    components = list(
-      "data.frame with list columns",
-      "bbox"
-    )
+    components = list("data.frame with list columns", "bbox")
   )
 }
 
@@ -3128,7 +2074,11 @@ new_CAVAanalytics_list <- function(models_df, country_shp) {
 #' @param temporal_data data.frame for spatially aggregated data
 #' @return A CAVAanalytics_ccs object
 #' @noRd
-new_CAVAanalytics_ccs <- function(ccs_mean, ccs_sd, members_ccs, agreement, temporal_data) {
+new_CAVAanalytics_ccs <- function(ccs_mean,
+                                  ccs_sd,
+                                  members_ccs,
+                                  agreement,
+                                  temporal_data) {
   # Validate inputs
   stopifnot(inherits(ccs_mean, "SpatRaster"))
   stopifnot(inherits(ccs_sd, "SpatRaster"))
@@ -3138,13 +2088,7 @@ new_CAVAanalytics_ccs <- function(ccs_mean, ccs_sd, members_ccs, agreement, temp
 
   # Create and return object
   structure(
-    list(
-      ccs_mean,
-      ccs_sd,
-      members_ccs,
-      agreement,
-      temporal_data
-    ),
+    list(ccs_mean, ccs_sd, members_ccs, agreement, temporal_data),
     class = "CAVAanalytics_ccs",
     components = list(
       "SpatRaster for ccs mean",
@@ -3167,7 +2111,10 @@ new_CAVAanalytics_ccs <- function(ccs_mean, ccs_sd, members_ccs, agreement, temp
 #' @return A CAVAanalytics_observations object
 #' @noRd
 #'
-new_CAVAanalytics_observations <- function(spatraster_data, pvalues = NULL, annual_data, trends = FALSE) {
+new_CAVAanalytics_observations <- function(spatraster_data,
+                                           pvalues = NULL,
+                                           annual_data,
+                                           trends = FALSE) {
   if (!trends) {
     structure(
       list(spatraster_data, annual_data),
@@ -3201,7 +2148,10 @@ new_CAVAanalytics_observations <- function(spatraster_data, pvalues = NULL, annu
 #' @param annual_data data.frame for annually aggregated data
 #' @return An object of class "CAVAanalytics_projections"
 #' @noRd
-new_CAVAanalytics_projections <- function(ensemble_mean, ensemble_sd, individual_members, annual_data) {
+new_CAVAanalytics_projections <- function(ensemble_mean,
+                                          ensemble_sd,
+                                          individual_members,
+                                          annual_data) {
   # Input validation
   if (!inherits(ensemble_mean, "SpatRaster")) {
     stop("ensemble_mean must be a SpatRaster object")
@@ -3218,12 +2168,7 @@ new_CAVAanalytics_projections <- function(ensemble_mean, ensemble_sd, individual
 
   # Create the object with proper structure
   structure(
-    list(
-      ensemble_mean,
-      ensemble_sd,
-      individual_members,
-      annual_data
-    ),
+    list(ensemble_mean, ensemble_sd, individual_members, annual_data),
     class = "CAVAanalytics_projections",
     components = list(
       "SpatRaster for ensemble mean",
@@ -3241,7 +2186,9 @@ new_CAVAanalytics_projections <- function(ensemble_mean, ensemble_sd, individual
 #' @param temporal_biases data.frame containing temporal biases
 #' @return An object of class CAVAanalytics_model_biases
 #' @noRd
-new_CAVAanalytics_model_biases <- function(ensemble_biases, model_biases, temporal_biases) {
+new_CAVAanalytics_model_biases <- function(ensemble_biases,
+                                           model_biases,
+                                           temporal_biases) {
   # Input validation
   if (!inherits(ensemble_biases, "SpatRaster")) {
     cli::cli_abort("ensemble_biases must be a SpatRaster object")
@@ -3268,5 +2215,3 @@ new_CAVAanalytics_model_biases <- function(ensemble_biases, model_biases, tempor
     )
   )
 }
-
-

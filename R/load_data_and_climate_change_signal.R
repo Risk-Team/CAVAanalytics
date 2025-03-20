@@ -58,6 +58,8 @@ load_data_and_climate_change_signal <-
            percentage = F,
            window="monthly",
            verbose = TRUE) {
+    start_time <- Sys.time()  # Add timing
+
     # calculate number of chunks based on xlim and ylim
     if (missing(chunk.size) | missing(season)) {
       cli::cli_abort("chunk.size and season must be specified")
@@ -126,19 +128,18 @@ load_data_and_climate_change_signal <-
         # set xlim and ylim for current chunk
         xlim_chunk <- c(x_chunks[i] - overlap, x_chunks[i + 1])
         ylim_chunk <- c(y_chunks[j] - overlap, y_chunks[j + 1])
-        cli::cli_progress_step(paste(
-          paste0(
-            "Loading data and calculating clmate change signal for spatial CHUNK_",
-            i,
-            "_",
-            j
-          ),
-          ". Coordinates ",
-          "xlim=",
-          paste(xlim_chunk, collapse = ","),
-          " ylim=",
-          paste(ylim_chunk, collapse = ",")
-        ))
+        
+        if (verbose) {
+          cli::cli_alert_info(sprintf(
+            "Processing chunk %d/%d [%d,%d] - Coordinates: xlim=[%.2f,%.2f], ylim=[%.2f,%.2f]", 
+            length(out_list) + 1,
+            (length(x_chunks) - 1) * (length(y_chunks) - 1), 
+            i, j,
+            xlim_chunk[1], xlim_chunk[2],
+            ylim_chunk[1], ylim_chunk[2]
+          ))
+        }
+        
         # load data for current chunk with error handling
         proj_chunk <- tryCatch({
           suppressMessages(
@@ -181,11 +182,21 @@ load_data_and_climate_change_signal <-
 
         # add chunk to output list
         out_list[[paste0("chunk_", i, "_", j)]] <- proj_chunk
-        cli::cli_progress_done()
-
       }
     }
-    cli::cli_progress_step("Merging rasters")
+
+    # Clean up after merging
+    rm(rst_mean, rst_sd, rst_mbrs, rst_agree, out_list)
+    gc()
+    
+    end_time <- Sys.time()
+    if (verbose) {
+      cli::cli_alert_success(sprintf(
+        "Processing completed in %.2f minutes",
+        as.numeric(difftime(end_time, start_time, units = "mins"))
+      ))
+    }
+
     # Extract elements of each list in `out_list`
     rst_mean <- lapply(out_list, `[[`, 1)
     rst_sd <- lapply(out_list, `[[`, 2)
@@ -249,8 +260,6 @@ load_data_and_climate_change_signal <-
       setNames(merged_raster, names)
     }
 
-    cli::cli_process_done()
-
     rasters_mean <-  merge_rasters(rst_mean)
     rasters_sd <- merge_rasters(rst_sd)
     rasters_mbrs <- merge_rasters(rst_mbrs)
@@ -260,22 +269,14 @@ load_data_and_climate_change_signal <-
     progress_report(sprintf("Total processing time: %.2f minutes", 
                            as.numeric(difftime(end_time, start_time, units = "mins"))))
 
-    invisible(structure(
-      list(
-        rasters_mean %>% terra::crop(., country_shp) %>% terra::mask(., country_shp),
-        rasters_sd %>% terra::crop(., country_shp) %>% terra::mask(., country_shp),
-        rasters_mbrs %>% terra::crop(., country_shp) %>% terra::mask(., country_shp),
-        rasters_agree %>% terra::crop(., country_shp) %>% terra::mask(., country_shp),
-        df_temp
-      ),
-      class = "CAVAanalytics_ccs",
-      components = list(
-        "SpatRaster for ensemble mean",
-        "SpatRaster for ensemble sd",
-        "SpatRaster for individual members",
-        "SpatRaster stack for ccs agreement",
-        "dataframe for spatially and annually aggregated data"
-      )
-    ))
+    # Return result using constructor with correct parameter names
+    new_CAVAanalytics_ccs(
+      ccs_mean = rasters_mean %>% terra::crop(., country_shp) %>% terra::mask(., country_shp),
+      ccs_sd = rasters_sd %>% terra::crop(., country_shp) %>% terra::mask(., country_shp),
+      members_ccs = rasters_mbrs %>% terra::crop(., country_shp) %>% terra::mask(., country_shp),
+      agreement = rasters_agree %>% terra::crop(., country_shp) %>% terra::mask(., country_shp),
+      temporal_data = df_temp
+    )
 
   }
+

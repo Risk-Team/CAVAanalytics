@@ -256,7 +256,7 @@ load_data_and_model_biases <-
     result <- new_CAVAanalytics_model_biases(
       ensemble_biases = rasters_mean,
       model_biases = rasters_mbrs,
-      temporal_biases = NULL
+      temporal_biases = data.frame()
     )
     return(result)
   }

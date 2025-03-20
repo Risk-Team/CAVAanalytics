@@ -26,7 +26,8 @@ load_data_and_projections(
   domain = NULL,
   n.sessions = 6,
   method = "eqm",
-  window = "monthly"
+  window = "monthly",
+  verbose = TRUE
 )
 }
 \arguments{

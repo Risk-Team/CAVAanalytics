@@ -30,7 +30,15 @@ projections <- function(data,
                         method = "eqm",
                         window = "monthly") {
   # Check inputs using S3 method
-  check_inputs.projections(data, bias.correction, uppert, lowert, consecutive, duration, season, method, window)
+  check_inputs.projections(data,
+                           bias.correction,
+                           uppert,
+                           lowert,
+                           consecutive,
+                           duration,
+                           season,
+                           method,
+                           window)
 
   # retrieve information
   mod.numb <- dim(data[[1]]$models_mbrs[[1]]$Data)[1]
@@ -47,7 +55,13 @@ projections <- function(data,
 
   # create plots by season
   data_list <- purrr::map(season, function(sns) {
-    mes <- create_message.projections(var, bias.correction, uppert, lowert, consecutive, duration, frequency)
+    mes <- create_message.projections(var,
+                                      bias.correction,
+                                      uppert,
+                                      lowert,
+                                      consecutive,
+                                      duration,
+                                      frequency)
 
     # filter data by season
     datasets <- filter_data_by_season.default(datasets, season = sns)
@@ -64,7 +78,7 @@ projections <- function(data,
     cli::cli_progress_step("Performing calculations")
 
     # perform calculations
-    data_list <- perform_calculations.prj(
+    data_list <- perform_calculations.projections(
       datasets,
       mod.numb,
       var,
@@ -91,6 +105,3 @@ projections <- function(data,
     do.call(rbind, lapply(data_list, `[[`, 4))
   )
 }
-
-
-

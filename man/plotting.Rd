@@ -14,7 +14,7 @@ plotting(rst, palette, ...)
   rst,
   palette = NULL,
   legend_range = NULL,
-  plot_titles = "default",
+  plot_titles = PLOT_TITLES,
   ensemble = TRUE,
   bins = FALSE,
   intervals = NULL,
@@ -30,7 +30,7 @@ plotting(rst, palette, ...)
   rst,
   palette = NULL,
   legend_range = NULL,
-  plot_titles = "default",
+  plot_titles = PLOT_TITLES,
   ensemble = TRUE,
   bins = FALSE,
   intervals = NULL,
@@ -38,14 +38,15 @@ plotting(rst, palette, ...)
   stat = "mean",
   spatiotemporal = FALSE,
   temporal = FALSE,
-  lwd = DEFAULT_LINE_WIDTH
+  lwd = DEFAULT_LINE_WIDTH,
+  point_size = POINT_SIZE
 )
 
 \method{plotting}{CAVAanalytics_observations}(
   rst,
   palette = NULL,
   legend_range = NULL,
-  plot_titles = "default",
+  plot_titles = PLOT_TITLES,
   ensemble = FALSE,
   bins = FALSE,
   intervals = NULL,
@@ -53,20 +54,21 @@ plotting(rst, palette, ...)
   spatiotemporal = FALSE,
   temporal = FALSE,
   lwd = DEFAULT_LINE_WIDTH,
-  n.groups = 3
+  n.groups = 3,
+  point_size = POINT_SIZE
 )
 
 \method{plotting}{CAVAanalytics_model_biases}(
   rst,
   palette = NULL,
   legend_range = NULL,
-  plot_titles = "default",
+  plot_titles = PLOT_TITLES,
   ensemble = TRUE,
   bins = FALSE,
   intervals = NULL,
   alpha = DEFAULT_ALPHA,
-  temporal = FALSE,
-  spatiotemporal = FALSE,
+  temporal = F,
+  spatiotemporal = F,
   lwd = DEFAULT_LINE_WIDTH
 )
 }
@@ -98,6 +100,8 @@ plotting(rst, palette, ...)
 \item{lwd}{Width of country boundaries. Default is 0.1}
 
 \item{n.groups}{Number of groups for spatiotemporal plots. Default is 3}
+
+\item{point_size}{Size of dots for significance of trends. Default is 0.1}
 }
 \value{
 A ggplot2 object

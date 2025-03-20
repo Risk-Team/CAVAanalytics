@@ -64,9 +64,7 @@ kenya_exmp[[1]]$experiment
 dim(kenya_exmp[[1]]$models_mbrs[[1]]$Data)
 ```
 
-When uploading CORDEX-CORE data it is important to understand the concept of CORDEX domains. The domain argument in load_data needs to be correctly specified. Below is an example of the available CORDEX domains.
-
-![](domains.png){#fig:figure-1}
+When uploading CORDEX-CORE data it is important to understand the concept of CORDEX domains. The domain argument in load_data needs to be correctly specified. 
 
 ## Observations
 
@@ -144,7 +142,7 @@ a/b
 
 ```
 
-If we want to explore model biases biases on, let's say, the number of very warm days (days with maximum temperature above 35 °C), then the choice of the bias-correction method is very important. The eqm and qdm methods are much more suitable in this case because they correct the data distribution.
+If we want to explore model biases biases on, let's say, the number of very warm days (days with maximum temperature above 35 °C), then the choice of the bias-correction method is very important. Empirical quantile methods are much more suitable in this case because they correct the data distribution.
 
 
 ```{r, fig.height=6, fig.width=10,  message=F, warning=F}
@@ -256,7 +254,7 @@ CAVAanalytics also offer some easy to use function to modify plot appearances. F
 
 plotting(ccs_kenya, plot_titles = "Δ °C", 
 legend_range = c(-3, 3), 
-palette = IPCC_palette(type = "tmp", divergent = T))+
+palette = IPCC_palette(type = "tmp", divergent = T), point_size=0.08)+
 remove_facets(position = "both") # remove facet text
 
 ```
@@ -276,14 +274,14 @@ ccs_kenya_2040_2050 <- climate_change_signal(kenya_exmp_2040_2050, season=list(1
 # make first plot, rename facet label
 p1= plotting(ccs_kenya_2030_2040, plot_titles = "Δ °C", 
 legend_range = c(-3, 3), 
-palette = IPCC_palette(type = "tmp", divergent = T))+
+palette = IPCC_palette(type = "tmp", divergent = T), point_size=0.08)+
 rename_facets(current_label = "JFMAMJJASOND", new_label = "2030-2040")+
 remove_facets(position = "y")
 
 # make second plot, rename facet label
 p2= plotting(ccs_kenya_2040_2050, plot_titles = "Δ °C", 
 legend_range = c(-3, 3), 
-palette = IPCC_palette(type = "tmp", divergent = T))+
+palette = IPCC_palette(type = "tmp", divergent = T), point_size=0.08)+
 rename_facets(current_label = "JFMAMJJASOND", new_label = "2040-2050")
 
 # combine the plots and collect the legend. You need to have patchwork installed first 

@@ -8,7 +8,7 @@ title: CAVAanalytics
 navbar:
   left:
     - icon: fas fa-cloud-sun-rain
-      text: CAVA and IPCC Atlas
+      text: CAVA vs other tools
       href: articles/CAVA.html
     - text: Tutorials
       icon: fas fa-book
@@ -59,11 +59,10 @@ reference:
     contents:
       - C4R_to_CAVA
       - IPCC_palette
-      - make_raster
       - thrs
       - thrs_consec
-      - rename_facets
-      - remove_facets
       - years_selection
+      - remove_facets
+      - rename_facets
 
 

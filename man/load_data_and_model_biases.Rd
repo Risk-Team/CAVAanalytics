@@ -27,7 +27,8 @@ load_data_and_model_biases(
   n.sessions = 6,
   method = "eqm",
   cross_validation = "none",
-  window = "monthly"
+  window = "monthly",
+  verbose = TRUE
 )
 }
 \arguments{
@@ -77,6 +78,8 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 \item{cross_validation}{character, one of none or 3fold. Whether 3-fold cross validation should be used to avoid overfitting during bias-correction. Default to "none"}
 
 \item{window}{character, one of none or monthly. Whether bias correction should be applied on a monthly or annual basis. Monthly is the preferred option when performing bias-correction using daily data}
+
+\item{verbose}{logical, whether to print processing time}
 }
 \value{
 list with SpatRaster. To explore the output run attributes(output)

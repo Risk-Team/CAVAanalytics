@@ -9,6 +9,15 @@ output:
     toc_depth: 2
 ---
 
+## CAVAanalytics 3.0.0
+
+In this new version of CAVAanalytics we:
+
+- Refactored the code for better mantainability
+- Improved error handling and messages
+- Introduced Sen slope estimator for trend calculation instead of design based inference via mvabund
+- Added a new argument to control the size of points for visualization of trends significance and agreement
+
 ## CAVAanalytics 3.2.7
 
 In this new version of CAVAanalytics there have been two minor changes to the extract_raster function. Now the function accept an optional path argument and filename has been replaced with file.extension. 

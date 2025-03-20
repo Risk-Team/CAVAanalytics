@@ -72,7 +72,7 @@ model_biases <- function(data,
     future::plan(future::multisession, workers = n.sessions)
 
     # filter data by season
-    datasets <- filter_data_by_season.default(datasets, season = sns)
+    datasets <- filter_data_by_season.model_biases(datasets, season = sns)
     cli::cli_text(
       paste0(
         "{cli::symbol$arrow_right}",
@@ -86,22 +86,23 @@ model_biases <- function(data,
     cli::cli_progress_step("Performing calculations")
 
     # perform calculations
-    data_list <- perform_calculations.biases(
-      datasets,
-      mod.numb,
-      var,
-      bias.correction,
-      uppert,
-      lowert,
-      consecutive,
-      duration,
-      country_shp,
-      season = sns,
-      frequency,
-      method,
-      cross_validation,
-      window
-    )
+    data_list <-
+      perform_calculations.model_biases(
+        datasets,
+        mod.numb,
+        var,
+        bias.correction,
+        uppert,
+        lowert,
+        consecutive,
+        duration,
+        country_shp,
+        season = sns,
+        frequency,
+        method,
+        cross_validation,
+        window
+      )
 
     cli::cli_progress_done()
     # return results

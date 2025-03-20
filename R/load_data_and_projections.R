@@ -52,6 +52,8 @@ load_data_and_projections <- function(variable,
                                       method = "eqm",
                                       window = "monthly",
                                       verbose = TRUE) {
+  start_time <- Sys.time()  # Add timing
+  
   # calculate number of chunks based on xlim and ylim
   if (missing(chunk.size) | missing(season)) {
     cli::cli_abort("chunk.size and season must be specified")
@@ -124,12 +126,9 @@ load_data_and_projections <- function(variable,
           "Processing chunk %d/%d [%d,%d] - Coordinates: xlim=[%.2f,%.2f], ylim=[%.2f,%.2f]", 
           chunk_counter, 
           (length(x_chunks) - 1) * (length(y_chunks) - 1), 
-          i, 
-          j,
-          xlim_chunk[1],
-          xlim_chunk[2],
-          ylim_chunk[1],
-          ylim_chunk[2]
+          i, j,
+          xlim_chunk[1], xlim_chunk[2],
+          ylim_chunk[1], ylim_chunk[2]
         ))
       }
       
@@ -234,9 +233,18 @@ load_data_and_projections <- function(variable,
     setNames(merged_raster, names(rst_list[[1]]))
   }
 
-
-  cli::cli_process_done()
-
+  # Clean up after merging
+  rm(rst_mean, rst_sd, rst_mbrs, out_list)
+  gc()
+  
+  end_time <- Sys.time()
+  if (verbose) {
+    cli::cli_alert_success(sprintf(
+      "Processing completed in %.2f minutes",
+      as.numeric(difftime(end_time, start_time, units = "mins"))
+    ))
+  }
+  
   rasters_mean <- merge_rasters(rst_mean)
   rasters_sd <- merge_rasters(rst_sd)
   rasters_mbrs <- merge_rasters(rst_mbrs)
@@ -246,7 +254,7 @@ load_data_and_projections <- function(variable,
   rasters_sd <- terra::crop(rasters_sd, country_shp) %>% terra::mask(., country_shp)
   rasters_mbrs <- terra::crop(rasters_mbrs, country_shp) %>% terra::mask(., country_shp)
   
-  # Use your constructor with the correct argument names
+  # Return result using constructor with correct parameter names
   new_CAVAanalytics_projections(
     ensemble_mean = rasters_mean,
     ensemble_sd = rasters_sd,

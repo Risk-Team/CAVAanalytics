@@ -14,6 +14,8 @@
 --------------------------------------------------------------------------------------------------
 **Check GitHub issues for known servers' downtimes**
 
+**We will release Bias corrected CORDEX-CORE simulations with the ISIMIP methodology in 2025 as part of a CAVA update**
+
 --------------------------------------------------------------------------------------------------
 
 

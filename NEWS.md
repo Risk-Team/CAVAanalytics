@@ -9,6 +9,10 @@ output:
     toc_depth: 2
 ---
 
+## CAVAanalytics 3.3.1
+
+- load_data_hub can now be used to worked with CORDEX-CORE resampled at 0.5 degrees. 
+
 ## CAVAanalytics 3.3.0
 
 In this new version of CAVAanalytics we:

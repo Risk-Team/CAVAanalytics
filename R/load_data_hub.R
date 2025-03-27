@@ -105,7 +105,7 @@ load_data_hub <- function(database = "CORDEX-CORE",
 
   # Validation
   check_inputs.load_data_hub(database, years.hist, domain, years.proj,
-                  variable, aggr.m, n.sessions, path.to.obs, years.obs)
+                  variable, aggr.m, n.sessions, path.to.obs, years.obs, res_folder)
 
   # Data loading setup
   if (!is.null(database)) {

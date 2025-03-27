@@ -34,7 +34,7 @@ load_model_paths.hub <- function(domain, years.hist, years.proj) {
   cli::cli_progress_step("Accessing inventory")
   csv_url <- "/home/jovyan/shared/inventories/cava/inventory.csv"
   data <- read.csv(csv_url) %>%
-    dplyr::filter(stringr::str_detect(activity, "CORDEX"), domain == domain) %>%
+    dplyr::filter(stringr::str_detect(activity, "CORDEX"),  domain %in% !!domain) %>%
     dplyr::group_by(experiment) %>%
     dplyr::summarise(path = list(as.character(hub))) %>%
     {
@@ -253,7 +253,7 @@ check_inputs.load_data_hub <- function(database,
   if (!is.null(database) &&
       database == "CORDEX-CORE") {
     if (is.null(domain))
-      cli::cli_abort(c("x" = "domain has no default when uploading CORDEX-CORE data remotely"))
+      cli::cli_abort(c("x" = "domain has no default for CORDEX-CORE data"))
     if (is.null(years.proj) &
         is.null(years.hist) & !is.null(years.obs))
       cli::cli_abort(c("x" = "set database as NULL to only upload observations"))
@@ -284,7 +284,7 @@ check_inputs.load_data_hub <- function(database,
     if (!is.null(domain))
       cli::cli_alert_warning(c("!" = "Argument domain is ignored"))
     if (!stringr::str_detect(database, "/"))
-      cli::cli_abort(c("x" = "please specify a valid path or CORDEX-CORE for remote upload"))
+      cli::cli_abort(c("x" = "please specify a valid path or CORDEX-CORE for the upload"))
     if (!any(stringr::str_detect(list.files(database), "historical")) &
         is.null(years.hist)) {
       cli::cli_alert_warning(

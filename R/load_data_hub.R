@@ -84,6 +84,7 @@ load_observation_data.hub <- function(obs.file, variable, years, xlim, ylim, agg
 #' @param aggr.m character, monthly aggregation. One of none, mean or sum
 #' @param n.sessions numeric, number of sessions for parallel processing
 #' @param years.obs NULL or numeric, specify year range for observation
+#' @param res_folder character, specify the resolution of the CORDEX data. Default to "interp025". Meaningful only when working with CORDEX-CORE. In the future this option will be removed
 #' @return list of length 2. List[[1]] contains a tibble with list columns and List[[2]] the bbox
 #' @importFrom magrittr %>%
 #' @export
@@ -99,7 +100,8 @@ load_data_hub <- function(database = "CORDEX-CORE",
                          domain = NULL,
                          aggr.m = "none",
                          n.sessions = 6,
-                         years.obs = NULL) {
+                         years.obs = NULL,
+                         res_folder= "interp025") {
 
   # Validation
   check_inputs.load_data_hub(database, years.hist, domain, years.proj,
@@ -108,7 +110,7 @@ load_data_hub <- function(database = "CORDEX-CORE",
   # Data loading setup
   if (!is.null(database)) {
     if (database == "CORDEX-CORE") {
-      files <- load_model_paths.hub(domain, years.hist, years.proj)
+      files <- load_model_paths.hub(domain, years.hist, years.proj, res_folder)
       experiment <- if (!is.null(years.hist) & !is.null(years.proj)) {
         c("historical", "rcp26", "rcp85")
       } else if (is.null(years.hist) & !is.null(years.proj)) {

@@ -30,7 +30,7 @@ load_model_paths.thredds <- function(domain, years.hist, years.proj) {
 
 #' Load model paths from hub
 #' @noRd
-load_model_paths.hub <- function(domain, years.hist, years.proj) {
+load_model_paths.hub <- function(domain, years.hist, years.proj, res_folder) {
   cli::cli_progress_step("Accessing inventory")
   csv_url <- "/home/jovyan/shared/inventories/cava/inventory.csv"
   data <- read.csv(csv_url) %>%
@@ -47,7 +47,10 @@ load_model_paths.hub <- function(domain, years.hist, years.proj) {
       }
     } %>%
     dplyr::select(path)
-  return(data[[1]])
+
+  data
+
+  return(if (res_folder=="interp025") data[[1]] else data[[1]] %>% stringr::str_replace_all(., res_folder, "interp05"))
 }
 
 #' Load model paths from local directory
@@ -206,9 +209,11 @@ check_inputs.load_data_hub <- function(database,
                                        aggr.m,
                                        n.sessions,
                                        path.to.obs,
-                                       years.obs) {
+                                       years.obs,
+                                       res_folder) {
   stopifnot(is.numeric(n.sessions))
   match.arg(aggr.m, choices = c("none", "sum", "mean"))
+  match.arg(res_folder, choices = c("interp025", "interp05"))
   if (!is.null(domain)) {
     match.arg(
       domain,

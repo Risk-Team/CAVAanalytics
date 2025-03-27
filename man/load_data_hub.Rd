@@ -17,7 +17,8 @@ load_data_hub(
   domain = NULL,
   aggr.m = "none",
   n.sessions = 6,
-  years.obs = NULL
+  years.obs = NULL,
+  res_folder = "interp025"
 )
 }
 \arguments{
@@ -46,6 +47,8 @@ load_data_hub(
 \item{n.sessions}{numeric, number of sessions for parallel processing}
 
 \item{years.obs}{NULL or numeric, specify year range for observation}
+
+\item{res_folder}{character, specify the resolution of the CORDEX data. Default to "interp025". Meaningful only when working with CORDEX-CORE. In the future this option will be removed}
 }
 \value{
 list of length 2. List[[1]] contains a tibble with list columns and List[[2]] the bbox

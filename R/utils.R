@@ -958,7 +958,7 @@ print_conversion_message <- function(variable, source) {
 #' @export
 
 years_selection = function(CAVAlist, years, projections = T) {
-  cli::cli_progress_step("Performing calculations")
+  cli::cli_progress_step("Subsetting years")
 
   if (projections) {
     new_data = CAVAlist[[1]] %>%

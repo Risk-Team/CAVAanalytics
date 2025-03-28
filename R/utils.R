@@ -35,7 +35,10 @@ load_model_paths.hub <- function(domain, years.hist, years.proj, res_folder) {
   csv_url <- "/home/jovyan/shared/inventories/cava/inventory.csv"
   data <- read.csv(csv_url) %>%
     dplyr::filter(stringr::str_detect(activity, "CORDEX"),  domain %in% !!domain) %>%
-    dplyr::mutate(hub= ifelse(res_folder=="interp025", hub, stringr::str_replace_all(hub, "interp025", "interp05") ) ) %>%
+dplyr::mutate(hub = dplyr::case_when(
+    res_folder == "interp025" ~ hub, 
+    TRUE ~ stringr::str_replace_all(as.character(hub), "interp025", "interp05")
+  )) %>%
     dplyr::group_by(experiment) %>%
     dplyr::summarise(path = list(as.character(hub))) %>%
     {
@@ -51,7 +54,6 @@ load_model_paths.hub <- function(domain, years.hist, years.proj, res_folder) {
 
   return(data[[1]])
 }
-
 #' Load model paths from local directory
 #' @noRd
 load_model_paths.local <- function(path.to.data) {

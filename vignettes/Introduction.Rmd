@@ -60,7 +60,10 @@ You can explore the output using attributes(kenya_exmp).
 class(kenya_exmp[[1]])
 colnames(kenya_exmp[[1]])
 kenya_exmp[[1]]$experiment
-# the column models_mbrs stands for model members. The structure of this element comes from the loadeR package. The data is contained in the data element, and as you can see, it has 6 members. CAVAanalytics automatically binds together multiple models and checks for temporal consistency.
+# the column models_mbrs stands for model members. 
+#The structure of this element comes from the loadeR package. 
+#The data is contained in the data element, and as you can see, it has 6 members. 
+#CAVAanalytics automatically binds together multiple models and checks for temporal consistency.
 dim(kenya_exmp[[1]]$models_mbrs[[1]]$Data)
 ```
 
@@ -184,7 +187,7 @@ plotting(proj_kenya_35, ensemble=T,  legend_range = c(0, 180),
 plot_titles = "N > 35", palette=c("white", "orange", "red", "darkred"))
 ```
 
-When dealing with model biases, CAVAanalytics offers a straightforward solution by automatically implementing bias correction using the empirical quantile mapping method. This process allows us to correct for discrepancies between observed data and model outputs. Note that CAVAanalytics allows the selection of three bias-correction methods. 
+If we remember, we assessed that there are model biases. Therefore, CAVAanalytics offers a straightforward solution by automatically implementing bias correction using the empirical quantile mapping method as default. This process allows us to correct for discrepancies between observed data and model outputs. Note that CAVAanalytics allows the selection of three bias-correction methods. 
 
 ```{r, fig.height=4, fig.width=5, fig.align="center", message=F, warning=F}
 # bias correction is applied with the widely used empirical quantile method
@@ -209,22 +212,9 @@ plot_titles = "N > 35 bc", spatiotemporal=T, palette=c("blue", "red"))
 ```
 
 
-
 ## Climate change signal
 
-While analyzing future periods can be useful, more often we prioritize understanding delta changes, which represent the relative increase or decrease in mean maximum temperatures compared to a baseline. CAVAanalytics facilitates this analysis as well.
-
-```{r, fig.height=4, fig.width=10,  message=F, warning=F}
-ccs_kenya <- climate_change_signal(kenya_exmp, season=list(1:12))
-plotting(ccs_kenya, ensemble=F, plot_titles = "Δ °C", 
-legend_range = c(-3, 3), 
-palette = c("blue", "cyan", "green", "white", "yellow" ,"orange", "red"))
-```
-
-
-## Climate change signal
-
-While analyzing future periods can be useful, more often we prioritize understanding delta changes, which represent the relative increase or decrease in mean maximum temperatures compared to a baseline. CAVAanalytics facilitates this analysis as well.
+While analyzing future periods can be useful, more often we prioritize understanding delta changes, which represent the relative increase or decrease in mean maximum temperatures compared to a baseline. CAVAanalytics facilitates this analysis as well, which is more common than looking at projected absolute values.
 
 To notice that the function climate_change_signal also calculates the agreement in the sign of the change. Basically, with a threshold of 0.8, it means that if 80% of the models agree that the climate change signal is positive or negative, the pixel gets a score of 1. These results are visualized through a black dot. 
 

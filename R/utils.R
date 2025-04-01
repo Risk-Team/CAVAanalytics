@@ -326,7 +326,8 @@ check_inputs.climate_change_signal <- function(data,
                                                threshold,
                                                method,
                                                percentage,
-                                               window) {
+                                               window,
+                                               diffs) {
   stopifnot(is.logical(consecutive))
   stopifnot(is.logical(percentage))
   stopifnot(is.numeric(threshold), threshold >= 0, threshold <= 1)

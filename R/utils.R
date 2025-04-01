@@ -36,7 +36,7 @@ load_model_paths.hub <- function(domain, years.hist, years.proj, res_folder) {
   data <- read.csv(csv_url) %>%
     dplyr::filter(stringr::str_detect(activity, "CORDEX"),  domain %in% !!domain) %>%
 dplyr::mutate(hub = dplyr::case_when(
-    res_folder == "interp025" ~ hub, 
+    res_folder == "interp025" ~ hub,
     TRUE ~ stringr::str_replace_all(as.character(hub), "interp025", "interp05")
   )) %>%
     dplyr::group_by(experiment) %>%
@@ -1415,10 +1415,10 @@ perform_calculations.climate_change_signal <-
                                   newdata = mod,
                                   precipitation = ifelse(var == "pr", TRUE, FALSE),
                                   method = method,
-                                  window = if (any(diffs == 1))
+                                  window = if (window == "monthly")
                                     c(30, 30)
                                   else
-                                    c(1, 1),
+                                    NULL,
                                   extrapolation = "constant"
                                 )
                               )

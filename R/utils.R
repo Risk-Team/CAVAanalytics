@@ -326,8 +326,7 @@ check_inputs.climate_change_signal <- function(data,
                                                threshold,
                                                method,
                                                percentage,
-                                               window,
-                                               diffs) {
+                                               window) {
   stopifnot(is.logical(consecutive))
   stopifnot(is.logical(percentage))
   stopifnot(is.numeric(threshold), threshold >= 0, threshold <= 1)
@@ -1351,7 +1350,7 @@ make_raster <-
 # performing calculations -------------------------------------------------
 #' function used to perform the calculations
 #' @noRd
-perform_calculations.ccs <-
+perform_calculations.climate_change_signal <-
   function(datasets,
            mod.numb,
            var,

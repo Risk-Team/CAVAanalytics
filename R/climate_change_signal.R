@@ -35,18 +35,17 @@ climate_change_signal <- function(data,
                                   window = "monthly") {
 
   # check input requirements
-  dates <- datasets$models_mbrs[[1]]$Dates$start
-  dates <- as.Date(dates)
-  # calculate the differences between consecutive dates to understand temporal resolution
-  diffs <- diff(dates)
-  check_inputs.climate_change_signal(data, uppert, lowert, consecutive, duration, bias.correction, season, threshold, method, percentage, window, diffs)
+  check_inputs.climate_change_signal(data, uppert, lowert, consecutive, duration, bias.correction, season, threshold, method, percentage, window)
 
   # retrieve information
   mod.numb <- dim(data[[1]]$models_mbrs[[1]]$Data)[1]
   datasets <- data[[1]]
   country_shp <- data[[2]]
   var <- datasets$models_mbrs[[1]]$Variable$varName
- 
+  dates <- datasets$models_mbrs[[1]]$Dates$start
+  dates <- as.Date(dates)
+  # calculate the differences between consecutive dates to understand temporal resolution
+  diffs <- diff(dates)
 
   # set parallel processing
   future::plan(future::multisession, workers = n.sessions)
@@ -71,7 +70,7 @@ climate_change_signal <- function(data,
 
     # perform calculations
     cli::cli_progress_step("Performing calculations")
-    data_list <- perform_calculations.ccs(
+    data_list <- perform_calculations.climate_change_signal(
         datasets, mod.numb, var, uppert, lowert, consecutive,
         duration, country_shp, bias.correction, season = sns,
         frequency, threshold, method, percentage, window

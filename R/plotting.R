@@ -1803,18 +1803,43 @@ remove_facets = function(position = "both") {
 #' @param position character indicating which facets to change (x or y).
 #' @export
 
-rename_facets = function(current_label, new_label, position = "x") {
-  cli::cli_alert_warning(c("!" = "Customise_facets can only be used with ensemble equal TRUE"))
-
-  names(new_label) = current_label
-
-  if (position == "x")
-    ggh4x::facet_nested(scenario ~ season, labeller = ggplot2::labeller(season = new_label))
-  else if (position == "y")
-
-    ggh4x::facet_nested(scenario ~ season, labeller = ggplot2::labeller(scenario = new_label))
-  else
-
-    cli::cli_abort(c("x" = "position can be equal to x or y"))
-
+rename_facets <- function(current_label, new_label, position = "x") {
+  cli::cli_alert_warning(c(
+    "!" = "Customise_facets can only be used with ensemble equal TRUE"
+  ))
+  
+  names(new_label) <- current_label
+  
+  if (position == "x") {
+    if (is.data.frame(pr_trend$data)) {
+      return(
+        ggplot2::facet_wrap(
+          ~ season,
+          labeller = ggplot2::labeller(season = new_label)
+        )
+      )
+    } else {
+      return(
+        ggh4x::facet_nested(
+          scenario ~ season,
+          labeller = ggplot2::labeller(season = new_label)
+        )
+      )
+    }
+    
+  } else if (position == "y") {
+    if (is.data.frame(pr_trend$data)) {
+      cli::cli_abort("Cannot rename facets on the y-axis for temporal plots")
+    }
+    return(
+      ggh4x::facet_nested(
+        scenario ~ season,
+        labeller = ggplot2::labeller(scenario = new_label)
+      )
+    )
+    
+  } else {
+    cli::cli_abort("`position` must be either \"x\" or \"y\".")
+  }
 }
+

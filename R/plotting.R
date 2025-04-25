@@ -1798,52 +1798,48 @@ remove_facets <- function(p, position = c("both", "x", "y")) {
 #'
 #' Customise facets labels in ggplot object. It only works when ensemble is TRUE
 #'
-#' @param p Output of plotting function
 #' @param current_label character indicating the current facet label.
 #' @param new_label character indicating which new label to use.
 #' @param position character indicating which facets to change (x or y).
 #' @export
 
-rename_facets <- function(p, current_label, new_label, position = c("x", "y")) {
-  # ensure position is one of "x" or "y"
-  position <- match.arg(position)
-  
-  cli::cli_alert_warning("Customise_facets can only be used with ensemble = TRUE")
+rename_facets <- function(current_label, new_label, position = "x") {
+  cli::cli_alert_warning(c(
+    "!" = "Customise_facets can only be used with ensemble equal TRUE"
+  ))
 
-  # map old to new labels
   names(new_label) <- current_label
+  p <- ggplot2::last_plot()
 
   if (position == "x") {
     if (is.data.frame(p$data)) {
-      # temporal plot: only season on x
       return(
-        p +
-          facet_wrap(
-            ~ season,
-            labeller = labeller(season = new_label)
-          )
+        ggplot2::facet_wrap(
+          ~ season,
+          labeller = ggplot2::labeller(season = new_label)
+        )
       )
     } else {
-      # ensemble plot: scenario nested by season
       return(
-        p +
-          facet_nested(
-            scenario ~ season,
-            labeller = labeller(season = new_label)
-          )
+        ggh4x::facet_nested(
+          scenario ~ season,
+          labeller = ggplot2::labeller(season = new_label)
+        )
       )
     }
 
-  } else { # position == "y"
+  } else if (position == "y") {
     if (is.data.frame(p$data)) {
       cli::cli_abort("Cannot rename facets on the y-axis for temporal plots")
     }
     return(
-      p +
-        facet_nested(
-          scenario ~ season,
-          labeller = labeller(scenario = new_label)
-        )
+      ggh4x::facet_nested(
+        scenario ~ season,
+        labeller = ggplot2::labeller(scenario = new_label)
+      )
     )
+
+  } else {
+    cli::cli_abort("position must be either \"x\" or \"y\".")
   }
 }

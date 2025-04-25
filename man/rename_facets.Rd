@@ -4,11 +4,9 @@
 \alias{rename_facets}
 \title{Customise facet text}
 \usage{
-rename_facets(p, current_label, new_label, position = c("x", "y"))
+rename_facets(current_label, new_label, position = "x")
 }
 \arguments{
-\item{p}{Output of plotting function}
-
 \item{current_label}{character indicating the current facet label.}
 
 \item{new_label}{character indicating which new label to use.}

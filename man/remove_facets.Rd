@@ -4,11 +4,16 @@
 \alias{remove_facets}
 \title{Clean text from plots}
 \usage{
-remove_facets(position = "both")
+remove_facets(p, position = c("both", "x", "y"))
 }
 \arguments{
-\item{position}{character indicating which facets to remove (both, x or y).}
+\item{p}{Outout of plotting function.}
+
+\item{position}{Character; which facet strips to remove. One of "both", "x", or "y".}
+}
+\value{
+A ggplot object with the specified strip texts removed.
 }
 \description{
-Remove facets labels from ggplot object
+Remove facet labels from a ggplot object.
 }

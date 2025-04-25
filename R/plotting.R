@@ -1770,76 +1770,80 @@ spatiotemporal_plot = function(data,
 
 #' Clean text from plots
 #'
-#' Remove facets labels from ggplot object
+#' Remove facet labels from a ggplot object.
 #'
-#' @param position character indicating which facets to remove (both, x or y).
+#' @param p Outout of plotting function.
+#' @param position Character; which facet strips to remove. One of "both", "x", or "y".
+#' @return A ggplot object with the specified strip texts removed.
 #' @export
-remove_facets = function(position = "both") {
-  if (position == "both")
-    ggplot2::theme(
+remove_facets <- function(p, position = c("both", "x", "y")) {
+  position <- match.arg(position)
+
+  # build the theme modification
+  th <- switch(position,
+    both = ggplot2::theme(
       strip.text.x = ggplot2::element_blank(),
       strip.text.y = ggplot2::element_blank(),
-      panel.border = ggplot2::element_rect(color = "black", fill =
-                                             NA)
-    )
-  else if (position == "x")
+      panel.border  = ggplot2::element_rect(color = "black", fill = NA)
+    ),
+    x = ggplot2::theme(strip.text.x = ggplot2::element_blank()),
+    y = ggplot2::theme(strip.text.y = ggplot2::element_blank())
+  )
 
-    ggplot2::theme(strip.text.x = ggplot2::element_blank())
-  else if (position == "y")
-
-    ggplot2::theme(strip.text.y = ggplot2::element_blank())
-  else
-
-    cli::cli_abort(c("x" = "position can be equal to both, x or y"))
-
+  # apply and return
+  p + th
 }
 
 #' Customise facet text
 #'
 #' Customise facets labels in ggplot object. It only works when ensemble is TRUE
 #'
+#' @param p Output of plotting function
 #' @param current_label character indicating the current facet label.
 #' @param new_label character indicating which new label to use.
 #' @param position character indicating which facets to change (x or y).
 #' @export
 
-rename_facets <- function(current_label, new_label, position = "x") {
-  cli::cli_alert_warning(c(
-    "!" = "Customise_facets can only be used with ensemble equal TRUE"
-  ))
+rename_facets <- function(p, current_label, new_label, position = c("x", "y")) {
+  # ensure position is one of "x" or "y"
+  position <- match.arg(position)
   
+  cli::cli_alert_warning("Customise_facets can only be used with ensemble = TRUE")
+
+  # map old to new labels
   names(new_label) <- current_label
-  
+
   if (position == "x") {
-    if (is.data.frame(pr_trend$data)) {
+    if (is.data.frame(p$data)) {
+      # temporal plot: only season on x
       return(
-        ggplot2::facet_wrap(
-          ~ season,
-          labeller = ggplot2::labeller(season = new_label)
-        )
+        p +
+          facet_wrap(
+            ~ season,
+            labeller = labeller(season = new_label)
+          )
       )
     } else {
+      # ensemble plot: scenario nested by season
       return(
-        ggh4x::facet_nested(
-          scenario ~ season,
-          labeller = ggplot2::labeller(season = new_label)
-        )
+        p +
+          facet_nested(
+            scenario ~ season,
+            labeller = labeller(season = new_label)
+          )
       )
     }
-    
-  } else if (position == "y") {
-    if (is.data.frame(pr_trend$data)) {
+
+  } else { # position == "y"
+    if (is.data.frame(p$data)) {
       cli::cli_abort("Cannot rename facets on the y-axis for temporal plots")
     }
     return(
-      ggh4x::facet_nested(
-        scenario ~ season,
-        labeller = ggplot2::labeller(scenario = new_label)
-      )
+      p +
+        facet_nested(
+          scenario ~ season,
+          labeller = labeller(scenario = new_label)
+        )
     )
-    
-  } else {
-    cli::cli_abort("`position` must be either \"x\" or \"y\".")
   }
 }
-

@@ -4,11 +4,9 @@
 \alias{remove_facets}
 \title{Clean text from plots}
 \usage{
-remove_facets(p, position = c("both", "x", "y"))
+remove_facets(position = c("both", "x", "y"))
 }
 \arguments{
-\item{p}{Outout of plotting function.}
-
 \item{position}{Character; which facet strips to remove. One of "both", "x", or "y".}
 }
 \value{

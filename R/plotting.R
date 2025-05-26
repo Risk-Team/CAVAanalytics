@@ -1772,11 +1772,10 @@ spatiotemporal_plot = function(data,
 #'
 #' Remove facet labels from a ggplot object.
 #'
-#' @param p Outout of plotting function.
 #' @param position Character; which facet strips to remove. One of "both", "x", or "y".
 #' @return A ggplot object with the specified strip texts removed.
 #' @export
-remove_facets <- function(p, position = c("both", "x", "y")) {
+remove_facets <- function(position = c("both", "x", "y")) {
   position <- match.arg(position)
 
   # build the theme modification
@@ -1791,7 +1790,7 @@ remove_facets <- function(p, position = c("both", "x", "y")) {
   )
 
   # apply and return
-  p + th
+  th
 }
 
 #' Customise facet text

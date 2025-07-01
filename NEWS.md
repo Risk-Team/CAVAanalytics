@@ -9,6 +9,11 @@ output:
     toc_depth: 2
 ---
 
+
+## CAVAanalytics 3.3.3
+
+- Improved appearance of colour bar. 
+
 ## CAVAanalytics 3.3.2
 
 - Improved rename_facet to handle temporal plots. 

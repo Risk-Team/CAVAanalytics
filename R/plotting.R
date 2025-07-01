@@ -593,8 +593,8 @@ plotting.CAVAanalytics_model_biases <-
               na.value = "transparent",
               n.breaks = 10,
               guide = ggplot2::guide_colourbar(
-                ticks.colour = "black",
-                ticks.linewidth = 1,
+                ticks.colour = "white",
+                ticks.linewidth = 0.8,
                 title.position = "top",
                 title.hjust = 0.5
               )
@@ -609,8 +609,8 @@ plotting.CAVAanalytics_model_biases <-
               else
                 intervals,
               guide = ggplot2::guide_colourbar(
-                ticks.colour = "black",
-                ticks.linewidth = 1,
+                ticks.colour = "white",
+                ticks.linewidth = 0.8,
                 title.position = "top",
                 title.hjust = 0.5
               )
@@ -653,9 +653,9 @@ plotting.CAVAanalytics_model_biases <-
           legend.key.height = if (ensemble)
             ggplot2::unit(1.2, 'cm')
           else
-            ggplot2::unit(0.3, 'cm'),
+            ggplot2::unit(0.2, 'cm'),
           legend.key.width = if (ensemble)
-            ggplot2::unit(0.3, 'cm')
+            ggplot2::unit(0.2, 'cm')
           else
             ggplot2::unit(2, 'cm'),
           legend.box.spacing = ggplot2::unit(0, "pt"),
@@ -1152,8 +1152,8 @@ spatial_plot = function(spatial_data,
             na.value = "transparent",
             n.breaks = 10,
             guide = ggplot2::guide_colourbar(
-              ticks.colour = "black",
-              ticks.linewidth = 1,
+              ticks.colour = "white",
+              ticks.linewidth = 0.8,
               title.position = "top",
               title.hjust = 0.5
             )
@@ -1169,8 +1169,8 @@ spatial_plot = function(spatial_data,
             else
               intervals,
             guide = ggplot2::guide_colourbar(
-              ticks.colour = "black",
-              ticks.linewidth = 1,
+              ticks.colour = "white",
+              ticks.linewidth = 0.8,
               title.position = "top",
               title.hjust = 0.5
             )
@@ -1220,9 +1220,9 @@ spatial_plot = function(spatial_data,
         legend.key.height = if (ensemble)
           ggplot2::unit(1.2, 'cm')
         else
-          ggplot2::unit(0.3, 'cm'),
+          ggplot2::unit(0.2, 'cm'),
         legend.key.width = if (ensemble)
-          ggplot2::unit(0.3, 'cm')
+          ggplot2::unit(0.2, 'cm')
         else
           ggplot2::unit(2, 'cm'),
         legend.box.spacing = ggplot2::unit(0, "pt"),
@@ -1275,8 +1275,8 @@ spatial_plot = function(spatial_data,
               na.value = "transparent",
               n.breaks = 10,
               guide = ggplot2::guide_colourbar(
-                ticks.colour = "black",
-                ticks.linewidth = 1,
+                ticks.colour = "white",
+                ticks.linewidth = 0.8,
                 title.position = "top",
                 title.hjust = 0.5,
                 label.hjust = 1
@@ -1293,8 +1293,8 @@ spatial_plot = function(spatial_data,
               else
                 intervals,
               guide = ggplot2::guide_colourbar(
-                ticks.colour = "black",
-                ticks.linewidth = 1,
+                ticks.colour = "white",
+                ticks.linewidth = 0.8,
                 title.position = "top",
                 title.hjust = 0.5,
                 label.hjust = 1
@@ -1332,7 +1332,7 @@ spatial_plot = function(spatial_data,
           axis.title = ggplot2::element_blank(),
           legend.position = "right",
           legend.key.height = ggplot2::unit(1, 'cm'),
-          legend.key.width = ggplot2::unit(0.3, 'cm'),
+          legend.key.width = ggplot2::unit(0.2, 'cm'),
           legend.box.spacing = ggplot2::unit(0.2, "pt")
         )
 
@@ -1367,8 +1367,8 @@ spatial_plot = function(spatial_data,
               na.value = "transparent",
               n.breaks = 10,
               guide = ggplot2::guide_colourbar(
-                ticks.colour = "black",
-                ticks.linewidth = 1,
+                ticks.colour = "white",
+                ticks.linewidth = 0.8,
                 title.position = "top",
                 title.hjust = 0.5
               )
@@ -1384,8 +1384,8 @@ spatial_plot = function(spatial_data,
               else
                 intervals,
               guide = ggplot2::guide_colourbar(
-                ticks.colour = "black",
-                ticks.linewidth = 1,
+                ticks.colour = "white",
+                ticks.linewidth = 0.8,
                 title.position = "top",
                 title.hjust = 0.5
               )
@@ -1427,7 +1427,7 @@ spatial_plot = function(spatial_data,
           axis.title = ggplot2::element_blank(),
           legend.position = "right",
           legend.key.height = ggplot2::unit(1, 'cm'),
-          legend.key.width = ggplot2::unit(0.3, 'cm'),
+          legend.key.width = ggplot2::unit(0.2, 'cm'),
           legend.box.spacing = ggplot2::unit(0.2, "pt")
         )
 

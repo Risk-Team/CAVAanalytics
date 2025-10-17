@@ -5,7 +5,6 @@ if (sys.nframe() == 0L) {
 
 # constants ---------------------------------------------------------------
 
-
 #' Constants and configurations
 #' @keywords internal
 CONSTANTS <- list(
@@ -23,74 +22,81 @@ CONSTANTS <- list(
 
 # loading data ------------------------------------------------------------
 
-
-
 #' Load model data from specified source
 #' @keywords internal
-load_model_data <- function(x,
-                            variable,
-                            years,
-                            xlim,
-                            ylim,
-                            aggr.m,
-                            path.to.data) {
-  if (path.to.data == "CORDEX-CORE") {
-    tryCatch({
-      data <- suppressMessages(
-        loadeR::loadGridData(
-          dataset = x,
-          var = variable,
-          years = years,
-          lonLim = xlim,
-          latLim = ylim,
-          aggr.m = aggr.m
+load_model_data <- function(
+  x,
+  variable,
+  years,
+  xlim,
+  ylim,
+  aggr.m,
+  path.to.data
+) {
+  if (path.to.data %in% c("CORDEX-CORE", "CORDEX-CORE-BC")) {
+    # Remote data download
+    tryCatch(
+      {
+        data <- suppressMessages(
+          loadeR::loadGridData(
+            dataset = x,
+            var = variable,
+            years = years,
+            lonLim = xlim,
+            latLim = ylim,
+            aggr.m = aggr.m
+          )
         )
-      )
-      data <- transform_climate_data(data, variable, "CORDEX-CORE")
-      return(data)
-    }, error = function(e) {
-      cli::cli_alert_warning(
-        paste(
-          "Error downloading CORDEX-CORE data. If the issue persist, flag it on our GitHub repo at https://github.com/Risk-Team/CAVAanalytics/issues /n",
-          e$message
+        data <- transform_climate_data(data, variable, path.to.data)
+        return(data)
+      },
+      error = function(e) {
+        cli::cli_alert_warning(
+          paste(
+            "Error downloading",
+            path.to.data,
+            "data. If the issue persists, flag it on our GitHub repo at https://github.com/Risk-Team/CAVAanalytics/issues\n",
+            e$message
+          )
         )
-      )
-      return(NULL)
-    })
-  } else {
-    tryCatch({
-      data <- suppressMessages(
-        loadeR::loadGridData(
-          dataset = x,
-          var = variable,
-          years = years,
-          lonLim = xlim,
-          latLim = ylim,
-          aggr.m = aggr.m
-        )
-      )
-
-      if (path.to.data == "CORDEX-CORE") {
-        data <- transform_climate_data(data, variable, "CORDEX-CORE")
+        return(NULL)
       }
-
-      return(data)
-    }, error = function(e) {
-      cli::cli_alert_warning(paste("Error loading local data:", e$message))
-      return(NULL)
-    })
+    )
+  } else {
+    # Local data upload
+    tryCatch(
+      {
+        data <- suppressMessages(
+          loadeR::loadGridData(
+            dataset = x,
+            var = variable,
+            years = years,
+            lonLim = xlim,
+            latLim = ylim,
+            aggr.m = aggr.m
+          )
+        )
+        return(data)
+      },
+      error = function(e) {
+        cli::cli_alert_warning(paste("Error loading local data:", e$message))
+        return(NULL)
+      }
+    )
   }
 }
 
 #' Load observational data
 #' @keywords internal
-load_observation_data <- function(obs.file,
-                                  variable,
-                                  years,
-                                  xlim,
-                                  ylim,
-                                  aggr.m,
-                                  path.to.obs) {
+load_observation_data <- function(
+  obs.file,
+  variable,
+  years,
+  xlim,
+  ylim,
+  aggr.m,
+  path.to.obs
+) {
   cli::cli_progress_step(paste0(
     ifelse(
       path.to.obs %in% c("ERA5", "W5E5"),
@@ -100,10 +106,11 @@ load_observation_data <- function(obs.file,
     path.to.obs
   ))
 
-  var_name <- if (path.to.obs == "ERA5")
+  var_name <- if (path.to.obs == "ERA5") {
     CONSTANTS$ERA5_VAR_MAPPING[variable]
-  else
+  } else {
     variable
+  }
 
   data <- suppressMessages(
     loadeR::loadGridData(
@@ -130,9 +137,8 @@ load_observation_data <- function(obs.file,
 #'
 #' Automatically load models (netCDF/NcML) in a tidy format with access to state-of-the-art climate models and reanalyses datasets
 
-
-#' @param path.to.data character (CORDEX-CORE or path to local data) or NULL. If path to local data, specify path to the directory containing the RCP/SSPs folders and historical simulations (optional). For example,
-#' home/user/data/. data would contain subfolders with the climate/impact models. Historical simulations have to be contained in a folder called historical. If path.to.data is set as CORDEX-CORE, CORDEX-CORE simulations will be downloaded
+#' @param path.to.data character (CORDEX-CORE, CORDEX-CORE-BC, or path to local data) or NULL. If path to local data, specify path to the directory containing the RCP/SSPs folders and historical simulations (optional). For example,
+#' home/user/data/. data would contain subfolders with the climate/impact models. Historical simulations have to be contained in a folder called historical. If path.to.data is set as CORDEX-CORE or CORDEX-CORE-BC, the respective simulations will be downloaded
 #' @param country character, in English, indicating the country of interest or an object of class sf. To select a bounding box,
 #' set country to NULL and define arguments xlim and ylim
 #' @param variable  character indicating the variable name
@@ -142,7 +148,7 @@ load_observation_data <- function(obs.file,
 #' @param years.proj NULL or numeric, specify year range for projections
 #' @param years.hist NULL or numeric, specify year range for the historical experiment
 #' @param years.obs NULL or numeric, specify year range for observation. Specifying years.obs will overwrite years.hist for observations
-#' @param domain charachter, specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE. Default is NULL. List of domain names can be found at https://cordex.org/domains/
+#' @param domain charachter, specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE or CORDEX-CORE-BC. Default is NULL. List of domain names can be found at https://cordex.org/domains/
 #' @param buffer numeric, default is zero.
 #' @param aggr.m character, monthly aggregation. One of none, mean or sum
 #' @param n.sessions numeric, number of sessions to use in parallel processing. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary
@@ -151,20 +157,21 @@ load_observation_data <- function(obs.file,
 #'
 #' @export
 
-
-load_data <- function(path.to.data,
-                      country,
-                      variable,
-                      xlim = NULL,
-                      ylim = NULL,
-                      years.hist = NULL,
-                      years.proj,
-                      path.to.obs = NULL,
-                      buffer = 0,
-                      domain = NULL,
-                      aggr.m = "none",
-                      n.sessions = 6,
-                      years.obs = NULL) {
+load_data <- function(
+  path.to.data,
+  country,
+  variable,
+  xlim = NULL,
+  ylim = NULL,
+  years.hist = NULL,
+  years.proj,
+  path.to.obs = NULL,
+  buffer = 0,
+  domain = NULL,
+  aggr.m = "none",
+  n.sessions = 6,
+  years.obs = NULL
+) {
   # Input validation
   check_inputs.load_data(
     path.to.data,
@@ -188,10 +195,17 @@ load_data <- function(path.to.data,
 
   # Process model data
   models_df <- if (!is.null(path.to.data)) {
-    if (path.to.data == "CORDEX-CORE") {
-      files <- load_model_paths.thredds(domain, years.hist, years.proj)
-      experiment <- if (!is.null(years.hist) &
-                        !is.null(years.proj)) {
+    if (path.to.data %in% c("CORDEX-CORE", "CORDEX-CORE-BC")) {
+      files <- load_model_paths.thredds(
+        domain,
+        years.hist,
+        years.proj,
+        path.to.data
+      )
+      experiment <- if (
+        !is.null(years.hist) &
+          !is.null(years.proj)
+      ) {
         c("historical", "rcp26", "rcp85")
       } else if (is.null(years.hist) & !is.null(years.proj)) {
         c("rcp26", "rcp85")
@@ -200,12 +214,12 @@ load_data <- function(path.to.data,
       }
 
       cli::cli_alert_info(sprintf(
-        "Downloading CORDEX-CORE data (%d simulations) using %d sessions%s",
+        "Downloading %s data (%d simulations) using %d sessions%s",
+        path.to.data,
         length(unlist(files)),
         n.sessions,
         ifelse(n.sessions == 6, " by default", "")
       ))
-
     } else {
       files <- load_model_paths.local(path.to.data)
       experiment <- list.dirs(path.to.data, full.names = FALSE)[-1]
@@ -220,17 +234,28 @@ load_data <- function(path.to.data,
 
     df <- dplyr::tibble(path = files, experiment = experiment) %>%
       tidyr::unnest(cols = path) %>%
-      dplyr::mutate(models = suppressWarnings(furrr::future_map(
-        unlist(files),
-        function(x) {
-          years <- if (stringr::str_detect(x, "historical"))
-            years.hist
-          else
-            years.proj
-          load_model_data(x, variable, years, xlim, ylim, aggr.m, path.to.data)
-        },
-        .progress = TRUE
-      ))) %>%
+      dplyr::mutate(
+        models = suppressWarnings(furrr::future_map(
+          unlist(files),
+          function(x) {
+            years <- if (stringr::str_detect(x, "historical")) {
+              years.hist
+            } else {
+              years.proj
+            }
+            load_model_data(
+              x,
+              variable,
+              years,
+              xlim,
+              ylim,
+              aggr.m,
+              path.to.data
+            )
+          },
+          .progress = TRUE
+        ))
+      ) %>%
       dplyr::group_by(experiment) %>%
       dplyr::summarise(models_mbrs = list(models))
 
@@ -239,15 +264,17 @@ load_data <- function(path.to.data,
     cli::cli_alert_success(
       sprintf(
         "%s {prettyunits::pretty_bytes(size)}",
-        if (path.to.data == "CORDEX-CORE")
+        if (path.to.data %in% c("CORDEX-CORE", "CORDEX-CORE-BC")) {
           "Downloaded"
-        else
+        } else {
           "Uploaded"
+        }
       )
     )
 
     cli::cli_progress_step("Making multi-model ensemble")
-    df_aggr <- df %>% dplyr::mutate(models_mbrs = purrr::map(models_mbrs, ~ common_dates(.x)))
+    df_aggr <- df %>%
+      dplyr::mutate(models_mbrs = purrr::map(models_mbrs, ~ common_dates(.x)))
     cli::cli_progress_done()
     df_aggr
   } else {
@@ -256,25 +283,35 @@ load_data <- function(path.to.data,
 
   # Process observation data
   if (!is.null(path.to.obs)) {
-    obs.file <- if (path.to.obs %in% c("ERA5", "W5E5")) load_obs_paths.thredds(path.to.obs) else path.to.obs
-    obs_years <- if (!is.null(years.obs))
+    obs.file <- if (path.to.obs %in% c("ERA5", "W5E5")) {
+      load_obs_paths.thredds(path.to.obs)
+    } else {
+      path.to.obs
+    }
+    obs_years <- if (!is.null(years.obs)) {
       years.obs
-    else
+    } else {
       years.hist
-    models_df$obs <- load_observation_data(obs.file,
-                                           variable,
-                                           obs_years,
-                                           xlim,
-                                           ylim,
-                                           aggr.m,
-                                           path.to.obs)
+    }
+    models_df$obs <- load_observation_data(
+      obs.file,
+      variable,
+      obs_years,
+      xlim,
+      ylim,
+      aggr.m,
+      path.to.obs
+    )
   } else {
     models_df$obs <- NULL
   }
 
   # Print conversion messages
-  if (!is.null(path.to.data) && path.to.data == "CORDEX-CORE") {
-    print_conversion_message(variable, "CORDEX-CORE")
+  if (
+    !is.null(path.to.data) &&
+      path.to.data %in% c("CORDEX-CORE", "CORDEX-CORE-BC")
+  ) {
+    print_conversion_message(variable, path.to.data)
   }
   if (!is.null(path.to.obs) && path.to.obs %in% c("W5E5", "ERA5")) {
     print_conversion_message(variable, path.to.obs)
@@ -286,7 +323,6 @@ load_data <- function(path.to.data,
 
 
 # Testing -----------------------------------------------------------------
-
 
 # Test function call when script is run directly
 if (sys.nframe() == 0L) {

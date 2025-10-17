@@ -1,44 +1,84 @@
 # Loading model paths ------------------------------------------------------
 #' Load model paths from thredds
 #' @noRd
-load_model_paths.thredds <- function(domain, years.hist, years.proj) {
+load_model_paths.thredds <- function(
+  domain,
+  years.hist,
+  years.proj,
+  path.to.data
+) {
   cli::cli_progress_step("Accessing inventory")
   csv_url <- "https://hub.ipcc.ifca.es/thredds/fileServer/inventories/cava.csv"
-  data <- tryCatch({
-    read.csv(url(csv_url)) %>%
-      dplyr::filter(stringr::str_detect(activity, "CORDEX"),
-                    domain %in% !!domain) %>%
-      dplyr::group_by(experiment) %>%
-      dplyr::summarise(path = list(as.character(location))) %>%
-      {
-        if (is.null(years.hist) & !is.null(years.proj)) {
-          dplyr::filter(., experiment != "historical")
-        } else if (!is.null(years.hist) & is.null(years.proj)) {
-          dplyr::filter(., experiment == "historical")
-        } else {
-          .
-        }
-      } %>%
-      dplyr::select(path)
-  }, error = function(e) {
-    cli::cli_abort(
-      c("x" = "Error establishing connection with servers. If the issue persist, flag it on our GitHub repo at https://github.com/Risk-Team/CAVAanalytics/issues")
-    )
-  })
+
+  # Determine activity filter based on path.to.data
+  activity_pattern <- if (path.to.data == "CORDEX-CORE-BC") {
+    "BC"
+  } else {
+    "CORDEX"
+  }
+
+  data <- tryCatch(
+    {
+      read.csv(url(csv_url)) %>%
+        dplyr::filter(
+          stringr::str_detect(activity, activity_pattern),
+          domain %in% !!domain
+        ) %>%
+        dplyr::group_by(experiment) %>%
+        dplyr::summarise(path = list(as.character(location))) %>%
+        {
+          if (is.null(years.hist) & !is.null(years.proj)) {
+            dplyr::filter(., experiment != "historical")
+          } else if (!is.null(years.hist) & is.null(years.proj)) {
+            dplyr::filter(., experiment == "historical")
+          } else {
+            .
+          }
+        } %>%
+        dplyr::select(path)
+    },
+    error = function(e) {
+      cli::cli_abort(
+        c(
+          "x" = "Error establishing connection with servers. If the issue persist, flag it on our GitHub repo at https://github.com/Risk-Team/CAVAanalytics/issues"
+        )
+      )
+    }
+  )
   return(data[[1]])
 }
 
 #' Load model paths from hub
 #' @noRd
-load_model_paths.hub <- function(domain, years.hist, years.proj, res_folder) {
+load_model_paths.hub <- function(
+  domain,
+  years.hist,
+  years.proj,
+  res_folder,
+  path.to.data
+) {
   cli::cli_progress_step("Accessing inventory")
   csv_url <- "/home/jovyan/shared/inventories/cava/inventory.csv"
+
+  # Determine activity filter based on path.to.data
+  activity_pattern <- if (path.to.data == "CORDEX-CORE-BC") {
+    "BC"
+  } else {
+    "CORDEX"
+  }
+
   data <- read.csv(csv_url) %>%
-    dplyr::filter(stringr::str_detect(activity, "CORDEX"),  domain %in% !!domain) %>%
-dplyr::mutate(hub = dplyr::case_when(
-    res_folder == "interp025" ~ hub,
-    TRUE ~ stringr::str_replace_all(as.character(hub), "interp025", "interp05")
-  )) %>%
+    dplyr::filter(
+      stringr::str_detect(activity, activity_pattern),
+      domain %in% !!domain
+    ) %>%
+    dplyr::mutate(
+      hub = dplyr::case_when(
+        res_folder == "interp025" ~ hub,
+        TRUE ~
+          stringr::str_replace_all(as.character(hub), "interp025", "interp05")
+      )
+    ) %>%
     dplyr::group_by(experiment) %>%
     dplyr::summarise(path = list(as.character(hub))) %>%
     {
@@ -91,15 +131,17 @@ load_obs_paths.hub <- function(path.to.obs) {
 
 #' Check inputs for thredds data loading
 #' @noRd
-check_inputs.load_data <-  function(path.to.data,
-                                    years.hist,
-                                    domain,
-                                    years.proj,
-                                    variable,
-                                    aggr.m,
-                                    n.sessions,
-                                    path.to.obs,
-                                    years.obs) {
+check_inputs.load_data <- function(
+  path.to.data,
+  years.hist,
+  domain,
+  years.proj,
+  variable,
+  aggr.m,
+  n.sessions,
+  path.to.obs,
+  years.obs
+) {
   stopifnot(is.numeric(n.sessions))
   match.arg(aggr.m, choices = c("none", "sum", "mean"))
   if (!is.null(domain)) {
@@ -120,75 +162,135 @@ check_inputs.load_data <-  function(path.to.data,
         "CAS-22"
       )
     )
-
   }
-  if (is.null(years.proj) &
-      is.null(years.hist) & is.null(years.obs))
-    cli::cli_abort(c("x" = "select at least one of years.hist, years.proj or years.obs"))
+  if (
+    is.null(years.proj) &
+      is.null(years.hist) &
+      is.null(years.obs)
+  ) {
+    cli::cli_abort(c(
+      "x" = "select at least one of years.hist, years.proj or years.obs"
+    ))
+  }
 
-  if (missing(variable))
+  if (missing(variable)) {
     cli::cli_abort(c("x" = "argument variable as no default"))
+  }
 
   if (!is.null(path.to.obs)) {
-    if (!is.null(years.obs) & path.to.obs == "ERA5" &
-        any(!(years.obs %in% 1976:2021)))
-      cli::cli_abort(c("x" = "Available years for ERA5 observations are 1976:2021"))
+    if (
+      !is.null(years.obs) &
+        path.to.obs == "ERA5" &
+        any(!(years.obs %in% 1976:2021))
+    ) {
+      cli::cli_abort(c(
+        "x" = "Available years for ERA5 observations are 1976:2021"
+      ))
+    }
 
-    if (!is.null(years.obs) & path.to.obs == "W5E5" &
-        any(!(years.obs %in% 1980:2019)))
-      cli::cli_abort(c("x" = "Available years for W5E5 observations are 1980:2019"))
+    if (
+      !is.null(years.obs) &
+        path.to.obs == "W5E5" &
+        any(!(years.obs %in% 1980:2019))
+    ) {
+      cli::cli_abort(c(
+        "x" = "Available years for W5E5 observations are 1980:2019"
+      ))
+    }
 
-    if (is.null(years.obs) & is.null(years.hist))
-      cli::cli_abort(c("x" = "Specify years.hist or years.obs since path.obs is not NULL"))
-
+    if (is.null(years.obs) & is.null(years.hist)) {
+      cli::cli_abort(c(
+        "x" = "Specify years.hist or years.obs since path.obs is not NULL"
+      ))
+    }
   }
 
-  if (!is.null(path.to.data) &&
-      path.to.data == "CORDEX-CORE") {
-    if (is.null(domain))
-      cli::cli_abort(c("x" = "domain has no default when uploading CORDEX-CORE data remotely"))
-    if (is.null(years.proj) &
-        is.null(years.hist) & !is.null(years.obs))
-      cli::cli_abort(c("x" = "set path.to.data as NULL to only upload observations"))
+  if (
+    !is.null(path.to.data) &&
+      (path.to.data %in% c("CORDEX-CORE", "CORDEX-CORE-BC"))
+  ) {
+    if (is.null(domain)) {
+      cli::cli_abort(c(
+        "x" = "domain has no default when uploading CORDEX-CORE or CORDEX-CORE-BC data remotely"
+      ))
+    }
+    if (
+      is.null(years.proj) &
+        is.null(years.hist) &
+        !is.null(years.obs)
+    ) {
+      cli::cli_abort(c(
+        "x" = "set path.to.data as NULL to only upload observations"
+      ))
+    }
 
-    if (!is.null(years.hist) & !is.null(years.obs))
-      cli::cli_alert_warning(c("!" = "years.obs overwrite years.hist for the observational dataset"))
+    if (!is.null(years.hist) & !is.null(years.obs)) {
+      cli::cli_alert_warning(c(
+        "!" = "years.obs overwrite years.hist for the observational dataset"
+      ))
+    }
 
-    if (is.null(years.hist) &
-        !is.null(years.obs) & !is.null(years.proj))
+    if (
+      is.null(years.hist) &
+        !is.null(years.obs) &
+        !is.null(years.proj)
+    ) {
       cli::cli_abort(
-        c("x" = "If you are loading observations and projections, also specify an historical period")
+        c(
+          "x" = "If you are loading observations and projections, also specify an historical period"
+        )
       )
+    }
 
-    if (any(!(years.hist %in% 1976:2005)))
-      cli::cli_abort(c("x" = "Available years for the CORDEX historical simulation are 1976:2005"))
+    if (any(!(years.hist %in% 1976:2005))) {
+      cli::cli_abort(c(
+        "x" = "Available years for the CORDEX historical simulation are 1976:2005"
+      ))
+    }
 
-
-    if (any(!(years.proj %in% 2006:2099)))
+    if (any(!(years.proj %in% 2006:2099))) {
       cli::cli_abort(c("x" = "Available years for projections are 2006:2099"))
+    }
 
     variable <-
-      match.arg(variable,
-                choices = c("tas", "tasmax", "tasmin", "hurs", "rsds", "sfcWind", "pr"))
-
+      match.arg(
+        variable,
+        choices = c("tas", "tasmax", "tasmin", "hurs", "rsds", "sfcWind", "pr")
+      )
   } else if (is.null(path.to.data)) {
     cli::cli_alert_warning(c("!" = "Only observations will be uploaded"))
   } else {
-    if (!is.null(domain))
+    if (!is.null(domain)) {
       cli::cli_alert_warning(c("!" = "Argument domain is ignored"))
-    if (!stringr::str_detect(path.to.data, "/"))
-      cli::cli_abort(c("x" = "please specify a valid path or CORDEX-CORE for remote upload"))
-    if (!any(stringr::str_detect(list.files(path.to.data), "historical")) &
-        is.null(years.hist)) {
+    }
+    if (!stringr::str_detect(path.to.data, "/")) {
+      cli::cli_abort(c(
+        "x" = "please specify a valid path, CORDEX-CORE, or CORDEX-CORE-BC for remote upload"
+      ))
+    }
+    if (
+      !any(stringr::str_detect(list.files(path.to.data), "historical")) &
+        is.null(years.hist)
+    ) {
       cli::cli_alert_warning(
-        c("!" = "Historical experiment not found. If present, the folder needs to be named historical")
+        c(
+          "!" = "Historical experiment not found. If present, the folder needs to be named historical"
+        )
       )
-    } else if (!any(stringr::str_detect(list.files(path.to.data), "historical")) &
-               !is.null(years.hist)) {
-      cli::cli_abort(c("x" = "Historical experiment not found. The folder needs to be named historical"))
-    } else if (any(stringr::str_detect(list.files(path.to.data), "historical")) &
-               is.null(years.hist)) {
-      cli::cli_abort(c("x" = "Historical experiment found but years.hist is not specified"))
+    } else if (
+      !any(stringr::str_detect(list.files(path.to.data), "historical")) &
+        !is.null(years.hist)
+    ) {
+      cli::cli_abort(c(
+        "x" = "Historical experiment not found. The folder needs to be named historical"
+      ))
+    } else if (
+      any(stringr::str_detect(list.files(path.to.data), "historical")) &
+        is.null(years.hist)
+    ) {
+      cli::cli_abort(c(
+        "x" = "Historical experiment found but years.hist is not specified"
+      ))
     } else {
       cli::cli_alert_info(c(
         "Your directory contains the following folders:\n",
@@ -196,22 +298,22 @@ check_inputs.load_data <-  function(path.to.data,
       ))
     }
   }
-
-
 }
 
 #' Check inputs for hub data loading
 #' @noRd
-check_inputs.load_data_hub <- function(database,
-                                       years.hist,
-                                       domain,
-                                       years.proj,
-                                       variable,
-                                       aggr.m,
-                                       n.sessions,
-                                       path.to.obs,
-                                       years.obs,
-                                       res_folder) {
+check_inputs.load_data_hub <- function(
+  database,
+  years.hist,
+  domain,
+  years.proj,
+  variable,
+  aggr.m,
+  n.sessions,
+  path.to.obs,
+  years.obs,
+  res_folder
+) {
   stopifnot(is.numeric(n.sessions))
   match.arg(aggr.m, choices = c("none", "sum", "mean"))
   match.arg(res_folder, choices = c("interp025", "interp05"))
@@ -233,75 +335,135 @@ check_inputs.load_data_hub <- function(database,
         "CAS-22"
       )
     )
-
   }
-  if (is.null(years.proj) &
-      is.null(years.hist) & is.null(years.obs))
-    cli::cli_abort(c("x" = "select at least one of years.hist, years.proj or years.obs"))
+  if (
+    is.null(years.proj) &
+      is.null(years.hist) &
+      is.null(years.obs)
+  ) {
+    cli::cli_abort(c(
+      "x" = "select at least one of years.hist, years.proj or years.obs"
+    ))
+  }
 
-  if (missing(variable))
+  if (missing(variable)) {
     cli::cli_abort(c("x" = "argument variable as no default"))
+  }
 
   if (!is.null(path.to.obs)) {
-    if (!is.null(years.obs) & path.to.obs == "ERA5" &
-        any(!(years.obs %in% 1976:2021)))
-      cli::cli_abort(c("x" = "Available years for ERA5 observations are 1976:2021"))
+    if (
+      !is.null(years.obs) &
+        path.to.obs == "ERA5" &
+        any(!(years.obs %in% 1976:2021))
+    ) {
+      cli::cli_abort(c(
+        "x" = "Available years for ERA5 observations are 1976:2021"
+      ))
+    }
 
-    if (!is.null(years.obs) & path.to.obs == "W5E5" &
-        any(!(years.obs %in% 1980:2021)))
-      cli::cli_abort(c("x" = "Available years for W5E5 observations are 1980:2019"))
+    if (
+      !is.null(years.obs) &
+        path.to.obs == "W5E5" &
+        any(!(years.obs %in% 1980:2021))
+    ) {
+      cli::cli_abort(c(
+        "x" = "Available years for W5E5 observations are 1980:2019"
+      ))
+    }
 
-    if (is.null(years.obs) & is.null(years.hist))
-      cli::cli_abort(c("x" = "Specify years.hist or years.obs since path.obs is not NULL"))
-
+    if (is.null(years.obs) & is.null(years.hist)) {
+      cli::cli_abort(c(
+        "x" = "Specify years.hist or years.obs since path.obs is not NULL"
+      ))
+    }
   }
 
-  if (!is.null(database) &&
-      database == "CORDEX-CORE") {
-    if (is.null(domain))
-      cli::cli_abort(c("x" = "domain has no default for CORDEX-CORE data"))
-    if (is.null(years.proj) &
-        is.null(years.hist) & !is.null(years.obs))
-      cli::cli_abort(c("x" = "set database as NULL to only upload observations"))
+  if (
+    !is.null(database) &&
+      (database %in% c("CORDEX-CORE", "CORDEX-CORE-BC"))
+  ) {
+    if (is.null(domain)) {
+      cli::cli_abort(c(
+        "x" = "domain has no default for CORDEX-CORE or CORDEX-CORE-BC data"
+      ))
+    }
+    if (
+      is.null(years.proj) &
+        is.null(years.hist) &
+        !is.null(years.obs)
+    ) {
+      cli::cli_abort(c(
+        "x" = "set database as NULL to only upload observations"
+      ))
+    }
 
-    if (!is.null(years.hist) & !is.null(years.obs))
-      cli::cli_alert_warning(c("!" = "years.obs overwrite years.hist for the observational dataset"))
+    if (!is.null(years.hist) & !is.null(years.obs)) {
+      cli::cli_alert_warning(c(
+        "!" = "years.obs overwrite years.hist for the observational dataset"
+      ))
+    }
 
-    if (is.null(years.hist) &
-        !is.null(years.obs) & !is.null(years.proj))
+    if (
+      is.null(years.hist) &
+        !is.null(years.obs) &
+        !is.null(years.proj)
+    ) {
       cli::cli_abort(
-        c("x" = "If you are loading observations and projections, also specify an historical period")
+        c(
+          "x" = "If you are loading observations and projections, also specify an historical period"
+        )
       )
+    }
 
-    if (any(!(years.hist %in% 1976:2005)))
-      cli::cli_abort(c("x" = "Available years for the CORDEX historical simulation are 1976:2005"))
+    if (any(!(years.hist %in% 1976:2005))) {
+      cli::cli_abort(c(
+        "x" = "Available years for the CORDEX historical simulation are 1976:2005"
+      ))
+    }
 
-
-    if (any(!(years.proj %in% 2006:2099)))
+    if (any(!(years.proj %in% 2006:2099))) {
       cli::cli_abort(c("x" = "Available years for projections are 2006:2099"))
+    }
 
     variable <-
-      match.arg(variable,
-                choices = c("tas", "tasmax", "tasmin", "hurs", "rsds", "sfcWind", "pr"))
-
+      match.arg(
+        variable,
+        choices = c("tas", "tasmax", "tasmin", "hurs", "rsds", "sfcWind", "pr")
+      )
   } else if (is.null(database)) {
     cli::cli_alert_warning(c("!" = "Only observations will be uploaded"))
   } else {
-    if (!is.null(domain))
+    if (!is.null(domain)) {
       cli::cli_alert_warning(c("!" = "Argument domain is ignored"))
-    if (!stringr::str_detect(database, "/"))
-      cli::cli_abort(c("x" = "please specify a valid path or CORDEX-CORE for the upload"))
-    if (!any(stringr::str_detect(list.files(database), "historical")) &
-        is.null(years.hist)) {
+    }
+    if (!stringr::str_detect(database, "/")) {
+      cli::cli_abort(c(
+        "x" = "please specify a valid path, CORDEX-CORE, or CORDEX-CORE-BC for the upload"
+      ))
+    }
+    if (
+      !any(stringr::str_detect(list.files(database), "historical")) &
+        is.null(years.hist)
+    ) {
       cli::cli_alert_warning(
-        c("!" = "Historical experiment not found. If present, the folder needs to be named historical")
+        c(
+          "!" = "Historical experiment not found. If present, the folder needs to be named historical"
+        )
       )
-    } else if (!any(stringr::str_detect(list.files(database), "historical")) &
-               !is.null(years.hist)) {
-      cli::cli_abort(c("x" = "Historical experiment not found. The folder needs to be named historical"))
-    } else if (any(stringr::str_detect(list.files(database), "historical")) &
-               is.null(years.hist)) {
-      cli::cli_abort(c("x" = "Historical experiment found but years.hist is not specified"))
+    } else if (
+      !any(stringr::str_detect(list.files(database), "historical")) &
+        !is.null(years.hist)
+    ) {
+      cli::cli_abort(c(
+        "x" = "Historical experiment not found. The folder needs to be named historical"
+      ))
+    } else if (
+      any(stringr::str_detect(list.files(database), "historical")) &
+        is.null(years.hist)
+    ) {
+      cli::cli_abort(c(
+        "x" = "Historical experiment found but years.hist is not specified"
+      ))
     } else {
       cli::cli_alert_info(c(
         "Your directory contains the following folders:\n",
@@ -309,29 +471,30 @@ check_inputs.load_data_hub <- function(database,
       ))
     }
   }
-
-
 }
 
 
 #' Check inputs for climate change signal analysis
 #' @noRd
-check_inputs.climate_change_signal <- function(data,
-                                               uppert,
-                                               lowert,
-                                               consecutive,
-                                               duration,
-                                               bias.correction,
-                                               season,
-                                               threshold,
-                                               method,
-                                               percentage,
-                                               window) {
+check_inputs.climate_change_signal <- function(
+  data,
+  uppert,
+  lowert,
+  consecutive,
+  duration,
+  bias.correction,
+  season,
+  threshold,
+  method,
+  percentage,
+  window
+) {
   stopifnot(is.logical(consecutive))
   stopifnot(is.logical(percentage))
   stopifnot(is.numeric(threshold), threshold >= 0, threshold <= 1)
-  if (!is.list(season))
+  if (!is.list(season)) {
     cli::cli_abort("season needs to be a list, for example, list(1:3)")
+  }
   if (!(method == "eqm" || method == "qdm")) {
     cli::cli_abort("method must be 'eqm' or qdm")
   }
@@ -347,37 +510,51 @@ check_inputs.climate_change_signal <- function(data,
     # calculate the differences between consecutive dates
     diffs <- diff(dates)
     # check if the differences are equal to 1
-    if (any(diffs == 1)) {
-
-    } else {
+    if (any(diffs == 1)) {} else {
       cli::cli_abort(c("x" = "Data is monthly or greater, set window to none"))
     }
   }
-  if (!any(stringr::str_detect(colnames(data[[1]]), "obs")) &
-      isTRUE(bias.correction)) {
+  if (
+    !any(stringr::str_detect(colnames(data[[1]]), "obs")) &
+      isTRUE(bias.correction)
+  ) {
     cli::cli_abort(
-      c("x" = "Bias correction cannot be performed, no observational dataset found. Set as F")
+      c(
+        "x" = "Bias correction cannot be performed, no observational dataset found. Set as F"
+      )
     )
   }
-  if (!is.null(lowert) &
-      !is.null(uppert))
+  if (
+    !is.null(lowert) &
+      !is.null(uppert)
+  ) {
     cli::cli_abort(c("x" = "Specify only one threshold argument"))
-  if ((is.null(lowert) &
-       is.null(uppert)) & bias.correction & method == "scaling")
+  }
+  if (
+    (is.null(lowert) &
+      is.null(uppert)) &
+      bias.correction &
+      method == "scaling"
+  ) {
     cli::cli_abort(
-      c("x" = "Bias correction with the scaling method can change the results of the climate change signal only for the calculation of indicators. Specify lowert or uppert aguments to use this option")
+      c(
+        "x" = "Bias correction with the scaling method can change the results of the climate change signal only for the calculation of indicators. Specify lowert or uppert aguments to use this option"
+      )
     )
-  if (!is.null(lowert) |
-      !is.null(uppert)) {
+  }
+  if (
+    !is.null(lowert) |
+      !is.null(uppert)
+  ) {
     dates <- data[[1]]$models_mbrs[[1]]$Dates$start
     dates <- as.Date(dates)
     # calculate the differences between consecutive dates
     diffs <- diff(dates)
     # check if the differences are equal to 1
-    if (any(diffs == 1)) {
-
-    } else {
-      cli::cli_abort(c("x" = "Data is monthly or greater, thresholds cannot be calculated. Set as NULL"))
+    if (any(diffs == 1)) {} else {
+      cli::cli_abort(c(
+        "x" = "Data is monthly or greater, thresholds cannot be calculated. Set as NULL"
+      ))
     }
   }
 
@@ -387,44 +564,56 @@ check_inputs.climate_change_signal <- function(data,
     # calculate the differences between consecutive dates
     diffs <- diff(dates)
     # check if the differences are equal to 1
-    if (any(diffs == 1)) {
-
-    } else {
+    if (any(diffs == 1)) {} else {
       cli::cli_abort(c("x" = "Data is monthly or greater, set window to none"))
     }
   }
 
-  if (consecutive &
+  if (
+    consecutive &
       is.null(uppert) &
-      is.null(lowert))
-    cli::cli_abort(c("x" = "Specify a threshold for which you want to calculate consecutive days"))
-  if (!any(stringr::str_detect(data[[1]]$experiment, "hist")))
-    cli::cli_abort(c("x" = "Please load historical data to use the climate_change_signal function"))
+      is.null(lowert)
+  ) {
+    cli::cli_abort(c(
+      "x" = "Specify a threshold for which you want to calculate consecutive days"
+    ))
+  }
+  if (!any(stringr::str_detect(data[[1]]$experiment, "hist"))) {
+    cli::cli_abort(c(
+      "x" = "Please load historical data to use the climate_change_signal function"
+    ))
+  }
 
   if (bias.correction) {
-    if ((length(data[[1]]$obs[[1]]$xy$x) != length(data[[1]]$models_mbrs[[1]]$xy$x)) |
-        (length(data[[1]]$obs[[1]]$xy$y) != length(data[[1]]$models_mbrs[[1]]$xy$y)))  {
+    if (
+      (length(data[[1]]$obs[[1]]$xy$x) !=
+        length(data[[1]]$models_mbrs[[1]]$xy$x)) |
+        (length(data[[1]]$obs[[1]]$xy$y) !=
+          length(data[[1]]$models_mbrs[[1]]$xy$y))
+    ) {
       cli::cli_alert_warning(
         "Observation and historical experiment do not have the same spatial resolution. Models will be interpolated to match the observational dataset"
       )
     }
-
   }
 }
 
 #' Check inputs for projections analysis
 #' @noRd
-check_inputs.projections <-  function(data,
-                                      bias.correction,
-                                      uppert,
-                                      lowert,
-                                      consecutive,
-                                      duration,
-                                      season,
-                                      method,
-                                      window) {
-  if (!is.list(season))
+check_inputs.projections <- function(
+  data,
+  bias.correction,
+  uppert,
+  lowert,
+  consecutive,
+  duration,
+  season,
+  method,
+  window
+) {
+  if (!is.list(season)) {
     cli::cli_abort("season needs to be a list, for example, list(1:3)")
+  }
   stopifnot(is.logical(consecutive), is.logical(bias.correction))
   if (!(duration == "max" || is.numeric(duration))) {
     cli::cli_abort("duration must be 'max' or a number")
@@ -432,8 +621,11 @@ check_inputs.projections <-  function(data,
   if (!(window == "none" || window == "monthly")) {
     cli::cli_abort("window must be one of 'none', or 'monthly'")
   }
-  if (!(method == "eqm" ||
-        method == "qdm" || method == "scaling")) {
+  if (
+    !(method == "eqm" ||
+      method == "qdm" ||
+      method == "scaling")
+  ) {
     cli::cli_abort("method must be 'eqm', 'qdm' or 'scaling' ")
   }
   if (bias.correction & window == "monthly") {
@@ -442,99 +634,126 @@ check_inputs.projections <-  function(data,
     # calculate the differences between consecutive dates
     diffs <- diff(dates)
     # check if the differences are equal to 1
-    if (any(diffs == 1)) {
-
-    } else {
+    if (any(diffs == 1)) {} else {
       cli::cli_abort(c("x" = "Data is monthly or greater, set window to none"))
     }
   }
-  if (length(data[[1]]$experiment) == 1 &
-      data[[1]]$experiment[[1]] == "historical")
+  if (
+    length(data[[1]]$experiment) == 1 &
+      data[[1]]$experiment[[1]] == "historical"
+  ) {
     cli::cli_abort(c("x" = "Projections are not part of CAVAanalytics list"))
-  if (!is.null(lowert) &
-      !is.null(uppert))
+  }
+  if (
+    !is.null(lowert) &
+      !is.null(uppert)
+  ) {
     cli::cli_abort(c("x" = "select only one threshold"))
-  if (!is.null(lowert) |
-      !is.null(uppert)) {
+  }
+  if (
+    !is.null(lowert) |
+      !is.null(uppert)
+  ) {
     dates <- data[[1]]$models_mbrs[[1]]$Dates$start
     dates <- as.Date(dates)
     # calculate the differences between consecutive dates
     diffs <- diff(dates)
     # check if the differences are equal to 1
-    if (any(diffs == 1)) {
-
-    } else {
-      cli::cli_abort(c("x" = "Data is monthly or greater, thresholds cannot be calculated. Set as NULL"))
+    if (any(diffs == 1)) {} else {
+      cli::cli_abort(c(
+        "x" = "Data is monthly or greater, thresholds cannot be calculated. Set as NULL"
+      ))
     }
   }
 
-  if (consecutive &
+  if (
+    consecutive &
       is.null(uppert) &
-      is.null(lowert))
+      is.null(lowert)
+  ) {
     stop("Specify a threshold for which you want to calculate consecutive days")
-  if (!any(stringr::str_detect(colnames(data[[1]]), "obs")) &
-      isTRUE(bias.correction)) {
+  }
+  if (
+    !any(stringr::str_detect(colnames(data[[1]]), "obs")) &
+      isTRUE(bias.correction)
+  ) {
     cli::cli_abort(
-      c("x" = "Bias correction cannot be performed, no observational dataset found. Set as F")
+      c(
+        "x" = "Bias correction cannot be performed, no observational dataset found. Set as F"
+      )
     )
-
   }
   if (bias.correction) {
-    if ((length(data[[1]]$obs[[1]]$xy$x) != length(data[[1]]$models_mbrs[[1]]$xy$x)) |
-        (length(data[[1]]$obs[[1]]$xy$y) != length(data[[1]]$models_mbrs[[1]]$xy$y))) {
+    if (
+      (length(data[[1]]$obs[[1]]$xy$x) !=
+        length(data[[1]]$models_mbrs[[1]]$xy$x)) |
+        (length(data[[1]]$obs[[1]]$xy$y) !=
+          length(data[[1]]$models_mbrs[[1]]$xy$y))
+    ) {
       cli::cli_alert_warning(
         "Observation and historical experiment do not have the same spatial resolution. Models will be interpolated to match the observational dataset"
       )
     }
-
   }
-
 }
 
 
 #' Check inputs for model_biases
 #' @noRd
-check_inputs.model_biases <- function(data,
-                                      bias.correction,
-                                      uppert,
-                                      lowert,
-                                      consecutive,
-                                      duration,
-                                      season,
-                                      method,
-                                      cross_validation,
-                                      window) {
-  if (!is.list(season))
+check_inputs.model_biases <- function(
+  data,
+  bias.correction,
+  uppert,
+  lowert,
+  consecutive,
+  duration,
+  season,
+  method,
+  cross_validation,
+  window
+) {
+  if (!is.list(season)) {
     cli::cli_abort("season needs to be a list, for example, list(1:3)")
+  }
   stopifnot(is.logical(consecutive), is.logical(bias.correction))
   if (!(duration == "max" || is.numeric(duration))) {
     cli::cli_abort("duration must be 'max' or a number")
   }
-  if (!(method == "eqm" ||
-        method == "qdm" || method == "scaling")) {
+  if (
+    !(method == "eqm" ||
+      method == "qdm" ||
+      method == "scaling")
+  ) {
     cli::cli_abort("method must be one of 'eqm', 'qdm' or 'scaling'")
   }
-  if (!(cross_validation == "none" ||
-        cross_validation == "3fold")) {
+  if (
+    !(cross_validation == "none" ||
+      cross_validation == "3fold")
+  ) {
     cli::cli_abort("cross_validation must be one of 'none', or '3fold'")
   }
   if (!(window == "none" || window == "monthly")) {
     cli::cli_abort("window must be one of 'none', or 'monthly'")
   }
-  if (!is.null(lowert) &
-      !is.null(uppert))
+  if (
+    !is.null(lowert) &
+      !is.null(uppert)
+  ) {
     cli::cli_abort(c("x" = "select only one threshold"))
-  if (!is.null(lowert) |
-      !is.null(uppert)) {
+  }
+  if (
+    !is.null(lowert) |
+      !is.null(uppert)
+  ) {
     dates <- data[[1]]$models_mbrs[[1]]$Dates$start
     dates <- as.Date(dates)
     # calculate the differences between consecutive dates
     diffs <- diff(dates)
     # check if the differences are equal to 1
-    if (any(diffs == 1)) {
-
-    } else {
-      cli::cli_abort(c("x" = "Data is monthly or greater, thresholds cannot be calculated. Set as NULL"))
+    if (any(diffs == 1)) {} else {
+      cli::cli_abort(c(
+        "x" = "Data is monthly or greater, thresholds cannot be calculated. Set as NULL"
+      ))
     }
   }
 
@@ -544,26 +763,36 @@ check_inputs.model_biases <- function(data,
     # calculate the differences between consecutive dates
     diffs <- diff(dates)
     # check if the differences are equal to 1
-    if (any(diffs == 1)) {
-
-    } else {
+    if (any(diffs == 1)) {} else {
       cli::cli_abort(c("x" = "Data is monthly or greater, set window to none"))
     }
   }
 
-  if (consecutive &
+  if (
+    consecutive &
       is.null(uppert) &
-      is.null(lowert))
-    cli::cli_abort("Specify a threshold for which you want to calculate consecutive days")
-  if (!any(stringr::str_detect(colnames(data[[1]]), "obs")) |
-      !any(stringr::str_detect(data[[1]]$experiment, "historical"))) {
+      is.null(lowert)
+  ) {
     cli::cli_abort(
-      c("x" = "This function requires an observational dataset and the historical experiment to calculate model biases")
+      "Specify a threshold for which you want to calculate consecutive days"
     )
-
   }
-  if ((length(data[[1]]$obs[[1]]$xy$x) != length(data[[1]]$models_mbrs[[1]]$xy$x)) |
-      (length(data[[1]]$obs[[1]]$xy$y) != length(data[[1]]$models_mbrs[[1]]$xy$y))) {
+  if (
+    !any(stringr::str_detect(colnames(data[[1]]), "obs")) |
+      !any(stringr::str_detect(data[[1]]$experiment, "historical"))
+  ) {
+    cli::cli_abort(
+      c(
+        "x" = "This function requires an observational dataset and the historical experiment to calculate model biases"
+      )
+    )
+  }
+  if (
+    (length(data[[1]]$obs[[1]]$xy$x) !=
+      length(data[[1]]$models_mbrs[[1]]$xy$x)) |
+      (length(data[[1]]$obs[[1]]$xy$y) !=
+        length(data[[1]]$models_mbrs[[1]]$xy$y))
+  ) {
     cli::cli_alert_warning(
       "Observation and historical experiment do not have the same spatial resolution. Models will be interpolated to match the observational dataset"
     )
@@ -572,48 +801,60 @@ check_inputs.model_biases <- function(data,
 
 #' Check inputs for observation
 #' @noRd
-check_inputs.observations <-  function(data,
-                                       uppert,
-                                       lowert,
-                                       consecutive,
-                                       duration,
-                                       season,
-                                       trends) {
-  if (!is.list(season))
+check_inputs.observations <- function(
+  data,
+  uppert,
+  lowert,
+  consecutive,
+  duration,
+  season,
+  trends
+) {
+  if (!is.list(season)) {
     cli::cli_abort("season needs to be a list, for example, list(1:3)")
-  if (!any(stringr::str_detect(colnames(data[[1]]), "obs")))
+  }
+  if (!any(stringr::str_detect(colnames(data[[1]]), "obs"))) {
     cli::cli_abort(
-      c("x" = "Observational dataset not detected. To use this function you need to specify path.to.obs in load_data")
+      c(
+        "x" = "Observational dataset not detected. To use this function you need to specify path.to.obs in load_data"
+      )
     )
+  }
   stopifnot(is.logical(consecutive))
   stopifnot(is.logical(trends))
   if (!(duration == "max" || is.numeric(duration))) {
     cli::cli_abort("duration must be 'max' or a number")
   }
-  if (!is.null(lowert) &
-      !is.null(uppert))
+  if (
+    !is.null(lowert) &
+      !is.null(uppert)
+  ) {
     cli::cli_abort(c("x" = "select only one threshold"))
-  if (!is.null(lowert) |
-      !is.null(uppert)) {
+  }
+  if (
+    !is.null(lowert) |
+      !is.null(uppert)
+  ) {
     dates <- data[[1]]$obs[[1]]$Dates$start
     dates <- as.Date(dates)
     # calculate the differences between consecutive dates
     diffs <- diff(dates)
     # check if the differences are equal to 1
-    if (any(diffs == 1)) {
-
-    } else {
-      cli::cli_abort(c("x" = "Data is monthly or greater, thresholds cannot be calculated. Set as NULL"))
+    if (any(diffs == 1)) {} else {
+      cli::cli_abort(c(
+        "x" = "Data is monthly or greater, thresholds cannot be calculated. Set as NULL"
+      ))
     }
   }
 
-  if (consecutive &
+  if (
+    consecutive &
       is.null(uppert) &
-      is.null(lowert))
+      is.null(lowert)
+  ) {
     stop("Specify a threshold for which you want to calculate consecutive days")
-
+  }
 }
-
 
 
 # Messages ----------------------------------------------------------------
@@ -626,14 +867,16 @@ create_message <- function(data, ...) {
 
 #' @noRd
 create_message.climate_change_signal <-
-  function(var,
-           uppert,
-           lowert,
-           consecutive,
-           duration,
-           bias.correction,
-           frequency,
-           percentage) {
+  function(
+    var,
+    uppert,
+    lowert,
+    consecutive,
+    duration,
+    bias.correction,
+    frequency,
+    percentage
+  ) {
     if (is.null(uppert) & is.null(lowert)) {
       paste0(
         "Climate change signal for ",
@@ -641,9 +884,11 @@ create_message.climate_change_signal <-
         var,
         ifelse(percentage, " in %", "")
       )
-    }
-    else if ((!is.null(uppert) |
-              !is.null(lowert)) & !consecutive) {
+    } else if (
+      (!is.null(uppert) |
+        !is.null(lowert)) &
+        !consecutive
+    ) {
       paste0(
         "Climate change signal for number of days with ",
         var,
@@ -654,10 +899,11 @@ create_message.climate_change_signal <-
         ),
         ifelse(bias.correction, " after bias-correction", "")
       )
-    }
-    else if ((!is.null(uppert) |
-              !is.null(lowert)) &
-             (consecutive & duration == "max")) {
+    } else if (
+      (!is.null(uppert) |
+        !is.null(lowert)) &
+        (consecutive & duration == "max")
+    ) {
       paste0(
         "Climate change signal for maximum consecutive number of days ",
         ifelse(
@@ -667,14 +913,15 @@ create_message.climate_change_signal <-
         ),
         ifelse(bias.correction, " after bias-correction", "")
       )
-    }
-    else if ((!is.null(uppert) |
-              !is.null(lowert)) &
-             (consecutive & is.numeric(duration))) {
+    } else if (
+      (!is.null(uppert) |
+        !is.null(lowert)) &
+        (consecutive & is.numeric(duration))
+    ) {
       paste0(
         var,
         ". Climate change signal for",
-        ifelse(frequency, " frequency " , " total number "),
+        ifelse(frequency, " frequency ", " total number "),
         "of days with duration longer than ",
         duration,
         " consecutive days, ",
@@ -690,13 +937,15 @@ create_message.climate_change_signal <-
 
 #' @noRd
 create_message.projections <-
-  function(var,
-           bias.correction,
-           uppert,
-           lowert,
-           consecutive,
-           duration,
-           frequency) {
+  function(
+    var,
+    bias.correction,
+    uppert,
+    lowert,
+    consecutive,
+    duration,
+    frequency
+  ) {
     if (is.null(uppert) & is.null(lowert)) {
       paste0(
         "Calculation of ",
@@ -704,9 +953,11 @@ create_message.projections <-
         ifelse(bias.correction, "bias-corrected ", " "),
         var
       )
-    }
-    else if ((!is.null(uppert) |
-              !is.null(lowert)) & !consecutive) {
+    } else if (
+      (!is.null(uppert) |
+        !is.null(lowert)) &
+        !consecutive
+    ) {
       paste0(
         "Calculation of number of days with ",
         var,
@@ -717,10 +968,11 @@ create_message.projections <-
         ),
         ifelse(bias.correction, " after bias-correction", "")
       )
-    }
-    else if ((!is.null(uppert) |
-              !is.null(lowert)) &
-             (consecutive & duration == "max")) {
+    } else if (
+      (!is.null(uppert) |
+        !is.null(lowert)) &
+        (consecutive & duration == "max")
+    ) {
       paste0(
         "Calculation of maximum length of consecutive number of days ",
         ifelse(
@@ -730,10 +982,11 @@ create_message.projections <-
         ),
         ifelse(bias.correction, " after bias-correction", "")
       )
-    }
-    else if ((!is.null(uppert) |
-              !is.null(lowert)) &
-             (consecutive & is.numeric(duration))) {
+    } else if (
+      (!is.null(uppert) |
+        !is.null(lowert)) &
+        (consecutive & is.numeric(duration))
+    ) {
       paste0(
         var,
         ". Calculation of ",
@@ -753,13 +1006,15 @@ create_message.projections <-
 
 #' @noRd
 create_message.model_biases <-
-  function(var,
-           bias.correction,
-           uppert,
-           lowert,
-           consecutive,
-           duration,
-           frequency) {
+  function(
+    var,
+    bias.correction,
+    uppert,
+    lowert,
+    consecutive,
+    duration,
+    frequency
+  ) {
     if (is.null(uppert) & is.null(lowert)) {
       paste0(
         "Calculation of model biases for ",
@@ -767,9 +1022,11 @@ create_message.model_biases <-
         ifelse(bias.correction, "bias-corrected ", " "),
         var
       )
-    }
-    else if ((!is.null(uppert) |
-              !is.null(lowert)) & !consecutive) {
+    } else if (
+      (!is.null(uppert) |
+        !is.null(lowert)) &
+        !consecutive
+    ) {
       paste0(
         "Calculation of model biases for number of days with ",
         var,
@@ -780,10 +1037,11 @@ create_message.model_biases <-
         ),
         ifelse(bias.correction, " after bias-correction", "")
       )
-    }
-    else if ((!is.null(uppert) |
-              !is.null(lowert)) &
-             (consecutive & duration == "max")) {
+    } else if (
+      (!is.null(uppert) |
+        !is.null(lowert)) &
+        (consecutive & duration == "max")
+    ) {
       paste0(
         "Calculation of model biases for maximum length of consecutive number of days ",
         ifelse(
@@ -793,14 +1051,15 @@ create_message.model_biases <-
         ),
         ifelse(bias.correction, " after bias-correction", "")
       )
-    }
-    else if ((!is.null(uppert) |
-              !is.null(lowert)) &
-             (consecutive & is.numeric(duration))) {
+    } else if (
+      (!is.null(uppert) |
+        !is.null(lowert)) &
+        (consecutive & is.numeric(duration))
+    ) {
       paste0(
         var,
         ". Calculation of model biases for ",
-        ifelse(frequency, "frequency " , "total number "),
+        ifelse(frequency, "frequency ", "total number "),
         "of days with duration longer than ",
         duration,
         " consecutive days, ",
@@ -816,13 +1075,7 @@ create_message.model_biases <-
 
 #' @noRd
 create_message.observations <-
-  function(var,
-           uppert,
-           lowert,
-           consecutive,
-           duration,
-           frequency,
-           trends) {
+  function(var, uppert, lowert, consecutive, duration, frequency, trends) {
     if (is.null(uppert) & is.null(lowert)) {
       paste0(
         "Calculation of ",
@@ -830,9 +1083,11 @@ create_message.observations <-
         ifelse(var == "pr", "total ", "mean "),
         var
       )
-    }
-    else if ((!is.null(uppert) |
-              !is.null(lowert)) & !consecutive) {
+    } else if (
+      (!is.null(uppert) |
+        !is.null(lowert)) &
+        !consecutive
+    ) {
       paste0(
         "Calculation of ",
         ifelse(trends, "yearly increase in ", " "),
@@ -844,10 +1099,11 @@ create_message.observations <-
           paste0(" above threshold of ", uppert)
         )
       )
-    }
-    else if ((!is.null(uppert) |
-              !is.null(lowert)) &
-             (consecutive & duration == "max")) {
+    } else if (
+      (!is.null(uppert) |
+        !is.null(lowert)) &
+        (consecutive & duration == "max")
+    ) {
       paste0(
         "Calculation of ",
         ifelse(trends, "yearly increase in ", " "),
@@ -858,10 +1114,11 @@ create_message.observations <-
           paste0("above ", uppert)
         )
       )
-    }
-    else if ((!is.null(uppert) |
-              !is.null(lowert)) &
-             (consecutive & is.numeric(duration))) {
+    } else if (
+      (!is.null(uppert) |
+        !is.null(lowert)) &
+        (consecutive & is.numeric(duration))
+    ) {
       paste0(
         var,
         ". Calculation of ",
@@ -880,14 +1137,14 @@ create_message.observations <-
   }
 
 
-
 # filtering, localisation and unit conversion---------------------------------------------------------------
 
 #' Get common dates
 #' @noRd
 common_dates <- function(data) {
-  all_dates <- lapply(data, function(x)
-    substr(x$Dates$start, 1, 10))
+  all_dates <- lapply(data, function(x) {
+    substr(x$Dates$start, 1, 10)
+  })
   common_dates <- Reduce(intersect, all_dates)
 
   data.filt <- lapply(data, function(x) {
@@ -901,26 +1158,46 @@ common_dates <- function(data) {
 
 #' Conversion of Units
 #' @noRd
-transform_climate_data <- function(data,
-                                   variable,
-                                   source,
-                                   conversion_factor = CONSTANTS$CONVERSION_FACTOR) {
+transform_climate_data <- function(
+  data,
+  variable,
+  source,
+  conversion_factor = CONSTANTS$CONVERSION_FACTOR
+) {
   if (stringr::str_detect(variable, "tas")) {
-    data <- suppressMessages(transformeR::gridArithmetics(data, 273.15, operator = "-"))
+    data <- suppressMessages(transformeR::gridArithmetics(
+      data,
+      273.15,
+      operator = "-"
+    ))
   } else if (stringr::str_detect(variable, "pr")) {
-    factor <- if (source == "ERA5")
+    factor <- if (source == "ERA5") {
       1000
-    else
+    } else {
       86400
-    data <- suppressMessages(transformeR::gridArithmetics(data, factor, operator = "*"))
+    }
+    data <- suppressMessages(transformeR::gridArithmetics(
+      data,
+      factor,
+      operator = "*"
+    ))
   } else if (stringr::str_detect(variable, "rsds")) {
-    factor <- if (source == "ERA5")
+    factor <- if (source == "ERA5") {
       86400
-    else
+    } else {
       1
-    data <- suppressMessages(transformeR::gridArithmetics(data, factor, operator = "/"))
+    }
+    data <- suppressMessages(transformeR::gridArithmetics(
+      data,
+      factor,
+      operator = "/"
+    ))
   } else if (stringr::str_detect(variable, "sfc")) {
-    data <- suppressMessages(transformeR::gridArithmetics(data, conversion_factor, operator = "*"))
+    data <- suppressMessages(transformeR::gridArithmetics(
+      data,
+      conversion_factor,
+      operator = "*"
+    ))
   }
 
   if (source %in% c("ERA5", "W5E5")) {
@@ -962,76 +1239,89 @@ years_selection = function(CAVAlist, years, projections = T) {
 
   if (projections) {
     new_data = CAVAlist[[1]] %>%
-      dplyr::mutate(models_mbrs = purrr::map2(models_mbrs, experiment, function(x, y) {
-        if (y == "historical") {
-          x
-
-        } else {
-          transformeR::subsetGrid(x, years = years)
-
-        }
-
-
-      }))
+      dplyr::mutate(
+        models_mbrs = purrr::map2(models_mbrs, experiment, function(x, y) {
+          if (y == "historical") {
+            x
+          } else {
+            transformeR::subsetGrid(x, years = years)
+          }
+        })
+      )
   } else {
-    cli::cli_alert_warning(c("!" = "Years selection is applied to observations"))
+    cli::cli_alert_warning(c(
+      "!" = "Years selection is applied to observations"
+    ))
     new_data = CAVAlist[[1]] %>%
-      dplyr::mutate(obs = map(obs, function(x) {
-        transformeR::subsetGrid(x, years = years)
-
-      }))
-
+      dplyr::mutate(
+        obs = map(obs, function(x) {
+          transformeR::subsetGrid(x, years = years)
+        })
+      )
   }
 
   CAVAlist[[1]] = new_data
   cli::cli_progress_done()
   return(CAVAlist)
-
 }
 
 #' subset based on a season of interest for future data
 #' @noRd
 filter_data_by_season.default <- function(datasets, season) {
-  if (all(season == sort(season))) {
-
-  } else {
+  if (all(season == sort(season))) {} else {
     cli::cli_alert_warning(
       "Some data will be lost on year-crossing season subset (see the 'Time slicing' section of subsetGrid documentation for more details)"
     )
   }
   if (any(stringr::str_detect(colnames(datasets), "obs"))) {
-    datasets %>%  dplyr::mutate_at(c("models_mbrs", "obs"),
-                                   ~ purrr::map(., ~ suppressMessages(
-                                     transformeR::subsetGrid(., season = season)
-                                   )))
+    datasets %>%
+      dplyr::mutate_at(
+        c("models_mbrs", "obs"),
+        ~ purrr::map(
+          .,
+          ~ suppressMessages(
+            transformeR::subsetGrid(., season = season)
+          )
+        )
+      )
   } else {
-    datasets %>%  dplyr::mutate_at(c("models_mbrs"), ~ purrr::map(., ~ suppressMessages(
-      transformeR::subsetGrid(., season = season)
-    )))
+    datasets %>%
+      dplyr::mutate_at(
+        c("models_mbrs"),
+        ~ purrr::map(
+          .,
+          ~ suppressMessages(
+            transformeR::subsetGrid(., season = season)
+          )
+        )
+      )
   }
 }
 
 #' subset based on a season of interest for observations
 #' @noRd
 filter_data_by_season.observations <- function(datasets, season) {
-  if (all(season == sort(season))) {
-
-  } else {
+  if (all(season == sort(season))) {} else {
     cli::cli_alert_warning(
       "Some data will be lost on year-crossing season subset (see the 'Time slicing' section of subsetGrid documentation for more details)"
     )
   }
-  datasets %>%  dplyr::mutate_at(c("obs"), ~ purrr::map(., ~ suppressMessages(
-    transformeR::subsetGrid(., season = season)
-  )))
+  datasets %>%
+    dplyr::mutate_at(
+      c("obs"),
+      ~ purrr::map(
+        .,
+        ~ suppressMessages(
+          transformeR::subsetGrid(., season = season)
+        )
+      )
+    )
 }
 
 #' subset based on a season of interest and experiment for model_biases
 #' @noRd
 filter_data_by_season.model_biases <- function(datasets, season) {
-  if (all(season == sort(season))) {
-
-  } else {
+  if (all(season == sort(season))) {} else {
     cli::cli_alert_warning(
       "Some data will be lost on year-crossing season subset (see the 'Time slicing' section of subsetGrid documentation for more details)"
     )
@@ -1042,16 +1332,25 @@ filter_data_by_season.model_biases <- function(datasets, season) {
   lat <- datasets$models_mbrs[[1]]$xyCoords$y
   lat_obs <- datasets$obs[[1]]$xyCoords$y
 
-  if ((length(lon) != length(lon_obs)) |
-      (length(lat) != length(lat_obs))) {
+  if (
+    (length(lon) != length(lon_obs)) |
+      (length(lat) != length(lat_obs))
+  ) {
     datasets <- datasets %>%
       dplyr::filter(experiment == "historical") %>%
-      dplyr::mutate(models_mbrs = purrr::map(models_mbrs,
-                                             ~ suppressMessages(
-                                               suppressWarnings(
-                                                 transformeR::interpGrid(.x, new.coordinates = transformeR::getGrid(obs[[1]]))
-                                               )
-                                             )))
+      dplyr::mutate(
+        models_mbrs = purrr::map(
+          models_mbrs,
+          ~ suppressMessages(
+            suppressWarnings(
+              transformeR::interpGrid(
+                .x,
+                new.coordinates = transformeR::getGrid(obs[[1]])
+              )
+            )
+          )
+        )
+      )
   } else {
     cli::cli_alert_warning(
       "Observations and model simulations have the same spatial resolution, proceeding with calculations"
@@ -1059,11 +1358,15 @@ filter_data_by_season.model_biases <- function(datasets, season) {
   }
   datasets %>%
     dplyr::filter(experiment == "historical") %>%
-    dplyr::mutate_at(c("models_mbrs", "obs"),
-                     ~ purrr::map(., ~ suppressMessages(
-                       transformeR::subsetGrid(., season = season)
-                     )))
-
+    dplyr::mutate_at(
+      c("models_mbrs", "obs"),
+      ~ purrr::map(
+        .,
+        ~ suppressMessages(
+          transformeR::subsetGrid(., season = season)
+        )
+      )
+    )
 }
 
 
@@ -1071,7 +1374,9 @@ filter_data_by_season.model_biases <- function(datasets, season) {
 #' @noRd
 geo_localize <- function(country, xlim, ylim, buffer) {
   if (!is.null(country) & !is.null(xlim)) {
-    cli::cli_abort(c("x" = "Either select a country or a region of interest, not both"))
+    cli::cli_abort(c(
+      "x" = "Either select a country or a region of interest, not both"
+    ))
   } else {
     country_shp = if (!is.null(country) & !inherits(country, "sf")) {
       suppressMessages(
@@ -1085,7 +1390,6 @@ geo_localize <- function(country, xlim, ylim, buffer) {
     } else if (!is.null(country) & inherits(country, "sf")) {
       country %>%
         sf::st_transform("EPSG:4326")
-
     } else {
       sf::st_bbox(c(
         xmin = min(xlim),
@@ -1100,11 +1404,15 @@ geo_localize <- function(country, xlim, ylim, buffer) {
     }
 
     xlim <-
-      c(sf::st_bbox(country_shp)[1] - buffer,
-        sf::st_bbox(country_shp)[3] + buffer)
+      c(
+        sf::st_bbox(country_shp)[1] - buffer,
+        sf::st_bbox(country_shp)[3] + buffer
+      )
     ylim <-
-      c(sf::st_bbox(country_shp)[2] - buffer,
-        sf::st_bbox(country_shp)[4] + buffer)
+      c(
+        sf::st_bbox(country_shp)[2] - buffer,
+        sf::st_bbox(country_shp)[4] + buffer
+      )
     return(list(
       xlim = xlim,
       ylim = ylim,
@@ -1112,7 +1420,6 @@ geo_localize <- function(country, xlim, ylim, buffer) {
     ))
   }
 }
-
 
 
 # Helper functions for calculating indices --------------------------------------------------------------
@@ -1131,8 +1438,9 @@ geo_localize <- function(country, xlim, ylim, buffer) {
 # functions for consecutive days
 
 thrs_consec = function(col, duration, lowert, uppert, frequency) {
-  if (!is.numeric(col))
+  if (!is.numeric(col)) {
     stop("input has to be a numeric vector")
+  }
 
   if (!(duration == "max" || is.numeric(duration))) {
     stop("duration must be 'max' or a number")
@@ -1141,17 +1449,18 @@ thrs_consec = function(col, duration, lowert, uppert, frequency) {
 
   if (!is.null(lowert)) {
     consec = rle(col < lowert)
-
-  } else{
+  } else {
     consec = rle(col > uppert)
-
   }
 
-  if (duration == "max" &
-      frequency)
+  if (
+    duration == "max" &
+      frequency
+  ) {
     stop(
       "Not meaningful. By definition, the maximum duration of an event, let's say a dry spell, has frequency of 1"
     )
+  }
 
   #get only connsecutive days matching the threshold
 
@@ -1161,19 +1470,20 @@ thrs_consec = function(col, duration, lowert, uppert, frequency) {
 
   if (duration == "max") {
     val <- max(consec_days, na.rm = T)
-    return(if (val == "-Inf")
-      0
-      else
-        val)
-
-  } else{
-    if (!frequency)
+    return(
+      if (val == "-Inf") {
+        0
+      } else {
+        val
+      }
+    )
+  } else {
+    if (!frequency) {
       return(sum(consec_days[consec_days > duration], na.rm = T))
-    else
+    } else {
       return(length(na.omit(consec_days[consec_days > duration])))
-
+    }
   }
-
 }
 
 
@@ -1188,20 +1498,16 @@ thrs_consec = function(col, duration, lowert, uppert, frequency) {
 #'
 #' @export
 
-
 thrs = function(col, lowert, uppert) {
-  if (!is.numeric(col))
-
+  if (!is.numeric(col)) {
     stop("input has to be a numeric vector")
+  }
 
   if (!is.null(lowert)) {
     sum(col < lowert, na.rm = T)
-
-  } else{
+  } else {
     sum(col > uppert, na.rm = T)
-
   }
-
 }
 
 
@@ -1211,9 +1517,11 @@ agreement = function(array3d, threshold) {
   # Define the inner function find.agreement within the agreement function
   find.agreement = function(x, threshold) {
     # Calculate proportion of models predicting each sign of change (negative(-1), no change(0), positive(+1))
-    sign.proportion = c(length(x[x < 0]) / length(x),
-                        length(x[x == 0]) / length(x),
-                        length(x[x > 0]) / length(x))
+    sign.proportion = c(
+      length(x[x < 0]) / length(x),
+      length(x[x == 0]) / length(x),
+      length(x[x > 0]) / length(x)
+    )
     names(sign.proportion) = c("-1", "0", "1")
     # Compare the set threshold to the maximum proportion of models agreeing on any one sign of change
     # If the max proportion is higher than threshold, return 1 (meaning there is agreement in signs among model)
@@ -1238,27 +1546,38 @@ models_trends <- function(c4R, observation = F) {
     # in cases in which there is a spatial dimension
     cli::cli_progress_step(" Calculating Sen's slope and Mann-Kendall test")
 
-    if (dim(c4R$Data)[ifelse(observation, 1, 2)] > 100)
-      cli::cli_alert_warning("Check that your performed annual aggregation before using this function")
+    if (dim(c4R$Data)[ifelse(observation, 1, 2)] > 100) {
+      cli::cli_alert_warning(
+        "Check that your performed annual aggregation before using this function"
+      )
+    }
 
     ind.trends <-
-      apply(c4R$Data, if (observation)
-        c(2, 3)
-        else
-          c(1, 3, 4), function(y) {
-            df <- reshape2::melt(y)
-            # Use trend package functions
-            mk <- trend::mk.test(df$value)
-            sen <- trend::sens.slope(df$value)
-            return(c(sen$estimates, mk$p.value))
-          })
+      apply(
+        c4R$Data,
+        if (observation) {
+          c(2, 3)
+        } else {
+          c(1, 3, 4)
+        },
+        function(y) {
+          df <- reshape2::melt(y)
+          # Use trend package functions
+          mk <- trend::mk.test(df$value)
+          sen <- trend::sens.slope(df$value)
+          return(c(sen$estimates, mk$p.value))
+        }
+      )
 
     cli::cli_process_done()
     return(ind.trends)
   } else {
     # when spatial averages are performed
-    if (dim(c4R$Data)[ifelse(observation, 1, 2)] > 100)
-      cli::cli_alert_warning("Check that your performed annual aggregation before using this function")
+    if (dim(c4R$Data)[ifelse(observation, 1, 2)] > 100) {
+      cli::cli_alert_warning(
+        "Check that your performed annual aggregation before using this function"
+      )
+    }
 
     if (!observation) {
       df_tm_series <- reshape2::melt(c4R$Data) %>%
@@ -1267,11 +1586,13 @@ models_trends <- function(c4R, observation = F) {
           coef = trend::sens.slope(value)$estimates,
           p.value = trend::mk.test(value)$p.value
         ) %>%
-        dplyr::mutate(date = seq(
-          as.Date(c4R$Dates$start[[1]]),
-          as.Date(c4R$Dates$start[[length(c4R$Dates$start)]]),
-          by = "year"
-        )) %>%
+        dplyr::mutate(
+          date = seq(
+            as.Date(c4R$Dates$start[[1]]),
+            as.Date(c4R$Dates$start[[length(c4R$Dates$start)]]),
+            by = "year"
+          )
+        ) %>%
         dplyr::select(Var1, value = coef, date, coef, p.value)
 
       return(df_tm_series)
@@ -1297,7 +1618,6 @@ models_trends <- function(c4R, observation = F) {
 }
 
 
-
 # Make raster -----------------------------------------------------------
 
 #' Make a spatRaster from a C4R list
@@ -1305,33 +1625,39 @@ models_trends <- function(c4R, observation = F) {
 make_raster <-
   function(cl4.object, dimensions, shape.file, stat = "mean") {
     xmin <-
-      if (is.null(cl4.object$xyCoords$lon))
+      if (is.null(cl4.object$xyCoords$lon)) {
         min(cl4.object$xyCoords$x)
-    else
-      min(cl4.object$xyCoords$lon[1, ])
+      } else {
+        min(cl4.object$xyCoords$lon[1, ])
+      }
     xmax <-
-      if (is.null(cl4.object$xyCoords$lon))
+      if (is.null(cl4.object$xyCoords$lon)) {
         max(cl4.object$xyCoords$x)
-    else
-      max(cl4.object$xyCoords$lon[1, ])
+      } else {
+        max(cl4.object$xyCoords$lon[1, ])
+      }
     ymin <-
-      if (is.null(cl4.object$xyCoords$lat))
+      if (is.null(cl4.object$xyCoords$lat)) {
         min(cl4.object$xyCoords$y)
-    else
-      min(cl4.object$xyCoords$lat[, 1])
+      } else {
+        min(cl4.object$xyCoords$lat[, 1])
+      }
     ymax <-
-      if (is.null(cl4.object$xyCoords$lat))
+      if (is.null(cl4.object$xyCoords$lat)) {
         max(cl4.object$xyCoords$y)
-    else
-      max(cl4.object$xyCoords$lat[, 1])
+      } else {
+        max(cl4.object$xyCoords$lat[, 1])
+      }
 
     array_mean <-
       apply(cl4.object$Data, dimensions, stat, na.rm = TRUE)
 
-
     cl4.object$Data <- array_mean
 
-    rasters <- terra::rast(cl4.object$Data, extent = terra::ext(xmin, xmax, ymin, ymax)) %>%
+    rasters <- terra::rast(
+      cl4.object$Data,
+      extent = terra::ext(xmin, xmax, ymin, ymax)
+    ) %>%
       terra::flip(., direction = 'vertical') %>%
       terra::crop(., shape.file, snap = "out") %>%
       terra::mask(., shape.file)
@@ -1340,35 +1666,39 @@ make_raster <-
       paste0(
         stringr::str_extract(cl4.object$Dates$start[1], "\\d{4}"),
         ".",
-        stringr::str_extract(cl4.object$Dates$end[length(cl4.object$Dates$start)], "\\d{4}")
+        stringr::str_extract(
+          cl4.object$Dates$end[length(cl4.object$Dates$start)],
+          "\\d{4}"
+        )
       )
-    names(rasters) <-  nms
+    names(rasters) <- nms
 
     return(rasters)
-
   }
 # performing calculations -------------------------------------------------
 #' function used to perform the calculations
 #' @noRd
 perform_calculations.climate_change_signal <-
-  function(datasets,
-           mod.numb,
-           var,
-           uppert,
-           lowert,
-           consecutive,
-           duration,
-           country_shp,
-           bias.correction,
-           season,
-           frequency,
-           threshold,
-           method,
-           percentage,
-           window) {
+  function(
+    datasets,
+    mod.numb,
+    var,
+    uppert,
+    lowert,
+    consecutive,
+    duration,
+    country_shp,
+    bias.correction,
+    season,
+    frequency,
+    threshold,
+    method,
+    percentage,
+    window
+  ) {
     season_name <-
       convert_vector_to_month_initials(season)
-    data_list <- datasets  %>%
+    data_list <- datasets %>%
       {
         if (bias.correction) {
           cli::cli_text(
@@ -1382,72 +1712,92 @@ perform_calculations.climate_change_signal <-
               glue::glue_collapse(season, "-")
             )
           )
-          dplyr::mutate(.,
-                        models_mbrs = purrr::map2(models_mbrs, experiment, function(mod, forc) {
-                          if (forc == "historical") {
-                            bc <-
-                              suppressMessages(
-                                downscaleR::biasCorrection(
-                                  y = obs[[1]],
-                                  x = mod,
-                                  precipitation =  if (var == "pr")
-                                    TRUE
-                                  else
-                                    FALSE,
-                                  method = method,
-                                  scaling.type = if (var == "pr")
-                                    "multiplicative"
-                                  else
-                                    "additive",
-                                  window = if (window == "monthly")
-                                    c(30, 30)
-                                  else
-                                    NULL,
-                                  extrapolation = "constant"
-                                )
-                              )
-                          } else {
-                            bc <-
-                              suppressMessages(
-                                downscaleR::biasCorrection(
-                                  y = obs[[1]],
-                                  x = dplyr::filter(datasets, experiment == "historical")$models_mbrs[[1]],
-                                  newdata = mod,
-                                  precipitation = ifelse(var == "pr", TRUE, FALSE),
-                                  method = method,
-                                  window = if (window == "monthly")
-                                    c(30, 30)
-                                  else
-                                    NULL,
-                                  extrapolation = "constant"
-                                )
-                              )
+          dplyr::mutate(
+            .,
+            models_mbrs = purrr::map2(
+              models_mbrs,
+              experiment,
+              function(mod, forc) {
+                if (forc == "historical") {
+                  bc <-
+                    suppressMessages(
+                      downscaleR::biasCorrection(
+                        y = obs[[1]],
+                        x = mod,
+                        precipitation = if (var == "pr") {
+                          TRUE
+                        } else {
+                          FALSE
+                        },
+                        method = method,
+                        scaling.type = if (var == "pr") {
+                          "multiplicative"
+                        } else {
+                          "additive"
+                        },
+                        window = if (window == "monthly") {
+                          c(30, 30)
+                        } else {
+                          NULL
+                        },
+                        extrapolation = "constant"
+                      )
+                    )
+                } else {
+                  bc <-
+                    suppressMessages(
+                      downscaleR::biasCorrection(
+                        y = obs[[1]],
+                        x = dplyr::filter(
+                          datasets,
+                          experiment == "historical"
+                        )$models_mbrs[[1]],
+                        newdata = mod,
+                        precipitation = ifelse(var == "pr", TRUE, FALSE),
+                        method = method,
+                        window = if (window == "monthly") {
+                          c(30, 30)
+                        } else {
+                          NULL
+                        },
+                        extrapolation = "constant"
+                      )
+                    )
+                }
 
-                          }
+                mod_temp <-
+                  transformeR::intersectGrid.time(mod, bc, which.return = 2)
+                mod_temp$Dates$start <-
+                  mod$Dates$start
+                mod_temp$Dates$end <- mod$Dates$end
 
-                          mod_temp <-
-                            transformeR::intersectGrid.time(mod, bc, which.return = 2)
-                          mod_temp$Dates$start <-
-                            mod$Dates$start
-                          mod_temp$Dates$end <-  mod$Dates$end
-
-                          return(mod_temp)
-                        }, .progress = T))
-        } else
+                return(mod_temp)
+              },
+              .progress = T
+            )
+          )
+        } else {
           .
-      }  %>%
+        }
+      } %>%
       # computing annual aggregation. if threshold is specified, first apply threshold
-      dplyr::mutate(models_agg_y = furrr::future_map(models_mbrs, function(x)
-        suppressMessages(
-          transformeR::aggregateGrid(# perform aggregation based on season output
-            x, aggr.y =
-              if (var == "pr" &
+      dplyr::mutate(
+        models_agg_y = furrr::future_map(models_mbrs, function(x) {
+          suppressMessages(
+            transformeR::aggregateGrid(
+              # perform aggregation based on season output
+              x,
+              aggr.y = if (
+                var == "pr" &
                   !consecutive &
-                  (is.null(uppert) & is.null(lowert))) {
+                  (is.null(uppert) & is.null(lowert))
+              ) {
                 list(FUN = "sum", na.rm = TRUE)
-              } else if (var != "pr" &
-                         !consecutive &
-                         (is.null(lowert) & is.null(uppert))) {
+              } else if (
+                var != "pr" &
+                  !consecutive &
+                  (is.null(lowert) & is.null(uppert))
+              ) {
                 list(FUN = "mean", na.rm = TRUE)
               } else if (consecutive) {
                 list(
@@ -1458,20 +1808,28 @@ perform_calculations.climate_change_signal <-
                   frequency = frequency
                 )
               } else if (!consecutive) {
-                list(FUN = thrs,
-                     uppert = uppert,
-                     lowert = lowert)
-              })
-        )))  %>%
-      dplyr::mutate(models_agg_tot = purrr::map(models_agg_y, function(x)  {
-        suppressMessages(x %>%
-                           transformeR::climatology(.))
-      })) %>%
+                list(FUN = thrs, uppert = uppert, lowert = lowert)
+              }
+            )
+          )
+        })
+      ) %>%
+      dplyr::mutate(
+        models_agg_tot = purrr::map(models_agg_y, function(x) {
+          suppressMessages(
+            x %>%
+              transformeR::climatology(.)
+          )
+        })
+      ) %>%
       dplyr::select(-models_mbrs) %>% # calculate climate change signal by subtracting historical data
       dplyr::mutate(
         ccs_mbrs = purrr::map(models_agg_tot, function(y) {
           h <-
-            dplyr::filter(., stringr::str_detect(experiment, "hist"))$models_agg_tot[[1]]
+            dplyr::filter(
+              .,
+              stringr::str_detect(experiment, "hist")
+            )$models_agg_tot[[1]]
           delta <-
             transformeR::gridArithmetics(y, h, operator = "-")
 
@@ -1521,24 +1879,33 @@ perform_calculations.climate_change_signal <-
         }),
         models_temp_ccs = purrr::map2(experiment, models_agg_y, function(x, y) {
           h <-
-            dplyr::filter(., stringr::str_detect(experiment, "hist"))$models_agg_tot[[1]]
+            dplyr::filter(
+              .,
+              stringr::str_detect(experiment, "hist")
+            )$models_agg_tot[[1]]
 
           if (stringr::str_detect(x, "hist")) {
             NULL
-
           } else {
             mbrs = dim(y$Data)[1]
             yrs = dim(y$Data)[2]
             lt = dim(y$Data)[3]
             ln = dim(y$Data)[4]
 
-            h.expanded = array(rep(h$Data, each = yrs), dim = c(mbrs, yrs, lt, ln))
+            h.expanded = array(
+              rep(h$Data, each = yrs),
+              dim = c(mbrs, yrs, lt, ln)
+            )
 
             delta <-
               transformeR::gridArithmetics(y, h.expanded, operator = "-")
             if (percentage) {
               delta <-
-                transformeR::gridArithmetics(delta, h.expanded, operator = "/") %>%
+                transformeR::gridArithmetics(
+                  delta,
+                  h.expanded,
+                  operator = "/"
+                ) %>%
                 transformeR::gridArithmetics(., 100, operator = "*")
             }
 
@@ -1553,7 +1920,6 @@ perform_calculations.climate_change_signal <-
               dplyr::mutate(season = season_name) %>%
               dplyr::group_by(date, experiment, Var1, season) %>%
               dplyr::summarise(value = median(value, na.rm = T)) # spatial aggregation because ccs do not support spatiotemporal
-
           }
         })
       ) %>%
@@ -1565,44 +1931,55 @@ perform_calculations.climate_change_signal <-
       ccs_sd = terra::rast(data_list$rst_ens_sd_ccs),
       members_ccs = terra::rast(unlist(data_list$rst_models_ccs)),
       agreement = terra::rast(data_list$rst_ccs_sign),
-      temporal_data = do.call(rbind, purrr::map(
-        1:nrow(data_list), ~ data_list$models_temp_ccs[[.]]
-      ))
+      temporal_data = do.call(
+        rbind,
+        purrr::map(
+          1:nrow(data_list),
+          ~ data_list$models_temp_ccs[[.]]
+        )
+      )
     ))
   }
-
 
 
 #' function used to perform the calculations
 #' @noRd
 perform_calculations.obs <-
-  function(datasets,
-           var,
-           uppert,
-           lowert,
-           consecutive,
-           duration,
-           country_shp,
-           season,
-           frequency,
-           trends) {
+  function(
+    datasets,
+    var,
+    uppert,
+    lowert,
+    consecutive,
+    duration,
+    country_shp,
+    season,
+    frequency,
+    trends
+  ) {
     season_name <-
       convert_vector_to_month_initials(season)
 
     data_list <- datasets %>%
-      dplyr::slice(1) %>%    # computing annual aggregation. if threshold is specified, first apply threshold
-      dplyr::mutate(obs_agg_y = purrr::map(obs, function(x)
-        suppressMessages(
-          transformeR::aggregateGrid(# perform aggregation based on season and output
-            x, aggr.y =
-              if (var == "pr" &
+      dplyr::slice(1) %>% # computing annual aggregation. if threshold is specified, first apply threshold
+      dplyr::mutate(
+        obs_agg_y = purrr::map(obs, function(x) {
+          suppressMessages(
+            transformeR::aggregateGrid(
+              # perform aggregation based on season and output
+              x,
+              aggr.y = if (
+                var == "pr" &
                   !consecutive &
-                  (is.null(uppert) & is.null(lowert))) {
+                  (is.null(uppert) & is.null(lowert))
+              ) {
                 list(FUN = "sum", na.rm = TRUE)
-              } else if (var != "pr" &
-                         !consecutive &
-                         (is.null(lowert) &
-                          is.null(uppert))) {
+              } else if (
+                var != "pr" &
+                  !consecutive &
+                  (is.null(lowert) &
+                    is.null(uppert))
+              ) {
                 list(FUN = "mean", na.rm = TRUE)
               } else if (consecutive) {
                 list(
@@ -1613,11 +1990,12 @@ perform_calculations.obs <-
                   frequency = frequency
                 )
               } else if (!consecutive) {
-                list(FUN = thrs,
-                     uppert = uppert,
-                     lowert = lowert)
-              })
-        ))) %>%
+                list(FUN = thrs, uppert = uppert, lowert = lowert)
+              }
+            )
+          )
+        })
+      ) %>%
       dplyr::select(obs_agg_y) %>%
       {
         if (!trends) {
@@ -1626,10 +2004,15 @@ perform_calculations.obs <-
             .,
             rst_mean = purrr::map(obs_agg_y, function(obs_agg) {
               rs <-
-                make_raster(obs_agg, if (length(obs_agg$Dates$start) == 1)
-                  c(1, 2)
-                  else
-                    c(2, 3), country_shp) # adjust by array dimension
+                make_raster(
+                  obs_agg,
+                  if (length(obs_agg$Dates$start) == 1) {
+                    c(1, 2)
+                  } else {
+                    c(2, 3)
+                  },
+                  country_shp
+                ) # adjust by array dimension
               names(rs) <-
                 paste0("obs", "_", names(rs), "_", season_name)
               return(rs)
@@ -1643,19 +2026,15 @@ perform_calculations.obs <-
                 dplyr::mutate(experiment = "obs") %>%
                 dplyr::mutate(season = season_name)
               return(df)
-
-
             })
           )
-
-
         } else {
           dplyr::mutate(
             .,
             obs_spat = purrr::map(obs_agg_y, function(x) {
               c4R <- x
               results <- models_trends(x, observation = T)
-              c4R$Data <- results[1, , ]# coef
+              c4R$Data <- results[1, , ] # coef
               x$Data <- results[2, , ] # p.value
 
               coef <- make_raster(c4R, c(1, 2), country_shp)
@@ -1666,7 +2045,6 @@ perform_calculations.obs <-
               names(p.value) <-
                 paste0("obs", "_p_", names(p.value), "_", season_name)
               return(list(coef, p.value))
-
             }),
             obs_temp = purrr::map(obs_agg_y, function(x) {
               dimnames(x$Data)[[1]] <- x$Dates$start
@@ -1677,13 +2055,8 @@ perform_calculations.obs <-
                 dplyr::mutate(experiment = "obs") %>%
                 dplyr::mutate(season = season_name)
               return(df)
-
-
             })
           )
-
-
-
         }
       }
 
@@ -1706,24 +2079,25 @@ perform_calculations.obs <-
   }
 
 
-
 #' function used to perform the calculations
 #' @noRd
 perform_calculations.model_biases <-
-  function(datasets,
-           mod.numb,
-           var,
-           bias.correction,
-           uppert,
-           lowert,
-           consecutive,
-           duration,
-           country_shp,
-           season,
-           frequency,
-           method,
-           cross_validation,
-           window) {
+  function(
+    datasets,
+    mod.numb,
+    var,
+    bias.correction,
+    uppert,
+    lowert,
+    consecutive,
+    duration,
+    country_shp,
+    season,
+    frequency,
+    method,
+    cross_validation,
+    window
+  ) {
     season_name <-
       convert_vector_to_month_initials(season)
     data_list <- datasets %>%
@@ -1745,105 +2119,136 @@ perform_calculations.model_biases <-
               )
             )
           )
-          dplyr::mutate(.,
-                        models_mbrs = purrr::map(models_mbrs, function(mod) {
-                          bc <-
-                            suppressMessages(
-                              downscaleR::biasCorrection(
-                                y = obs[[1]],
-                                x = mod,
-                                scaling.type = if (var == "pr")
-                                  "multiplicative"
-                                else
-                                  "additive",
-                                precipitation = if (var == "pr")
-                                  TRUE
-                                else
-                                  FALSE,
-                                method = method,
-                                cross.val = if (cross_validation == "3fold")
-                                  "kfold"
-                                else
-                                  "none",
-                                folds = 3,
-                                window = if (window == "monthly")
-                                  c(30, 30)
-                                else
-                                  NULL,
-                                extrapolation = "constant"
-                              )
-                            )
+          dplyr::mutate(
+            .,
+            models_mbrs = purrr::map(
+              models_mbrs,
+              function(mod) {
+                bc <-
+                  suppressMessages(
+                    downscaleR::biasCorrection(
+                      y = obs[[1]],
+                      x = mod,
+                      scaling.type = if (var == "pr") {
+                        "multiplicative"
+                      } else {
+                        "additive"
+                      },
+                      precipitation = if (var == "pr") {
+                        TRUE
+                      } else {
+                        FALSE
+                      },
+                      method = method,
+                      cross.val = if (cross_validation == "3fold") {
+                        "kfold"
+                      } else {
+                        "none"
+                      },
+                      folds = 3,
+                      window = if (window == "monthly") {
+                        c(30, 30)
+                      } else {
+                        NULL
+                      },
+                      extrapolation = "constant"
+                    )
+                  )
 
-                          mod_temp <-
-                            transformeR::intersectGrid.time(mod, bc, which.return = 2)
-                          mod_temp$Dates$start <-
-                            mod$Dates$start
-                          mod_temp$Dates$end <-  mod$Dates$end
+                mod_temp <-
+                  transformeR::intersectGrid.time(mod, bc, which.return = 2)
+                mod_temp$Dates$start <-
+                  mod$Dates$start
+                mod_temp$Dates$end <- mod$Dates$end
 
-                          return(mod_temp)
-                        }, .progress = T))
-        } else
+                return(mod_temp)
+              },
+              .progress = T
+            )
+          )
+        } else {
           .
-      }  %>%   # computing annual aggregation. if threshold is specified, first apply threshold
-      dplyr::mutate_at(c("models_mbrs", "obs"),
-                       ~ furrr::future_map(., ~
-                                             suppressMessages(
-                                               transformeR::aggregateGrid(# perform aggregation based on seasonended output
-                                                 ., aggr.y =
-                                                   if (var == "pr" &
-                                                       !consecutive &
-                                                       (is.null(uppert) &
-                                                        is.null(lowert))) {
-                                                     list(FUN = "sum", na.rm = TRUE)
-                                                   } else if (var != "pr" &
-                                                              !consecutive &
-                                                              (is.null(lowert) &
-                                                               is.null(uppert))) {
-                                                     list(FUN = "mean", na.rm = TRUE)
-                                                   } else if (consecutive) {
-                                                     list(
-                                                       FUN = thrs_consec,
-                                                       duration = duration,
-                                                       lowert = lowert,
-                                                       uppert = uppert,
-                                                       frequency = frequency
-                                                     )
-                                                   } else if (!consecutive) {
-                                                     list(FUN = thrs,
-                                                          uppert = uppert,
-                                                          lowert = lowert)
-                                                   })
-                                             ))) %>%
-      dplyr::mutate(rst_obs = purrr::map(obs, function(data_obs) {
-        rs <-
-          make_raster(data_obs, if (length(data_obs$Dates$start) == 1)
-            c(1, 2)
-            else
-              c(2, 3), country_shp)
-      })) %>%
-      # individual models rasters
-      dplyr::mutate(rst_models = purrr::map(models_mbrs, function(y) {
-        rs_list <- purrr::map(1:dim(y$Data)[[1]], function(ens) {
-          array_mean <-
-            if (length(y$Dates$start) == 1)
-              apply(y$Data[ens, , , ], c(1, 2), mean, na.rm = TRUE)
-          else
-            apply(y$Data[ens, , , ], c(2, 3), mean, na.rm = TRUE) # climatology per member adjusting by array dimension
-
-          y$Data <- array_mean
-
-          rs <- make_raster(y, c(1, 2), country_shp)
-
-          names(rs) <-
-            paste0("Member ",
-                   ens,
-                   "_historical_",
-                   names(rs),
-                   "_",
-                   season_name)
-          return(rs)
+        }
+      } %>% # computing annual aggregation. if threshold is specified, first apply threshold
+      dplyr::mutate_at(
+        c("models_mbrs", "obs"),
+        ~ furrr::future_map(
+          .,
+          ~ suppressMessages(
+            transformeR::aggregateGrid(
+              # perform aggregation based on seasonended output
+              .,
+              aggr.y = if (
+                var == "pr" &
+                  !consecutive &
+                  (is.null(uppert) &
+                    is.null(lowert))
+              ) {
+                list(FUN = "sum", na.rm = TRUE)
+              } else if (
+                var != "pr" &
+                  !consecutive &
+                  (is.null(lowert) &
+                    is.null(uppert))
+              ) {
+                list(FUN = "mean", na.rm = TRUE)
+              } else if (consecutive) {
+                list(
+                  FUN = thrs_consec,
+                  duration = duration,
+                  lowert = lowert,
+                  uppert = uppert,
+                  frequency = frequency
+                )
+              } else if (!consecutive) {
+                list(FUN = thrs, uppert = uppert, lowert = lowert)
+              }
+            )
+          )
+        )
+      ) %>%
+      dplyr::mutate(
+        rst_obs = purrr::map(obs, function(data_obs) {
+          rs <-
+            make_raster(
+              data_obs,
+              if (length(data_obs$Dates$start) == 1) {
+                c(1, 2)
+              } else {
+                c(2, 3)
+              },
+              country_shp
+            )
         })
-      })) %>%
+      ) %>%
+      # individual models rasters
+      dplyr::mutate(
+        rst_models = purrr::map(models_mbrs, function(y) {
+          rs_list <- purrr::map(1:dim(y$Data)[[1]], function(ens) {
+            array_mean <-
+              if (length(y$Dates$start) == 1) {
+                apply(y$Data[ens, , , ], c(1, 2), mean, na.rm = TRUE)
+              } else {
+                apply(y$Data[ens, , , ], c(2, 3), mean, na.rm = TRUE)
+              } # climatology per member adjusting by array dimension
+
+            y$Data <- array_mean
+
+            rs <- make_raster(y, c(1, 2), country_shp)
+
+            names(rs) <-
+              paste0(
+                "Member ",
+                ens,
+                "_historical_",
+                names(rs),
+                "_",
+                season_name
+              )
+            return(rs)
+          })
+        })
+      ) %>%
       # biases
       dplyr::mutate(
         rst_mod_biases = purrr::map(rst_models, function(y) {
@@ -1879,7 +2284,6 @@ perform_calculations.model_biases <-
           )
 
           return(df)
-
         })
       )
     invisible(new_CAVAanalytics_model_biases(
@@ -1890,22 +2294,23 @@ perform_calculations.model_biases <-
   }
 
 
-
 #' function used to perform the calculations on prjections
 #' @noRd
-perform_calculations.projections <- function(datasets,
-                                             mod.numb,
-                                             var,
-                                             bias.correction,
-                                             uppert,
-                                             lowert,
-                                             consecutive,
-                                             duration,
-                                             country_shp,
-                                             season,
-                                             frequency,
-                                             method,
-                                             window) {
+perform_calculations.projections <- function(
+  datasets,
+  mod.numb,
+  var,
+  bias.correction,
+  uppert,
+  lowert,
+  consecutive,
+  duration,
+  country_shp,
+  season,
+  frequency,
+  method,
+  window
+) {
   season_name <-
     convert_vector_to_month_initials(season)
   data_list <- datasets %>%
@@ -1923,54 +2328,73 @@ perform_calculations.projections <- function(datasets,
             glue::glue_collapse(season, "-")
           )
         )
-        dplyr::mutate(.,
-                      models_mbrs = purrr::map(models_mbrs, function(mod) {
-                        bc <-
-                          suppressMessages(
-                            downscaleR::biasCorrection(
-                              y = obs[[1]],
-                              x = dplyr::filter(datasets, experiment == "historical")$models_mbrs[[1]],
-                              newdata = mod,
-                              scaling.type = if (var == "pr")
-                                "multiplicative"
-                              else
-                                "additive",
-                              precipitation =  if (var == "pr")
-                                TRUE
-                              else
-                                FALSE,
-                              method = method,
-                              window =  if (window == "monthly")
-                                c(30, 30)
-                              else
-                                NULL,
-                              extrapolation = "constant"
-                            )
-                          )
+        dplyr::mutate(
+          .,
+          models_mbrs = purrr::map(
+            models_mbrs,
+            function(mod) {
+              bc <-
+                suppressMessages(
+                  downscaleR::biasCorrection(
+                    y = obs[[1]],
+                    x = dplyr::filter(
+                      datasets,
+                      experiment == "historical"
+                    )$models_mbrs[[1]],
+                    newdata = mod,
+                    scaling.type = if (var == "pr") {
+                      "multiplicative"
+                    } else {
+                      "additive"
+                    },
+                    precipitation = if (var == "pr") {
+                      TRUE
+                    } else {
+                      FALSE
+                    },
+                    method = method,
+                    window = if (window == "monthly") {
+                      c(30, 30)
+                    } else {
+                      NULL
+                    },
+                    extrapolation = "constant"
+                  )
+                )
 
-                        mod_temp <-
-                          transformeR::intersectGrid.time(mod, bc, which.return = 2)
-                        mod_temp$Dates$start <-
-                          mod$Dates$start
-                        mod_temp$Dates$end <-  mod$Dates$end
+              mod_temp <-
+                transformeR::intersectGrid.time(mod, bc, which.return = 2)
+              mod_temp$Dates$start <-
+                mod$Dates$start
+              mod_temp$Dates$end <- mod$Dates$end
 
-                        return(mod_temp)
-                      }, .progress = T))
-      } else
+              return(mod_temp)
+            },
+            .progress = T
+          )
+        )
+      } else {
         .
-    }  %>%   # computing annual aggregation. if threshold is specified, first apply threshold
-    dplyr::mutate(models_agg_y = furrr::future_map(models_mbrs, function(x)
-      suppressMessages(
-        transformeR::aggregateGrid(# perform aggregation based on season and output
-          x, aggr.y =
-            if (var == "pr" &
+      }
+    } %>% # computing annual aggregation. if threshold is specified, first apply threshold
+    dplyr::mutate(
+      models_agg_y = furrr::future_map(models_mbrs, function(x) {
+        suppressMessages(
+          transformeR::aggregateGrid(
+            # perform aggregation based on season and output
+            x,
+            aggr.y = if (
+              var == "pr" &
                 !consecutive &
-                (is.null(uppert) & is.null(lowert))) {
+                (is.null(uppert) & is.null(lowert))
+            ) {
               list(FUN = "sum", na.rm = TRUE)
-            } else if (var != "pr" &
-                       !consecutive &
-                       (is.null(lowert) &
-                        is.null(uppert))) {
+            } else if (
+              var != "pr" &
+                !consecutive &
+                (is.null(lowert) &
+                  is.null(uppert))
+            ) {
               list(FUN = "mean", na.rm = TRUE)
             } else if (consecutive) {
               list(
@@ -1981,17 +2405,21 @@ perform_calculations.projections <- function(datasets,
                 frequency = frequency
               )
             } else if (!consecutive) {
-              list(FUN = thrs,
-                   uppert = uppert,
-                   lowert = lowert)
-            })
-      ))) %>%
+              list(FUN = thrs, uppert = uppert, lowert = lowert)
+            }
+          )
+        )
+      })
+    ) %>%
     dplyr::select(-models_mbrs) %>%
     # ensemble mean
     dplyr::mutate(
       rst_ens_mean = purrr::map2(experiment, models_agg_y, function(x, y) {
         ens <-
-          suppressMessages(transformeR::aggregateGrid(y, aggr.mem = list(FUN = "mean", na.rm = TRUE)))
+          suppressMessages(transformeR::aggregateGrid(
+            y,
+            aggr.mem = list(FUN = "mean", na.rm = TRUE)
+          ))
         rs <-
           make_raster(ens, c(2, 3), country_shp) # adjust by array dimension
         names(rs) <-
@@ -2001,7 +2429,10 @@ perform_calculations.projections <- function(datasets,
       # ensemble SD
       rst_ens_sd = purrr::map2(experiment, models_agg_y, function(x, y) {
         ens <-
-          suppressMessages(transformeR::aggregateGrid(y, aggr.mem = list(FUN = "sd", na.rm = TRUE)))
+          suppressMessages(transformeR::aggregateGrid(
+            y,
+            aggr.mem = list(FUN = "sd", na.rm = TRUE)
+          ))
         rs <-
           make_raster(ens, c(2, 3), country_shp)
         names(rs) <-
@@ -2012,17 +2443,17 @@ perform_calculations.projections <- function(datasets,
       rst_models = purrr::map2(experiment, models_agg_y, function(x, y) {
         rs_list <- purrr::map(1:dim(y$Data)[[1]], function(ens) {
           array_mean <-
-            if (length(y$Dates$start) == 1)
+            if (length(y$Dates$start) == 1) {
               apply(y$Data[ens, , , ], c(1, 2), mean, na.rm = TRUE)
-          else
-            apply(y$Data[ens, , , ], c(2, 3), mean, na.rm = TRUE) # climatology per member adjusting by array dimension
+            } else {
+              apply(y$Data[ens, , , ], c(2, 3), mean, na.rm = TRUE)
+            } # climatology per member adjusting by array dimension
           y$Data <- array_mean
           rs <- make_raster(y, c(1, 2), country_shp)
           names(rs) <-
             paste0("Member ", ens, "_", x, "_", names(rs), "_", season_name)
           return(rs)
         })
-
       }),
       models_temp = purrr::map2(models_agg_y, experiment, function(x, y) {
         dimnames(x$Data)[[1]] <- x$Members
@@ -2035,7 +2466,6 @@ perform_calculations.projections <- function(datasets,
           dplyr::mutate(experiment = y) %>%
           dplyr::mutate(season = season_name)
         return(df)
-
       })
     )
 
@@ -2043,11 +2473,16 @@ perform_calculations.projections <- function(datasets,
     ensemble_mean = terra::rast(data_list$rst_ens_mean),
     ensemble_sd = terra::rast(data_list$rst_ens_sd),
     individual_members = terra::rast(purrr::map(
-      data_list$rst_models, ~ terra::rast(.x)
+      data_list$rst_models,
+      ~ terra::rast(.x)
     )),
-    annual_data = do.call(rbind, purrr::map(
-      1:nrow(data_list), ~ data_list$models_temp[[.]]
-    ))
+    annual_data = do.call(
+      rbind,
+      purrr::map(
+        1:nrow(data_list),
+        ~ data_list$models_temp[[.]]
+      )
+    )
   ))
 }
 
@@ -2080,11 +2515,13 @@ new_CAVAanalytics_list <- function(models_df, country_shp) {
 #' @param temporal_data data.frame for spatially aggregated data
 #' @return A CAVAanalytics_ccs object
 #' @noRd
-new_CAVAanalytics_ccs <- function(ccs_mean,
-                                  ccs_sd,
-                                  members_ccs,
-                                  agreement,
-                                  temporal_data) {
+new_CAVAanalytics_ccs <- function(
+  ccs_mean,
+  ccs_sd,
+  members_ccs,
+  agreement,
+  temporal_data
+) {
   # Validate inputs
   stopifnot(inherits(ccs_mean, "SpatRaster"))
   stopifnot(inherits(ccs_sd, "SpatRaster"))
@@ -2117,10 +2554,12 @@ new_CAVAanalytics_ccs <- function(ccs_mean,
 #' @return A CAVAanalytics_observations object
 #' @noRd
 #'
-new_CAVAanalytics_observations <- function(spatraster_data,
-                                           pvalues = NULL,
-                                           annual_data,
-                                           trends = FALSE) {
+new_CAVAanalytics_observations <- function(
+  spatraster_data,
+  pvalues = NULL,
+  annual_data,
+  trends = FALSE
+) {
   if (!trends) {
     structure(
       list(spatraster_data, annual_data),
@@ -2154,10 +2593,12 @@ new_CAVAanalytics_observations <- function(spatraster_data,
 #' @param annual_data data.frame for annually aggregated data
 #' @return An object of class "CAVAanalytics_projections"
 #' @noRd
-new_CAVAanalytics_projections <- function(ensemble_mean,
-                                          ensemble_sd,
-                                          individual_members,
-                                          annual_data) {
+new_CAVAanalytics_projections <- function(
+  ensemble_mean,
+  ensemble_sd,
+  individual_members,
+  annual_data
+) {
   # Input validation
   if (!inherits(ensemble_mean, "SpatRaster")) {
     stop("ensemble_mean must be a SpatRaster object")
@@ -2192,9 +2633,11 @@ new_CAVAanalytics_projections <- function(ensemble_mean,
 #' @param temporal_biases data.frame containing temporal biases
 #' @return An object of class CAVAanalytics_model_biases
 #' @noRd
-new_CAVAanalytics_model_biases <- function(ensemble_biases,
-                                           model_biases,
-                                           temporal_biases) {
+new_CAVAanalytics_model_biases <- function(
+  ensemble_biases,
+  model_biases,
+  temporal_biases
+) {
   # Input validation
   if (!inherits(ensemble_biases, "SpatRaster")) {
     cli::cli_abort("ensemble_biases must be a SpatRaster object")

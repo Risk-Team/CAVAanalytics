@@ -12,7 +12,7 @@ load_model_paths.thredds <- function(
 
   # Determine activity filter based on path.to.data
   activity_pattern <- if (path.to.data == "CORDEX-CORE-BC") {
-    "BC"
+    "CRDX-ISIMIP-025"
   } else {
     "CORDEX"
   }
@@ -62,7 +62,7 @@ load_model_paths.hub <- function(
 
   # Determine activity filter based on path.to.data
   activity_pattern <- if (path.to.data == "CORDEX-CORE-BC") {
-    "BC"
+    "CRDX-ISIMIP-025"
   } else {
     "CORDEX"
   }

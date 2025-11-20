@@ -21,8 +21,8 @@ load_data(
 )
 }
 \arguments{
-\item{path.to.data}{character (CORDEX-CORE or path to local data) or NULL. If path to local data, specify path to the directory containing the RCP/SSPs folders and historical simulations (optional). For example,
-home/user/data/. data would contain subfolders with the climate/impact models. Historical simulations have to be contained in a folder called historical. If path.to.data is set as CORDEX-CORE, CORDEX-CORE simulations will be downloaded}
+\item{path.to.data}{character (CORDEX-CORE, CORDEX-CORE-BC, or path to local data) or NULL. If path to local data, specify path to the directory containing the RCP/SSPs folders and historical simulations (optional). For example,
+home/user/data/. data would contain subfolders with the climate/impact models. Historical simulations have to be contained in a folder called historical. If path.to.data is set as CORDEX-CORE or CORDEX-CORE-BC, the respective simulations will be downloaded}
 
 \item{country}{character, in English, indicating the country of interest or an object of class sf. To select a bounding box,
 set country to NULL and define arguments xlim and ylim}
@@ -41,7 +41,7 @@ set country to NULL and define arguments xlim and ylim}
 
 \item{buffer}{numeric, default is zero.}
 
-\item{domain}{charachter, specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE. Default is NULL. List of domain names can be found at https://cordex.org/domains/}
+\item{domain}{charachter, specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE or CORDEX-CORE-BC. Default is NULL. List of domain names can be found at https://cordex.org/domains/}
 
 \item{aggr.m}{character, monthly aggregation. One of none, mean or sum}
 

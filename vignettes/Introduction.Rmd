@@ -161,6 +161,29 @@ b=plotting(bias.eqm, ensemble=F, legend_range = c(-40,40), palette = IPCC_palett
 a/b
 ```
 
+## Pre-computed bias-corrected datasets
+
+As an alternative to performing bias correction locally, CAVAanalytics now provides access to pre-computed bias-corrected CORDEX-CORE simulations. These datasets have been bias-corrected using ERA5 as the reference dataset following the ISIMIP methodology, and are currently available for the AFR-22 and WAS-22 domains (with additional domains to be released soon).
+
+To load these pre-computed bias-corrected datasets, simply use `path.to.data = "CORDEX-CORE-BC"` instead of `path.to.data = "CORDEX-CORE"`:
+
+```{r, message=FALSE, warning=F}
+# Load pre-computed bias-corrected CORDEX-CORE data
+kenya_bc <- load_data(path.to.data = "CORDEX-CORE-BC", country = "Kenya", variable = "tasmax", 
+years.proj = 2030:2055, years.hist = 1980:2005, domain = "AFR-22")
+```
+
+The data structure is identical to the standard CORDEX-CORE data, but the models are already bias-corrected. This means you can directly use the data for projections and climate change signal analysis without needing to apply bias correction:
+
+```{r, fig.height=4, fig.width=5, fig.align="center", message=F, warning=F}
+# Directly calculate climate change signal with pre-computed bias-corrected data
+ccs_kenya_bc <- climate_change_signal(kenya_bc, season=list(1:12), threshold = 0.8)
+
+plotting(ccs_kenya_bc, plot_titles = "Δ °C (bias-corrected",legend_range = c(-3, 3), 
+palette = IPCC_palette(type = "tmp", divergent = T))
+```
+
+Since the data is already bias-corrected, you should **not** set `bias.correction = TRUE` when using functions like `projections()` or `climate_change_signal()` with these datasets.
 
 ## Projections
 

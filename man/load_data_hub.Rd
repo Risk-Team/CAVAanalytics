@@ -22,7 +22,7 @@ load_data_hub(
 )
 }
 \arguments{
-\item{database}{character, indicating the database of interest (default to CORDEX-CORE).}
+\item{database}{character, indicating the database of interest (default to CORDEX-CORE). Can be CORDEX-CORE or CORDEX-CORE-BC.}
 
 \item{country}{character, in English, indicating the country of interest or an object of class sf.}
 
@@ -40,7 +40,7 @@ load_data_hub(
 
 \item{buffer}{numeric, default is zero}
 
-\item{domain}{character, specify the CORDEX-CORE domain}
+\item{domain}{character, specify the CORDEX-CORE or CORDEX-CORE-BC domain}
 
 \item{aggr.m}{character, monthly aggregation. One of none, mean or sum}
 
@@ -48,7 +48,7 @@ load_data_hub(
 
 \item{years.obs}{NULL or numeric, specify year range for observation}
 
-\item{res_folder}{character, specify the resolution of the CORDEX data. Default to "interp025". Meaningful only when working with CORDEX-CORE. In the future this option will be removed}
+\item{res_folder}{character, specify the resolution of the CORDEX data. Default to "interp025". Meaningful only when working with CORDEX-CORE or CORDEX-CORE-BC. In the future this option will be removed}
 }
 \value{
 list of length 2. List[[1]] contains a tibble with list columns and List[[2]] the bbox

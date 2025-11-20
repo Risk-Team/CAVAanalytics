@@ -14,7 +14,7 @@
 --------------------------------------------------------------------------------------------------
 **Check GitHub issues for known servers' downtimes**
 
-**We will release Bias corrected CORDEX-CORE simulations with the ISIMIP methodology in 2025 as part of a CAVA update**
+**Bias-corrected CORDEX-CORE simulations (ISIMIP methodology) are now available as ready-to-use, pre-computed datasets within CAVAanalytics (no local bias-correction step required), currently for the AFR-22 and WAS-22 domains, with additional domains to be released soon.**
 
 --------------------------------------------------------------------------------------------------
 
@@ -25,6 +25,11 @@
 
 - **Simplified Data Access:** Retrieve CORDEX-CORE models globally without the need to manage netCDF files. Data requests are sent to THREDDS servers, allowing you to access only the necessary information directly in memory.
 - **Consistent Analytical Framework:** Work seamlessly with multiple climate models, making indicator calculation and result visualization straightforward and efficient. 
+- **Pre-computed bias-corrected datasets:** Directly access ISIMIP-style, bias-corrected CORDEX-CORE simulations as pre-computed products, currently available for the AFR-22 and WAS-22 domains (with more domains to be added), ideal for users who want bias-corrected data without running the correction workflow themselves.
+
+### Pre-computed bias-corrected datasets
+
+The pre-computed bias-corrected CORDEX-CORE simulations available in CAVAanalytics have been bias-corrected using ERA5 as the reference dataset, following the ISIMIP methodology. These ready-to-use datasets eliminate the need for users to perform local bias-correction procedures, providing immediate access to high-quality, bias-adjusted climate projections.
 
 
 ### Quick example

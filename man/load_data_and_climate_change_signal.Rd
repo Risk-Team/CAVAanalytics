@@ -41,8 +41,8 @@ load_data_and_climate_change_signal(
 
 \item{years.proj}{Numerical range, years to select for projections}
 
-\item{path.to.data}{character (CORDEX-CORE or path to local data) or NULL. If path to local data, specify path to the directory containing the RCP/SSPs folders and historical simulations (optional). For example,
-home/user/data/. data would contain subfolders with the climate/impact models. Historical simulations have to be contained in a folder called historical. If path.to.data is set as CORDEX-CORE, CORDEX-CORE simulations will be downloaded}
+\item{path.to.data}{character (CORDEX-CORE, CORDEX-CORE-BC, or path to local data) or NULL. If path to local data, specify path to the directory containing the RCP/SSPs folders and historical simulations (optional). For example,
+home/user/data/. data would contain subfolders with the climate/impact models. Historical simulations have to be contained in a folder called historical. If path.to.data is set as CORDEX-CORE or CORDEX-CORE-BC, the respective simulations will be downloaded}
 
 \item{path.to.obs}{Default to NULL, if not, indicate the absolute path to the directory containing a reanalysis dataset, for example ERA5. To automatically load W5E5. specify W5E5}
 
@@ -70,7 +70,7 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 
 \item{bias.correction}{logical}
 
-\item{domain}{specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE. Default is NULL}
+\item{domain}{specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE or CORDEX-CORE-BC. Default is NULL}
 
 \item{threshold}{numerical value with range 0-1. It indicates the threshold for assigning model agreement. For example, 0.6 indicates that model agreement is assigned when 60 percent of the models agree in the sign of the change}
 

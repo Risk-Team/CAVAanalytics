@@ -59,7 +59,7 @@ sudan_ccs <- climate_change_signal(remote.data, season=list(1:12), bias.correcti
  palette=IPCC_palette(type = "pr", divergent = T), legend_range = c(-400,400))
 ```
 
-| ![Rplot01]("https://github.com/user-attachments/assets/5cc6a5c7-02a9-4e25-b813-3f18522072dc") |
+|  <img width="3600" height="2400" alt="1stpage" src="https://github.com/user-attachments/assets/9ae55cc8-5708-4dbb-906e-0eb137ea6ea6" />|
 |:-------------------------------------------------------------------------------------------------------------------:|
 | *Projected change in total annual precipitation compared to the 1990-2000 baseline period in Sudan* |
 
@@ -200,3 +200,4 @@ If you would like to contribute to this project, you are welcome to fork this re
 ### Issues
 
 You can report issues [here](https://github.com/Risk-Team/CAVAanalytics/issues)
+

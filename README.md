@@ -7,14 +7,22 @@
    <img src="https://img.shields.io/github/r-package/v/Risk-Team/CAVAanalytics" alt="GitHub R package version" style="display: inline-block;">
    <img src="https://img.shields.io/github/release-date-pre/Risk-team/CAVAanalytics" alt="release date" style="display: inline-block;">
    <a href="https://zenodo.org/doi/10.5281/zenodo.11127220"><img src="https://zenodo.org/badge/558266668.svg" alt="DOI"></a>
-<a href="http://hits.dwyl.com/Risk-team/CAVAanalytics"><img src="http://hits.dwyl.com/Risk-team/CAVAanalytics.svg"/></a>
 </div>
 </h1>
 
 --------------------------------------------------------------------------------------------------
 **Check GitHub issues for known servers' downtimes**
 
-**Bias-corrected CORDEX-CORE simulations (ISIMIP methodology) are now available as ready-to-use, pre-computed datasets within CAVAanalytics (no local bias-correction step required), currently for the AFR-22 and WAS-22 domains, with additional domains to be released soon.**
+---
+
+### :rocket: New Feature Alert: Pre-computed Bias-Corrected Datasets :rocket:
+
+**Bias-corrected CORDEX-CORE simulations (ISIMIP methodology) are now available as ready-to-use, pre-computed datasets!**  
+:white_check_mark: **No local bias-correction step required.**  
+:earth_africa: Currently available for the **AFR-22** and **WAS-22** domains.  
+:soon: Additional domains to be released soon.
+
+---
 
 --------------------------------------------------------------------------------------------------
 
@@ -43,15 +51,15 @@ library(CAVAanalytics)
 # 1st step
  remote.data <- load_data(country = "Sudan", variable="pr",
  years.hist=1990:2000, years.proj=2020:2030,
- path.to.data = "CORDEX-CORE", aggr.m="sum", domain="AFR-22")
+ path.to.data = "CORDEX-CORE-BC", aggr.m="sum", domain="AFR-22")
 # 2nd step
 sudan_ccs <- climate_change_signal(remote.data, season=list(1:12), bias.correction = F)
 # 3rd step
  plotting(sudan_ccs, ensemble=FALSE, plot_titles = "Precipitation change (mm)",
- palette=IPCC_palette(type = "pr", divergent = T), legend_range = c(-550,550))
+ palette=IPCC_palette(type = "pr", divergent = T), legend_range = c(-400,400))
 ```
 
-| ![Rplot01](https://github.com/Risk-Team/CAVAanalytics/assets/40058235/80a4a686-3192-4226-9535-6cff58192c96) |
+| ![Rplot01]("https://github.com/user-attachments/assets/5cc6a5c7-02a9-4e25-b813-3f18522072dc") |
 |:-------------------------------------------------------------------------------------------------------------------:|
 | *Projected change in total annual precipitation compared to the 1990-2000 baseline period in Sudan* |
 
@@ -87,16 +95,8 @@ if (!requireNamespace("pak", quietly = TRUE)) {
   install.packages("pak")
 }
 
-# Step 3: Install all required packages from GitHub using pak
-required_packages <- c(
-  "SantanderMetGroup/loadeR.java",
-  "SantanderMetGroup/climate4R.UDG",
-  "SantanderMetGroup/loadeR",
-  "SantanderMetGroup/transformeR",
-  "SantanderMetGroup/downscaleR",
-  "Risk-Team/CAVAanalytics"
-)
-pak::pkg_install(required_packages)
+# Step 3: Install CAVAanalytics
+pak::pkg_install( "Risk-Team/CAVAanalytics")
 ```
 
 #### 2) Docker

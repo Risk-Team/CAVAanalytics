@@ -1,0 +1,100 @@
+# Models download/upload
+
+Automatically load models (netCDF/NcML) in a tidy format with access to
+state-of-the-art climate models and reanalyses datasets
+
+## Usage
+
+``` r
+load_data(
+  path.to.data,
+  country,
+  variable,
+  xlim = NULL,
+  ylim = NULL,
+  years.hist = NULL,
+  years.proj,
+  path.to.obs = NULL,
+  buffer = 0,
+  domain = NULL,
+  aggr.m = "none",
+  n.sessions = 6,
+  years.obs = NULL
+)
+```
+
+## Arguments
+
+- path.to.data:
+
+  character (CORDEX-CORE, CORDEX-CORE-BC, or path to local data) or
+  NULL. If path to local data, specify path to the directory containing
+  the RCP/SSPs folders and historical simulations (optional). For
+  example, home/user/data/. data would contain subfolders with the
+  climate/impact models. Historical simulations have to be contained in
+  a folder called historical. If path.to.data is set as CORDEX-CORE or
+  CORDEX-CORE-BC, the respective simulations will be downloaded
+
+- country:
+
+  character, in English, indicating the country of interest or an object
+  of class sf. To select a bounding box, set country to NULL and define
+  arguments xlim and ylim
+
+- variable:
+
+  character indicating the variable name
+
+- xlim:
+
+  numeric of length = 2, with minimum and maximum longitude coordinates,
+  in decimal degrees, of the bounding box of interest
+
+- ylim:
+
+  same as xlim, but for the selection of the latitudinal range
+
+- years.hist:
+
+  NULL or numeric, specify year range for the historical experiment
+
+- years.proj:
+
+  NULL or numeric, specify year range for projections
+
+- path.to.obs:
+
+  character, default to NULL. To automatically load W5E5 or ERA5,
+  specify W5E5 or ERA5. Otherwise, indicate the observational dataset
+  path to be used
+
+- buffer:
+
+  numeric, default is zero.
+
+- domain:
+
+  charachter, specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used
+  with path.to.data = CORDEX-CORE or CORDEX-CORE-BC. Default is NULL.
+  List of domain names can be found at https://cordex.org/domains/
+
+- aggr.m:
+
+  character, monthly aggregation. One of none, mean or sum
+
+- n.sessions:
+
+  numeric, number of sessions to use in parallel processing. Default
+  to 6. Increasing the number of sessions will not necessarily results
+  in better performances. Leave as default unless necessary
+
+- years.obs:
+
+  NULL or numeric, specify year range for observation. Specifying
+  years.obs will overwrite years.hist for observations
+
+## Value
+
+list of length 3. List\[\[1\]\] contains a tibble with list columns.
+List\[\[2\]\] the bbox and list\[\[3\]\] the temporal structure of the
+models

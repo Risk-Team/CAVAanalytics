@@ -39,8 +39,8 @@ load_data_and_projections(
 
 \item{years.proj}{Numerical range, years to select for projections}
 
-\item{path.to.data}{character (CORDEX-CORE or path to local data) or NULL. If path to local data, specify path to the directory containing the RCP/SSPs folders and historical simulations (optional). For example,
-home/user/data/. data would contain subfolders with the climate/impact models. Historical simulations have to be contained in a folder called historical. If path.to.data is set as CORDEX-CORE, CORDEX-CORE simulations will be downloaded}
+\item{path.to.data}{character (CORDEX-CORE, CORDEX-CORE-BC, or path to local data) or NULL. If path to local data, specify path to the directory containing the RCP/SSPs folders and historical simulations (optional). For example,
+home/user/data/. data would contain subfolders with the climate/impact models. Historical simulations have to be contained in a folder called historical. If path.to.data is set as CORDEX-CORE or CORDEX-CORE-BC, the respective simulations will be downloaded}
 
 \item{path.to.obs}{Default to NULL, if not, indicate the absolute path to the directory containing a reanalysis dataset, for example ERA5. To automatically load W5E5. specify W5E5}
 
@@ -68,7 +68,7 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 
 \item{bias.correction}{logical}
 
-\item{domain}{specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE. Default is NULL}
+\item{domain}{specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE or CORDEX-CORE-BC. Default is NULL}
 
 \item{n.sessions}{numeric, number of sessions to use in parallel processing for loading the data. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary}
 

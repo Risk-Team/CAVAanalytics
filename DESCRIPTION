@@ -1,7 +1,7 @@
 Package: CAVAanalytics
 Type: Package
 Title: R package providing a framework for easy access, processing, and advanced visualization of gridded climate products
-Version: 3.3.3
+Version: 4.0.0
 Authors@R: c(person("Riccardo", "Soldan", , "riccardosoldan@hotmail.it", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-2583-5840")),
            person("Rodrigo", "Manzanas", , "rodrigo.manzanas@unican.es", role = "aut",
@@ -14,7 +14,7 @@ Description: CAVAanalytics is a comprehensive framework for climate data analysi
 License: GPL-2 | GPL-3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Imports:
     dplyr, 
     furrr, 
@@ -25,8 +25,10 @@ Imports:
     stringr,
     transformeR,
     downscaleR,
+    climate4R.UDG,
     rnaturalearth,
     rnaturalearthdata,
+    mgcv,
     ggplot2,
     RColorBrewer,
     tidyr,
@@ -47,4 +49,10 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+Remotes:
+    SantanderMetGroup/loadeR.java,
+    SantanderMetGroup/climate4R.UDG,
+    SantanderMetGroup/loadeR,
+    SantanderMetGroup/transformeR,
+    SantanderMetGroup/downscaleR
 URL: https://risk-team.github.io/CAVAanalytics/

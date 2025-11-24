@@ -7,14 +7,22 @@
    <img src="https://img.shields.io/github/r-package/v/Risk-Team/CAVAanalytics" alt="GitHub R package version" style="display: inline-block;">
    <img src="https://img.shields.io/github/release-date-pre/Risk-team/CAVAanalytics" alt="release date" style="display: inline-block;">
    <a href="https://zenodo.org/doi/10.5281/zenodo.11127220"><img src="https://zenodo.org/badge/558266668.svg" alt="DOI"></a>
-<a href="http://hits.dwyl.com/Risk-team/CAVAanalytics"><img src="http://hits.dwyl.com/Risk-team/CAVAanalytics.svg"/></a>
 </div>
 </h1>
 
 --------------------------------------------------------------------------------------------------
 **Check GitHub issues for known servers' downtimes**
 
-**We will release Bias corrected CORDEX-CORE simulations with the ISIMIP methodology in 2025 as part of a CAVA update**
+---
+
+### :rocket: New Feature Alert: Pre-computed Bias-Corrected Datasets :rocket:
+
+**Bias-corrected CORDEX-CORE simulations (ISIMIP methodology) are now available as ready-to-use, pre-computed datasets!**  
+:white_check_mark: **No local bias-correction step required.**  
+:earth_africa: Currently available for the **AFR-22** and **WAS-22** domains.  
+:soon: Additional domains to be released soon.
+
+---
 
 --------------------------------------------------------------------------------------------------
 
@@ -25,6 +33,11 @@
 
 - **Simplified Data Access:** Retrieve CORDEX-CORE models globally without the need to manage netCDF files. Data requests are sent to THREDDS servers, allowing you to access only the necessary information directly in memory.
 - **Consistent Analytical Framework:** Work seamlessly with multiple climate models, making indicator calculation and result visualization straightforward and efficient. 
+- **Pre-computed bias-corrected datasets:** Directly access ISIMIP-style, bias-corrected CORDEX-CORE simulations as pre-computed products, currently available for the AFR-22 and WAS-22 domains (with more domains to be added), ideal for users who want bias-corrected data without running the correction workflow themselves.
+
+### Pre-computed bias-corrected datasets
+
+The pre-computed bias-corrected CORDEX-CORE simulations available in CAVAanalytics have been bias-corrected using ERA5 as the reference dataset, following the ISIMIP methodology. These ready-to-use datasets eliminate the need for users to perform local bias-correction procedures, providing immediate access to high-quality, bias-adjusted climate projections.
 
 
 ### Quick example
@@ -38,15 +51,15 @@ library(CAVAanalytics)
 # 1st step
  remote.data <- load_data(country = "Sudan", variable="pr",
  years.hist=1990:2000, years.proj=2020:2030,
- path.to.data = "CORDEX-CORE", aggr.m="sum", domain="AFR-22")
+ path.to.data = "CORDEX-CORE-BC", aggr.m="sum", domain="AFR-22")
 # 2nd step
 sudan_ccs <- climate_change_signal(remote.data, season=list(1:12), bias.correction = F)
 # 3rd step
  plotting(sudan_ccs, ensemble=FALSE, plot_titles = "Precipitation change (mm)",
- palette=IPCC_palette(type = "pr", divergent = T), legend_range = c(-550,550))
+ palette=IPCC_palette(type = "pr", divergent = T), legend_range = c(-400,400))
 ```
 
-| ![Rplot01](https://github.com/Risk-Team/CAVAanalytics/assets/40058235/80a4a686-3192-4226-9535-6cff58192c96) |
+|  <img width="3600" height="2400" alt="1stpage" src="https://github.com/user-attachments/assets/9ae55cc8-5708-4dbb-906e-0eb137ea6ea6" />|
 |:-------------------------------------------------------------------------------------------------------------------:|
 | *Projected change in total annual precipitation compared to the 1990-2000 baseline period in Sudan* |
 
@@ -82,16 +95,8 @@ if (!requireNamespace("pak", quietly = TRUE)) {
   install.packages("pak")
 }
 
-# Step 3: Install all required packages from GitHub using pak
-required_packages <- c(
-  "SantanderMetGroup/loadeR.java",
-  "SantanderMetGroup/climate4R.UDG",
-  "SantanderMetGroup/loadeR",
-  "SantanderMetGroup/transformeR",
-  "SantanderMetGroup/downscaleR",
-  "Risk-Team/CAVAanalytics"
-)
-pak::pkg_install(required_packages)
+# Step 3: Install CAVAanalytics
+pak::pkg_install( "Risk-Team/CAVAanalytics")
 ```
 
 #### 2) Docker
@@ -195,3 +200,4 @@ If you would like to contribute to this project, you are welcome to fork this re
 ### Issues
 
 You can report issues [here](https://github.com/Risk-Team/CAVAanalytics/issues)
+

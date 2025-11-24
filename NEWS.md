@@ -10,6 +10,12 @@ output:
 ---
 
 
+## CAVAanalytics 4.0.0
+
+In this major release of CAVAanalytics we:
+
+- Added access to pre-computed bias-corrected CORDEX-CORE simulations (ISIMIP methodology) as ready-to-use products, currently for the AFR-22 and WAS-22 domains (with additional domains to be released soon).
+
 ## CAVAanalytics 3.3.3
 
 - Improved appearance of colour bar. 

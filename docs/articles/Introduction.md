@@ -197,15 +197,19 @@ correct the data distribution.
 ``` r
 
 
+bias.no_correction=model_biases(kenya_exmp, season=list(1:12), uppert=35, bias.correction = F)
+
+a=plotting(bias.no_correction, ensemble=F,  legend_range = c(-200,200), palette = IPCC_palette(type = "tmp", divergent = T), plot_titles = "Biases in N° days")+ggplot2::ggtitle("No bias correction", subtitle="Note the scale is different from the other plots because biases are much higher")
+
 bias.scaling=model_biases(kenya_exmp, season=list(1:12), uppert=35, bias.correction = T, method="scaling", cross_validation = "3fold")
 
-a=plotting(bias.scaling, ensemble=F,  legend_range = c(-40,40), palette = IPCC_palette(type = "tmp", divergent = T), plot_titles = "Biases in N° days")+ggplot2::ggtitle("After bias correction-scaling method")
+b=plotting(bias.scaling, ensemble=F,  legend_range = c(-40,40), palette = IPCC_palette(type = "tmp", divergent = T), plot_titles = "Biases in N° days")+ggplot2::ggtitle("After bias correction-scaling method")
 
 bias.eqm=model_biases(kenya_exmp, season=list(1:12), uppert=35, bias.correction = T, method="eqm", cross_validation = "3fold")
 
-b=plotting(bias.eqm, ensemble=F, legend_range = c(-40,40), palette = IPCC_palette(type = "tmp", divergent = T), plot_titles = "Biases in N° days")+ggplot2::ggtitle("After bias correction-eqm method")
+c=plotting(bias.eqm, ensemble=F, legend_range = c(-40,40), palette = IPCC_palette(type = "tmp", divergent = T), plot_titles = "Biases in N° days")+ggplot2::ggtitle("After bias correction-eqm method")
 
-a/b
+a/b/c
 ```
 
 ![](Introduction_files/figure-html/unnamed-chunk-12-1.png)
@@ -233,21 +237,22 @@ years.proj = 2030:2055, years.hist = 1980:2005, domain = "AFR-22", path.to.obs =
 
 We can now verify that the data is bias-corrected by comparing it
 against the observations for the number of very warm days (days with
-maximum temperature above 35 °C)
+maximum temperature above 35 °C) as above.
 
 ``` r
 
 # Calculate biases. We set bias.correction = FALSE to see the actual state of the data
 biases_kenya_bc <- model_biases(kenya_bc, season=list(1:12), uppert=35, bias.correction = F)
 
-plotting(biases_kenya_bc, ensemble=F, legend_range = c(-40,40), palette = IPCC_palette(type = "tmp", divergent = T), plot_titles = "Biases in N° days")+ ggplot2::ggtitle("Pre-bias correcetd data with ISIMIP methodology")
+plotting(biases_kenya_bc, ensemble=F, legend_range = c(-40,40), palette = IPCC_palette(type = "tmp", divergent = T), plot_titles = "Biases in N° days")+ ggplot2::ggtitle("Pre-bias correcetd data with ISIMIP3b protocol")
 ```
 
 ![](Introduction_files/figure-html/unnamed-chunk-14-1.png)
 
-As shown above, the biases are negligible. This means you can directly
-use the data for projections and climate change signal analysis without
-needing to apply bias correction:
+As shown above, the biases are more negligible than in the non
+bias-corrected data. This means you can directly use the data for
+projections and climate change signal analysis without needing to apply
+bias correction:
 
 Since the data is already bias-corrected, you should **not** set
 `bias.correction = TRUE` when using functions like
@@ -255,6 +260,9 @@ Since the data is already bias-corrected, you should **not** set
 or
 [`climate_change_signal()`](https://risk-team.github.io/CAVAanalytics/reference/climate_change_signal.md)
 with these datasets.
+
+In this specific case, it seems that the eqm method is working better
+than the ISIMIP3b method.
 
 ## Projections
 

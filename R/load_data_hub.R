@@ -29,16 +29,44 @@ load_model_data.hub <- function(
   aggr.m,
   database
 ) {
-  data <- suppressMessages(
-    loadeR::loadGridData(
-      dataset = x,
-      var = variable,
-      years = years,
-      lonLim = xlim,
-      latLim = ylim,
-      aggr.m = aggr.m
+  if (length(years) > 30) {
+    # Split years into chunks of 30
+    year_chunks <- split(years, ceiling(seq_along(years) / 30))
+
+    cli::cli_alert_info(
+      "Requesting {length(years)} years. Splitting download into {length(year_chunks)} chunks for stability..."
     )
-  )
+
+    # Load each chunk
+    data_list <- lapply(year_chunks, function(chk) {
+      suppressMessages(
+        loadeR::loadGridData(
+          dataset = x,
+          var = variable,
+          years = chk,
+          lonLim = xlim,
+          latLim = ylim,
+          aggr.m = aggr.m
+        )
+      )
+    })
+
+    # Bind the chunks along the time dimension
+    data <- suppressMessages(
+      do.call(transformeR::bindGrid, c(data_list, list(dimension = "time")))
+    )
+  } else {
+    data <- suppressMessages(
+      loadeR::loadGridData(
+        dataset = x,
+        var = variable,
+        years = years,
+        lonLim = xlim,
+        latLim = ylim,
+        aggr.m = aggr.m
+      )
+    )
+  }
 
   if (database %in% c("CORDEX-CORE", "CORDEX-CORE-BC")) {
     data <- transform_climate_data(data, variable, database)
@@ -103,7 +131,7 @@ load_observation_data.hub <- function(
 #' @param aggr.m character, monthly aggregation. One of none, mean or sum
 #' @param n.sessions numeric, number of sessions for parallel processing
 #' @param years.obs NULL or numeric, specify year range for observation
-#' @param res_folder character, specify the resolution of the CORDEX data. Default to "interp025". Meaningful only when working with CORDEX-CORE or CORDEX-CORE-BC. In the future this option will be removed
+#' @param res_folder character, specify the resolution of the CORDEX data. Default to "interp025". Meaningful only when working with CORDEX-CORE. In the future this option will be removed
 #' @return list of length 2. List[[1]] contains a tibble with list columns and List[[2]] the bbox
 #' @importFrom magrittr %>%
 #' @export

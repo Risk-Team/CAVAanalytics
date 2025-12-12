@@ -9,6 +9,9 @@ output:
     toc_depth: 2
 ---
 
+## CAVAanalytics 4.0.1
+
+When Users requests a long series of years, loading is performed in chunks automatically
 
 ## CAVAanalytics 4.0.0
 

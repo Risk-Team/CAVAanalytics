@@ -37,16 +37,48 @@ load_model_data <- function(
     # Remote data download
     tryCatch(
       {
-        data <- suppressMessages(
-          loadeR::loadGridData(
-            dataset = x,
-            var = variable,
-            years = years,
-            lonLim = xlim,
-            latLim = ylim,
-            aggr.m = aggr.m
+        if (length(years) > 30) {
+          # Split years into chunks of 30
+          year_chunks <- split(years, ceiling(seq_along(years) / 30))
+
+          cli::cli_alert_info(
+            "Requesting {length(years)} years. Splitting download into {length(year_chunks)} chunks for stability..."
           )
-        )
+
+          # Load each chunk
+          data_list <- lapply(year_chunks, function(chk) {
+            suppressMessages(
+              loadeR::loadGridData(
+                dataset = x,
+                var = variable,
+                years = chk,
+                lonLim = xlim,
+                latLim = ylim,
+                aggr.m = aggr.m
+              )
+            )
+          })
+
+          # Bind the chunks along the time dimension
+          data <- suppressMessages(
+            do.call(
+              transformeR::bindGrid,
+              c(data_list, list(dimension = "time"))
+            )
+          )
+        } else {
+          data <- suppressMessages(
+            loadeR::loadGridData(
+              dataset = x,
+              var = variable,
+              years = years,
+              lonLim = xlim,
+              latLim = ylim,
+              aggr.m = aggr.m
+            )
+          )
+        }
+
         data <- transform_climate_data(data, variable, path.to.data)
         return(data)
       },

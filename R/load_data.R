@@ -32,18 +32,22 @@ load_model_data <- function(
   ylim,
   aggr.m,
   path.to.data,
-  temporal_chunking
+  temporal_chunking,
+  temporal_chunk_size
 ) {
   if (path.to.data %in% c("CORDEX-CORE", "CORDEX-CORE-BC")) {
     # Remote data download
     tryCatch(
       {
-        if (isTRUE(temporal_chunking) && length(years) > 10) {
-          # Split years into chunks of 10
-          year_chunks <- split(years, ceiling(seq_along(years) / 10))
+        if (isTRUE(temporal_chunking) && length(years) > temporal_chunk_size) {
+          # Split years into chunks
+          year_chunks <- split(
+            years,
+            ceiling(seq_along(years) / temporal_chunk_size)
+          )
 
           cli::cli_alert_info(
-            "Requesting {length(years)} years. Splitting download into {length(year_chunks)} chunks of 10 years..."
+            "Requesting {length(years)} years. Splitting download into {length(year_chunks)} chunks of {temporal_chunk_size} years..."
           )
 
           # Load each chunk
@@ -129,7 +133,8 @@ load_observation_data <- function(
   ylim,
   aggr.m,
   path.to.obs,
-  temporal_chunking
+  temporal_chunking,
+  temporal_chunk_size
 ) {
   cli::cli_progress_step(paste0(
     ifelse(
@@ -146,11 +151,14 @@ load_observation_data <- function(
     variable
   }
 
-  if (isTRUE(temporal_chunking) && length(years) > 10) {
-    year_chunks <- split(years, ceiling(seq_along(years) / 10))
+  if (isTRUE(temporal_chunking) && length(years) > temporal_chunk_size) {
+    year_chunks <- split(
+      years,
+      ceiling(seq_along(years) / temporal_chunk_size)
+    )
 
     cli::cli_alert_info(
-      "Requesting {length(years)} years. Splitting observations into {length(year_chunks)} chunks of 10 years..."
+      "Requesting {length(years)} years. Splitting observations into {length(year_chunks)} chunks of {temporal_chunk_size} years..."
     )
 
     data_list <- lapply(year_chunks, function(chk) {
@@ -210,7 +218,8 @@ load_observation_data <- function(
 #' @param years.proj NULL or numeric, specify year range for projections
 #' @param years.hist NULL or numeric, specify year range for the historical experiment
 #' @param years.obs NULL or numeric, specify year range for observation. Specifying years.obs will overwrite years.hist for observations
-#' @param temporal_chunking logical, default to FALSE. If TRUE, loads data in 10-year temporal chunks
+#' @param temporal_chunking logical, default to FALSE. If TRUE, loads data in temporal chunks
+#' @param temporal_chunk_size numeric, default to 10. Number of years per chunk when temporal_chunking is TRUE
 #' @param domain charachter, specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE or CORDEX-CORE-BC. Default is NULL. List of domain names can be found at https://cordex.org/domains/
 #' @param buffer numeric, default is zero.
 #' @param aggr.m character, monthly aggregation. One of none, mean or sum
@@ -234,7 +243,8 @@ load_data <- function(
   aggr.m = "none",
   n.sessions = 6,
   years.obs = NULL,
-  temporal_chunking = FALSE
+  temporal_chunking = FALSE,
+  temporal_chunk_size = 10
 ) {
   # Input validation
   check_inputs.load_data(
@@ -247,7 +257,8 @@ load_data <- function(
     n.sessions,
     path.to.obs,
     years.obs,
-    temporal_chunking
+    temporal_chunking,
+    temporal_chunk_size
   )
 
   # Geolocalization
@@ -316,7 +327,8 @@ load_data <- function(
               ylim,
               aggr.m,
               path.to.data,
-              temporal_chunking
+              temporal_chunking,
+              temporal_chunk_size
             )
           },
           .progress = TRUE
@@ -367,7 +379,8 @@ load_data <- function(
       ylim,
       aggr.m,
       path.to.obs,
-      temporal_chunking
+      temporal_chunking,
+      temporal_chunk_size
     )
   } else {
     models_df$obs <- NULL

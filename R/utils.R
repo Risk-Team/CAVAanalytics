@@ -141,10 +141,16 @@ check_inputs.load_data <- function(
   n.sessions,
   path.to.obs,
   years.obs,
-  temporal_chunking
+  temporal_chunking,
+  temporal_chunk_size
 ) {
   stopifnot(is.numeric(n.sessions))
   stopifnot(is.logical(temporal_chunking))
+  stopifnot(
+    is.numeric(temporal_chunk_size),
+    length(temporal_chunk_size) == 1,
+    temporal_chunk_size > 0
+  )
   match.arg(aggr.m, choices = c("none", "sum", "mean"))
   if (!is.null(domain)) {
     match.arg(
@@ -315,10 +321,16 @@ check_inputs.load_data_hub <- function(
   path.to.obs,
   years.obs,
   res_folder,
-  temporal_chunking
+  temporal_chunking,
+  temporal_chunk_size
 ) {
   stopifnot(is.numeric(n.sessions))
   stopifnot(is.logical(temporal_chunking))
+  stopifnot(
+    is.numeric(temporal_chunk_size),
+    length(temporal_chunk_size) == 1,
+    temporal_chunk_size > 0
+  )
   match.arg(aggr.m, choices = c("none", "sum", "mean"))
   match.arg(res_folder, choices = c("interp025", "interp05"))
   if (!is.null(domain)) {

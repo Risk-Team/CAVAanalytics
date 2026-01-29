@@ -18,7 +18,8 @@ load_data(
   aggr.m = "none",
   n.sessions = 6,
   years.obs = NULL,
-  temporal_chunking = FALSE
+  temporal_chunking = FALSE,
+  temporal_chunk_size = 10
 )
 }
 \arguments{
@@ -50,7 +51,9 @@ set country to NULL and define arguments xlim and ylim}
 
 \item{years.obs}{NULL or numeric, specify year range for observation. Specifying years.obs will overwrite years.hist for observations}
 
-\item{temporal_chunking}{logical, default to FALSE. If TRUE, loads data in 10-year temporal chunks}
+\item{temporal_chunking}{logical, default to FALSE. If TRUE, loads data in temporal chunks}
+
+\item{temporal_chunk_size}{numeric, default to 10. Number of years per chunk when temporal_chunking is TRUE}
 }
 \value{
 list of length 3. List[[1]] contains a tibble with list columns. List[[2]] the bbox and list[[3]] the temporal structure of the models

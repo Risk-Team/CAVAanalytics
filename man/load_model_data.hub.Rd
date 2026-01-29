@@ -12,7 +12,8 @@ load_model_data.hub(
   ylim,
   aggr.m,
   database,
-  temporal_chunking
+  temporal_chunking,
+  temporal_chunk_size
 )
 }
 \description{

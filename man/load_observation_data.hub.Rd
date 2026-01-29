@@ -12,7 +12,8 @@ load_observation_data.hub(
   ylim,
   aggr.m,
   path.to.obs,
-  temporal_chunking
+  temporal_chunking,
+  temporal_chunk_size
 )
 }
 \description{

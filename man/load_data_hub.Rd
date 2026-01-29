@@ -19,7 +19,8 @@ load_data_hub(
   n.sessions = 6,
   years.obs = NULL,
   res_folder = "interp025",
-  temporal_chunking = FALSE
+  temporal_chunking = FALSE,
+  temporal_chunk_size = 10
 )
 }
 \arguments{
@@ -51,7 +52,9 @@ load_data_hub(
 
 \item{res_folder}{character, specify the resolution of the CORDEX data. Default to "interp025". Meaningful only when working with CORDEX-CORE. In the future this option will be removed}
 
-\item{temporal_chunking}{logical, default to FALSE. If TRUE, loads data in 10-year temporal chunks}
+\item{temporal_chunking}{logical, default to FALSE. If TRUE, loads data in temporal chunks}
+
+\item{temporal_chunk_size}{numeric, default to 10. Number of years per chunk when temporal_chunking is TRUE}
 }
 \value{
 list of length 2. List[[1]] contains a tibble with list columns and List[[2]] the bbox

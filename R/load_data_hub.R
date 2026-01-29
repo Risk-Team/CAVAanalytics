@@ -28,14 +28,18 @@ load_model_data.hub <- function(
   ylim,
   aggr.m,
   database,
-  temporal_chunking
+  temporal_chunking,
+  temporal_chunk_size
 ) {
-  if (isTRUE(temporal_chunking) && length(years) > 10) {
-    # Split years into chunks of 10
-    year_chunks <- split(years, ceiling(seq_along(years) / 10))
+  if (isTRUE(temporal_chunking) && length(years) > temporal_chunk_size) {
+    # Split years into chunks
+    year_chunks <- split(
+      years,
+      ceiling(seq_along(years) / temporal_chunk_size)
+    )
 
     cli::cli_alert_info(
-      "Requesting {length(years)} years. Splitting download into {length(year_chunks)} chunks of 10 years..."
+      "Requesting {length(years)} years. Splitting download into {length(year_chunks)} chunks of {temporal_chunk_size} years..."
     )
 
     # Load each chunk
@@ -86,7 +90,8 @@ load_observation_data.hub <- function(
   ylim,
   aggr.m,
   path.to.obs,
-  temporal_chunking
+  temporal_chunking,
+  temporal_chunk_size
 ) {
   cli::cli_progress_step(paste0("Uploading ", path.to.obs))
 
@@ -96,11 +101,14 @@ load_observation_data.hub <- function(
     variable
   }
 
-  if (isTRUE(temporal_chunking) && length(years) > 10) {
-    year_chunks <- split(years, ceiling(seq_along(years) / 10))
+  if (isTRUE(temporal_chunking) && length(years) > temporal_chunk_size) {
+    year_chunks <- split(
+      years,
+      ceiling(seq_along(years) / temporal_chunk_size)
+    )
 
     cli::cli_alert_info(
-      "Requesting {length(years)} years. Splitting observations into {length(year_chunks)} chunks of 10 years..."
+      "Requesting {length(years)} years. Splitting observations into {length(year_chunks)} chunks of {temporal_chunk_size} years..."
     )
 
     data_list <- lapply(year_chunks, function(chk) {
@@ -158,7 +166,8 @@ load_observation_data.hub <- function(
 #' @param aggr.m character, monthly aggregation. One of none, mean or sum
 #' @param n.sessions numeric, number of sessions for parallel processing
 #' @param years.obs NULL or numeric, specify year range for observation
-#' @param temporal_chunking logical, default to FALSE. If TRUE, loads data in 10-year temporal chunks
+#' @param temporal_chunking logical, default to FALSE. If TRUE, loads data in temporal chunks
+#' @param temporal_chunk_size numeric, default to 10. Number of years per chunk when temporal_chunking is TRUE
 #' @param res_folder character, specify the resolution of the CORDEX data. Default to "interp025". Meaningful only when working with CORDEX-CORE. In the future this option will be removed
 #' @return list of length 2. List[[1]] contains a tibble with list columns and List[[2]] the bbox
 #' @importFrom magrittr %>%
@@ -178,7 +187,8 @@ load_data_hub <- function(
   n.sessions = 6,
   years.obs = NULL,
   res_folder = "interp025",
-  temporal_chunking = FALSE
+  temporal_chunking = FALSE,
+  temporal_chunk_size = 10
 ) {
   # Validation
   check_inputs.load_data_hub(
@@ -192,7 +202,8 @@ load_data_hub <- function(
     path.to.obs,
     years.obs,
     res_folder,
-    temporal_chunking
+    temporal_chunking,
+    temporal_chunk_size
   )
 
   # Data loading setup
@@ -260,7 +271,8 @@ load_data_hub <- function(
               ylim,
               aggr.m,
               database,
-              temporal_chunking
+              temporal_chunking,
+              temporal_chunk_size
             )
           })
         )
@@ -294,7 +306,8 @@ load_data_hub <- function(
       ylim,
       aggr.m,
       path.to.obs,
-      temporal_chunking
+      temporal_chunking,
+      temporal_chunk_size
     )
   } else {
     models_df$obs <- NULL

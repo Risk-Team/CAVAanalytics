@@ -17,7 +17,8 @@ load_data(
   domain = NULL,
   aggr.m = "none",
   n.sessions = 6,
-  years.obs = NULL
+  years.obs = NULL,
+  temporal_chunking = FALSE
 )
 }
 \arguments{
@@ -48,6 +49,8 @@ set country to NULL and define arguments xlim and ylim}
 \item{n.sessions}{numeric, number of sessions to use in parallel processing. Default to 6. Increasing the number of sessions will not necessarily results in better performances. Leave as default unless necessary}
 
 \item{years.obs}{NULL or numeric, specify year range for observation. Specifying years.obs will overwrite years.hist for observations}
+
+\item{temporal_chunking}{logical, default to FALSE. If TRUE, loads data in 10-year temporal chunks}
 }
 \value{
 list of length 3. List[[1]] contains a tibble with list columns. List[[2]] the bbox and list[[3]] the temporal structure of the models

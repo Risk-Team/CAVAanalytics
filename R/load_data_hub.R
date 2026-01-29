@@ -27,14 +27,15 @@ load_model_data.hub <- function(
   xlim,
   ylim,
   aggr.m,
-  database
+  database,
+  temporal_chunking
 ) {
-  if (length(years) > 30) {
-    # Split years into chunks of 30
-    year_chunks <- split(years, ceiling(seq_along(years) / 30))
+  if (isTRUE(temporal_chunking) && length(years) > 10) {
+    # Split years into chunks of 10
+    year_chunks <- split(years, ceiling(seq_along(years) / 10))
 
     cli::cli_alert_info(
-      "Requesting {length(years)} years. Splitting download into {length(year_chunks)} chunks for stability..."
+      "Requesting {length(years)} years. Splitting download into {length(year_chunks)} chunks of 10 years..."
     )
 
     # Load each chunk
@@ -84,7 +85,8 @@ load_observation_data.hub <- function(
   xlim,
   ylim,
   aggr.m,
-  path.to.obs
+  path.to.obs,
+  temporal_chunking
 ) {
   cli::cli_progress_step(paste0("Uploading ", path.to.obs))
 
@@ -94,16 +96,41 @@ load_observation_data.hub <- function(
     variable
   }
 
-  data <- suppressMessages(
-    loadeR::loadGridData(
-      obs.file,
-      var = var_name,
-      years = years,
-      lonLim = xlim,
-      latLim = ylim,
-      aggr.m = aggr.m
+  if (isTRUE(temporal_chunking) && length(years) > 10) {
+    year_chunks <- split(years, ceiling(seq_along(years) / 10))
+
+    cli::cli_alert_info(
+      "Requesting {length(years)} years. Splitting observations into {length(year_chunks)} chunks of 10 years..."
     )
-  )
+
+    data_list <- lapply(year_chunks, function(chk) {
+      suppressMessages(
+        loadeR::loadGridData(
+          obs.file,
+          var = var_name,
+          years = chk,
+          lonLim = xlim,
+          latLim = ylim,
+          aggr.m = aggr.m
+        )
+      )
+    })
+
+    data <- suppressMessages(
+      do.call(transformeR::bindGrid, c(data_list, list(dimension = "time")))
+    )
+  } else {
+    data <- suppressMessages(
+      loadeR::loadGridData(
+        obs.file,
+        var = var_name,
+        years = years,
+        lonLim = xlim,
+        latLim = ylim,
+        aggr.m = aggr.m
+      )
+    )
+  }
 
   if (path.to.obs %in% c("ERA5", "W5E5")) {
     data <- transform_climate_data(data, variable, path.to.obs)
@@ -131,6 +158,7 @@ load_observation_data.hub <- function(
 #' @param aggr.m character, monthly aggregation. One of none, mean or sum
 #' @param n.sessions numeric, number of sessions for parallel processing
 #' @param years.obs NULL or numeric, specify year range for observation
+#' @param temporal_chunking logical, default to FALSE. If TRUE, loads data in 10-year temporal chunks
 #' @param res_folder character, specify the resolution of the CORDEX data. Default to "interp025". Meaningful only when working with CORDEX-CORE. In the future this option will be removed
 #' @return list of length 2. List[[1]] contains a tibble with list columns and List[[2]] the bbox
 #' @importFrom magrittr %>%
@@ -149,7 +177,8 @@ load_data_hub <- function(
   aggr.m = "none",
   n.sessions = 6,
   years.obs = NULL,
-  res_folder = "interp025"
+  res_folder = "interp025",
+  temporal_chunking = FALSE
 ) {
   # Validation
   check_inputs.load_data_hub(
@@ -162,7 +191,8 @@ load_data_hub <- function(
     n.sessions,
     path.to.obs,
     years.obs,
-    res_folder
+    res_folder,
+    temporal_chunking
   )
 
   # Data loading setup
@@ -229,7 +259,8 @@ load_data_hub <- function(
               xlim,
               ylim,
               aggr.m,
-              database
+              database,
+              temporal_chunking
             )
           })
         )
@@ -262,7 +293,8 @@ load_data_hub <- function(
       xlim,
       ylim,
       aggr.m,
-      path.to.obs
+      path.to.obs,
+      temporal_chunking
     )
   } else {
     models_df$obs <- NULL

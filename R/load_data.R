@@ -31,18 +31,19 @@ load_model_data <- function(
   xlim,
   ylim,
   aggr.m,
-  path.to.data
+  path.to.data,
+  temporal_chunking
 ) {
   if (path.to.data %in% c("CORDEX-CORE", "CORDEX-CORE-BC")) {
     # Remote data download
     tryCatch(
       {
-        if (length(years) > 30) {
-          # Split years into chunks of 30
-          year_chunks <- split(years, ceiling(seq_along(years) / 30))
+        if (isTRUE(temporal_chunking) && length(years) > 10) {
+          # Split years into chunks of 10
+          year_chunks <- split(years, ceiling(seq_along(years) / 10))
 
           cli::cli_alert_info(
-            "Requesting {length(years)} years. Splitting download into {length(year_chunks)} chunks for stability..."
+            "Requesting {length(years)} years. Splitting download into {length(year_chunks)} chunks of 10 years..."
           )
 
           # Load each chunk
@@ -127,7 +128,8 @@ load_observation_data <- function(
   xlim,
   ylim,
   aggr.m,
-  path.to.obs
+  path.to.obs,
+  temporal_chunking
 ) {
   cli::cli_progress_step(paste0(
     ifelse(
@@ -144,16 +146,44 @@ load_observation_data <- function(
     variable
   }
 
-  data <- suppressMessages(
-    loadeR::loadGridData(
-      obs.file,
-      var = var_name,
-      years = years,
-      lonLim = xlim,
-      latLim = ylim,
-      aggr.m = aggr.m
+  if (isTRUE(temporal_chunking) && length(years) > 10) {
+    year_chunks <- split(years, ceiling(seq_along(years) / 10))
+
+    cli::cli_alert_info(
+      "Requesting {length(years)} years. Splitting observations into {length(year_chunks)} chunks of 10 years..."
     )
-  )
+
+    data_list <- lapply(year_chunks, function(chk) {
+      suppressMessages(
+        loadeR::loadGridData(
+          obs.file,
+          var = var_name,
+          years = chk,
+          lonLim = xlim,
+          latLim = ylim,
+          aggr.m = aggr.m
+        )
+      )
+    })
+
+    data <- suppressMessages(
+      do.call(
+        transformeR::bindGrid,
+        c(data_list, list(dimension = "time"))
+      )
+    )
+  } else {
+    data <- suppressMessages(
+      loadeR::loadGridData(
+        obs.file,
+        var = var_name,
+        years = years,
+        lonLim = xlim,
+        latLim = ylim,
+        aggr.m = aggr.m
+      )
+    )
+  }
 
   if (path.to.obs %in% c("ERA5", "W5E5")) {
     data <- transform_climate_data(data, variable, path.to.obs)
@@ -180,6 +210,7 @@ load_observation_data <- function(
 #' @param years.proj NULL or numeric, specify year range for projections
 #' @param years.hist NULL or numeric, specify year range for the historical experiment
 #' @param years.obs NULL or numeric, specify year range for observation. Specifying years.obs will overwrite years.hist for observations
+#' @param temporal_chunking logical, default to FALSE. If TRUE, loads data in 10-year temporal chunks
 #' @param domain charachter, specify the CORDEX-CORE domain (e.g AFR-22, EAS-22). Used with path.to.data = CORDEX-CORE or CORDEX-CORE-BC. Default is NULL. List of domain names can be found at https://cordex.org/domains/
 #' @param buffer numeric, default is zero.
 #' @param aggr.m character, monthly aggregation. One of none, mean or sum
@@ -202,7 +233,8 @@ load_data <- function(
   domain = NULL,
   aggr.m = "none",
   n.sessions = 6,
-  years.obs = NULL
+  years.obs = NULL,
+  temporal_chunking = FALSE
 ) {
   # Input validation
   check_inputs.load_data(
@@ -214,7 +246,8 @@ load_data <- function(
     aggr.m,
     n.sessions,
     path.to.obs,
-    years.obs
+    years.obs,
+    temporal_chunking
   )
 
   # Geolocalization
@@ -282,7 +315,8 @@ load_data <- function(
               xlim,
               ylim,
               aggr.m,
-              path.to.data
+              path.to.data,
+              temporal_chunking
             )
           },
           .progress = TRUE
@@ -332,7 +366,8 @@ load_data <- function(
       xlim,
       ylim,
       aggr.m,
-      path.to.obs
+      path.to.obs,
+      temporal_chunking
     )
   } else {
     models_df$obs <- NULL

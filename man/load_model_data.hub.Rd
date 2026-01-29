@@ -4,7 +4,16 @@
 \alias{load_model_data.hub}
 \title{Load model data from specified source}
 \usage{
-load_model_data.hub(x, variable, years, xlim, ylim, aggr.m, database)
+load_model_data.hub(
+  x,
+  variable,
+  years,
+  xlim,
+  ylim,
+  aggr.m,
+  database,
+  temporal_chunking
+)
 }
 \description{
 Load model data from specified source

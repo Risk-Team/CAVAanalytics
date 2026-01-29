@@ -4,7 +4,16 @@
 \alias{load_model_data}
 \title{Load model data from specified source}
 \usage{
-load_model_data(x, variable, years, xlim, ylim, aggr.m, path.to.data)
+load_model_data(
+  x,
+  variable,
+  years,
+  xlim,
+  ylim,
+  aggr.m,
+  path.to.data,
+  temporal_chunking
+)
 }
 \description{
 Load model data from specified source

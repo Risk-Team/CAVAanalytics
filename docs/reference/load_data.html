@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">CAVAanalytics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">4.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">4.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,7 +60,8 @@
 <span>  domain <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  aggr.m <span class="op">=</span> <span class="st">"none"</span>,</span>
 <span>  n.sessions <span class="op">=</span> <span class="fl">6</span>,</span>
-<span>  years.obs <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  years.obs <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  temporal_chunking <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -120,6 +121,10 @@ set country to NULL and define arguments xlim and ylim</p></dd>
 
 <dt id="arg-years-obs">years.obs<a class="anchor" aria-label="anchor" href="#arg-years-obs"></a></dt>
 <dd><p>NULL or numeric, specify year range for observation. Specifying years.obs will overwrite years.hist for observations</p></dd>
+
+
+<dt id="arg-temporal-chunking">temporal_chunking<a class="anchor" aria-label="anchor" href="#arg-temporal-chunking"></a></dt>
+<dd><p>logical, default to FALSE. If TRUE, loads data in 10-year temporal chunks</p></dd>
 
 </dl></div>
     <div class="section level2">

@@ -35,6 +35,13 @@ load_model_data <- function(
   temporal_chunking,
   temporal_chunk_size
 ) {
+  var_name <- if (path.to.data == "CORDEX-CORE-BC" &&
+    variable == "sfcWind") {
+    "sfcwind"
+  } else {
+    variable
+  }
+
   if (path.to.data %in% c("CORDEX-CORE", "CORDEX-CORE-BC")) {
     # Remote data download
     tryCatch(
@@ -55,7 +62,7 @@ load_model_data <- function(
             suppressMessages(
               loadeR::loadGridData(
                 dataset = x,
-                var = variable,
+                var = var_name,
                 years = chk,
                 lonLim = xlim,
                 latLim = ylim,
@@ -75,7 +82,7 @@ load_model_data <- function(
           data <- suppressMessages(
             loadeR::loadGridData(
               dataset = x,
-              var = variable,
+              var = var_name,
               years = years,
               lonLim = xlim,
               latLim = ylim,
@@ -106,7 +113,7 @@ load_model_data <- function(
         data <- suppressMessages(
           loadeR::loadGridData(
             dataset = x,
-            var = variable,
+            var = var_name,
             years = years,
             lonLim = xlim,
             latLim = ylim,

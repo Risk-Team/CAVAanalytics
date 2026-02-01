@@ -31,6 +31,13 @@ load_model_data.hub <- function(
   temporal_chunking,
   temporal_chunk_size
 ) {
+  var_name <- if (database == "CORDEX-CORE-BC" &&
+    variable == "sfcWind") {
+    "sfcwind"
+  } else {
+    variable
+  }
+
   if (isTRUE(temporal_chunking) && length(years) > temporal_chunk_size) {
     # Split years into chunks
     year_chunks <- split(
@@ -47,7 +54,7 @@ load_model_data.hub <- function(
       suppressMessages(
         loadeR::loadGridData(
           dataset = x,
-          var = variable,
+          var = var_name,
           years = chk,
           lonLim = xlim,
           latLim = ylim,
@@ -64,7 +71,7 @@ load_model_data.hub <- function(
     data <- suppressMessages(
       loadeR::loadGridData(
         dataset = x,
-        var = variable,
+        var = var_name,
         years = years,
         lonLim = xlim,
         latLim = ylim,

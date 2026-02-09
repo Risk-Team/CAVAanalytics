@@ -19,9 +19,6 @@
 
 **Bias-corrected CORDEX-CORE simulations (ISIMIP methodology) are now available as ready-to-use, pre-computed datasets!**  
 :white_check_mark: **No local bias-correction step required.**  
-:earth_africa: Currently available for **AFR-22**, **WAS-22**, **SAM-22**, **SEA-22** domains.  
-:soon: Additional domains to be released soon.
-
 ---
 
 --------------------------------------------------------------------------------------------------

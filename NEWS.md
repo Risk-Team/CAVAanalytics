@@ -9,9 +9,14 @@ output:
     toc_depth: 2
 ---
 
+
+## CAVAanalytics 4.0.2
+
+Added automatic fetching of GitHub announcement on pakcage start-up to display information
+
 ## CAVAanalytics 4.0.1
 
-When Users requests a long series of years, loading is performed in chunks automatically
+Possibility of loading data in temporal chunks
 
 ## CAVAanalytics 4.0.0
 

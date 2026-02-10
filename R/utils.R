@@ -1158,6 +1158,7 @@ create_message.observations <-
 #' Get common dates
 #' @noRd
 common_dates <- function(data) {
+
   # Validation
   if (length(data) == 0) {
     stop("No data provided to common_dates")
@@ -1177,45 +1178,63 @@ common_dates <- function(data) {
     return(NULL)
   }
 
-  # Step 3: Pre-compute indices for each model (using cached dates)
+  # Step 3: Check if subsetting is actually needed.
+  # If every model already has exactly the common dates, skip the expensive
+  # subsetDimension + bindGrid pipeline to avoid doubling RAM usage.
+  needs_subset <- !all(vapply(model_dates, function(dates) {
+    length(dates) == length(common_dates_vec)
+  }, logical(1)))
+
+  if (!needs_subset) {
+    # All models share the same dates -- bind in one call (fastest, O(N)).
+    # No subsetting copies needed so this is both fast and memory-friendly.
+    return(transformeR::bindGrid(data, dimension = "member"))
+  }
+
+  # Step 4: Pre-compute indices for each model (using cached dates)
   model_indices <- lapply(model_dates, function(dates) {
     which(dates %in% common_dates_vec)
   })
 
-  # Step 4: Batch processing for memory efficiency
+  if (length(data) == 1L) {
+    return(transformeR::subsetDimension(
+      data[[1]],
+      dimension = "time",
+      indices = model_indices[[1]]
+    ))
+  }
+
+  # Step 5: Batch-subset then Reduce across batches.
+  # Within each batch we subset and bind (fast, O(batch_size) per batch).
+  # Across batches we use Reduce so only the accumulator + one batch result
+  # are alive at a time, avoiding the old 3x RAM peak.
   batch_size <- 3
-  n_models <- length(data)
-
-  if (n_models <= batch_size) {
-    # Small number of models - process all at once
-    data.filt <- lapply(seq_along(data), function(i) {
-      transformeR::subsetDimension(
-        data[[i]],
-        dimension = "time",
-        indices = model_indices[[i]]
-      )
-    })
-    return(transformeR::bindGrid(data.filt, dimension = "member"))
-  }
-
-  # Large number of models - process in batches
   batches <- split(seq_along(data), ceiling(seq_along(data) / batch_size))
-  batch_results <- vector("list", length(batches))
 
-  for (i in seq_along(batches)) {
-    batch_idx <- batches[[i]]
-    batch_data <- lapply(batch_idx, function(idx) {
-      transformeR::subsetDimension(
-        data[[idx]],
-        dimension = "time",
-        indices = model_indices[[idx]]
-      )
-    })
-    batch_results[[i]] <- transformeR::bindGrid(batch_data, dimension = "member")
-  }
-
-  # Final bind of batched results
-  return(transformeR::bindGrid(batch_results, dimension = "member"))
+  Reduce(
+    f = function(acc, batch_idx) {
+      batch_data <- lapply(batch_idx, function(idx) {
+        transformeR::subsetDimension(
+          data[[idx]],
+          dimension = "time",
+          indices = model_indices[[idx]]
+        )
+      })
+      batch_bound <- transformeR::bindGrid(batch_data, dimension = "member")
+      transformeR::bindGrid(list(acc, batch_bound), dimension = "member")
+    },
+    x = batches[-1],
+    init = {
+      batch1 <- lapply(batches[[1]], function(idx) {
+        transformeR::subsetDimension(
+          data[[idx]],
+          dimension = "time",
+          indices = model_indices[[idx]]
+        )
+      })
+      transformeR::bindGrid(batch1, dimension = "member")
+    }
+  )
 }
 
 

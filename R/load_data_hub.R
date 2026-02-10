@@ -301,8 +301,13 @@ load_data_hub <- function(
     cli::cli_progress_step(
       "Making multi-model ensemble and checking temporal consistency"
     )
-    df %>%
+    df <- df %>%
       dplyr::mutate(models_mbrs = purrr::map(models_mbrs, ~ common_dates(.x)))
+
+    # Shut down parallel workers to free memory
+    future::plan(future::sequential)
+
+    df
   } else {
     dplyr::tibble(obs = NA)
   }

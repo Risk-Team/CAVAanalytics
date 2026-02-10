@@ -12,7 +12,6 @@ output:
 
 ## CAVAanalytics 4.0.2
 
-- Reduce of 50% RAM usage during download data, especially with temporal chunking
 - Suppress retry messages from Java
 - Added automatic fetching of GitHub announcement on pakcage start-up to display information
 

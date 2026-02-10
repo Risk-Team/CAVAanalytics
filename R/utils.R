@@ -1158,83 +1158,17 @@ create_message.observations <-
 #' Get common dates
 #' @noRd
 common_dates <- function(data) {
-
-  # Validation
-  if (length(data) == 0) {
-    stop("No data provided to common_dates")
-  }
-
-  # Step 1: Cache date strings for all models (avoids redundant substr calls)
-  model_dates <- lapply(data, function(x) {
+  all_dates <- lapply(data, function(x) {
     substr(x$Dates$start, 1, 10)
   })
+  common_dates <- Reduce(intersect, all_dates)
 
-  # Step 2: Find common dates across all models
-  common_dates_vec <- Reduce(intersect, model_dates)
-
-  # Check if we have any common dates
-  if (length(common_dates_vec) == 0) {
-    warning("No common dates found across all models")
-    return(NULL)
-  }
-
-  # Step 3: Check if subsetting is actually needed.
-  # If every model already has exactly the common dates, skip the expensive
-  # subsetDimension + bindGrid pipeline to avoid doubling RAM usage.
-  needs_subset <- !all(vapply(model_dates, function(dates) {
-    length(dates) == length(common_dates_vec)
-  }, logical(1)))
-
-  if (!needs_subset) {
-    # All models share the same dates -- bind in one call (fastest, O(N)).
-    # No subsetting copies needed so this is both fast and memory-friendly.
-    return(transformeR::bindGrid(data, dimension = "member"))
-  }
-
-  # Step 4: Pre-compute indices for each model (using cached dates)
-  model_indices <- lapply(model_dates, function(dates) {
-    which(dates %in% common_dates_vec)
+  data.filt <- lapply(data, function(x) {
+    ind <- which(substr(x$Dates$start, 1, 10) %in% common_dates)
+    mod <-
+      transformeR::subsetDimension(x, dimension = "time", indices = ind)
   })
-
-  if (length(data) == 1L) {
-    return(transformeR::subsetDimension(
-      data[[1]],
-      dimension = "time",
-      indices = model_indices[[1]]
-    ))
-  }
-
-  # Step 5: Batch-subset then Reduce across batches.
-  # Within each batch we subset and bind (fast, O(batch_size) per batch).
-  # Across batches we use Reduce so only the accumulator + one batch result
-  # are alive at a time, avoiding the old 3x RAM peak.
-  batch_size <- 3
-  batches <- split(seq_along(data), ceiling(seq_along(data) / batch_size))
-
-  Reduce(
-    f = function(acc, batch_idx) {
-      batch_data <- lapply(batch_idx, function(idx) {
-        transformeR::subsetDimension(
-          data[[idx]],
-          dimension = "time",
-          indices = model_indices[[idx]]
-        )
-      })
-      batch_bound <- transformeR::bindGrid(batch_data, dimension = "member")
-      transformeR::bindGrid(list(acc, batch_bound), dimension = "member")
-    },
-    x = batches[-1],
-    init = {
-      batch1 <- lapply(batches[[1]], function(idx) {
-        transformeR::subsetDimension(
-          data[[idx]],
-          dimension = "time",
-          indices = model_indices[[idx]]
-        )
-      })
-      transformeR::bindGrid(batch1, dimension = "member")
-    }
-  )
+  return(transformeR::bindGrid(data.filt, dimension = "member"))
 }
 
 

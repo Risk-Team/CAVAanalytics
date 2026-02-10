@@ -1158,17 +1158,64 @@ create_message.observations <-
 #' Get common dates
 #' @noRd
 common_dates <- function(data) {
-  all_dates <- lapply(data, function(x) {
+  # Validation
+  if (length(data) == 0) {
+    stop("No data provided to common_dates")
+  }
+
+  # Step 1: Cache date strings for all models (avoids redundant substr calls)
+  model_dates <- lapply(data, function(x) {
     substr(x$Dates$start, 1, 10)
   })
-  common_dates <- Reduce(intersect, all_dates)
 
-  data.filt <- lapply(data, function(x) {
-    ind <- which(substr(x$Dates$start, 1, 10) %in% common_dates)
-    mod <-
-      transformeR::subsetDimension(x, dimension = "time", indices = ind)
+  # Step 2: Find common dates across all models
+  common_dates_vec <- Reduce(intersect, model_dates)
+
+  # Check if we have any common dates
+  if (length(common_dates_vec) == 0) {
+    warning("No common dates found across all models")
+    return(NULL)
+  }
+
+  # Step 3: Pre-compute indices for each model (using cached dates)
+  model_indices <- lapply(model_dates, function(dates) {
+    which(dates %in% common_dates_vec)
   })
-  return(transformeR::bindGrid(data.filt, dimension = "member"))
+
+  # Step 4: Batch processing for memory efficiency
+  batch_size <- 3
+  n_models <- length(data)
+
+  if (n_models <= batch_size) {
+    # Small number of models - process all at once
+    data.filt <- lapply(seq_along(data), function(i) {
+      transformeR::subsetDimension(
+        data[[i]],
+        dimension = "time",
+        indices = model_indices[[i]]
+      )
+    })
+    return(transformeR::bindGrid(data.filt, dimension = "member"))
+  }
+
+  # Large number of models - process in batches
+  batches <- split(seq_along(data), ceiling(seq_along(data) / batch_size))
+  batch_results <- vector("list", length(batches))
+
+  for (i in seq_along(batches)) {
+    batch_idx <- batches[[i]]
+    batch_data <- lapply(batch_idx, function(idx) {
+      transformeR::subsetDimension(
+        data[[idx]],
+        dimension = "time",
+        indices = model_indices[[idx]]
+      )
+    })
+    batch_results[[i]] <- transformeR::bindGrid(batch_data, dimension = "member")
+  }
+
+  # Final bind of batched results
+  return(transformeR::bindGrid(batch_results, dimension = "member"))
 }
 
 

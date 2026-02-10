@@ -20,6 +20,34 @@ CONSTANTS <- list(
   )
 )
 
+# helpers -----------------------------------------------------------------
+
+#' Suppress Java stderr and evaluate an expression
+#'
+#' Redirects the JVM's System.err to the null device, evaluates \code{expr},
+#' then restores the original stream. Useful for silencing Java HTTP retry
+#' logs emitted by the Unidata/netCDF libraries.
+#'
+#' @param expr An expression to evaluate while Java stderr is suppressed.
+#' @return The result of evaluating \code{expr}.
+#' @keywords internal
+with_java_quiet <- function(expr) {
+  # Ensure JVM is running before touching Java streams.
+  # .jinit() is a safe no-op when the JVM is already up.
+  rJava::.jinit()
+  java_ps <- rJava::.jfield(
+    "java/lang/System",
+    "Ljava/io/PrintStream;",
+    "err"
+  )
+  null_stream <- rJava::.jnew("java/io/PrintStream", nullfile())
+  rJava::.jcall("java/lang/System", "V", "setErr", null_stream)
+  on.exit(
+    rJava::.jcall("java/lang/System", "V", "setErr", java_ps)
+  )
+  force(expr)
+}
+
 # loading data ------------------------------------------------------------
 
 #' Load model data from specified source
@@ -35,8 +63,10 @@ load_model_data <- function(
   temporal_chunking,
   temporal_chunk_size
 ) {
-  var_name <- if (path.to.data == "CORDEX-CORE-BC" &&
-    variable == "sfcWind") {
+  var_name <- if (
+    path.to.data == "CORDEX-CORE-BC" &&
+      variable == "sfcWind"
+  ) {
     "sfcwind"
   } else {
     variable
@@ -57,27 +87,45 @@ load_model_data <- function(
             "Requesting {length(years)} years. Splitting download into {length(year_chunks)} chunks of {temporal_chunk_size} years..."
           )
 
-          # Load each chunk
-          data_list <- lapply(year_chunks, function(chk) {
-            suppressMessages(
-              loadeR::loadGridData(
-                dataset = x,
-                var = var_name,
-                years = chk,
-                lonLim = xlim,
-                latLim = ylim,
-                aggr.m = aggr.m
-              )
-            )
-          })
-
-          # Bind the chunks along the time dimension
-          data <- suppressMessages(
-            do.call(
-              transformeR::bindGrid,
-              c(data_list, list(dimension = "time"))
+          # Load first chunk as initial value
+          init_data <- suppressMessages(
+            loadeR::loadGridData(
+              dataset = x,
+              var = var_name,
+              years = year_chunks[[1]],
+              lonLim = xlim,
+              latLim = ylim,
+              aggr.m = aggr.m
             )
           )
+
+          # Stream remaining chunks using Reduce to avoid 2x memory overhead
+          if (length(year_chunks) > 1) {
+            data <- Reduce(
+              f = function(accumulated_data, year_chunk) {
+                chunk <- suppressMessages(
+                  loadeR::loadGridData(
+                    dataset = x,
+                    var = var_name,
+                    years = year_chunk,
+                    lonLim = xlim,
+                    latLim = ylim,
+                    aggr.m = aggr.m
+                  )
+                )
+                suppressMessages(
+                  transformeR::bindGrid(
+                    list(accumulated_data, chunk),
+                    dimension = "time"
+                  )
+                )
+              },
+              x = year_chunks[-1], # All chunks except first
+              init = init_data
+            )
+          } else {
+            data <- init_data
+          }
         } else {
           data <- suppressMessages(
             loadeR::loadGridData(
@@ -95,15 +143,13 @@ load_model_data <- function(
         return(data)
       },
       error = function(e) {
-        cli::cli_alert_warning(
-          paste(
-            "Error downloading",
-            path.to.data,
-            "data. If the issue persists, flag it on our GitHub repo at https://github.com/Risk-Team/CAVAanalytics/issues\n",
-            e$message
+        cli::cli_abort(
+          c(
+            "x" = "Error downloading {path.to.data} data.",
+            "i" = e$message,
+            "i" = "If the issue persists, flag it on our GitHub repo at https://github.com/Risk-Team/CAVAanalytics/issues"
           )
         )
-        return(NULL)
       }
     )
   } else {
@@ -123,8 +169,12 @@ load_model_data <- function(
         return(data)
       },
       error = function(e) {
-        cli::cli_alert_warning(paste("Error loading local data:", e$message))
-        return(NULL)
+        cli::cli_abort(
+          c(
+            "x" = "Error loading local data.",
+            "i" = e$message
+          )
+        )
       }
     )
   }
@@ -326,16 +376,21 @@ load_data <- function(
             } else {
               years.proj
             }
-            load_model_data(
-              x,
-              variable,
-              years,
-              xlim,
-              ylim,
-              aggr.m,
-              path.to.data,
-              temporal_chunking,
-              temporal_chunk_size
+            # Suppress Java HTTP retry logs in each worker's JVM.
+            # Each multisession worker has its own JVM, so this must
+            # be done inside the worker, not in the main process.
+            with_java_quiet(
+              load_model_data(
+                x,
+                variable,
+                years,
+                xlim,
+                ylim,
+                aggr.m,
+                path.to.data,
+                temporal_chunking,
+                temporal_chunk_size
+              )
             )
           },
           .progress = TRUE
@@ -378,16 +433,18 @@ load_data <- function(
     } else {
       years.hist
     }
-    models_df$obs <- load_observation_data(
-      obs.file,
-      variable,
-      obs_years,
-      xlim,
-      ylim,
-      aggr.m,
-      path.to.obs,
-      temporal_chunking,
-      temporal_chunk_size
+    models_df$obs <- with_java_quiet(
+      load_observation_data(
+        obs.file,
+        variable,
+        obs_years,
+        xlim,
+        ylim,
+        aggr.m,
+        path.to.obs,
+        temporal_chunking,
+        temporal_chunk_size
+      )
     )
   } else {
     models_df$obs <- NULL

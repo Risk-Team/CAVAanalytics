@@ -23,7 +23,7 @@
 
           msg <- cli::format_message(c(
             "",
-            "!" = "{.strong {title}}",
+            " " = "\U0001f4e2 {.strong {title}}",
             if (!is.na(body) && nzchar(trimws(body))) "i" = trimws(body)
           ))
           packageStartupMessage(msg)

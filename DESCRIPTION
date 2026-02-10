@@ -42,7 +42,8 @@ Imports:
     ggridges,
     magrittr,
     cli,
-    loadeR.java
+    loadeR.java,
+    rJava
 Depends:
     R(>= 3.6.0)
 Suggests: 

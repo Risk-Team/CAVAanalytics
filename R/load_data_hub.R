@@ -31,8 +31,10 @@ load_model_data.hub <- function(
   temporal_chunking,
   temporal_chunk_size
 ) {
-  var_name <- if (database == "CORDEX-CORE-BC" &&
-    variable == "sfcWind") {
+  var_name <- if (
+    database == "CORDEX-CORE-BC" &&
+      variable == "sfcWind"
+  ) {
     "sfcwind"
   } else {
     variable
@@ -49,24 +51,45 @@ load_model_data.hub <- function(
       "Requesting {length(years)} years. Splitting download into {length(year_chunks)} chunks of {temporal_chunk_size} years..."
     )
 
-    # Load each chunk
-    data_list <- lapply(year_chunks, function(chk) {
-      suppressMessages(
-        loadeR::loadGridData(
-          dataset = x,
-          var = var_name,
-          years = chk,
-          lonLim = xlim,
-          latLim = ylim,
-          aggr.m = aggr.m
-        )
+    # Load first chunk as initial value
+    init_data <- suppressMessages(
+      loadeR::loadGridData(
+        dataset = x,
+        var = var_name,
+        years = year_chunks[[1]],
+        lonLim = xlim,
+        latLim = ylim,
+        aggr.m = aggr.m
       )
-    })
-
-    # Bind the chunks along the time dimension
-    data <- suppressMessages(
-      do.call(transformeR::bindGrid, c(data_list, list(dimension = "time")))
     )
+
+    # Stream remaining chunks using Reduce to avoid 2x memory overhead
+    if (length(year_chunks) > 1) {
+      data <- Reduce(
+        f = function(accumulated_data, year_chunk) {
+          chunk <- suppressMessages(
+            loadeR::loadGridData(
+              dataset = x,
+              var = var_name,
+              years = year_chunk,
+              lonLim = xlim,
+              latLim = ylim,
+              aggr.m = aggr.m
+            )
+          )
+          suppressMessages(
+            transformeR::bindGrid(
+              list(accumulated_data, chunk),
+              dimension = "time"
+            )
+          )
+        },
+        x = year_chunks[-1], # All chunks except first
+        init = init_data
+      )
+    } else {
+      data <- init_data
+    }
   } else {
     data <- suppressMessages(
       loadeR::loadGridData(
@@ -118,22 +141,45 @@ load_observation_data.hub <- function(
       "Requesting {length(years)} years. Splitting observations into {length(year_chunks)} chunks of {temporal_chunk_size} years..."
     )
 
-    data_list <- lapply(year_chunks, function(chk) {
-      suppressMessages(
-        loadeR::loadGridData(
-          obs.file,
-          var = var_name,
-          years = chk,
-          lonLim = xlim,
-          latLim = ylim,
-          aggr.m = aggr.m
-        )
+    # Load first chunk as initial value
+    init_data <- suppressMessages(
+      loadeR::loadGridData(
+        obs.file,
+        var = var_name,
+        years = year_chunks[[1]],
+        lonLim = xlim,
+        latLim = ylim,
+        aggr.m = aggr.m
       )
-    })
-
-    data <- suppressMessages(
-      do.call(transformeR::bindGrid, c(data_list, list(dimension = "time")))
     )
+
+    # Stream remaining chunks using Reduce to avoid 2x memory overhead
+    if (length(year_chunks) > 1) {
+      data <- Reduce(
+        f = function(accumulated_data, year_chunk) {
+          chunk <- suppressMessages(
+            loadeR::loadGridData(
+              obs.file,
+              var = var_name,
+              years = year_chunk,
+              lonLim = xlim,
+              latLim = ylim,
+              aggr.m = aggr.m
+            )
+          )
+          suppressMessages(
+            transformeR::bindGrid(
+              list(accumulated_data, chunk),
+              dimension = "time"
+            )
+          )
+        },
+        x = year_chunks[-1], # All chunks except first
+        init = init_data
+      )
+    } else {
+      data <- init_data
+    }
   } else {
     data <- suppressMessages(
       loadeR::loadGridData(

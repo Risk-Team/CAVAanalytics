@@ -47,10 +47,6 @@ load_model_data.hub <- function(
       ceiling(seq_along(years) / temporal_chunk_size)
     )
 
-    cli::cli_alert_info(
-      "Requesting {length(years)} years. Splitting download into {length(year_chunks)} chunks of {temporal_chunk_size} years..."
-    )
-
     # Load each chunk
     data_list <- lapply(year_chunks, function(chk) {
       suppressMessages(
@@ -263,6 +259,12 @@ load_data_hub <- function(
         n.sessions,
         ifelse(n.sessions == 6, " by default", "")
       ))
+    }
+
+    if (isTRUE(temporal_chunking)) {
+      cli::cli_alert_info(
+        "Temporal chunking enabled ({temporal_chunk_size}-year chunks)"
+      )
     }
 
     df <- dplyr::tibble(path = files, experiment = experiment) %>%

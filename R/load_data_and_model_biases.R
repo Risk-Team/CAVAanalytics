@@ -193,9 +193,14 @@ load_data_and_model_biases <-
       }
     }
     cli::cli_progress_step("Merging rasters")
-    # Extract the first, second, and third elements of each list in `out_list`
+    # Extract elements of each list in `out_list`
     rst_mean <- lapply(out_list, `[[`, 1)
     rst_mbrs <- lapply(out_list, `[[`, 2)
+    df_temp <-
+      do.call(rbind, lapply(out_list, `[[`, 3)) %>%
+      dplyr::group_by(date, Var1, season) %>%
+      dplyr::summarise(value = median(value, na.rm = T),
+                       obs_value = median(obs_value, na.rm = T))
     # Merge the extracted rasters using `Reduce` and set their names
     merge_rasters <- function(rst_list) {
       if (length(rst_list) == 0) {
@@ -282,10 +287,9 @@ load_data_and_model_biases <-
     }
 
     # Return result
-    result <- new_CAVAanalytics_model_biases(
+    new_CAVAanalytics_model_biases(
       ensemble_biases = rasters_mean,
       model_biases = rasters_mbrs,
-      temporal_biases = data.frame()
+      temporal_biases = df_temp
     )
-    return(result)
   }

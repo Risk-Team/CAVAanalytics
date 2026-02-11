@@ -263,21 +263,13 @@ load_data_and_projections <- function(
     setNames(merged_raster, names(rst_list[[1]]))
   }
 
-  # Clean up after merging
-  rm(rst_mean, rst_sd, rst_mbrs, out_list)
-  gc()
-
-  end_time <- Sys.time()
-  if (verbose) {
-    cli::cli_alert_success(sprintf(
-      "Processing completed in %.2f minutes",
-      as.numeric(difftime(end_time, start_time, units = "mins"))
-    ))
-  }
-
   rasters_mean <- merge_rasters(rst_mean)
   rasters_sd <- merge_rasters(rst_sd)
   rasters_mbrs <- merge_rasters(rst_mbrs)
+
+  # Clean up after merging
+  rm(rst_mean, rst_sd, rst_mbrs, out_list)
+  gc()
 
   # Crop and mask rasters
   rasters_mean <- terra::crop(rasters_mean, country_shp) %>%
@@ -286,6 +278,14 @@ load_data_and_projections <- function(
     terra::mask(., country_shp)
   rasters_mbrs <- terra::crop(rasters_mbrs, country_shp) %>%
     terra::mask(., country_shp)
+
+  end_time <- Sys.time()
+  if (verbose) {
+    cli::cli_alert_success(sprintf(
+      "Processing completed in %.2f minutes",
+      as.numeric(difftime(end_time, start_time, units = "mins"))
+    ))
+  }
 
   # Return result using constructor with correct parameter names
   new_CAVAanalytics_projections(

@@ -199,18 +199,7 @@ load_data_and_climate_change_signal <-
       }
     }
 
-    # Clean up after merging
-    rm(rst_mean, rst_sd, rst_mbrs, rst_agree, out_list)
-    gc()
-
-    end_time <- Sys.time()
-    if (verbose) {
-      cli::cli_alert_success(sprintf(
-        "Processing completed in %.2f minutes",
-        as.numeric(difftime(end_time, start_time, units = "mins"))
-      ))
-    }
-
+    cli::cli_progress_step("Merging rasters")
     # Extract elements of each list in `out_list`
     rst_mean <- lapply(out_list, `[[`, 1)
     rst_sd <- lapply(out_list, `[[`, 2)
@@ -225,6 +214,9 @@ load_data_and_climate_change_signal <-
       if (length(rst_list) == 0) {
         cli::cli_abort("Empty raster list provided")
       }
+
+      # Remove NULL entries if any
+      rst_list <- Filter(Negate(is.null), rst_list)
 
       # Determine the resolution of each raster in the list
       resolutions <- tryCatch(
@@ -268,7 +260,9 @@ load_data_and_climate_change_signal <-
       }
 
       # Merge rasters with progress indication
-      cli::cli_alert_info("Merging...")
+      if (verbose) {
+        cli::cli_alert_info("Merging...")
+      }
       merged_raster <- tryCatch(
         {
           Reduce(function(x, y) terra::merge(x, y), rst_list)
@@ -279,8 +273,7 @@ load_data_and_climate_change_signal <-
       )
 
       # Set names from the first raster in the list
-      names <- names(rst_list[[1]])
-      setNames(merged_raster, names)
+      setNames(merged_raster, names(rst_list[[1]]))
     }
 
     rasters_mean <- merge_rasters(rst_mean)
@@ -288,26 +281,34 @@ load_data_and_climate_change_signal <-
     rasters_mbrs <- merge_rasters(rst_mbrs)
     rasters_agree <- merge_rasters(rst_agree)
 
+    # Clean up after merging
+    rm(rst_mean, rst_sd, rst_mbrs, rst_agree, out_list)
+    gc()
+
+    # Crop and mask rasters
+    rasters_mean <- terra::crop(rasters_mean, country_shp) %>%
+      terra::mask(., country_shp)
+    rasters_sd <- terra::crop(rasters_sd, country_shp) %>%
+      terra::mask(., country_shp)
+    rasters_mbrs <- terra::crop(rasters_mbrs, country_shp) %>%
+      terra::mask(., country_shp)
+    rasters_agree <- terra::crop(rasters_agree, country_shp) %>%
+      terra::mask(., country_shp)
+
     end_time <- Sys.time()
-    progress_report(sprintf(
-      "Total processing time: %.2f minutes",
-      as.numeric(difftime(end_time, start_time, units = "mins"))
-    ))
+    if (verbose) {
+      cli::cli_alert_success(sprintf(
+        "Processing completed in %.2f minutes",
+        as.numeric(difftime(end_time, start_time, units = "mins"))
+      ))
+    }
 
     # Return result using constructor with correct parameter names
     new_CAVAanalytics_ccs(
-      ccs_mean = rasters_mean %>%
-        terra::crop(., country_shp) %>%
-        terra::mask(., country_shp),
-      ccs_sd = rasters_sd %>%
-        terra::crop(., country_shp) %>%
-        terra::mask(., country_shp),
-      members_ccs = rasters_mbrs %>%
-        terra::crop(., country_shp) %>%
-        terra::mask(., country_shp),
-      agreement = rasters_agree %>%
-        terra::crop(., country_shp) %>%
-        terra::mask(., country_shp),
+      ccs_mean = rasters_mean,
+      ccs_sd = rasters_sd,
+      members_ccs = rasters_mbrs,
+      agreement = rasters_agree,
       temporal_data = df_temp
     )
   }

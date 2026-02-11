@@ -14,6 +14,7 @@ output:
 
 - Suppress retry messages from Java
 - Added automatic fetching of GitHub announcement on pakcage start-up to display information
+- Polished the memory efficient functions
 
 ## CAVAanalytics 4.0.1
 

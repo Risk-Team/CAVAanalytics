@@ -55,178 +55,125 @@
   </div>
 </nav><div class="container template-home">
 <div class="row">
-  <main id="main" class="col-md-9"><div class="page-header"><h1 align="center">
-<img src="reference/figures/sticker2.png" width="300" height="300" align="center"><br><h5 align="center">
-R package providing a framework for easy access, processing, and advanced visualization of gridded climate products
-</h5>
-<br><div align="center">
-<p><img src="https://img.shields.io/github/r-package/v/Risk-Team/CAVAanalytics" alt="GitHub R package version" style="display: inline-block;"><img src="https://img.shields.io/github/release-date-pre/Risk-team/CAVAanalytics" alt="release date" style="display: inline-block;"><a href="https://zenodo.org/doi/10.5281/zenodo.11127220" class="external-link"><img src="https://zenodo.org/badge/558266668.svg" alt="DOI"></a></p>
-</div>
-</h1></div>
-<table class="table">
-<colgroup><col width="100%"></colgroup>
-<tbody><tr>
-<td align="left"><strong>Check GitHub issues for known servers’ downtimes</strong></td>
-</tr></tbody>
-</table>
-<div class="section level3">
-<h3 id="rocket-new-feature-alert-pre-computed-bias-corrected-datasets-rocket">
-<span class="emoji" data-emoji="rocket">🚀</span> New Feature Alert: Pre-computed Bias-Corrected Datasets <span class="emoji" data-emoji="rocket">🚀</span>
-<a class="anchor" aria-label="anchor" href="#rocket-new-feature-alert-pre-computed-bias-corrected-datasets-rocket"></a>
-</h3>
-<p><strong>Bias-corrected CORDEX-CORE simulations (ISIMIP methodology) are now available as ready-to-use, pre-computed datasets!</strong><br><span class="emoji" data-emoji="white_check_mark">✅</span> <strong>No local bias-correction step required.</strong><br>
-—</p>
+  <main id="main" class="col-md-9"><p align="center">
+<img src="reference/figures/sticker2.png" width="250" height="250"></p>
+<h4 align="center">
+An R package for easy access, processing, and visualization of gridded climate products
+</h4>
+<p align="center">
+<img src="https://img.shields.io/github/r-package/v/Risk-Team/CAVAanalytics" alt="GitHub R package version"><img src="https://img.shields.io/github/release-date-pre/Risk-team/CAVAanalytics" alt="Release date"><a href="https://zenodo.org/doi/10.5281/zenodo.11127220" class="external-link"><img src="https://zenodo.org/badge/558266668.svg" alt="DOI"></a>
+</p>
 <hr>
-<p><a href="https://risk-team.github.io/CAVAanalytics/"><strong>CAVAanalytics</strong></a> is a comprehensive R package designed to simplify and enhance climate data analysis. It offers a unified framework that streamlines access to datasets such as W5E5, ERA5, and CORDEX-CORE models, facilitating efficient loading, analysis, indicator calculation, and visualization of climate and impact model data</p>
+<blockquote>
+<p><strong>Check <a href="https://github.com/Risk-Team/CAVAanalytics/issues" class="external-link">GitHub Issues</a> for known server downtimes</strong></p>
+</blockquote>
+<blockquote>
+<p><strong>New:</strong> Bias-corrected CORDEX-CORE simulations (ISIMIP methodology) are now available as ready-to-use, pre-computed datasets — no local bias-correction step required.</p>
+</blockquote>
+<hr>
+<div class="section level2">
+<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
+</h2>
+<p><a href="https://risk-team.github.io/CAVAanalytics/"><strong>CAVAanalytics</strong></a> is a comprehensive R package designed to simplify climate data analysis. It provides a unified framework for accessing datasets such as W5E5, ERA5, and CORDEX-CORE models, enabling efficient loading, analysis, indicator calculation, and visualization.</p>
 </div>
-<div class="section level3">
-<h3 id="key-features">Key Features:<a class="anchor" aria-label="anchor" href="#key-features"></a>
-</h3>
+<div class="section level2">
+<h2 id="key-features">Key Features<a class="anchor" aria-label="anchor" href="#key-features"></a>
+</h2>
 <ul>
 <li>
-<strong>Simplified Data Access:</strong> Retrieve CORDEX-CORE models globally without the need to manage netCDF files. Data requests are sent to THREDDS servers, allowing you to access only the necessary information directly in memory.</li>
+<strong>Simplified Data Access</strong> — Retrieve CORDEX-CORE models globally without managing netCDF files. Requests go to THREDDS servers, loading only the data you need directly into memory.</li>
 <li>
-<strong>Consistent Analytical Framework:</strong> Work seamlessly with multiple climate models, making indicator calculation and result visualization straightforward and efficient.</li>
+<strong>Consistent Analytical Framework</strong> — Work seamlessly with multiple climate models for straightforward indicator calculation and visualization.</li>
 <li>
-<strong>Pre-computed bias-corrected datasets:</strong> Directly access ISIMIP-style, bias-corrected CORDEX-CORE simulations as pre-computed products, currently available for the AFR-22 and WAS-22 domains (with more domains to be added), ideal for users who want bias-corrected data without running the correction workflow themselves.</li>
+<strong>Pre-computed Bias-Corrected Datasets</strong> — Access ISIMIP-style, bias-corrected CORDEX-CORE simulations (using ERA5 as reference), currently available for AFR-22 and WAS-22 domains, with more to come.</li>
 </ul>
 </div>
-<div class="section level3">
-<h3 id="pre-computed-bias-corrected-datasets">Pre-computed bias-corrected datasets<a class="anchor" aria-label="anchor" href="#pre-computed-bias-corrected-datasets"></a>
-</h3>
-<p>The pre-computed bias-corrected CORDEX-CORE simulations available in CAVAanalytics have been bias-corrected using ERA5 as the reference dataset, following the ISIMIP methodology. These ready-to-use datasets eliminate the need for users to perform local bias-correction procedures, providing immediate access to high-quality, bias-adjusted climate projections.</p>
-</div>
-<div class="section level3">
-<h3 id="quick-example">Quick example<a class="anchor" aria-label="anchor" href="#quick-example"></a>
-</h3>
-<p>Below is an example of how to use CAVAanalytics to retrieve and analyze climate information for Sudan, covering both historical and projected data. Detailed examples are available from the <a href="https://risk-team.github.io/CAVAanalytics/articles/Introduction.html">tutorial webpage</a>.</p>
-<p>This script retrieves precipitation data for Sudan from 1990 to 2000 (historical) and 2020 to 2030 (projected), analyzes the climate change signal, and visualizes the projected change in total annual precipitation compared to the 1990-2000 baseline period.</p>
+<div class="section level2">
+<h2 id="quick-example">Quick Example<a class="anchor" aria-label="anchor" href="#quick-example"></a>
+</h2>
+<p>Retrieve precipitation data for Sudan (1990–2000 historical, 2020–2030 projected), compute the climate change signal, and visualize the projected change in total annual precipitation.</p>
+<p>Detailed examples are available in the <a href="https://risk-team.github.io/CAVAanalytics/articles/Introduction.html">tutorial</a>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://risk-team.github.io/CAVAanalytics/">CAVAanalytics</a></span><span class="op">)</span></span>
-<span><span class="co"># 1st step</span></span>
-<span> <span class="va">remote.data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/load_data.html">load_data</a></span><span class="op">(</span>country <span class="op">=</span> <span class="st">"Sudan"</span>, variable<span class="op">=</span><span class="st">"pr"</span>,</span>
-<span> years.hist<span class="op">=</span><span class="fl">1990</span><span class="op">:</span><span class="fl">2000</span>, years.proj<span class="op">=</span><span class="fl">2020</span><span class="op">:</span><span class="fl">2030</span>,</span>
-<span> path.to.data <span class="op">=</span> <span class="st">"CORDEX-CORE-BC"</span>, aggr.m<span class="op">=</span><span class="st">"sum"</span>, domain<span class="op">=</span><span class="st">"AFR-22"</span><span class="op">)</span></span>
-<span><span class="co"># 2nd step</span></span>
-<span><span class="va">sudan_ccs</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/climate_change_signal.html">climate_change_signal</a></span><span class="op">(</span><span class="va">remote.data</span>, season<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span>, bias.correction <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
-<span><span class="co"># 3rd step</span></span>
-<span> <span class="fu"><a href="reference/plotting.html">plotting</a></span><span class="op">(</span><span class="va">sudan_ccs</span>, ensemble<span class="op">=</span><span class="cn">FALSE</span>, plot_titles <span class="op">=</span> <span class="st">"Precipitation change (mm)"</span>,</span>
-<span> palette<span class="op">=</span><span class="fu"><a href="reference/IPCC_palette.html">IPCC_palette</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"pr"</span>, divergent <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>, legend_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">400</span>,<span class="fl">400</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span></span>
+<span><span class="co"># Load data</span></span>
+<span><span class="va">remote.data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/load_data.html">load_data</a></span><span class="op">(</span></span>
+<span>  country <span class="op">=</span> <span class="st">"Sudan"</span>, variable <span class="op">=</span> <span class="st">"pr"</span>,</span>
+<span>  years.hist <span class="op">=</span> <span class="fl">1990</span><span class="op">:</span><span class="fl">2000</span>, years.proj <span class="op">=</span> <span class="fl">2020</span><span class="op">:</span><span class="fl">2030</span>,</span>
+<span>  path.to.data <span class="op">=</span> <span class="st">"CORDEX-CORE-BC"</span>, aggr.m <span class="op">=</span> <span class="st">"sum"</span>, domain <span class="op">=</span> <span class="st">"AFR-22"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Compute climate change signal</span></span>
+<span><span class="va">sudan_ccs</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/climate_change_signal.html">climate_change_signal</a></span><span class="op">(</span><span class="va">remote.data</span>, season <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span>, bias.correction <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Plot results</span></span>
+<span><span class="fu"><a href="reference/plotting.html">plotting</a></span><span class="op">(</span></span>
+<span>  <span class="va">sudan_ccs</span>, ensemble <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  plot_titles <span class="op">=</span> <span class="st">"Precipitation change (mm)"</span>,</span>
+<span>  palette <span class="op">=</span> <span class="fu"><a href="reference/IPCC_palette.html">IPCC_palette</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"pr"</span>, divergent <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>  legend_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">400</span>, <span class="fl">400</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup><col width="100%"></colgroup>
 <thead><tr>
-<th align="center"><img width="3600" height="2400" alt="1stpage" src="https://github.com/user-attachments/assets/9ae55cc8-5708-4dbb-906e-0eb137ea6ea6"></th>
+<th align="center"><img width="3600" height="2400" alt="Sudan precipitation change" src="https://github.com/user-attachments/assets/9ae55cc8-5708-4dbb-906e-0eb137ea6ea6"></th>
 </tr></thead>
 <tbody><tr>
-<td align="center"><em>Projected change in total annual precipitation compared to the 1990-2000 baseline period in Sudan</em></td>
+<td align="center"><em>Projected change in total annual precipitation compared to the 1990–2000 baseline period in Sudan</em></td>
 </tr></tbody>
 </table>
 </div>
-<div class="section level3">
-<h3 id="installation-options">Installation options<a class="anchor" aria-label="anchor" href="#installation-options"></a>
-</h3>
-<p>Depending on your preferences and setup, CAVAanalytics can be installed in the following ways:</p>
-<div class="section level4">
-<h4 id="id_1-locally">1) Locally<a class="anchor" aria-label="anchor" href="#id_1-locally"></a>
-</h4>
-<p><strong>If you are new to climate4R</strong>, You need to first install <strong>rJava</strong>. This installation can be problematic. Follow the instructions below</p>
-<p><strong>Windows</strong></p>
-<p><a href="https://cimentadaj.github.io/blog/2018-05-25-installing-rjava-on-windows-10/installing-rjava-on-windows-10/" class="external-link">Installing rJava in Windows</a></p>
-<p><strong>Linux and macOS</strong></p>
-<p><a href="https://github.com/SantanderMetGroup/loadeR/wiki/Installation" class="external-link">Installing rJava in Linux and macOS</a></p>
-<p>If the installation of rJava is successful, you should be able to load the library from Rstudio and you can now installed CAVAanalytics.</p>
-<pre><code><span><span class="co"># Step 1: Ensure rJava is installed and working</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"rJava"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"rJava"</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://www.rforge.net/rJava/" class="external-link">rJava</a></span><span class="op">)</span>  <span class="co"># Verify no errors here</span></span>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<p>CAVAanalytics depends on <strong>rJava</strong>. If you are new to climate4R, install rJava first:</p>
+<table class="table">
+<colgroup>
+<col width="43%">
+<col width="56%">
+</colgroup>
+<thead><tr>
+<th>Platform</th>
+<th>Instructions</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Windows</strong></td>
+<td><a href="https://cimentadaj.github.io/blog/2018-05-25-installing-rjava-on-windows-10/installing-rjava-on-windows-10/" class="external-link">Installing rJava on Windows</a></td>
+</tr>
+<tr>
+<td><strong>Linux / macOS</strong></td>
+<td><a href="https://github.com/SantanderMetGroup/loadeR/wiki/Installation" class="external-link">Installing rJava on Linux and macOS</a></td>
+</tr>
+</tbody>
+</table>
+<p>Once rJava loads successfully in RStudio, install CAVAanalytics:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Verify rJava works</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"rJava"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"rJava"</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://www.rforge.net/rJava/" class="external-link">rJava</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Step 2: Install pak (if not already installed)</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"pak"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"pak"</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
+<span><span class="co"># Install pak if needed</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"pak"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"pak"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Step 3: Install CAVAanalytics</span></span>
-<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pkg_install</a></span><span class="op">(</span> <span class="st">"Risk-Team/CAVAanalytics"</span><span class="op">)</span></span></code></pre>
+<span><span class="co"># Install CAVAanalytics</span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pkg_install</a></span><span class="op">(</span><span class="st">"Risk-Team/CAVAanalytics"</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level4">
-<h4 id="id_2-docker">2) Docker<a class="anchor" aria-label="anchor" href="#id_2-docker"></a>
-</h4>
-<p>The Docker image is available at Docker.io, rso9192/cava. This docker image is built on top of <a href="https://davetang.org/muse/2021/04/24/running-rstudio-server-with-docker/" class="external-link">rocker/rstudio</a></p>
-<div class="section level5">
-<h5 id="linux">Linux<a class="anchor" aria-label="anchor" href="#linux"></a>
-</h5>
-<p>Open the terminal</p>
-<pre><code># if not already installed
-sudo apt-get install snapd
-# if not already installed
-sudo snap install docker
-
-sudo docker pull docker.io/rso9192/cava:version3.3.2
-
-sudo docker run --rm \
-           -p 8888:8787 \
-           -e PASSWORD=password \
-           -v /path/to/local/directory:/home \
-           rso9192/cava:version3.3.2
-
-</code></pre>
-<p>Replace <strong>/path/to/local/directory</strong> with the local directory on your host machine where you want to save your plots or data. For example, you can create a folder on your Desktop called CAVA_results. Then, you would run the above command as:</p>
-<pre><code>sudo docker run --rm \
-           -p 8888:8787 \
-           -e PASSWORD=password \
-           -v /home/Desktop/CAVA_results:/home \
-           rso9192/cava:version3.3.2</code></pre>
-<p>Now open your favorite browser and type <strong><a href="http://localhost:8888/" class="external-link uri">http://localhost:8888/</a></strong>. You should see a login page: enter the <strong>username “rstudio”</strong> and <strong>password “password”</strong> to login and that’s it! You can now use CAVAanalytics through Rstudio server.</p>
+<div class="section level2">
+<h2 id="why-r-and-not-python">Why R (and not Python)?<a class="anchor" aria-label="anchor" href="#why-r-and-not-python"></a>
+</h2>
+<p>CAVAanalytics was built with R packages like <code>climate4R</code> and <code>tidyverse</code> to prioritize visualization. However, R lacks Python’s out-of-memory parallel computation capabilities (via <code>xarray</code> + <code>dask</code>), which means CAVAanalytics relies on in-memory (RAM) processing. This can limit analysis of very large areas such as entire CORDEX domains. That said, CAVAanalytics was primarily designed for <strong>country-level assessments</strong> (<a href="https://risk-team.github.io/CAVAanalytics/reference/index.html">memory-efficient functions are also available</a>).</p>
+<p>For large-scale data retrieval, consider <a href="https://github.com/Risk-Team/cavapy" class="external-link"><strong>cavapy</strong></a>, the Python companion focused on efficient data access.</p>
 </div>
-<div class="section level5">
-<h5 id="windows">Windows<a class="anchor" aria-label="anchor" href="#windows"></a>
-</h5>
-<p>If you are using Windows, you can install <a href="https://docs.docker.com/desktop/install/windows-install/" class="external-link">Docker Desktop</a> first. Note that Docker Desktop would require the installation of WSL (Windows Subsystem for Linux). To do that, open a Command Prompt (as administrator) and run</p>
-<pre><code><span><span class="va">wsl</span> <span class="op">-</span><span class="op">-</span><span class="va">install</span></span></code></pre>
-<p>This will instal the Windows Subsystem for Linux in your computer. Then <strong>start the Docker app</strong> and open an ubuntu terminal and run</p>
-<pre><code>sudo docker pull docker.io/rso9192/cava:version3.3.2
-# ignore the messages about login</code></pre>
-<p>Now run your image as below. Remember to replace <strong>/path/to/local/directory</strong> with the local directory on your host machine where you want to save your plots or data. For example, you can create a folder on your Desktop called CAVA_results. Then, you could run the above command as:</p>
-<pre><code>sudo docker run --rm \
-           -p 8888:8787 \
-           -e PASSWORD=password \
-           -v /mnt/c/Users/my_username/Desktop/CAVA_results:/home \
-           rso9192/cava:version3.3.2</code></pre>
-<p>Now open your favorite browser and type <strong><a href="http://localhost:8888/" class="external-link uri">http://localhost:8888/</a></strong>. You should see a login page: enter the <strong>username “rstudio”</strong> and <strong>password “password”</strong> to login and that’s it! You can now use CAVAanalytics through Rstudio server.</p>
+<div class="section level2">
+<h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
+</h2>
+<p>Contributions are welcome — fork this repository and submit a PR. If you find CAVAanalytics useful, please consider <a href="https://github.com/Risk-Team/CAVAanalytics/stargazers" class="external-link">giving it a star</a>!</p>
 </div>
-<div class="section level5">
-<h5 id="mac">Mac<a class="anchor" aria-label="anchor" href="#mac"></a>
-</h5>
-<p>If you are using a Mac, you first need to install <a href="https://docs.docker.com/desktop/install/mac-install/" class="external-link">Docker desktop for Mac</a>.</p>
-<p>Then open a terminal and while Docker Desktop is open, run:</p>
-<pre><code>sudo docker pull docker.io/rso9192/cava:version3.3.2</code></pre>
-<p>At this point, you can run the Docker image with the below comand.</p>
-<pre><code>sudo docker run --rm \
-           -p 8888:8787 \
-           -e PASSWORD=password \
-           -v /path/to/local/directory:/home \
-           rso9192/cava:version3.3.2</code></pre>
-<p>Remember to replace <strong>/path/to/local/directory</strong> with the local directory on your host machine where you want to save your plots or data. Now open your favorite browser and type <strong><a href="http://localhost:8888/" class="external-link uri">http://localhost:8888/</a></strong>. You should see a login page: enter the <strong>username “rstudio”</strong> and <strong>password “password”</strong> to login and that’s it! You can now use CAVAanalytics through Rstudio server.</p>
-</div>
-</div>
-</div>
-<div class="section level3">
-<h3 id="python">Python<a class="anchor" aria-label="anchor" href="#python"></a>
-</h3>
-<p><strong>Firstly, why Python?</strong></p>
-<p>While CAVAanalytics was developed using R packages like <code>climate4R</code> and <code>tidyverse</code> to prioritize result visualization, R lacks the computational efficiency of Python, particularly for handling large climate datasets. Python supports out-of-memory parallel computation for arrays through the integration of<code>xarray</code> and <code>dask</code>, a feature absent in R. Consequently, CAVAanalytics relies heavily on in-memory (RAM) processing, which limits its ability to efficiently analyze large-scale geographical areas, such as entire CORDEX domains. This limitation arises because such analyses demand substantial RAM resources. However, CAVAanalytics was primarily designed for country-level assessments rather than extensive climate data analyses. (<a href="https://risk-team.github.io/CAVAanalytics/reference/index.html">check out the memory-efficient functions available from CAVAanalytics though</a>)</p>
-<p>For users interested in accessing gridded climate projections more efficiently, <a href="https://github.com/Risk-Team/cavapy" class="external-link">cavapy</a> is recommended. Cavapy focuses on data retrieval in Python, whereas CAVAanalytics offers a broader suite of tools for processing and visualization.</p>
-</div>
-<div class="section level3">
-<h3 id="contributions">Contributions<a class="anchor" aria-label="anchor" href="#contributions"></a>
-</h3>
-<p>If you would like to contribute to this project, you are welcome to fork this repository and submit your contribution. If you liked CAVAanalytics, please remember to <a href="https://github.com/Risk-Team/CAVAanalytics/stargazers" class="external-link">add a star</a>!</p>
-</div>
-<div class="section level3">
-<h3 id="issues">Issues<a class="anchor" aria-label="anchor" href="#issues"></a>
-</h3>
-<p>You can report issues <a href="https://github.com/Risk-Team/CAVAanalytics/issues" class="external-link">here</a></p>
+<div class="section level2">
+<h2 id="issues">Issues<a class="anchor" aria-label="anchor" href="#issues"></a>
+</h2>
+<p>Report bugs or problems <a href="https://github.com/Risk-Team/CAVAanalytics/issues" class="external-link">here</a>.</p>
 </div>
 
   </main><aside class="col-md-3"><div class="license">

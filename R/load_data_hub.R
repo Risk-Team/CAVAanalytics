@@ -176,7 +176,6 @@ load_observation_data.hub <- function(
 #' @param years.obs NULL or numeric, specify year range for observation
 #' @param temporal_chunking logical, default to FALSE. If TRUE, loads data in temporal chunks
 #' @param temporal_chunk_size numeric, default to 10. Number of years per chunk when temporal_chunking is TRUE
-#' @param res_folder character, specify the resolution of the CORDEX data. Default to "interp025". Meaningful only when working with CORDEX-CORE. In the future this option will be removed
 #' @return list of length 2. List[[1]] contains a tibble with list columns and List[[2]] the bbox
 #' @importFrom magrittr %>%
 #' @export
@@ -194,7 +193,6 @@ load_data_hub <- function(
   aggr.m = "none",
   n.sessions = 6,
   years.obs = NULL,
-  res_folder = "interp025",
   temporal_chunking = FALSE,
   temporal_chunk_size = 10
 ) {
@@ -209,7 +207,6 @@ load_data_hub <- function(
     n.sessions,
     path.to.obs,
     years.obs,
-    res_folder,
     temporal_chunking,
     temporal_chunk_size
   )
@@ -221,7 +218,6 @@ load_data_hub <- function(
         domain,
         years.hist,
         years.proj,
-        res_folder,
         database
       )
       experiment <- if (!is.null(years.hist) & !is.null(years.proj)) {

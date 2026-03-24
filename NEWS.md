@@ -10,6 +10,11 @@ output:
 ---
 
 
+## CAVAanalytics 4.0.3
+
+- Removed hard-coded year range constraints for ERA5 and W5E5 observations to support continuously updated datasets
+- Removed res_folder arg from load_data_hub
+
 ## CAVAanalytics 4.0.2
 
 - Suppress retry messages from Java

@@ -54,11 +54,10 @@ load_model_paths.hub <- function(
   domain,
   years.hist,
   years.proj,
-  res_folder,
   path.to.data
 ) {
   cli::cli_progress_step("Accessing inventory")
-  csv_url <- "/home/jovyan/shared/inventories/cava/inventory.csv"
+  csv_url <- "/gpfs/ces/share-7c11c2a4-9d9f-40f5-b95e-396bcbf3f608/HUB/inventories/cava/inventory.csv"
 
   # Determine activity filter based on path.to.data
   activity_pattern <- if (path.to.data == "CORDEX-CORE-BC") {
@@ -71,13 +70,6 @@ load_model_paths.hub <- function(
     dplyr::filter(
       stringr::str_detect(activity, activity_pattern),
       domain %in% !!domain
-    ) %>%
-    dplyr::mutate(
-      hub = dplyr::case_when(
-        res_folder == "interp025" ~ hub,
-        TRUE ~
-          stringr::str_replace_all(as.character(hub), "interp025", "interp05")
-      )
     ) %>%
     dplyr::group_by(experiment) %>%
     dplyr::summarise(path = list(as.character(hub))) %>%
@@ -118,9 +110,9 @@ load_obs_paths.thredds <- function(path.to.obs) {
 #' @noRd
 load_obs_paths.hub <- function(path.to.obs) {
   if (path.to.obs == "ERA5") {
-    "/home/jovyan/shared/data/observations/ERA5/0.25/ERA5_025.ncml"
+    "/gpfs/ces/share-7c11c2a4-9d9f-40f5-b95e-396bcbf3f608/HUB/dataobservations/ERA5/0.25/ERA5_025.ncml"
   } else if (path.to.obs == "W5E5") {
-    "/home/jovyan/shared/data/observations/W5E5/v2.0/w5e5_v2.0.ncml"
+    "/gpfs/ces/share-7c11c2a4-9d9f-40f5-b95e-396bcbf3f608/HUB/data/observations/W5E5/v2.0/w5e5_v2.0.ncml"
   } else {
     path.to.obs
   }
@@ -186,26 +178,6 @@ check_inputs.load_data <- function(
   }
 
   if (!is.null(path.to.obs)) {
-    if (
-      !is.null(years.obs) &
-        path.to.obs == "ERA5" &
-        any(!(years.obs %in% 1976:2021))
-    ) {
-      cli::cli_abort(c(
-        "x" = "Available years for ERA5 observations are 1976:2021"
-      ))
-    }
-
-    if (
-      !is.null(years.obs) &
-        path.to.obs == "W5E5" &
-        any(!(years.obs %in% 1980:2019))
-    ) {
-      cli::cli_abort(c(
-        "x" = "Available years for W5E5 observations are 1980:2019"
-      ))
-    }
-
     if (is.null(years.obs) & is.null(years.hist)) {
       cli::cli_abort(c(
         "x" = "Specify years.hist or years.obs since path.obs is not NULL"
@@ -320,7 +292,6 @@ check_inputs.load_data_hub <- function(
   n.sessions,
   path.to.obs,
   years.obs,
-  res_folder,
   temporal_chunking,
   temporal_chunk_size
 ) {
@@ -332,7 +303,6 @@ check_inputs.load_data_hub <- function(
     temporal_chunk_size > 0
   )
   match.arg(aggr.m, choices = c("none", "sum", "mean"))
-  match.arg(res_folder, choices = c("interp025", "interp05"))
   if (!is.null(domain)) {
     match.arg(
       domain,
@@ -367,26 +337,6 @@ check_inputs.load_data_hub <- function(
   }
 
   if (!is.null(path.to.obs)) {
-    if (
-      !is.null(years.obs) &
-        path.to.obs == "ERA5" &
-        any(!(years.obs %in% 1976:2021))
-    ) {
-      cli::cli_abort(c(
-        "x" = "Available years for ERA5 observations are 1976:2021"
-      ))
-    }
-
-    if (
-      !is.null(years.obs) &
-        path.to.obs == "W5E5" &
-        any(!(years.obs %in% 1980:2021))
-    ) {
-      cli::cli_abort(c(
-        "x" = "Available years for W5E5 observations are 1980:2019"
-      ))
-    }
-
     if (is.null(years.obs) & is.null(years.hist)) {
       cli::cli_abort(c(
         "x" = "Specify years.hist or years.obs since path.obs is not NULL"

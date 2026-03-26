@@ -110,7 +110,7 @@ load_obs_paths.thredds <- function(path.to.obs) {
 #' @noRd
 load_obs_paths.hub <- function(path.to.obs) {
   if (path.to.obs == "ERA5") {
-    "/gpfs/ces/share-7c11c2a4-9d9f-40f5-b95e-396bcbf3f608/HUB/dataobservations/ERA5/0.25/ERA5_025.ncml"
+    "/gpfs/ces/share-7c11c2a4-9d9f-40f5-b95e-396bcbf3f608/HUB/data/observations/ERA5/0.25/ERA5_025.ncml"
   } else if (path.to.obs == "W5E5") {
     "/gpfs/ces/share-7c11c2a4-9d9f-40f5-b95e-396bcbf3f608/HUB/data/observations/W5E5/v2.0/w5e5_v2.0.ncml"
   } else {

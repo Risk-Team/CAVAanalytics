@@ -14,9 +14,6 @@ output:
 
 - Removed hard-coded year range constraints for ERA5 and W5E5 observations to support continuously updated datasets
 - Removed res_folder arg from load_data_hub
-
-## CAVAanalytics 4.0.2
-
 - Suppress retry messages from Java
 - Added automatic fetching of GitHub announcement on pakcage start-up to display information
 - Polished the memory efficient functions

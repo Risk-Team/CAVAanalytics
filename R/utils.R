@@ -1,4 +1,8 @@
 # Loading model paths ------------------------------------------------------
+# Inventory stores JupyterHub paths; on HUB compute nodes use GPFS (same root as ERA5/W5E5).
+.hub_fs_data_root <- "/gpfs/ces/share-7c11c2a4-9d9f-40f5-b95e-396bcbf3f608/HUB/data"
+.hub_jupyter_inventory_prefix <- "/home/jovyan/shared/data"
+
 #' Load model paths from thredds
 #' @noRd
 load_model_paths.thredds <- function(
@@ -71,8 +75,15 @@ load_model_paths.hub <- function(
       stringr::str_detect(activity, activity_pattern),
       domain %in% !!domain
     ) %>%
+    dplyr::mutate(
+      hub = stringr::str_replace(
+        as.character(hub),
+        stringr::fixed(.hub_jupyter_inventory_prefix),
+        .hub_fs_data_root
+      )
+    ) %>%
     dplyr::group_by(experiment) %>%
-    dplyr::summarise(path = list(as.character(hub))) %>%
+    dplyr::summarise(path = list(hub)) %>%
     {
       if (is.null(years.hist) & !is.null(years.proj)) {
         dplyr::filter(., experiment != "historical")
@@ -110,9 +121,21 @@ load_obs_paths.thredds <- function(path.to.obs) {
 #' @noRd
 load_obs_paths.hub <- function(path.to.obs) {
   if (path.to.obs == "ERA5") {
-    "/gpfs/ces/share-7c11c2a4-9d9f-40f5-b95e-396bcbf3f608/HUB/data/observations/ERA5/0.25/ERA5_025.ncml"
+    file.path(
+      .hub_fs_data_root,
+      "observations",
+      "ERA5",
+      "0.25",
+      "ERA5_025.ncml"
+    )
   } else if (path.to.obs == "W5E5") {
-    "/gpfs/ces/share-7c11c2a4-9d9f-40f5-b95e-396bcbf3f608/HUB/data/observations/W5E5/v2.0/w5e5_v2.0.ncml"
+    file.path(
+      .hub_fs_data_root,
+      "observations",
+      "W5E5",
+      "v2.0",
+      "w5e5_v2.0.ncml"
+    )
   } else {
     path.to.obs
   }

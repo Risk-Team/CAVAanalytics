@@ -11,7 +11,7 @@ output:
 
 
 ## CAVAanalytics 4.0.3
-
+- changed path in load data hub so the function can work from the docker image used for reports
 - Removed hard-coded year range constraints for ERA5 and W5E5 observations to support continuously updated datasets
 - Removed res_folder arg from load_data_hub
 - Suppress retry messages from Java

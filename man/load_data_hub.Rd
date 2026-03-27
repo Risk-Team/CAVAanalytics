@@ -18,7 +18,6 @@ load_data_hub(
   aggr.m = "none",
   n.sessions = 6,
   years.obs = NULL,
-  res_folder = "interp025",
   temporal_chunking = FALSE,
   temporal_chunk_size = 10
 )
@@ -49,8 +48,6 @@ load_data_hub(
 \item{n.sessions}{numeric, number of sessions for parallel processing}
 
 \item{years.obs}{NULL or numeric, specify year range for observation}
-
-\item{res_folder}{character, specify the resolution of the CORDEX data. Default to "interp025". Meaningful only when working with CORDEX-CORE. In the future this option will be removed}
 
 \item{temporal_chunking}{logical, default to FALSE. If TRUE, loads data in temporal chunks}
 

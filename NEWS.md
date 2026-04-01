@@ -10,6 +10,10 @@ output:
 ---
 
 
+## CAVAanalytics 4.0.4
+
+- Switched to IPCC-style markers for trend significance and climate change signal plots. Crosses now indicate **non-significant** trends (p ≥ 0.05) instead of significant ones, and **model disagreement** instead of agreement — consistent with IPCC AR6 uncertainty visualization conventions.
+
 ## CAVAanalytics 4.0.3
 - changed path in load data hub so the function can work from the docker image used for reports
 - Removed hard-coded year range constraints for ERA5 and W5E5 observations to support continuously updated datasets

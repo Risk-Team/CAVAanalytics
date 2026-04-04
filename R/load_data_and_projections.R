@@ -51,7 +51,8 @@ load_data_and_projections <- function(
   n.sessions = 6,
   method = "eqm",
   window = "monthly",
-  verbose = TRUE
+  verbose = TRUE,
+  use_hub = FALSE
 ) {
   start_time <- Sys.time() # Add timing
 
@@ -143,20 +144,39 @@ load_data_and_projections <- function(
       proj_chunk <- tryCatch(
         {
           suppressMessages(
-            load_data(
-              country = NULL,
-              variable = variable,
-              years.hist = years.hist,
-              years.proj = years.proj,
-              path.to.data = path.to.data,
-              domain = domain,
-              path.to.obs = path.to.obs,
-              xlim = xlim_chunk,
-              ylim = ylim_chunk,
-              aggr.m = aggr.m,
-              buffer = 0,
-              n.sessions = n.sessions
-            ) %>%
+            {
+              if (use_hub) {
+                load_data_hub(
+                  database    = path.to.data,
+                  country     = NULL,
+                  variable    = variable,
+                  years.hist  = years.hist,
+                  years.proj  = years.proj,
+                  domain      = domain,
+                  path.to.obs = path.to.obs,
+                  xlim        = xlim_chunk,
+                  ylim        = ylim_chunk,
+                  aggr.m      = aggr.m,
+                  buffer      = 0,
+                  n.sessions  = n.sessions
+                )
+              } else {
+                load_data(
+                  country      = NULL,
+                  variable     = variable,
+                  years.hist   = years.hist,
+                  years.proj   = years.proj,
+                  path.to.data = path.to.data,
+                  domain       = domain,
+                  path.to.obs  = path.to.obs,
+                  xlim         = xlim_chunk,
+                  ylim         = ylim_chunk,
+                  aggr.m       = aggr.m,
+                  buffer       = 0,
+                  n.sessions   = n.sessions
+                )
+              }
+            } %>%
               projections(
                 .,
                 bias.correction = bias.correction,
@@ -209,7 +229,9 @@ load_data_and_projections <- function(
     # Remove NULL entries if any
     rst_list <- Filter(Negate(is.null), rst_list)
 
-    # Determine the resolution of each raster in the list
+    # Determine the resolution of each raster in the list.
+    # sapply returns a 2×n matrix (x-res, y-res per raster); use unique rows
+    # of the transpose to detect mismatches across rasters.
     resolutions <- tryCatch(
       {
         sapply(rst_list, terra::res)
@@ -219,15 +241,16 @@ load_data_and_projections <- function(
       }
     )
 
+    unique_res <- unique(t(resolutions))
+
     # Check if all rasters have the same resolution
-    if (length(unique(resolutions)) > 1) {
+    if (nrow(unique_res) > 1) {
+      common_res <- apply(unique_res, 2, max)
       cli::cli_alert_warning(sprintf(
-        "Rasters have different resolutions: %s. Resampling to %s",
-        paste(unique(resolutions), collapse = ", "),
-        max(resolutions)
+        "Rasters have different resolutions. Resampling all to [%.6f, %.6f]",
+        common_res[1], common_res[2]
       ))
 
-      common_res <- max(resolutions)
       rst_list <- lapply(rst_list, function(r) {
         tryCatch(
           {
@@ -238,7 +261,7 @@ load_data_and_projections <- function(
                 resolution = common_res,
                 crs = terra::crs(r)
               ),
-              method = "mode"
+              method = "bilinear"
             )
           },
           error = function(e) {

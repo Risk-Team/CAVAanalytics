@@ -10,6 +10,11 @@ output:
 ---
 
 
+## CAVAanalytics 4.0.5
+
+- Added `use_hub` argument (default `FALSE`) to `load_data_and_climate_change_signal` and `load_data_and_projections`. When `TRUE`, each spatial chunk is loaded via `load_data_hub` (GPFS paths on the JupyterHub) instead of `load_data` (public Thredds OPeNDAP), enabling these memory-efficient functions to be used in hub environments without outbound internet access.
+- Fixed a bug in the `merge_rasters` helper inside both memory-efficient functions where the resolution mismatch check never triggered. `sapply(rst_list, terra::res)` returns a 2×n matrix, so the previous `length(unique(resolutions)) > 1` check was comparing individual numeric elements rather than per-raster (x, y) resolution pairs. Replaced with `nrow(unique(t(resolutions))) > 1`, which correctly identifies rasters with differing resolutions. Also changed the resampling method from `"mode"` (intended for categorical data) to `"bilinear"` (appropriate for continuous climate fields).
+
 ## CAVAanalytics 4.0.4
 
 - Switched to IPCC-style markers for trend significance and climate change signal plots. Crosses now indicate **non-significant** trends (p ≥ 0.05) instead of significant ones, and **model disagreement** instead of agreement — consistent with IPCC AR6 uncertainty visualization conventions.

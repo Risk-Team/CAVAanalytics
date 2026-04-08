@@ -27,6 +27,9 @@
 #' @param method character, bias-correction method to use. One of eqm (Empirical Quantile Mapping), qdm (Quantile Delta Mapping) or scaling. Default to eqm. When using the scaling method, the multiplicative approach is automatically applied only when the variable is precipitation.
 #' @param window character, one of none or monthly. Whether bias correction should be applied on a monthly or annual basis. Monthly is the preferred option when performing bias-correction using daily data
 #' @param verbose logical, whether to print progress messages
+#' @param data.path character, default to NULL. Optional root used by `load_data_hub()`
+#'   to rewrite HUB inventory/model path prefixes. If NULL, a global `data.path`
+#'   variable or `options(data.path = ...)` is used when available.
 #' @importFrom magrittr %>%
 #' @return list with SpatRaster. To explore the output run attributes(output)
 #' @export
@@ -58,7 +61,8 @@ load_data_and_climate_change_signal <-
     percentage = F,
     window = "monthly",
     verbose = TRUE,
-    use_hub = FALSE
+    use_hub = FALSE,
+    data.path = NULL
   ) {
     start_time <- Sys.time() # Add timing
 
@@ -164,6 +168,7 @@ load_data_and_climate_change_signal <-
                     years.proj  = years.proj,
                     domain      = domain,
                     path.to.obs = path.to.obs,
+                    data.path   = data.path,
                     xlim        = xlim_chunk,
                     ylim        = ylim_chunk,
                     aggr.m      = aggr.m,

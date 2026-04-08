@@ -12,6 +12,8 @@ load_observation_data(
   xlim,
   ylim,
   aggr.m,
-  path.to.obs
+  path.to.obs,
+  temporal_chunking,
+  temporal_chunk_size
 )
 ```

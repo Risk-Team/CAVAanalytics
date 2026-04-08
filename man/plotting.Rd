@@ -101,7 +101,7 @@ plotting(rst, palette, ...)
 
 \item{n.groups}{Number of groups for spatiotemporal plots. Default is 3}
 
-\item{point_size}{Size of dots for significance of trends. Default is 0.1}
+\item{point_size}{Size of crosses marking non-significant trends or model disagreement (IPCC style). Default is 0.1}
 }
 \value{
 A ggplot2 object

@@ -174,6 +174,8 @@ load_observation_data.hub <- function(
 #' @param aggr.m character, monthly aggregation. One of none, mean or sum
 #' @param n.sessions numeric, number of sessions for parallel processing
 #' @param years.obs NULL or numeric, specify year range for observation
+#' @param data.path character, default to NULL. Optional replacement root for `/home/jovyan`
+#'   used to read the HUB inventory and rewrite model paths from the inventory.
 #' @param temporal_chunking logical, default to FALSE. If TRUE, loads data in temporal chunks
 #' @param temporal_chunk_size numeric, default to 10. Number of years per chunk when temporal_chunking is TRUE
 #' @return list of length 2. List[[1]] contains a tibble with list columns and List[[2]] the bbox
@@ -193,6 +195,7 @@ load_data_hub <- function(
   aggr.m = "none",
   n.sessions = 6,
   years.obs = NULL,
+  data.path = NULL,
   temporal_chunking = FALSE,
   temporal_chunk_size = 10
 ) {
@@ -207,6 +210,7 @@ load_data_hub <- function(
     n.sessions,
     path.to.obs,
     years.obs,
+    data.path,
     temporal_chunking,
     temporal_chunk_size
   )
@@ -218,7 +222,8 @@ load_data_hub <- function(
         domain,
         years.hist,
         years.proj,
-        database
+        database,
+        data.path = data.path
       )
       experiment <- if (!is.null(years.hist) & !is.null(years.proj)) {
         c("historical", "rcp26", "rcp85")

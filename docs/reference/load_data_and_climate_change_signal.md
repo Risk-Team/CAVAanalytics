@@ -31,7 +31,9 @@ load_data_and_climate_change_signal(
   method = "eqm",
   percentage = F,
   window = "monthly",
-  verbose = TRUE
+  verbose = TRUE,
+  use_hub = FALSE,
+  data.path = NULL
 )
 ```
 
@@ -172,6 +174,13 @@ load_data_and_climate_change_signal(
 - verbose:
 
   logical, whether to print progress messages
+
+- data.path:
+
+  character, default to NULL. Optional root used by \`load_data_hub()\`
+  to rewrite HUB inventory/model path prefixes. If NULL, a global
+  \`data.path\` variable or \`options(data.path = ...)\` is used when
+  available.
 
 ## Value
 

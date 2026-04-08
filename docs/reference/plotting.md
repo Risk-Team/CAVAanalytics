@@ -135,7 +135,8 @@ plotting(
 
 - point_size:
 
-  Size of dots for significance of trends. Default is 0.1
+  Size of crosses marking non-significant trends or model disagreement
+  (IPCC style). Default is 0.1
 
 ## Value
 

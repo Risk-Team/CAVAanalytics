@@ -19,7 +19,9 @@ load_data(
   domain = NULL,
   aggr.m = "none",
   n.sessions = 6,
-  years.obs = NULL
+  years.obs = NULL,
+  temporal_chunking = FALSE,
+  temporal_chunk_size = 10
 )
 ```
 
@@ -92,6 +94,15 @@ load_data(
 
   NULL or numeric, specify year range for observation. Specifying
   years.obs will overwrite years.hist for observations
+
+- temporal_chunking:
+
+  logical, default to FALSE. If TRUE, loads data in temporal chunks
+
+- temporal_chunk_size:
+
+  numeric, default to 10. Number of years per chunk when
+  temporal_chunking is TRUE
 
 ## Value
 

@@ -19,7 +19,9 @@ load_data_hub(
   aggr.m = "none",
   n.sessions = 6,
   years.obs = NULL,
-  res_folder = "interp025"
+  data.path = NULL,
+  temporal_chunking = FALSE,
+  temporal_chunk_size = 10
 )
 ```
 
@@ -79,11 +81,20 @@ load_data_hub(
 
   NULL or numeric, specify year range for observation
 
-- res_folder:
+- data.path:
 
-  character, specify the resolution of the CORDEX data. Default to
-  "interp025". Meaningful only when working with CORDEX-CORE or
-  CORDEX-CORE-BC. In the future this option will be removed
+  character, default to NULL. Optional replacement root for
+  \`/home/jovyan\` used to read the HUB inventory and rewrite model
+  paths from the inventory.
+
+- temporal_chunking:
+
+  logical, default to FALSE. If TRUE, loads data in temporal chunks
+
+- temporal_chunk_size:
+
+  numeric, default to 10. Number of years per chunk when
+  temporal_chunking is TRUE
 
 ## Value
 

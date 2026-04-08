@@ -291,7 +291,7 @@ plotting.CAVAanalytics_ccs <-
 #' @param temporal Whether to show temporal aggregation. Default is FALSE
 #' @param lwd Width of country boundaries. Default is 0.1
 #' @param n.groups Number of groups for spatiotemporal plots. Default is 3
-#' @param point_size Size of dots for significance of trends. Default is 0.1
+#' @param point_size Size of crosses marking non-significant trends or model disagreement (IPCC style). Default is 0.1
 #' @export
 plotting.CAVAanalytics_observations <-
   function(rst,
@@ -1233,8 +1233,9 @@ spatial_plot = function(spatial_data,
       ) + {
         if (sign)
           ggplot2::geom_point(
-            data = dplyr::filter(spatial_data[[2]], value == 1),
+            data = dplyr::filter(spatial_data[[2]], value == 0),
             size = point_size,
+            shape = 4,
             alpha = 0.4,
             color = "black",
             ggplot2::aes(x, y)
@@ -1393,8 +1394,9 @@ spatial_plot = function(spatial_data,
           }
         } +
         ggplot2::geom_point(
-          data = dplyr::filter(spatial_data[[2]], value < 0.05),
+          data = dplyr::filter(spatial_data[[2]], value >= 0.05),
           size = point_size,
+          shape = 4,
           alpha = 0.4,
           color = "black",
           ggplot2::aes(x, y)

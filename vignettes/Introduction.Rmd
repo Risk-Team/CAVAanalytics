@@ -105,6 +105,7 @@ plotting(., plot_titles = "N.days > 35 °C", temporal=T, palette="black")
 ```
 
 And we can apply linear regression to each pixel to assess the statistical significance of the yearly increase in the number of days with Tmax higher than 35 degrees Celsius.
+In these trend maps, the overlaid marker indicates **no statistical significance** (i.e., `p >= 0.05`), while pixels without marker are significant.
 
 ```{r, fig.height=3, fig.width=4, fig.align="center",  message=F, warning=F}
 observations(kenya_exmp, season=list(1:12), uppert=35,trends=T) %>% 
@@ -246,6 +247,7 @@ plot_titles = "N > 35 bc", spatiotemporal=T, palette=c("blue", "red"))
 While analyzing future periods can be useful, more often we prioritize understanding delta changes, which represent the relative increase or decrease in mean maximum temperatures compared to a baseline. CAVAanalytics facilitates this analysis as well, which is more common than looking at projected absolute values.
 
 To notice that the function climate_change_signal also calculates the agreement in the sign of the change. Basically, with a threshold of 0.8, it means that if 80% of the models agree that the climate change signal is positive or negative, the pixel gets a score of 1. These results are visualized through a black dot. 
+For climate change signal maps, the overlaid marker/hatching indicates **lack of agreement** among models (agreement below the selected threshold).
 
 When working with precipitation, it can be useful to look at the results in percentages. This can be done easily by specifying percentage as TRUE in climate_change_signal
 

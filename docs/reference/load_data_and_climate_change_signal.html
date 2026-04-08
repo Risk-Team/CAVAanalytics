@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">CAVAanalytics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">4.0.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">4.0.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -72,7 +72,9 @@
 <span>  method <span class="op">=</span> <span class="st">"eqm"</span>,</span>
 <span>  percentage <span class="op">=</span> <span class="cn">F</span>,</span>
 <span>  window <span class="op">=</span> <span class="st">"monthly"</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  use_hub <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  data.path <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -179,6 +181,12 @@ home/user/data/. data would contain subfolders with the climate/impact models. H
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>logical, whether to print progress messages</p></dd>
+
+
+<dt id="arg-data-path">data.path<a class="anchor" aria-label="anchor" href="#arg-data-path"></a></dt>
+<dd><p>character, default to NULL. Optional root used by `load_data_hub()`
+to rewrite HUB inventory/model path prefixes. If NULL, a global `data.path`
+variable or `options(data.path = ...)` is used when available.</p></dd>
 
 </dl></div>
     <div class="section level2">

@@ -1,15 +1,13 @@
 Package: CAVAanalytics
 Type: Package
 Title: R package providing a framework for easy access, processing, and advanced visualization of gridded climate products
-Version: 4.0.3
+Version: 4.0.5
 Authors@R: c(person("Riccardo", "Soldan", , "riccardosoldan@hotmail.it", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-2583-5840")),
            person("Rodrigo", "Manzanas", , "rodrigo.manzanas@unican.es", role = "aut",
            comment = c(ORCID = "0000-0002-0001-3448")),
            person("Ana", "Casanueva", , "ana.casanueva@unican.es", role = "aut"), 
-           person("Hideki", "Kanamaru", , "Hideki.kanamaru@fao.org", role = "ctb", comment=c(ORCID="0000-0002-5306-5022")), 
-           person("Jorge", "Alvar-Beltrán", , "jorge.alvarbeltran@fao.org", role = "ctb",  comment = c(ORCID = "0000-0003-2454-0629")),
-           person("Arianna", "Gialletti", , "Arianna.gialletti@fao.org", role = "ctb"))
+           person("Jorge", "Alvar-Beltrán", , "jorge.alvarbeltran@fao.org", role = "ctb",  comment = c(ORCID = "0000-0003-2454-0629")))
 Description: CAVAanalytics is a comprehensive framework for climate data analysis, offering streamlined access to data, advanced processing and visualization capabilities. It is designed to support a wide range of climate research and user needs
 License: GPL-2 | GPL-3
 Encoding: UTF-8

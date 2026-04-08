@@ -29,7 +29,9 @@ load_data_and_projections(
   n.sessions = 6,
   method = "eqm",
   window = "monthly",
-  verbose = TRUE
+  verbose = TRUE,
+  use_hub = FALSE,
+  data.path = NULL
 )
 ```
 
@@ -154,6 +156,13 @@ load_data_and_projections(
   character, one of none or monthly. Whether bias correction should be
   applied on a monthly or annual basis. Monthly is the preferred option
   when performing bias-correction using daily data
+
+- data.path:
+
+  character, default to NULL. Optional root used by \`load_data_hub()\`
+  to rewrite HUB inventory/model path prefixes. If NULL, a global
+  \`data.path\` variable or \`options(data.path = ...)\` is used when
+  available.
 
 ## Value
 

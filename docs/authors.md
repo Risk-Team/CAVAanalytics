@@ -20,15 +20,15 @@
 
 ## Citation
 
-Soldan R, Manzanas R, Casanueva A (2025). *CAVAanalytics: R package
+Soldan R, Manzanas R, Casanueva A (2026). *CAVAanalytics: R package
 providing a framework for easy access, processing, and advanced
-visualization of gridded climate products*. R package version 4.0.0,
+visualization of gridded climate products*. R package version 4.0.5,
 <https://risk-team.github.io/CAVAanalytics/>.
 
     @Manual{,
       title = {CAVAanalytics: R package providing a framework for easy access, processing, and advanced visualization of gridded climate products},
       author = {Riccardo Soldan and Rodrigo Manzanas and Ana Casanueva},
-      year = {2025},
-      note = {R package version 4.0.0},
+      year = {2026},
+      note = {R package version 4.0.5},
       url = {https://risk-team.github.io/CAVAanalytics/},
     }

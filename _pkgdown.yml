@@ -57,6 +57,8 @@ reference:
     desc: |
       Accessory functions
     contents:
+      - check_data_hub
+      - check_data_thredds
       - C4R_to_CAVA
       - IPCC_palette
       - thrs

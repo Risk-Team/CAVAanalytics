@@ -1,7 +1,82 @@
 # Loading model paths ------------------------------------------------------
-# Inventory stores JupyterHub paths; on HUB compute nodes use GPFS (same root as ERA5/W5E5).
-.hub_fs_data_root <- "/gpfs/ces/share-7c11c2a4-9d9f-40f5-b95e-396bcbf3f608/HUB/data"
-.hub_jupyter_inventory_prefix <- "/home/jovyan/shared/data"
+# Inventory stores JupyterHub paths by default.
+.hub_jupyter_home_prefix <- "/home/jovyan"
+.hub_jupyter_inventory_csv <- "/home/jovyan/shared/inventories/cava/inventory.csv"
+
+#' Resolve optional HUB data override root
+#' @noRd
+.resolve_hub_data_path <- function(data.path = NULL) {
+  resolved <- data.path
+
+  if (is.null(resolved) && exists("data.path", envir = .GlobalEnv, inherits = FALSE)) {
+    resolved <- get("data.path", envir = .GlobalEnv, inherits = FALSE)
+  }
+
+  if (is.null(resolved)) {
+    resolved <- getOption("data.path", NULL)
+  }
+
+  if (
+    is.null(resolved) ||
+      !is.character(resolved) ||
+      length(resolved) != 1L ||
+      is.na(resolved) ||
+      !nzchar(resolved)
+  ) {
+    return(NULL)
+  }
+
+  stringr::str_replace(resolved, "/+$", "")
+}
+
+#' Normalize replacement root to the prefix before `/data`
+#' @noRd
+.normalize_hub_root <- function(path) {
+  path <- stringr::str_replace(path, "/+$", "")
+  stringr::str_replace(path, "/data$", "")
+}
+
+#' Replace everything before an anchor path
+#' @noRd
+.replace_prefix_before_anchor <- function(path, new_root, anchor) {
+  if (!stringr::str_detect(path, stringr::fixed(anchor))) {
+    return(path)
+  }
+
+  anchor_esc <- gsub("([][{}()+*^$|\\\\?.])", "\\\\\\1", anchor)
+  suffix <- sub(paste0("^.*(", anchor_esc, ".*)$"), "\\1", path)
+  if (!nzchar(suffix)) {
+    return(path)
+  }
+
+  paste0(.normalize_hub_root(new_root), suffix)
+}
+
+#' Resolve inventory CSV path for HUB loading
+#' @noRd
+.hub_inventory_csv_path <- function(data.path = NULL) {
+  resolved <- .resolve_hub_data_path(data.path)
+  if (is.null(resolved)) {
+    return(.hub_jupyter_inventory_csv)
+  }
+
+  .replace_prefix_before_anchor(
+    .hub_jupyter_inventory_csv,
+    resolved,
+    "/inventories"
+  )
+}
+
+#' Rewrite a JupyterHub path with an optional data root override
+#' @noRd
+.rewrite_hub_path <- function(path, data.path = NULL) {
+  resolved <- .resolve_hub_data_path(data.path)
+  if (is.null(resolved)) {
+    return(path)
+  }
+
+  .replace_prefix_before_anchor(path, resolved, "/data")
+}
 
 #' Load model paths from thredds
 #' @noRd
@@ -58,10 +133,11 @@ load_model_paths.hub <- function(
   domain,
   years.hist,
   years.proj,
-  path.to.data
+  path.to.data,
+  data.path = NULL
 ) {
   cli::cli_progress_step("Accessing inventory")
-  csv_url <- "/gpfs/ces/share-7c11c2a4-9d9f-40f5-b95e-396bcbf3f608/HUB/inventories/cava/inventory.csv"
+  csv_url <- .hub_inventory_csv_path(data.path)
 
   # Determine activity filter based on path.to.data
   activity_pattern <- if (path.to.data == "CORDEX-CORE-BC") {
@@ -76,11 +152,7 @@ load_model_paths.hub <- function(
       domain %in% !!domain
     ) %>%
     dplyr::mutate(
-      hub = stringr::str_replace(
-        as.character(hub),
-        stringr::fixed(.hub_jupyter_inventory_prefix),
-        .hub_fs_data_root
-      )
+      hub = .rewrite_hub_path(as.character(hub), data.path)
     ) %>%
     dplyr::group_by(experiment) %>%
     dplyr::summarise(path = list(hub)) %>%
@@ -122,7 +194,7 @@ load_obs_paths.thredds <- function(path.to.obs) {
 load_obs_paths.hub <- function(path.to.obs) {
   if (path.to.obs == "ERA5") {
     file.path(
-      .hub_fs_data_root,
+      .rewrite_hub_path("/home/jovyan/shared/data"),
       "observations",
       "ERA5",
       "0.25",
@@ -130,7 +202,7 @@ load_obs_paths.hub <- function(path.to.obs) {
     )
   } else if (path.to.obs == "W5E5") {
     file.path(
-      .hub_fs_data_root,
+      .rewrite_hub_path("/home/jovyan/shared/data"),
       "observations",
       "W5E5",
       "v2.0",
@@ -315,6 +387,7 @@ check_inputs.load_data_hub <- function(
   n.sessions,
   path.to.obs,
   years.obs,
+  data.path,
   temporal_chunking,
   temporal_chunk_size
 ) {
@@ -325,6 +398,9 @@ check_inputs.load_data_hub <- function(
     length(temporal_chunk_size) == 1,
     temporal_chunk_size > 0
   )
+  if (!is.null(data.path)) {
+    stopifnot(is.character(data.path), length(data.path) == 1, nzchar(data.path))
+  }
   match.arg(aggr.m, choices = c("none", "sum", "mean"))
   if (!is.null(domain)) {
     match.arg(

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">CAVAanalytics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">4.0.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">4.0.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,6 +40,12 @@
 
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="4.0.5" id="cavaanalytics-405">CAVAanalytics 4.0.5<a class="anchor" aria-label="anchor" href="#cavaanalytics-405"></a></h2>
+<ul><li>Added <code>data.path</code> support to HUB loading. <code>load_data_hub</code> now accepts <code>data.path = NULL</code> and, when not provided, also checks a global <code>data.path</code> variable (and <code>options(data.path = ...)</code>). This path is used to rewrite only the prefix before <code>inventories/...</code> for inventory access and before <code>data/...</code> for model paths listed in the inventory. The same <code>data.path</code> pass-through was added to <code>load_data_and_climate_change_signal</code> and <code>load_data_and_projections</code> when <code>use_hub = TRUE</code>.</li>
+<li>Fixed a bug in the <code>merge_rasters</code> helper inside both memory-efficient functions where the resolution mismatch check never triggered. <code>sapply(rst_list, terra::res)</code> returns a 2×n matrix, so the previous <code>length(unique(resolutions)) &gt; 1</code> check was comparing individual numeric elements rather than per-raster (x, y) resolution pairs. Replaced with <code>nrow(unique(t(resolutions))) &gt; 1</code>, which correctly identifies rasters with differing resolutions. Also changed the resampling method from <code>"mode"</code> (intended for categorical data) to <code>"bilinear"</code> (appropriate for continuous climate fields).</li>
+<li>Switched to IPCC-style markers for trend significance and climate change signal plots. Crosses now indicate <strong>non-significant</strong> trends (p ≥ 0.05) instead of significant ones, and <strong>model disagreement</strong> instead of agreement — consistent with IPCC AR6 uncertainty visualization conventions.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="4.0.3" id="cavaanalytics-403">CAVAanalytics 4.0.3<a class="anchor" aria-label="anchor" href="#cavaanalytics-403"></a></h2>
 <ul><li>changed path in load data hub so the function can work from the docker image used for reports</li>

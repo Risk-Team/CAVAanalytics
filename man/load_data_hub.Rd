@@ -18,6 +18,7 @@ load_data_hub(
   aggr.m = "none",
   n.sessions = 6,
   years.obs = NULL,
+  data.path = NULL,
   temporal_chunking = FALSE,
   temporal_chunk_size = 10
 )
@@ -48,6 +49,9 @@ load_data_hub(
 \item{n.sessions}{numeric, number of sessions for parallel processing}
 
 \item{years.obs}{NULL or numeric, specify year range for observation}
+
+\item{data.path}{character, default to NULL. Optional replacement root for `/home/jovyan`
+used to read the HUB inventory and rewrite model paths from the inventory.}
 
 \item{temporal_chunking}{logical, default to FALSE. If TRUE, loads data in temporal chunks}
 

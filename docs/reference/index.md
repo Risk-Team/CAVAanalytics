@@ -44,6 +44,10 @@ Load and process in spatial chunks
 
 Accessory functions
 
+- [`check_data_hub()`](https://risk-team.github.io/CAVAanalytics/reference/check_data_hub.md)
+  : Check that CORDEX and observation paths exist on the HUB filesystem
+- [`check_data_thredds()`](https://risk-team.github.io/CAVAanalytics/reference/check_data_thredds.md)
+  : Check that CORDEX and observation URLs are reachable on THREDDS
 - [`C4R_to_CAVA()`](https://risk-team.github.io/CAVAanalytics/reference/C4R_to_CAVA.md)
   : Converting C4R lists into CAVAanalytics list
 - [`IPCC_palette()`](https://risk-team.github.io/CAVAanalytics/reference/IPCC_palette.md)

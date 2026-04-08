@@ -10,6 +10,12 @@ output:
 ---
 
 
+## CAVAanalytics 4.0.5
+
+- Added `data.path` support to HUB loading. `load_data_hub` now accepts `data.path = NULL` and, when not provided, also checks a global `data.path` variable (and `options(data.path = ...)`). This path is used to rewrite only the prefix before `inventories/...` for inventory access and before `data/...` for model paths listed in the inventory. The same `data.path` pass-through was added to `load_data_and_climate_change_signal` and `load_data_and_projections` when `use_hub = TRUE`.
+- Fixed a bug in the `merge_rasters` helper inside both memory-efficient functions where the resolution mismatch check never triggered. `sapply(rst_list, terra::res)` returns a 2×n matrix, so the previous `length(unique(resolutions)) > 1` check was comparing individual numeric elements rather than per-raster (x, y) resolution pairs. Replaced with `nrow(unique(t(resolutions))) > 1`, which correctly identifies rasters with differing resolutions. Also changed the resampling method from `"mode"` (intended for categorical data) to `"bilinear"` (appropriate for continuous climate fields).
+- Switched to IPCC-style markers for trend significance and climate change signal plots. Crosses now indicate **non-significant** trends (p ≥ 0.05) instead of significant ones, and **model disagreement** instead of agreement — consistent with IPCC AR6 uncertainty visualization conventions.
+
 ## CAVAanalytics 4.0.3
 - changed path in load data hub so the function can work from the docker image used for reports
 - Removed hard-coded year range constraints for ERA5 and W5E5 observations to support continuously updated datasets

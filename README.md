@@ -23,3 +23,9 @@ Install from the official repository:
 
 ```r
 pak::pkg_install("un-fao/CAVAanalytics")
+```
+# If you found this project useful
+Please star the official repository:
+
+[un-fao/CAVAanalytics](https://github.com/un-fao/CAVAanalytics)
+
